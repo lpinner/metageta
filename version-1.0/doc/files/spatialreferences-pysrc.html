@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>spatialreferences</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Metadata Crawler</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        Module&nbsp;spatialreferences
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="spatialreferences-pysrc.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="spatialreferences-module.html">Module spatialreferences</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-docstring">'''</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-docstring">Spatial reference helper functions</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-docstring">==================================</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-docstring">'''</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">os</tt><tt class="py-op">,</tt><tt class="py-name">sys</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line">    <tt class="py-keyword">from</tt> <tt class="py-name">osgeo</tt> <tt class="py-keyword">import</tt> <tt class="py-name">gdal</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line">    <tt class="py-keyword">from</tt> <tt class="py-name">osgeo</tt> <tt class="py-keyword">import</tt> <tt class="py-name">gdalconst</tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line">    <tt class="py-keyword">from</tt> <tt class="py-name">osgeo</tt> <tt class="py-keyword">import</tt> <tt class="py-name">osr</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line">    <tt class="py-keyword">from</tt> <tt class="py-name">osgeo</tt> <tt class="py-keyword">import</tt> <tt class="py-name">ogr</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-keyword">except</tt> <tt class="py-name">ImportError</tt><tt class="py-op">:</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line">    <tt class="py-keyword">import</tt> <tt class="py-name">gdal</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line">    <tt class="py-keyword">import</tt> <tt class="py-name">gdalconst</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line">    <tt class="py-keyword">import</tt> <tt class="py-name">osr</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line">    <tt class="py-keyword">import</tt> <tt class="py-name">ogr</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-comment">#==============================================================================</tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#Constants</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#==============================================================================</tt> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"><tt class="py-comment"></tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"><tt id="link-0" class="py-name" targets="Variable spatialreferences.SRS_UNITS_CONV=spatialreferences-module.html#SRS_UNITS_CONV"><a title="spatialreferences.SRS_UNITS_CONV" class="py-name" href="#" onclick="return doclink('link-0', 'SRS_UNITS_CONV', 'link-0');">SRS_UNITS_CONV</a></tt><tt class="py-op">=</tt><tt class="py-op">{</tt>  </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line">    <tt class="py-string">'meter'</tt><tt class="py-op">:</tt>                <tt class="py-string">'m'</tt><tt class="py-op">,</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line">    <tt class="py-string">'metre'</tt><tt class="py-op">:</tt>                <tt class="py-string">'m'</tt><tt class="py-op">,</tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line">    <tt class="py-string">'meters'</tt><tt class="py-op">:</tt>               <tt class="py-string">'m'</tt><tt class="py-op">,</tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line">    <tt class="py-string">'metres'</tt><tt class="py-op">:</tt>               <tt class="py-string">'m'</tt><tt class="py-op">,</tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line">    <tt class="py-string">'foot (international)'</tt><tt class="py-op">:</tt> <tt class="py-string">'ft'</tt><tt class="py-op">,</tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line">    <tt class="py-string">'foot'</tt><tt class="py-op">:</tt>                 <tt class="py-string">'ft'</tt><tt class="py-op">,</tt> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line">    <tt class="py-string">'feet'</tt><tt class="py-op">:</tt>                 <tt class="py-string">'ft'</tt><tt class="py-op">,</tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line">    <tt class="py-string">'u.s. foot'</tt><tt class="py-op">:</tt>            <tt class="py-string">'ft-us'</tt><tt class="py-op">,</tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line">    <tt class="py-string">'u.s. feet'</tt><tt class="py-op">:</tt>            <tt class="py-string">'ft-us'</tt><tt class="py-op">,</tt> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line">    <tt class="py-string">'us survey foot'</tt><tt class="py-op">:</tt>       <tt class="py-string">'ft-us'</tt><tt class="py-op">,</tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line">    <tt class="py-string">'nautical mile'</tt><tt class="py-op">:</tt>        <tt class="py-string">'nm'</tt><tt class="py-op">,</tt> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line">    <tt class="py-string">'nm'</tt><tt class="py-op">:</tt>                   <tt class="py-string">'nm'</tt><tt class="py-op">,</tt> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line">    <tt class="py-string">'degree'</tt><tt class="py-op">:</tt>               <tt class="py-string">'deg'</tt><tt class="py-op">,</tt> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line">    <tt class="py-string">'dd'</tt><tt class="py-op">:</tt>                   <tt class="py-string">'deg'</tt><tt class="py-op">,</tt> </tt>
+<a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line">    <tt class="py-string">'deg'</tt><tt class="py-op">:</tt>                  <tt class="py-string">'deg'</tt><tt class="py-op">,</tt> </tt>
+<a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line">    <tt class="py-string">'radian'</tt><tt class="py-op">:</tt>               <tt class="py-string">'rad'</tt><tt class="py-op">,</tt> </tt>
+<a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line">    <tt class="py-string">'radians'</tt><tt class="py-op">:</tt>              <tt class="py-string">'rad'</tt><tt class="py-op">,</tt> </tt>
+<a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line">    <tt class="py-string">'rad'</tt><tt class="py-op">:</tt>                  <tt class="py-string">'rad'</tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line"><tt class="py-op">}</tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line"><tt class="py-string">'''Convert from GDAL-OSR to ISO 19115 metadata unit of measure.</tt> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line"><tt class="py-string"></tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line"><tt class="py-string">Mostly from ogr_srs_api.h (with some extras thrown in just in case...)::</tt> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line"><tt class="py-string">  define SRS_UL_METER            "Meter"</tt> </tt>
+<a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line"><tt class="py-string">  define SRS_UL_FOOT             "Foot (International)" /* or just "FOOT"? */</tt> </tt>
+<a name="L46"></a><tt class="py-lineno"> 46</tt>  <tt class="py-line"><tt class="py-string">  define SRS_UL_US_FOOT          "U.S. Foot" /* or "US survey foot" */</tt> </tt>
+<a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line"><tt class="py-string">  define SRS_UL_NAUTICAL_MILE    "Nautical Mile"</tt> </tt>
+<a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line"><tt class="py-string">  define SRS_UA_DEGREE           "degree"</tt> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line"><tt class="py-string">  define SRS_UA_RADIAN           "radian"</tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line"><tt class="py-string">'''</tt> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line"> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line"><tt class="py-comment">#Geog/Projected EPSG codes</tt> </tt>
+<a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt id="link-1" class="py-name" targets="Variable spatialreferences.AUS_GEOGCS=spatialreferences-module.html#AUS_GEOGCS"><a title="spatialreferences.AUS_GEOGCS" class="py-name" href="#" onclick="return doclink('link-1', 'AUS_GEOGCS', 'link-1');">AUS_GEOGCS</a></tt><tt class="py-op">=</tt><tt class="py-op">(</tt> </tt>
+<a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line">    <tt class="py-number">4202</tt><tt class="py-op">,</tt> <tt class="py-comment">#AGD66</tt> </tt>
+<a name="L55"></a><tt class="py-lineno"> 55</tt>  <tt class="py-line">    <tt class="py-number">4203</tt><tt class="py-op">,</tt> <tt class="py-comment">#AGD84</tt> </tt>
+<a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line">    <tt class="py-number">4283</tt><tt class="py-op">,</tt> <tt class="py-comment">#GDA94</tt> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line">    <tt class="py-number">4326</tt><tt class="py-op">,</tt> <tt class="py-comment">#WGS 84</tt> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line">    <tt class="py-number">32622</tt>  <tt class="py-comment">#WGS 84 / Plate Carree</tt> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line"><tt class="py-op">)</tt> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line"><tt id="link-2" class="py-name" targets="Variable spatialreferences.AUS_PROJCS=spatialreferences-module.html#AUS_PROJCS"><a title="spatialreferences.AUS_PROJCS" class="py-name" href="#" onclick="return doclink('link-2', 'AUS_PROJCS', 'link-2');">AUS_PROJCS</a></tt><tt class="py-op">=</tt><tt class="py-op">(</tt> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line">    <tt class="py-number">3032</tt><tt class="py-op">,</tt> <tt class="py-comment">#WGS 84 / Australian Antarctic Polar Stereographic</tt> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line">    <tt class="py-number">3033</tt><tt class="py-op">,</tt> <tt class="py-comment">#WGS 84 / Australian Antarctic Lambert</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line">    <tt class="py-number">3107</tt><tt class="py-op">,</tt> <tt class="py-comment">#GDA94 / SA Lambert</tt> </tt>
+<a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line">    <tt class="py-number">3110</tt><tt class="py-op">,</tt> <tt class="py-comment">#AGD66 / Vicgrid66</tt> </tt>
+<a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line">    <tt class="py-number">3111</tt><tt class="py-op">,</tt> <tt class="py-comment">#GDA94 / Vicgrid94</tt> </tt>
+<a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line">    <tt class="py-number">3112</tt><tt class="py-op">,</tt> <tt class="py-comment">#GDA94 / Geoscience Australia Lambert</tt> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line">    <tt class="py-number">3308</tt><tt class="py-op">,</tt> <tt class="py-comment">#GDA94 / NSW Lambert</tt> </tt>
+<a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line">    <tt class="py-number">3577</tt><tt class="py-op">,</tt> <tt class="py-comment">#GDA94 / Australian Albers</tt> </tt>
+<a name="L69"></a><tt class="py-lineno"> 69</tt>  <tt class="py-line">    <tt class="py-number">4176</tt><tt class="py-op">,</tt> <tt class="py-comment">#Australian Antarctic</tt> </tt>
+<a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line">    <tt class="py-number">20248</tt><tt class="py-op">,</tt> <tt class="py-comment">#AGD66 / AMG zone 48</tt> </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line">    <tt class="py-number">20249</tt><tt class="py-op">,</tt> <tt class="py-comment">#AGD66 / AMG zone 49</tt> </tt>
+<a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line">    <tt class="py-number">20250</tt><tt class="py-op">,</tt> <tt class="py-comment">#AGD66 / AMG zone 50</tt> </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line">    <tt class="py-number">20251</tt><tt class="py-op">,</tt> <tt class="py-comment">#AGD66 / AMG zone 51</tt> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line">    <tt class="py-number">20252</tt><tt class="py-op">,</tt> <tt class="py-comment">#AGD66 / AMG zone 52</tt> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line">    <tt class="py-number">20253</tt><tt class="py-op">,</tt> <tt class="py-comment">#AGD66 / AMG zone 53</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line">    <tt class="py-number">20254</tt><tt class="py-op">,</tt> <tt class="py-comment">#AGD66 / AMG zone 54</tt> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line">    <tt class="py-number">20255</tt><tt class="py-op">,</tt> <tt class="py-comment">#AGD66 / AMG zone 55</tt> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line">    <tt class="py-number">20256</tt><tt class="py-op">,</tt> <tt class="py-comment">#AGD66 / AMG zone 56</tt> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line">    <tt class="py-number">20257</tt><tt class="py-op">,</tt> <tt class="py-comment">#AGD66 / AMG zone 57</tt> </tt>
+<a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line">    <tt class="py-number">20258</tt><tt class="py-op">,</tt> <tt class="py-comment">#AGD66 / AMG zone 58</tt> </tt>
+<a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line">    <tt class="py-number">20348</tt><tt class="py-op">,</tt> <tt class="py-comment">#AGD84 / AMG zone 48</tt> </tt>
+<a name="L82"></a><tt class="py-lineno"> 82</tt>  <tt class="py-line">    <tt class="py-number">20349</tt><tt class="py-op">,</tt> <tt class="py-comment">#AGD84 / AMG zone 49</tt> </tt>
+<a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line">    <tt class="py-number">20350</tt><tt class="py-op">,</tt> <tt class="py-comment">#AGD84 / AMG zone 50</tt> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line">    <tt class="py-number">20351</tt><tt class="py-op">,</tt> <tt class="py-comment">#AGD84 / AMG zone 51</tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line">    <tt class="py-number">20352</tt><tt class="py-op">,</tt> <tt class="py-comment">#AGD84 / AMG zone 52</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line">    <tt class="py-number">20353</tt><tt class="py-op">,</tt> <tt class="py-comment">#AGD84 / AMG zone 53</tt> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line">    <tt class="py-number">20354</tt><tt class="py-op">,</tt> <tt class="py-comment">#AGD84 / AMG zone 54</tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line">    <tt class="py-number">20355</tt><tt class="py-op">,</tt> <tt class="py-comment">#AGD84 / AMG zone 55</tt> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line">    <tt class="py-number">20356</tt><tt class="py-op">,</tt> <tt class="py-comment">#AGD84 / AMG zone 56</tt> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line">    <tt class="py-number">20357</tt><tt class="py-op">,</tt> <tt class="py-comment">#AGD84 / AMG zone 57</tt> </tt>
+<a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line">    <tt class="py-number">20358</tt><tt class="py-op">,</tt> <tt class="py-comment">#AGD84 / AMG zone 58</tt> </tt>
+<a name="L92"></a><tt class="py-lineno"> 92</tt>  <tt class="py-line">    <tt class="py-number">28348</tt><tt class="py-op">,</tt> <tt class="py-comment">#GDA94 / MGA zone 48</tt> </tt>
+<a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line">    <tt class="py-number">28349</tt><tt class="py-op">,</tt> <tt class="py-comment">#GDA94 / MGA zone 49</tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line">    <tt class="py-number">28350</tt><tt class="py-op">,</tt> <tt class="py-comment">#GDA94 / MGA zone 50</tt> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line">    <tt class="py-number">28351</tt><tt class="py-op">,</tt> <tt class="py-comment">#GDA94 / MGA zone 51</tt> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line">    <tt class="py-number">28352</tt><tt class="py-op">,</tt> <tt class="py-comment">#GDA94 / MGA zone 52</tt> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line">    <tt class="py-number">28353</tt><tt class="py-op">,</tt> <tt class="py-comment">#GDA94 / MGA zone 53</tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line">    <tt class="py-number">28354</tt><tt class="py-op">,</tt> <tt class="py-comment">#GDA94 / MGA zone 54</tt> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line">    <tt class="py-number">28355</tt><tt class="py-op">,</tt> <tt class="py-comment">#GDA94 / MGA zone 55</tt> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line">    <tt class="py-number">28356</tt><tt class="py-op">,</tt> <tt class="py-comment">#GDA94 / MGA zone 56</tt> </tt>
+<a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line">    <tt class="py-number">28357</tt><tt class="py-op">,</tt> <tt class="py-comment">#GDA94 / MGA zone 57</tt> </tt>
+<a name="L102"></a><tt class="py-lineno">102</tt>  <tt class="py-line">    <tt class="py-number">28358</tt>  <tt class="py-comment">#GDA94 / MGA zone 58</tt> </tt>
+<a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line"><tt class="py-op">)</tt> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line"><tt class="py-comment">#==============================================================================</tt> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#Functions</tt> </tt>
+<a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#==============================================================================</tt> </tt>
+<a name="IdentifyAusEPSG"></a><div id="IdentifyAusEPSG-def"><a name="L107"></a><tt class="py-lineno">107</tt> <a class="py-toggle" href="#" id="IdentifyAusEPSG-toggle" onclick="return toggle('IdentifyAusEPSG');">-</a><tt class="py-line"><tt class="py-comment"></tt><tt class="py-keyword">def</tt> <a class="py-def-name" href="spatialreferences-module.html#IdentifyAusEPSG">IdentifyAusEPSG</a><tt class="py-op">(</tt><tt class="py-param">wkt</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="IdentifyAusEPSG-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="IdentifyAusEPSG-expanded"><a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line">     </tt>
+<a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line">    <tt class="py-name">se</tt><tt class="py-op">=</tt><tt class="py-name">osr</tt><tt class="py-op">.</tt><tt class="py-name">SpatialReference</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line">    <tt class="py-name">sw</tt><tt class="py-op">=</tt><tt class="py-name">osr</tt><tt class="py-op">.</tt><tt class="py-name">SpatialReference</tt><tt class="py-op">(</tt><tt class="py-name">wkt</tt><tt class="py-op">)</tt> </tt>
+<a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line">     </tt>
+<a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line">    <tt class="py-name">epsg</tt><tt class="py-op">=</tt><tt class="py-number">0</tt> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt>   <tt class="py-name">sw</tt><tt class="py-op">.</tt><tt class="py-name">IsGeographic</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt><tt class="py-name">epsg</tt><tt class="py-op">=</tt><tt class="py-name">sw</tt><tt class="py-op">.</tt><tt class="py-name">GetAuthorityCode</tt><tt class="py-op">(</tt><tt class="py-string">'GEOGCS'</tt><tt class="py-op">)</tt> </tt>
+<a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line">    <tt class="py-keyword">elif</tt> <tt class="py-name">sw</tt><tt class="py-op">.</tt><tt class="py-name">IsProjected</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt><tt class="py-name">epsg</tt><tt class="py-op">=</tt><tt class="py-name">sw</tt><tt class="py-op">.</tt><tt class="py-name">GetAuthorityCode</tt><tt class="py-op">(</tt><tt class="py-string">'PROJCS'</tt><tt class="py-op">)</tt> </tt>
+<a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">epsg</tt><tt class="py-op">:</tt> </tt>
+<a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">sw</tt><tt class="py-op">.</tt><tt class="py-name">IsGeographic</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt class="py-name">ausepsg</tt> <tt class="py-keyword">in</tt> <tt id="link-3" class="py-name"><a title="spatialreferences.AUS_GEOGCS" class="py-name" href="#" onclick="return doclink('link-3', 'AUS_GEOGCS', 'link-1');">AUS_GEOGCS</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line">                <tt class="py-name">epsg</tt><tt class="py-op">=</tt><tt class="py-number">0</tt> <tt class="py-comment">#Default return value</tt> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line">                <tt class="py-name">se</tt><tt class="py-op">.</tt><tt class="py-name">ImportFromEPSG</tt><tt class="py-op">(</tt><tt class="py-name">ausepsg</tt><tt class="py-op">)</tt> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">se</tt><tt class="py-op">.</tt><tt class="py-name">ExportToUSGS</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-name">sw</tt><tt class="py-op">.</tt><tt class="py-name">ExportToUSGS</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line">                    <tt class="py-name">epsg</tt><tt class="py-op">=</tt><tt class="py-name">ausepsg</tt> </tt>
+<a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line">                    <tt class="py-keyword">break</tt> </tt>
+<a name="L123"></a><tt class="py-lineno">123</tt>  <tt class="py-line">        <tt class="py-keyword">elif</tt> <tt class="py-name">sw</tt><tt class="py-op">.</tt><tt class="py-name">IsProjected</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt class="py-name">ausepsg</tt> <tt class="py-keyword">in</tt> <tt id="link-4" class="py-name"><a title="spatialreferences.AUS_PROJCS" class="py-name" href="#" onclick="return doclink('link-4', 'AUS_PROJCS', 'link-2');">AUS_PROJCS</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line">                <tt class="py-name">epsg</tt><tt class="py-op">=</tt><tt class="py-number">0</tt> <tt class="py-comment">#Default return value</tt> </tt>
+<a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line">                <tt class="py-name">se</tt><tt class="py-op">.</tt><tt class="py-name">ImportFromEPSG</tt><tt class="py-op">(</tt><tt class="py-name">ausepsg</tt><tt class="py-op">)</tt> </tt>
+<a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">se</tt><tt class="py-op">.</tt><tt class="py-name">ExportToUSGS</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> <tt class="py-op">==</tt> <tt class="py-name">sw</tt><tt class="py-op">.</tt><tt class="py-name">ExportToUSGS</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line">                    <tt class="py-name">epsg</tt><tt class="py-op">=</tt><tt class="py-name">ausepsg</tt> </tt>
+<a name="L129"></a><tt class="py-lineno">129</tt>  <tt class="py-line">                    <tt class="py-keyword">break</tt> </tt>
+<a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line">    <tt class="py-keyword">del</tt> <tt class="py-name">se</tt><tt class="py-op">;</tt><tt class="py-keyword">del</tt> <tt class="py-name">sw</tt> </tt>
+<a name="L131"></a><tt class="py-lineno">131</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt id="link-5" class="py-name" targets="Class int=int-class.html"><a title="int" class="py-name" href="#" onclick="return doclink('link-5', 'int', 'link-5');">int</a></tt><tt class="py-op">(</tt><tt class="py-name">epsg</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line"> </tt>
+<a name="GetLinearUnitsName"></a><div id="GetLinearUnitsName-def"><a name="L133"></a><tt class="py-lineno">133</tt> <a class="py-toggle" href="#" id="GetLinearUnitsName-toggle" onclick="return toggle('GetLinearUnitsName');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="spatialreferences-module.html#GetLinearUnitsName">GetLinearUnitsName</a><tt class="py-op">(</tt><tt class="py-param">wkt</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="GetLinearUnitsName-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="GetLinearUnitsName-expanded"><a name="L134"></a><tt class="py-lineno">134</tt>  <tt class="py-line">    <tt class="py-name">sw</tt><tt class="py-op">=</tt><tt class="py-name">osr</tt><tt class="py-op">.</tt><tt class="py-name">SpatialReference</tt><tt class="py-op">(</tt><tt class="py-name">wkt</tt><tt class="py-op">)</tt> </tt>
+<a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line">    <tt class="py-name">name</tt> <tt class="py-op">=</tt> <tt class="py-string">'Meter'</tt> <tt class="py-comment">#Default</tt> </tt>
+<a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt class="py-name">sw</tt><tt class="py-op">.</tt><tt class="py-name">IsProjected</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line">        <tt class="py-name">name</tt> <tt class="py-op">=</tt> <tt class="py-name">sw</tt><tt class="py-op">.</tt><tt class="py-name">GetAttrValue</tt><tt class="py-op">(</tt> <tt class="py-string">'PROJCS|UNIT'</tt><tt class="py-op">,</tt> <tt class="py-number">0</tt> <tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">lower</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L138"></a><tt class="py-lineno">138</tt>  <tt class="py-line">    <tt class="py-keyword">elif</tt> <tt class="py-name">sw</tt><tt class="py-op">.</tt><tt class="py-name">IsLocal</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line">        <tt class="py-name">name</tt> <tt class="py-op">=</tt> <tt class="py-name">sw</tt><tt class="py-op">.</tt><tt class="py-name">GetAttrValue</tt><tt class="py-op">(</tt> <tt class="py-string">'LOCAL_CS|UNIT'</tt><tt class="py-op">,</tt> <tt class="py-number">0</tt> <tt class="py-op">)</tt><tt class="py-op">.</tt><tt class="py-name">lower</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line">    <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line">        <tt class="py-name">name</tt> <tt class="py-op">=</tt> <tt class="py-string">'deg'</tt> </tt>
+<a name="L142"></a><tt class="py-lineno">142</tt>  <tt class="py-line"> </tt>
+<a name="L143"></a><tt class="py-lineno">143</tt>  <tt class="py-line">    <tt class="py-keyword">if</tt> <tt id="link-6" class="py-name"><a title="spatialreferences.SRS_UNITS_CONV" class="py-name" href="#" onclick="return doclink('link-6', 'SRS_UNITS_CONV', 'link-0');">SRS_UNITS_CONV</a></tt><tt class="py-op">.</tt><tt id="link-7" class="py-name" targets="Method formats.__dataset__._idict.has_key()=formats.__dataset__._idict-class.html#has_key"><a title="formats.__dataset__._idict.has_key" class="py-name" href="#" onclick="return doclink('link-7', 'has_key', 'link-7');">has_key</a></tt><tt class="py-op">(</tt><tt class="py-name">name</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L144"></a><tt class="py-lineno">144</tt>  <tt class="py-line">      <tt class="py-keyword">return</tt> <tt id="link-8" class="py-name"><a title="spatialreferences.SRS_UNITS_CONV" class="py-name" href="#" onclick="return doclink('link-8', 'SRS_UNITS_CONV', 'link-0');">SRS_UNITS_CONV</a></tt><tt class="py-op">[</tt><tt class="py-name">name</tt><tt class="py-op">]</tt> </tt>
+<a name="L145"></a><tt class="py-lineno">145</tt>  <tt class="py-line">    <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L146"></a><tt class="py-lineno">146</tt>  <tt class="py-line">      <tt class="py-keyword">return</tt> <tt class="py-name">name</tt> </tt>
+</div><a name="L147"></a><tt class="py-lineno">147</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >Metadata Crawler</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Wed Aug 12 09:47:12 2009
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

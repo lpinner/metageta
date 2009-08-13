@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<stylesheet 
-  name="ANZLIC Profile"
-  file="anzlic_iso19139.xsl"
-  description="ANZLIC Metadata Profile (AS/NZS ISO 19115:2005 Geographic information - Metadata)"/>

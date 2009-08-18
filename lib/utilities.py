@@ -4,8 +4,7 @@ Utility helper functions
 '''
 from xlutils import xlrd
 from xlutils import xlwt
-import sys, os.path, os, re, struct, glob, shutil,traceback
-import win32com.client, win32wnet
+import sys, os.path, os, re, struct, glob, shutil,traceback,time
 
 def ExceptionInfo(maxTBlevel=0):
     cla, exc, trbk = sys.exc_info()
@@ -24,57 +23,89 @@ def FormatTraceback(trbk, maxTBlevel):
 def readbinary(data,offset, start, stop):
     return ''.join(struct.unpack('s' * (stop-start+1), data[offset+start-1:offset+stop])).strip()
 
+def _WinFileOwner(filepath):
+    import win32com.client
+    import win32net
+    import win32netcon
+
+    OWNERID=8
+    try:
+        d=os.path.split(filepath)
+        oShell = win32com.client.Dispatch("Shell.Application")
+        oFolder = oShell.NameSpace(d[0])
+        ownerid=oFolder.GetDetailsOf(oFolder.parsename(d[1]), OWNERID)
+        ownerid=ownerid.split('\\')[-1]
+    except: ownerid='0'
+    #Too slow...
+    ##oWMI = win32com.client.GetObject(r"winmgmts:\\.\root\cimv2")
+    ##qry = "Select * from Win32_UserAccount where NAME = '%s'" % ownerid
+    ##qry = oWMI.ExecQuery(qry)
+    ##if qry.count > 0:
+    ##for result in qry:
+    ##    ownername=str(result.FullName)
+    ##    break
+    ##else: ownername='No user match'
+    #Much quicker...
+    try:
+       dc=win32net.NetServerEnum(None,100,win32netcon.SV_TYPE_DOMAIN_CTRL)
+       if dc[0]:
+           dcname=dc[0][0]['name']
+           ownername=win32net.NetUserGetInfo(r"\\"+dcname,ownerid,2)['full_name']
+       else:
+           ownername=win32net.NetUserGetInfo(None,ownerid,2)['full_name']
+    except: ownername='No user match'
+
+    return ownerid,ownername
+
+def _NixFileOwner(uid):
+    import pwd
+    pwuid=pwd.getpwuid(uid)
+    ownerid = pwuid[0]
+    ownername = pwuid[4]
+    return ownerid,ownername
+
 def FileInfo(filepath):
-    '''http://www.microsoft.com/technet/scriptcenter/guide/sas_fil_lunl.mspx?mfr=true'''
-
-    fileattr={
-        'SIZE':1,
-        'TYPE':2,
-        'DATE_MODIFIED':3,
-        'DATE_CREATED':4,
-        'DATE_ACCESSED':5,
-        'ATTRIBUTES':6,
-        'STATUS':7,
-        'OWNERID':8
+    filestat = os.stat(filepath)
+    fileinfo = {
+        'size':filestat.st_size,
+        'datemodified':time.strftime('%Y-%m-%dT%H:%M:%S', time.localtime(filestat.st_mtime)),
+        'datecreated':time.strftime('%Y-%m-%dT%H:%M:%S', time.localtime(filestat.st_ctime)),
+        'dateaccessed':time.strftime('%Y-%m-%dT%H:%M:%S', time.localtime(filestat.st_atime))
     }
+    if sys.platform[0:3] =='win':
+        ownerid,ownername=_WinFileOwner(filepath)
+    else:
+        ownerid,ownername=_NixFileOwner(filestat.st_uid)
 
-    d=os.path.split(filepath)
-    oShell = win32com.client.Dispatch("Shell.Application")
-    oFolder = oShell.NameSpace(d[0])
-    for attr in fileattr:
-        fileattr[attr]=oFolder.GetDetailsOf(oFolder.parsename(d[1]), fileattr[attr])
+    fileinfo['ownerid']=ownerid
+    fileinfo['ownername']=ownername
 
-    oWMI = win32com.client.GetObject(r"winmgmts:\\.\root\cimv2")
-    user=fileattr['OWNERID'].split('\\')
-    fileattr['OWNERID']=user[len(user)-1]
-    qry = "Select * from Win32_UserAccount where NAME = '%s'" % fileattr['OWNERID']
-    qry = oWMI.ExecQuery(qry)
-    if qry.count > 0:
-      for result in qry:
-        name=str(result.FullName)
-    else: name='No user match'
-    fileattr['OWNERNAME']=name
-    return fileattr
+    return fileinfo
+
 
 def convertUNC(filepath):
-    if type(filepath) is list or type(filepath) is tuple: #is it a list of filepaths
-        uncpath=[]
-        for path in filepath:
-            try:    uncpath.append(win32wnet.WNetGetUniversalName(path))
-            except: uncpath.append(path) #Local path
-    else:
-        try:    uncpath=win32wnet.WNetGetUniversalName(filepath)
-        except: uncpath=filepath #Local path
-
+    if sys.platform[0:3] =='win':
+        import win32wnet
+        if type(filepath) is list or type(filepath) is tuple: #is it a list of filepaths
+            uncpath=[]
+            for path in filepath:
+                try:    uncpath.append(win32wnet.WNetGetUniversalName(path))
+                except: uncpath.append(path) #Local path
+        else:
+            try:    uncpath=win32wnet.WNetGetUniversalName(filepath)
+            except: uncpath=filepath #Local path
+    else:uncpath=filepath
     return uncpath
+
 def fixSeparators(f):
-    if type(f) == list:
-        i=0
-        while i < len(f):
-            f[i]=(f[i].replace('\\\\','\\')).replace('/','\\')
-            i+=1
-    else:
-        f=(f.replace('\\\\','\\')).replace('/','\\')
+    if sys.platform[0:3] =='win':
+        if type(f) == list:
+            i=0
+            while i < len(f):
+                f[i]=(f[i].replace('\\\\','\\')).replace('/','\\')
+                i+=1
+        else:
+            f=(f.replace('\\\\','\\')).replace('/','\\')
     return f
 
 def checkExt(var,vals):

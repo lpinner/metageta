@@ -29,14 +29,15 @@ except ImportError:
     import ogr
     
 class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
-    def __init__(self,f):
-        '''Read georeferencing information for a ACRES Landsat CCRS/SPOT 1-4 format image as GDAL doesn't
-        Format description: http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10349'''
-        gdalDataset = geometry.OpenDataset(f)
+    def __init__(self,f=None):
+        if not f:f=self.fileinfo['filepath']
+        self.filelist=[r for r in utilities.rglob(os.path.dirname(f))] #everything in this dir and below.
+        
+    def __getmetadata__(self,f=None):
+        if not f:f=self.fileinfo['filepath']
+        self._gdaldataset = geometry.OpenDataset(f)
 
-        p=re.compile(r'\\imag_*', re.I)
-        led=p.sub(r'\\lead_',f)
-        filelist=[r for r in utilities.rglob(os.path.dirname(f))]
+        led=glob.glob(os.path.dirname(f) + '/[Ll][Ee][Aa][Dd]*')[0] #volume file
 
         meta = open(led,'rb').read()
 
@@ -89,7 +90,7 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
         record=3
 
         #Bands, rows & columns and rotation
-        nbands = int(gdalDataset.RasterCount)
+        nbands = int(self._gdaldataset.RasterCount)
         start,stop=333,348
         ncols=float(utilities.readbinary(meta,(record-1)*recordlength,start,stop))
         start,stop=349,364
@@ -163,8 +164,7 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
         else:
             self.metadata['sensor']='HRV'
             self.metadata['filetype'] ='CEOS/SPOT CCRS Format'
-        self.metadata['filesize']=sum([os.path.getsize(file) for file in filelist])
-        self.metadata['filelist']=','.join(utilities.fixSeparators(filelist))
+        self.metadata['filesize']=sum([os.path.getsize(file) for file in self.filelist])
         self.metadata['srs'] = srs
         self.metadata['epsg'] = epsg
         self.metadata['units'] = units
@@ -180,7 +180,7 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
         self.metadata['UR']='%s,%s' % tuple(ext[1])
         self.metadata['LR']='%s,%s' % tuple(ext[2])
         self.metadata['LL']='%s,%s' % tuple(ext[3])
-        metadata=gdalDataset.GetMetadata()
+        metadata=self._gdaldataset.GetMetadata()
         self.metadata['metadata']='\n'.join(['%s: %s' %(m,hdf_self.metadata[m]) for m in metadata])
         self.metadata['compressionratio']=0
         self.metadata['compressiontype']='None'

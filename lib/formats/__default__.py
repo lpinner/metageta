@@ -1,6 +1,6 @@
 '''
-Metadata driver for generic imagery
-===================================
+Metadata driver for generic imagery formats including GDAL Virtual Rasters (VRT files and xml strings)
+=======================================================================================================
 '''
 
 format_regex=[
@@ -36,28 +36,38 @@ class Dataset(__dataset__.Dataset):
     '''Default Dataset class.
     For generic imagery formats that gdal can read.'''
     def __init__(self,f):
-        try:
-            cwd=os.curdir
-            p=os.path.split(f)[0]
-            os.chdir(p)
-            filelist = utilities.GetFileList(f)
-            self._gdalDataset= geometry.OpenDataset(f)
-            if self._gdalDataset:
-                driver=self._gdalDataset.GetDriver().ShortName
-                self.metadata['filetype'] = driver+'/'+self._gdalDataset.GetDriver().LongName
-                self.metadata['cols'] = self._gdalDataset.RasterXSize
-                self.metadata['rows'] = self._gdalDataset.RasterYSize
-                self.metadata['nbands'] = self._gdalDataset.RasterCount
+        pass
+    def __getmetadata__(self,f=None): 
+        '''
+        Generate metadata for generic imagery
 
-                self.metadata['srs']= self._gdalDataset.GetProjection()
-                if not self.metadata['srs'] and self._gdalDataset.GetGCPCount() > 0:
-                    self.metadata['srs'] = self._gdalDataset.GetGCPProjection()
+        @type  f: string
+        @param f: a filepath to the dataset or a VRT XML string
+        @return:  None
+        '''
+        if not f:f=self.fileinfo['filepath']
+        try:
+            cwd=os.path.abspath(os.curdir)
+            if os.path.exists(f):
+                p=os.path.split(f)[0]
+                os.chdir(p)
+            self._gdaldataset= geometry.OpenDataset(f)
+            if self._gdaldataset:
+                driver=self._gdaldataset.GetDriver().ShortName
+                self.metadata['filetype'] = driver+'/'+self._gdaldataset.GetDriver().LongName
+                self.metadata['cols'] = self._gdaldataset.RasterXSize
+                self.metadata['rows'] = self._gdaldataset.RasterYSize
+                self.metadata['nbands'] = self._gdaldataset.RasterCount
+
+                self.metadata['srs']= self._gdaldataset.GetProjection()
+                if not self.metadata['srs'] and self._gdaldataset.GetGCPCount() > 0:
+                    self.metadata['srs'] = self._gdaldataset.GetGCPProjection()
                 self.metadata['epsg'] = spatialreferences.IdentifyAusEPSG(self.metadata['srs'])
                 self.metadata['units'] = spatialreferences.GetLinearUnitsName(self.metadata['srs'])
                 
-                geotransform = self._gdalDataset.GetGeoTransform()
-                if geotransform == (0, 1, 0, 0, 0, 1) and self._gdalDataset.GetGCPCount() > 0:
-                    gcps=self._gdalDataset.GetGCPs()
+                geotransform = self._gdaldataset.GetGeoTransform()
+                if geotransform == (0, 1, 0, 0, 0, 1) and self._gdaldataset.GetGCPCount() > 0:
+                    gcps=self._gdaldataset.GetGCPs()
                     geotransform=gdal.GCPsToGeoTransform(gcps)
                     gcps=geometry.GeoTransformToGCPs(geotransform,self.metadata['cols'],self.metadata['rows']) #Just get the 4 corner GCP's
                 else:
@@ -87,7 +97,7 @@ class Dataset(__dataset__.Dataset):
                 self.metadata['LR']='%s,%s' % tuple(ext[2])
                 self.metadata['LL']='%s,%s' % tuple(ext[3])
 
-                rb=self._gdalDataset.GetRasterBand(1)
+                rb=self._gdaldataset.GetRasterBand(1)
                 self.metadata['datatype']=gdal.GetDataTypeName(rb.DataType)
                 self.metadata['nbits']=gdal.GetDataTypeSize(rb.DataType)
                 nodata=rb.GetNoDataValue()
@@ -95,10 +105,10 @@ class Dataset(__dataset__.Dataset):
                 else:
                     if self.metadata['datatype'][0:4] in ['Byte','UInt']: self.metadata['nodata']=0 #Unsigned, assume 0
                     else:self.metadata['nodata']=-2**(self.metadata['nbits']-1)                     #Signed, assume min value in data range
-                metadata=self._gdalDataset.GetMetadata()
+                metadata=self._gdaldataset.GetMetadata()
                 self.metadata['metadata']='\n'.join(['%s: %s' %(m,metadata[m]) for m in metadata])
-                self.metadata['filesize']=sum([os.path.getsize(file) for file in filelist])
-                self.metadata['filelist']=','.join(utilities.fixSeparators(filelist))
+                self.metadata['filesize']=sum([os.path.getsize(tmp) for tmp in self.filelist])
+                #self.metadata['filelist']=','.join(self.filelist)
                 self.metadata['compressionratio']=int((self.metadata['nbands']*self.metadata['cols']*self.metadata['rows']*(self.metadata['nbits']/8.0))/self.metadata['filesize'])
                 if self.metadata['compressionratio'] > 0:
                     try:
@@ -107,7 +117,7 @@ class Dataset(__dataset__.Dataset):
                         elif driver[0:3]=='ECW':
                             self.metadata['compressiontype']="ECW"
                         else:
-                            mdis=self._gdalDataset.GetMetadata('IMAGE_STRUCTURE')
+                            mdis=self._gdaldataset.GetMetadata('IMAGE_STRUCTURE')
                             self.metadata['compressiontype']=mdis['IMAGE_STRUCTURE']
                     except: self.metadata['compressiontype']='Unknown'
                 else: self.metadata['compressiontype']='None'

@@ -30,26 +30,145 @@ except ImportError:
 class Dataset(__default__.Dataset): 
     '''Subclass of __default__.Dataset class so we get a load of metadata populated automatically'''
     def __init__(self,f):
+        self.filelist=glob.glob(os.path.dirname(f)+'/*')
+
+    def __getmetadata__(self):
         '''Read Metadata for an Digital Globe Quickbird format image as GDAL doesn't quite get it all...
 
         @todo: does not handle QB tile files (*til). Must check if GDAL can read them...?
+        @todo: Fix QB GDA94 Geographic CS "Unknown datum" problem
         '''
+        f=self.fileinfo['filepath']
+        imddata=self.__getimddata__(f)
         
         tif = os.path.splitext(f)[0]+'.tif'
         img = os.path.splitext(f)[0]+'.img'
         til = os.path.splitext(f)[0]+'.til'
-        if   os.path.exists(tif):__default__.Dataset.__init__(self, tif)
-        elif os.path.exists(img):__default__.Dataset.__init__(self, img)
-        #elif os.path.exists(til):__default__.Dataset.__init__(self, til) #NEED TO DO SOMETHING WITH THE TILE FILE!!!
+
+        if   os.path.exists(tif):__default__.Dataset.__getmetadata__(self, tif)
+        elif os.path.exists(img):__default__.Dataset.__getmetadata__(self, img)
+        elif os.path.exists(til):
+            vrt=self.__gettilevrt__(til,imddata)
+            __default__.Dataset.__getmetadata__(self, vrt)
+            for tmp in self.filelist:
+                if tmp[-3:].lower()=='tif':
+                    self.metadata['filetype']='GTiff/GeoTIFF'
+                    break
+                elif tmp[-3:].lower()=='img':
+                    self.metadata['filetype']='HFA/Erdas Imagine Images (.img)'
+                    break
         else:raise IOError, 'Matching Quickbird imagery TIFF/IMG not found:\n'
+
+        self.metadata['metadata']=open(f).read()
+
+        if imddata.has_key('IMAGE_1'):imgkey='IMAGE_1'
+        else:imgkey='SINGLE_IMAGE_PRODUCT'
+        if imddata.has_key('MAP_PROJECTED_PRODUCT'):self.metadata['imgdate']=imddata['MAP_PROJECTED_PRODUCT']['earliestAcqTime'][0:10]#.replace('-','') #ISO 8601 format
+        elif imddata[imgkey].has_key('firstLineTime'):self.metadata['imgdate']=imddata[imgkey]['firstLineTime'][0:10]#.replace('-','') #ISO 8601 format
+        self.metadata['satellite']='Quickbird (%s)' % imddata[imgkey]['satId']
+        if imddata['bandId'] == 'P':self.metadata['sensor']='PANCHROMATIC'
+        else:
+            if imddata['panSharpenAlgorithm']== 'None':self.metadata['sensor']='MULTISPECTRAL'
+            else:self.metadata['sensor']='MULTI/PAN'
+        if imddata['bandId']=='Multi':
+            if imddata['nbands'] == 3:self.metadata['bands'] = 'B,G,R'
+            elif imddata['nbands'] == 4:self.metadata['bands'] = 'B,G,R,N'
+        else: #'BGRN','RGB','P'
+            self.metadata['bands'] = ','.join([l for l in imddata['bandId']])
+        if imddata[imgkey].has_key('meanSunEl'):
+            self.metadata['sunelevation'] = imddata[imgkey]['meanSunEl']
+            self.metadata['sunazimuth'] = imddata[imgkey]['meanSunAz']
+        elif imddata[imgkey].has_key('sunEl'):
+            self.metadata['sunelevation'] = imddata[imgkey]['sunEl']
+            self.metadata['sunazimuth'] = imddata[imgkey]['sunAz']
+        self.metadata['level'] = imddata['productLevel']
+        if imddata[imgkey].has_key('cloudCover'):
+            self.metadata['cloudcover'] = imddata[imgkey]['cloudCover']
+        elif imddata[imgkey].has_key('manualCloudCover'):
+            self.metadata['cloudcover'] = max([0, imddata[imgkey]['manualCloudCover']]) #hack for -999 cloud cover
+        elif imddata[imgkey].has_key('autoCloudCover'):
+            self.metadata['cloudcover'] = max([0, imddata[imgkey]['autoCloudCover']])
+        if imddata[imgkey].has_key('offNadirViewAngle'):
+            self.metadata['viewangle'] = imddata[imgkey]['offNadirViewAngle']
+        elif imddata[imgkey].has_key('meanOffNadirViewAngle'):
+            self.metadata['viewangle'] = imddata[imgkey]['meanOffNadirViewAngle']
+        if imddata[imgkey].has_key('CatId'):
+            self.metadata['sceneid'] = imddata[imgkey]['CatId']
+        if imddata[imgkey].has_key('resamplingKernel'):
+            self.metadata['resampling'] = imddata[imgkey]['resamplingKernel']
+        elif imddata.has_key('MAP_PROJECTED_PRODUCT') and imddata['MAP_PROJECTED_PRODUCT'].has_key('resamplingKernel'):
+            self.metadata['resampling'] = imddata['MAP_PROJECTED_PRODUCT']['resamplingKernel']
+        if imddata.has_key('MAP_PROJECTED_PRODUCT') and imddata['MAP_PROJECTED_PRODUCT'].has_key('DEMCorrection'):
+            self.metadata['demcorrection'] = imddata['MAP_PROJECTED_PRODUCT']['DEMCorrection']
+        #self.extent is set in __default__.Dataset.__getmetadata__()
+
+    def __gettilevrt__(self,f,imddata):
+        til=iter(open(f).readlines())
+        tileinfo={}
+        datasets={}
+        line=til.next()
+        while line: #Extract all keys and values from the header file into a dictionary
+            line=line.strip().strip(';').replace('"','')
+            if line == 'END':break
+            if 'BEGIN_GROUP' in line:
+                line=til.next()
+                while line:
+                    line=line.strip().strip(';').replace('"','')
+                    if 'END_GROUP' in line:break
+                    else:
+                        dat=map(string.strip, line.split('=',1))
+                        if not dat[0] in datasets:datasets[dat[0]]=[]
+                        datasets[dat[0]].append(dat[1])
+                    line=til.next()
+            else:
+                var=map(string.strip, line.split('=',1))
+                tileinfo[var[0]]=var[1]
+            line=til.next()
+        curdir=os.path.dirname(f)
+        ds=geometry.OpenDataset(os.path.join(curdir,datasets['filename'][0]))
+        rb=ds.GetRasterBand(1)
+        DataType=gdal.GetDataTypeName(rb.DataType)
+        GeoTransform=','.join(map(str, ds.GetGeoTransform()))
+        Projection=ds.GetProjection()
+        numTiles=int(tileinfo['numTiles'])
+        BlockXSize,BlockYSize=rb.GetBlockSize()
+        
+        vrtXML = []
+        vrtXML.append('<VRTDataset rasterXSize="%s" rasterYSize="%s">' % (imddata['numColumns'],imddata['numRows']))
+        vrtXML.append('<SRS>%s</SRS>' % Projection)
+        vrtXML.append('<GeoTransform>%s</GeoTransform>' % GeoTransform)
+
+        for b, band in enumerate(imddata['bands']):
+            b+=1
+            vrtXML.append(' <VRTRasterBand dataType="%s" band="%s">' % (DataType,b))
+            #vrtXML.append('  <ColorInterp>Gray</ColorInterp>')
+            for tile in range(0,numTiles):
+                tileSizeX=int(datasets['URColOffset'][tile])-int(datasets['ULColOffset'][tile])+1
+                tileSizeY=int(datasets['LLRowOffset'][tile])-int(datasets['ULRowOffset'][tile])+1
+                ULColOffset=datasets['ULColOffset'][tile]
+                ULRowOffset=datasets['ULRowOffset'][tile]
+                vrtXML.append('  <SimpleSource>')
+                vrtXML.append('   <SourceFilename  relativeToVRT="0">%s</SourceFilename>' % os.path.join(curdir,datasets['filename'][tile]))
+                vrtXML.append('   <SourceBand>%s</SourceBand>' % (b))
+                vrtXML.append('   <SourceProperties RasterXSize="%s" RasterYSize="%s" DataType="%s"/>'%(tileSizeX,tileSizeY,DataType))# BlockXSize="%s" BlockYSize="%s"/>'(tileSizeX,tileSizeY,DataType,BlockXSize,BlockYSize))
+                vrtXML.append('   <SrcRect xOff="0" yOff="0" xSize="%s" ySize="%s"/>' %(tileSizeX,tileSizeY))
+                vrtXML.append('   <DstRect xOff="%s" yOff="%s" xSize="%s" ySize="%s"/>' % (ULColOffset,ULRowOffset,tileSizeX,tileSizeY))
+                vrtXML.append('  </SimpleSource>')
+            vrtXML.append(' </VRTRasterBand>')
+        vrtXML.append('</VRTDataset>')
+        vrtXML='\n'.join(vrtXML)
+        return vrtXML
+        
+    def __getimddata__(self,f):
         #Loop thru and parse the IMD file.
         #would be easier to walk the nodes in the XML files, but not all of our QB imagery has this
         #perhaps someone deleted them...?
-        lines=open(f).readlines()
-        i=0
-        data={}
-        while i < len(lines):
-            line=[item.strip() for item in lines[i].replace('"','').split('=')]
+        lines=iter(open(f).readlines())
+        imddata={}
+        bands=[]
+        line=lines.next()
+        while line:
+            line=[item.strip() for item in line.replace('"','').split('=')]
             #line = map(string.strip, lines[i].split('='))
             group=line[0]
             if group == 'END;':break
@@ -57,59 +176,26 @@ class Dataset(__default__.Dataset):
             if group == 'BEGIN_GROUP':
                 group=value
                 subdata={}
-                while True:
-                    i+=1
-                    line = map(string.strip, lines[i].replace('"','').split('='))
+                if 'BAND_' in group:bands.append(group)
+                while line:
+                    line=lines.next()
+                    line = [l.replace('"','').strip() for l in line.split('=')]
                     subgroup=line[0]
                     subvalue=line[1]
                     if subgroup == 'END_GROUP':break
                     elif line[1] == '(':
-                        while True:
-                            i+=1
-                            line = lines[i].replace('"','').strip()
+                        while line:
+                            line=lines.next()
+                            line = line.replace('"','').strip()
                             subvalue+=line
                             if line[-1:]==';':
                                 subvalue=eval(subvalue.strip(';'))
                                 break
                     else:subvalue=subvalue.strip(';')
                     subdata[subgroup]=subvalue
-                data[group]=subdata
-            else: data[group]=value.strip(');')
-            i+=1
-        if data.has_key('IMAGE_1'):imgkey='IMAGE_1'
-        else:imgkey='SINGLE_IMAGE_PRODUCT'
-        if data.has_key('MAP_PROJECTED_PRODUCT'):self.metadata['imgdate']=data['MAP_PROJECTED_PRODUCT']['earliestAcqTime'][0:10]#.replace('-','') #ISO 8601 format
-        elif data[imgkey].has_key('firstLineTime'):self.metadata['imgdate']=data[imgkey]['firstLineTime'][0:10]#.replace('-','') #ISO 8601 format
-        self.metadata['satellite']='Quickbird (%s)' % data[imgkey]['satId']
-        if data['bandId'] == 'BGRN':self.metadata['sensor']='MULTI/PAN'
-        elif data['bandId'] == 'P':self.metadata['sensor']='PANCHROMATIC'
-        elif data['bandId'] == 'Multi':self.metadata['sensor']='MULTISPECTRAL'
-        if data[imgkey].has_key('meanSunEl'):
-            self.metadata['sunelevation'] = data[imgkey]['meanSunEl']
-            self.metadata['sunazimuth'] = data[imgkey]['meanSunAz']
-        elif data[imgkey].has_key('sunEl'):
-            self.metadata['sunelevation'] = data[imgkey]['sunEl']
-            self.metadata['sunazimuth'] = data[imgkey]['sunAz']
-        self.metadata['level'] = data['productLevel']
-        if self.metadata['nbands'] == 4:self.metadata['bands'] = 'B,G,R,N'
-        else:self.metadata['bands'] = 'P'
-        if data[imgkey].has_key('cloudCover'):
-            self.metadata['cloudcover'] = data[imgkey]['cloudCover']
-        elif data[imgkey].has_key('manualCloudCover'):
-            self.metadata['cloudcover'] = max([0, data[imgkey]['manualCloudCover']]) #hack for -999 cloud cover
-        elif data[imgkey].has_key('autoCloudCover'):
-            self.metadata['cloudcover'] = max([0, data[imgkey]['autoCloudCover']])
-        if data[imgkey].has_key('offNadirViewAngle'):
-            self.metadata['viewangle'] = data[imgkey]['offNadirViewAngle']
-        elif data[imgkey].has_key('meanOffNadirViewAngle'):
-            self.metadata['viewangle'] = data[imgkey]['meanOffNadirViewAngle']
-        if data[imgkey].has_key('CatId'):
-            self.metadata['sceneid'] = data[imgkey]['CatId']
-        if data[imgkey].has_key('resamplingKernel'):
-            self.metadata['resampling'] = data[imgkey]['resamplingKernel']
-        elif data.has_key('MAP_PROJECTED_PRODUCT') and data['MAP_PROJECTED_PRODUCT'].has_key('resamplingKernel'):
-            self.metadata['resampling'] = data['MAP_PROJECTED_PRODUCT']['resamplingKernel']
-        if data.has_key('MAP_PROJECTED_PRODUCT') and data['MAP_PROJECTED_PRODUCT'].has_key('DEMCorrection'):
-            self.metadata['demcorrection'] = data['MAP_PROJECTED_PRODUCT']['DEMCorrection']
-        #self.extent is set in __default__.Dataset.__init__()
-
+                imddata[group]=subdata
+            else: imddata[group]=value.strip(');')
+            line=lines.next()
+        imddata['bands']=bands
+        imddata['nbands']=len(bands)
+        return imddata

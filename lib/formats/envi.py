@@ -15,18 +15,15 @@ import sys, os
 
 class Dataset(__default__.Dataset): 
     '''Subclass of __default__.Dataset class so we get a load of metadata populated automatically'''
-    def __init__(self,f):
-        '''Read Metadata for a ENVI image as GDAL doesn't work if you pass the header file...'''
+    def __init__(self,f=None):
+        if not f:f=self.fileinfo['filepath']
         hdr=open(f)
-        try:
-            if hdr.readline().strip() == 'ENVI': #is it an ENVI hdr file...?
-                dat=os.path.splitext(f)[0] #Get the data file
-                if os.path.exists(dat):
-                    __default__.Dataset.__init__(self, dat) #autopopulate basic metadata
-                else:
-                    raise NotImplementedError, 'No data file exists for ENVI header file %s.' % f
-                #self.metadata['filename']=os.path.basename(f)
-                #self.metadata['filepath']=f
-            else:raise NotImplementedError #This error gets ignored in __init__.Open()
-        finally:
-            hdr.close()
+        lin=hdr.readline().strip() #read first line
+        hdr.close()
+        self._dat=os.path.splitext(f)[0]
+        if not lin == 'ENVI' or not os.path.exists(self._dat): #is it an ENVI format hdr...?
+            raise NotImplementedError #This error gets ignored in __init__.Open()
+            
+    def __getmetadata__(self):
+        '''Read Metadata for a ENVI image as GDAL doesn't work if you pass the header file...'''
+        __default__.Dataset.__getmetadata__(self, self._dat) #autopopulate basic metadata

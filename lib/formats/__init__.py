@@ -74,6 +74,11 @@ Class hierarchy::
           #Populate extent list
 
 @todo: Need to pass back info about import errors - warnings.warn perhaps?
+@todo: More info re. geometric, radiometric corrections where available (ccrs,...)
+@todo: __dataset__.__getfilelist__() does not handle different file formats with the same basename
+       eg. dir/abc.jp2,dir/abc.j2i,dir/abc.tif,dir/abc.tfw
+       This could be handled with a bit of kludgery, but should it...? Can we assume that abc.jp2
+       is the compressed version of abc.tif and should all be lumped together (as currently happens)?
 '''
 
 from glob import glob as _glob

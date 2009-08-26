@@ -15,26 +15,27 @@ import sys, os
 
 class Dataset(__default__.Dataset): 
     '''Subclass of __default__.Dataset class so we get a load of metadata populated automatically'''
-    def __init__(self,f):
+    def __getmetadata__(self,f=None):
         '''Read Metadata for a ECW image as GDAL doesn't quite get it all...'''
+        if not f:f=self.fileinfo['filepath']
         ers=os.path.splitext(f)[0]+'.ers'
         if os.path.exists(ers):
             try:
-                __default__.Dataset.__init__(self, ers) #autopopulate basic metadata
-                self.metadata['filepath']=f
-                self.metadata['filename']=os.path.split(f)[1]
+                __default__.Dataset.__getmetadata__(self, ers) #autopopulate basic metadata
                 self.metadata['filetype']='ECW/ERMapper Compressed Wavelets'
                 self.metadata['compressiontype']='ECW'
-            except:__default__.Dataset.__init__(self, f)
+            except:__default__.Dataset.__getmetadata__(self, f)
         else:
-            __default__.Dataset.__init__(self, f) #autopopulate basic metadata
-        path=os.environ['PATH']
-        os.environ['PATH'] = '%s\\bin_ecw;%s' %(os.path.dirname(__file__), os.environ['PATH'])
-        stdin,stdout,stderr=os.popen3('ecw_report.exe "%s"' % f)
-        os.environ['PATH']=path
-        stdout=stdout.readlines()
-        for line in stdout:
-            line=[part.strip() for part in line.split(':')]
-            if line[0].upper() == 'TARGET RATIO':
-                self.metadata['targetratio']=line[1]
-                break
+            __default__.Dataset.__getmetadata__(self) #autopopulate basic metadata
+        try:
+            path=os.environ['PATH']
+            os.environ['PATH'] = '%s\\bin_ecw;%s' %(os.path.dirname(__file__), os.environ['PATH'])
+            stdin,stdout,stderr=os.popen3('ecw_report.exe "%s"' % f)
+            os.environ['PATH']=path
+            stdout=stdout.readlines()
+            for line in stdout:
+                line=[part.strip() for part in line.split(':')]
+                if line[0].upper() == 'TARGET RATIO':
+                    self.metadata['targetratio']=line[1]
+                    break
+        except:pass

@@ -3,6 +3,7 @@ Metadata driver for SPOT DIMAP imagery
 ======================================
 @see:Format specification
     U{http://www.spotimage.fr/dimap/spec/documentation/refdoc.htm}
+@todo: GDALINFO is pretty slow (4+ sec), check that this driver is not that slow...
 '''
 
 #Regular expression list of file formats
@@ -32,11 +33,14 @@ except ImportError:
 class Dataset(__default__.Dataset): 
     '''Subclass of __default__.Dataset class so we get a load of metadata populated automatically'''
     def __init__(self,f):
+        if not f:f=self.fileinfo['filepath']
+        self.filelist=[r for r in glob.glob('%s/*'%os.path.dirname(f))]
+    def __getmetadata__(self,f=None):
         '''Read Metadata for a SPOT DIMAP image as GDAL doesn't quite get it all...'''
-        __default__.Dataset.__init__(self, f) #autopopulate basic metadata
+        if not f:f=self.fileinfo['filepath']
+        __default__.Dataset.__getmetadata__(self, f) #autopopulate basic metadata
         #include every file in the current and upper level directory
-        gdalmd=self._gdalDataset.GetMetadata()
-        self.metadata['filelist']=','.join([r for r in utilities.rglob(os.path.dirname(os.path.dirname(f)),'*')])
+        gdalmd=self._gdaldataset.GetMetadata()
         self.metadata['imgdate']=gdalmd['IMAGING_DATE']#ISO 8601 
         #self.metadata['imgdate']=gdalmd['IMAGING_DATE'].replace('-','')
         self.metadata['satellite']='%s %s' % (gdalmd['MISSION'],gdalmd['MISSION_INDEX'])

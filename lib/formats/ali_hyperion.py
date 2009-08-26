@@ -36,8 +36,13 @@ except ImportError:
 class Dataset(__dataset__.Dataset):
     '''Subclass of base Dataset class'''
     def __init__(self,f):
+        self.filelist=glob.glob(os.path.dirname(f)+'/*') #Assume raw data - all files in current dir belong to this dataset.
+        #filelist=glob.glob(os.path.splitext(f)[0]+'.*')
+        #filelist.extend(glob.glob('%s\\%s_%s_*.hdf' % (os.path.dirname(f),os.path.basename(f)[10:14],os.path.basename(f)[14:17])))
+    def __getmetadata__(self):
         '''Read Metadata for recognised EO1 ALI (L1G & L1R) & Hyperion (L1R) images as GDAL doesn't'''
 
+        f=self.fileinfo['filepath']
         self.metadata['satellite']='E01'
         
         if re.search(r'\.m[1-4]r$', f):
@@ -53,9 +58,6 @@ class Dataset(__dataset__.Dataset):
                                                            gdalDataset.GetDriver().LongName,
                                                            self.metadata['sensor'],
                                                            self.metadata['level'])
-
-            filelist=glob.glob(os.path.splitext(f)[0]+'.*')
-            filelist.extend(glob.glob('%s\\%s_%s_*.hdf' % (os.path.dirname(f),os.path.basename(f)[10:14],os.path.basename(f)[14:17])))
 
             srs=osr.SpatialReference()
             srs.ImportFromEPSG(4326)
@@ -112,9 +114,8 @@ class Dataset(__dataset__.Dataset):
             self.metadata['level']='L1G'
             self.metadata['sensor']='ALI'
             self.metadata['sceneid']=self.metadata['filename'].split('_')[0]
-            self.metadata['filetype'] = 'GTiff/GeoTIFF (%s %s)' % (self.metadata['sensor'],self.metadata['level'])
+            self.metadata['filetype'] = 'GTiff/GeoTIFF'
 
-            filelist=glob.glob(os.path.dirname(f)+'/*')
             ncols=[]
             nrows=[]
             nbands=0
@@ -186,17 +187,16 @@ class Dataset(__dataset__.Dataset):
             self.metadata['level']='L1G'
             self.metadata['sensor']='ALI'
             self.metadata['sceneid']=self.metadata['filename'].split('_')[0]
-            filelist=glob.glob(os.path.dirname(f)+'/*')
 
             gdalDataset = geometry.OpenDataset(f)
             if not gdalDataset:
                 errmsg=gdal.GetLastErrorMsg()
                 raise IOError, 'Unable to open %s\n%s' % (f,errmsg.strip())
 
-                self.metadata['filetype'] = '%s/%s (%s %s)' % (gdalDataset.GetDriver().ShortName,
-                                                           gdalDataset.GetDriver().LongName,
-                                                           self.metadata['sensor'],
-                                                           self.metadata['level'])
+            self.metadata['filetype'] = '%s/%s (%s %s)' % (gdalDataset.GetDriver().ShortName,
+                                                       gdalDataset.GetDriver().LongName,
+                                                       self.metadata['sensor'],
+                                                       self.metadata['level'])
 
             hdf_sd=gdalDataset.GetSubDatasets()
             hdf_md=gdalDataset.GetMetadata()
@@ -263,8 +263,6 @@ class Dataset(__dataset__.Dataset):
         else:
             self.metadata['level']='L1R'
             self.metadata['sensor']='HYPERION'
-            filelist=glob.glob(os.path.splitext(f)[0]+'.*')
-            filelist.extend(glob.glob('%s\\%s_%s_*.hdf' % (os.path.dirname(f),os.path.basename(f)[10:14],os.path.basename(f)[14:17])))
 
             gdalDataset = geometry.OpenDataset(f)
             if not gdalDataset:
@@ -354,8 +352,7 @@ class Dataset(__dataset__.Dataset):
             self.metadata['rotation']=0.0
         else:self.metadata['orientation']='Path oriented'
 
-        self.metadata['filesize']=sum([os.path.getsize(file) for file in filelist])
-        self.metadata['filelist']=','.join(utilities.fixSeparators(filelist))
+        self.metadata['filesize']=sum([os.path.getsize(tmp) for tmp in self.filelist])
         self.metadata['compressionratio']=0
         self.metadata['compressiontype']='None'
         self.extent=geoext

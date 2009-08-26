@@ -117,7 +117,7 @@ def IdentifyAusEPSG(wkt):
             for ausepsg in AUS_GEOGCS:
                 epsg=0 #Default return value
                 se.ImportFromEPSG(ausepsg)
-                if se.ExportToUSGS() == sw.ExportToUSGS():
+                if se.ExportToUSGS() == sw.ExportToUSGS():#dirty little kludge, doesn't always work...
                     epsg=ausepsg
                     break
         elif sw.IsProjected():
@@ -141,6 +141,6 @@ def GetLinearUnitsName(wkt):
         name = 'deg'
 
     if SRS_UNITS_CONV.has_key(name):
-      return SRS_UNITS_CONV[name]
+        return SRS_UNITS_CONV[name]
     else:
-      return name
+        return name

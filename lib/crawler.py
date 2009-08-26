@@ -55,14 +55,12 @@ class Crawler:
         try:
             #Open it
             ds=formats.Open(self.file)
+
             #Remove any files in our filelist that occur in the dataset's filelist and decrement the filecount
-            for f in ds.metadata['filelist'].split(','):
+            for f in ds.filelist:
                 if f in self.files:
                     self.files.remove(f)
                     self.filecount-=1 
-            #Convert paths to UNC
-            ds.metadata['filepath']=utilities.convertUNC(ds.metadata['filepath'])
-            ds.metadata['filelist']=','.join([unc for unc in utilities.convertUNC(ds.metadata['filelist'].split(','))])
 
             #Fin!
             return ds

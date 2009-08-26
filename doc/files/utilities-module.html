@@ -167,8 +167,55 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="FileInfo"></a><span class="summary-sig-name">FileInfo</span>(<span class="summary-sig-arg">filepath</span>)</span><br />
-      http://www.microsoft.com/technet/scriptcenter/guide/sas_fil_lunl.mspx?mfr=true</td>
+          <td><span class="summary-sig"><a name="ByteOrder"></a><span class="summary-sig-name">ByteOrder</span>()</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="utilities-pysrc.html#ByteOrder">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_WinFileOwner"></a><span class="summary-sig-name">_WinFileOwner</span>(<span class="summary-sig-arg">filepath</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="utilities-pysrc.html#_WinFileOwner">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_NixFileOwner"></a><span class="summary-sig-name">_NixFileOwner</span>(<span class="summary-sig-arg">uid</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="utilities-pysrc.html#_NixFileOwner">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="FileInfo"></a><span class="summary-sig-name">FileInfo</span>(<span class="summary-sig-arg">filepath</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="utilities-pysrc.html#FileInfo">source&nbsp;code</a></span>
             
@@ -233,25 +280,6 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="GetFileList"></a><span class="summary-sig-name">GetFileList</span>(<span class="summary-sig-arg">f</span>)</span><br />
-      Get all files that have the same name, or are related according to 
-      gdalinfo special cases (eg hdf, ccrs, etc) are handled separately in 
-      their respective metadata functions</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="utilities-pysrc.html#GetFileList">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
           <td><span class="summary-sig"><a name="ExcelReader"></a><span class="summary-sig-name">ExcelReader</span>(<span class="summary-sig-arg">xls</span>,
         <span class="summary-sig-arg">returntype</span>=<span class="summary-sig-default">&lt;type 'dict'&gt;</span>)</span></td>
           <td align="right" valign="top">
@@ -278,6 +306,45 @@
         </tr>
       </table>
       
+    </td>
+  </tr>
+</table>
+<!-- ==================== VARIABLES ==================== -->
+<a name="section-Variables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Variables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="dateformat"></a><span class="summary-name">dateformat</span> = <code title="'%Y-%m-%d'"><code class="variable-quote">'</code><code class="variable-string">%Y-%m-%d</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="timeformat"></a><span class="summary-name">timeformat</span> = <code title="'%H:%M:%S'"><code class="variable-quote">'</code><code class="variable-string">%H:%M:%S</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="datetimeformat"></a><span class="summary-name">datetimeformat</span> = <code title="'%Y-%m-%dT%H:%M:%S'"><code class="variable-quote">'</code><code class="variable-string">%Y-%m-%dT%H:%M:%S</code><code class="variable-quote">'</code></code>
     </td>
   </tr>
 </table>
@@ -309,7 +376,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Wed Aug 12 09:47:08 2009
+    Generated by Epydoc 3.0.1 on Wed Aug 26 11:38:04 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

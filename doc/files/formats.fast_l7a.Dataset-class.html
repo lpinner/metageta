@@ -95,10 +95,27 @@
         <tr>
           <td><span class="summary-sig"><a href="formats.fast_l7a.Dataset-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">f</span>)</span><br />
+      x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="formats.fast_l7a-pysrc.html#Dataset.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="formats.fast_l7a.Dataset-class.html#__getmetadata__" class="summary-sig-name">__getmetadata__</a>(<span class="summary-sig-arg">self</span>)</span><br />
       Read Metadata for an ACRES Landsat FastL7A format image as GDAL 
       doesn't.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="formats.fast_l7a-pysrc.html#Dataset.__init__">source&nbsp;code</a></span>
+            <span class="codelink"><a href="formats.fast_l7a-pysrc.html#Dataset.__getmetadata__">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -109,15 +126,17 @@
   <tr>
     <td colspan="2" class="summary">
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="formats.__dataset__.Dataset-class.html">__dataset__.Dataset</a></code></b>:
-      <code><a href="formats.__dataset__.Dataset-class.html#__delattr__">__delattr__</a></code>,
-      <code><a href="formats.__dataset__.Dataset-class.html#__setattr__">__setattr__</a></code>
+      <code><a href="formats.__dataset__.Dataset-class.html#__classproperty__">__classproperty__</a></code>,
+      <code><a href="formats.__dataset__.Dataset-class.html#__getfilelist__">__getfilelist__</a></code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
       <code>__getattribute__</code>,
       <code>__hash__</code>,
       <code>__reduce__</code>,
       <code>__reduce_ex__</code>,
       <code>__repr__</code>,
+      <code>__setattr__</code>,
       <code>__str__</code>
       </p>
     </td>
@@ -148,31 +167,6 @@
     </td>
   </tr>
 </table>
-<!-- ==================== CLASS VARIABLES ==================== -->
-<a name="section-ClassVariables"></a>
-<table class="summary" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr bgcolor="#70b0f0" class="table-header">
-  <td colspan="2" class="table-header">
-    <table border="0" cellpadding="0" cellspacing="0" width="100%">
-      <tr valign="top">
-        <td align="left"><span class="table-header">Class Variables</span></td>
-        <td align="right" valign="top"
-         ><span class="options">[<a href="#section-ClassVariables"
-         class="privatelink" onclick="toggle_private();"
-         >hide private</a>]</span></td>
-      </tr>
-    </table>
-  </td>
-</tr>
-  <tr>
-    <td colspan="2" class="summary">
-    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="formats.__dataset__.Dataset-class.html">__dataset__.Dataset</a></code></b> (private):
-      <code><a href="formats.__dataset__.Dataset-class.html#_err" onclick="show_private();">_err</a></code>
-      </p></div>
-    </td>
-  </tr>
-</table>
 <!-- ==================== PROPERTIES ==================== -->
 <a name="section-Properties"></a>
 <table class="summary" border="1" cellpadding="3"
@@ -192,6 +186,11 @@
 </tr>
   <tr>
     <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="formats.__dataset__.Dataset-class.html">__dataset__.Dataset</a></code></b>:
+      <code><a href="formats.__dataset__.Dataset-class.html#extent">extent</a></code>,
+      <code><a href="formats.__dataset__.Dataset-class.html#filelist">filelist</a></code>,
+      <code><a href="formats.__dataset__.Dataset-class.html#metadata">metadata</a></code>
+      </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__class__</code>
       </p>
@@ -232,12 +231,38 @@
     </td>
   </tr></table>
   
-  <p>Read Metadata for an ACRES Landsat FastL7A format image as GDAL 
-  doesn't. Format description: 
-  http://www.ga.gov.au/image_cache/GA10348.pdf</p>
+  <p>x.__init__(...) initializes x; see x.__class__.__doc__ for 
+  signature</p>
   <dl class="fields">
     <dt>Overrides:
         object.__init__
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__getmetadata__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__getmetadata__</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="formats.fast_l7a-pysrc.html#Dataset.__getmetadata__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Read Metadata for an ACRES Landsat FastL7A format image as GDAL 
+  doesn't. Format description: 
+  http://www.ga.gov.au/image_cache/GA10348.pdf</p>
+  <p>Note: hrf = ~30m VNIR/SWIR       (bands 1-5 &amp; 7) htm = ~60m 
+  thermal         (band 6) hpn = ~15m pan             (band 8)</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="formats.__dataset__.Dataset-class.html#__getmetadata__">__dataset__.Dataset.__getmetadata__</a>
     </dt>
   </dl>
 </td></tr></table>
@@ -271,7 +296,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Wed Aug 12 09:47:09 2009
+    Generated by Epydoc 3.0.1 on Wed Aug 26 11:38:05 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

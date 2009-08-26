@@ -7,7 +7,8 @@ from xlutils import xlwt
 import sys, os.path, os, re, struct, glob, shutil,traceback,time
 
 dateformat='%Y-%m-%d'  #ISO 8601
-timeformat='T%H:%M:%S' #ISO 8601
+timeformat='%H:%M:%S' #ISO 8601
+datetimeformat='%sT%s' % (dateformat,timeformat)
 
 def ExceptionInfo(maxTBlevel=0):
     cla, exc, trbk = sys.exc_info()
@@ -80,9 +81,9 @@ def FileInfo(filepath):
     filestat = os.stat(filepath)
     fileinfo = {
         'size':filestat.st_size,
-        'datemodified':time.strftime('%Y-%m-%dT%H:%M:%S', time.localtime(filestat.st_mtime)),
-        'datecreated':time.strftime('%Y-%m-%dT%H:%M:%S', time.localtime(filestat.st_ctime)),
-        'dateaccessed':time.strftime('%Y-%m-%dT%H:%M:%S', time.localtime(filestat.st_atime))
+        'datemodified':time.strftime(datetimeformat, time.localtime(filestat.st_mtime)),
+        'datecreated': time.strftime(datetimeformat, time.localtime(filestat.st_ctime)),
+        'dateaccessed':time.strftime(datetimeformat, time.localtime(filestat.st_atime))
     }
     if sys.platform[0:3] =='win':
         ownerid,ownername=_WinFileOwner(filepath)

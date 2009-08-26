@@ -14,7 +14,7 @@ Usage::
 @sysarg: C{shp}: ESRI Shapefile to write extents to
 @sysarg: C{log}: Log file to write messages to
 '''
-import sys, os, re
+import sys, os, re,time
 from Tkinter import *
 import tkFileDialog
 
@@ -24,7 +24,7 @@ import geometry
 import utilities
 import crawler
 
-def main(dir,xls,shp,log, gui=False, debug=False): 
+def main(dir,xls,shp,log, gui=False, debug=False, nomd=False): 
     xls = utilities.checkExt(xls, ['.xls'])
     shp = utilities.checkExt(shp, ['.shp'])
     log = utilities.checkExt(shp, ['.log', '.txt'])
@@ -55,29 +55,47 @@ def main(dir,xls,shp,log, gui=False, debug=False):
     ShapeWriter=geometry.ShapeWriter(shp,format_fields,overwrite=True)
 
     pl.info('Searching for files...')
+    now=time.time()
     Crawler=crawler.Crawler(dir)
     #Loop thru dataset objects returned by Crawler
     for ds in Crawler:
         try:
-            md=ds.metadata
-            geom=ds.extent
-            pl.info('Extracted metadata from %s' % Crawler.file)
-            try:
-                ExcelWriter.WriteRecord(md)
-            except Exception,err:
-               pl.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
-               pl.debug(utilities.ExceptionInfo(10))
-            try:
-                ShapeWriter.WriteRecord(geom,md)
-            except Exception,err:
-                pl.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
-                pl.debug(utilities.ExceptionInfo(10))
+            if not nomd:
+                md=ds.metadata
+                geom=ds.extent
+                fi=ds.fileinfo
+                fi['filepath']=utilities.convertUNC(fi['filepath'])
+                fi['filelist']=','.join(utilities.convertUNC(ds.filelist))
+                md.update(fi)
+                pl.info('Extracted metadata from %s' % Crawler.file)
+                try:
+                    ExcelWriter.WriteRecord(md)
+                except Exception,err:
+                    pl.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
+                    pl.debug(utilities.ExceptionInfo(10))
+                try:
+                    ShapeWriter.WriteRecord(geom,md)
+                except Exception,err:
+                    pl.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
+                    pl.debug(utilities.ExceptionInfo(10))
+            else:
+                fi=ds.fileinfo
+                fi['filepath']=utilities.convertUNC(fi['filepath'])
+                fi['filelist']=','.join(utilities.convertUNC(ds.filelist))
+
+                pl.info('Extracted file info from %s' % Crawler.file)
+                try:
+                    ExcelWriter.WriteRecord(fi)
+                except Exception,err:
+                    pl.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
+                    pl.debug(utilities.ExceptionInfo(10))
 
             pl.updateProgress(newMax=Crawler.filecount)
         except Exception,err:
             pl.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
             pl.debug(utilities.ExceptionInfo(10))
-
+    then=time.time()
+    pl.debug(then-now)
     #Check for files that couldn't be opened
     for file,err,dbg in Crawler.errors:
        pl.error('%s\n%s' % (file, err))
@@ -109,7 +127,7 @@ class Command:
         
 
 class GetArgs:
-    def __init__(self,gui,debug):
+    def __init__(self,gui,debug,getmd):
         windowicon=os.environ['CURDIR']+'/lib/wm_icon.ico'
         #base 64 encoded gif images for the GUI buttons
         shp_img = '''
@@ -269,12 +287,14 @@ if __name__ == '__main__':
                       help="Shapefile to write extents to")
     parser.add_option("-l", dest="log", metavar="log",
                       help="Log file")
+    parser.add_option("--nomd", action="store_true", dest="nomd",default=False,
+                      help="Extract metadata (crawl), if False just get basic file info (walk)")
     parser.add_option("--debug", action="store_true", dest="debug",default=False,
                       help="Turn debug output on")
     parser.add_option("--gui", action="store_true", dest="gui", default=False,
                       help="Show the GUI progress dialog")
     opts,args = parser.parse_args()
     if not opts.dir or not opts.log or not opts.shp or not opts.xls:
-        GetArgs(True,opts.debug) #Show progress GUI.
+        GetArgs(True,opts.debug,True) #Show progress GUI.
     else:
-        main(opts.dir,opts.xls,opts.shp,opts.log,opts.gui,opts.debug)
+        main(opts.dir,opts.xls,opts.shp,opts.log,opts.gui,opts.debug,opts.nomd)

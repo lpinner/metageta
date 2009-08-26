@@ -6,6 +6,9 @@ from xlutils import xlrd
 from xlutils import xlwt
 import sys, os.path, os, re, struct, glob, shutil,traceback,time
 
+dateformat='%Y-%m-%d'  #ISO 8601
+timeformat='T%H:%M:%S' #ISO 8601
+
 def ExceptionInfo(maxTBlevel=0):
     cla, exc, trbk = sys.exc_info()
     excName = cla.__name__
@@ -22,6 +25,15 @@ def FormatTraceback(trbk, maxTBlevel):
 
 def readbinary(data,offset, start, stop):
     return ''.join(struct.unpack('s' * (stop-start+1), data[offset+start-1:offset+stop])).strip()
+
+def ByteOrder():
+    from struct import pack
+    if pack('<h', 1) == pack('=h',1):
+        return 'LSB'
+    elif pack('>h', 1) == pack('=h',1):
+        return 'MSB'
+    else:
+        raise Exception,'Unknown byte order'
 
 def _WinFileOwner(filepath):
     import win32com.client
@@ -98,15 +110,10 @@ def convertUNC(filepath):
     return uncpath
 
 def fixSeparators(f):
-    if sys.platform[0:3] =='win':
-        if type(f) == list:
-            i=0
-            while i < len(f):
-                f[i]=(f[i].replace('\\\\','\\')).replace('/','\\')
-                i+=1
-        else:
-            f=(f.replace('\\\\','\\')).replace('/','\\')
-    return f
+    if type(f) in [list,tuple]:
+        return [os.path.normpath(i) for i in f]
+    else:
+        return os.path.normpath(f)
 
 def checkExt(var,vals):
     vars=os.path.splitext(var)
@@ -114,42 +121,43 @@ def checkExt(var,vals):
         return vars[0]+vals[0]
     else:
         return var
-def GetFileList(f):
-    '''Get all files that have the same name, or are related according to gdalinfo
-        special cases (eg hdf, ccrs, etc) are handled separately in their respective
-        metadata functions'''
-    files=[]
-    files=glob.glob(os.path.splitext(f)[0]+'.*')
-    if os.path.exists(os.path.splitext(f)[0]):files.append(os.path.splitext(f)[0])
-    hdr_dir=os.path.join(os.path.split(f)[0], 'headers') #Cause ACRES creates a 'headers' directory
-    if os.path.exists(hdr_dir):
-        files.extend(glob.glob(os.path.join(hdr_dir,'*')))
 
-    try:
-        #the GDALDataset object has a GetFileList method, but it is not exposed to the python API
-        #So use the commandline utility instead and parse the output
-        stdin, stdout, stderr=os.popen3('gdalinfo  -nogcp -nomd -noct '+f)
-        lines=stdout.readlines()
-        i=0
-        while i < len(lines):
-            line=lines[i].strip()
-            if line[0:5]  == 'Files':
-                file=os.path.realpath(line.replace('Files:','').strip())
-                if not file in files:files.append(file)
-                i+=1
-                while i < len(lines):
-                    line=lines[i]
-                    if line[0:4] == 'Size':
-                        break
-                    else:
-                        file=os.path.realpath(line.strip())
-                        if not file in files:files.append(file)
-                    i+=1
-                break
-            i+=1
-        i=0
-    except:pass
-    return fixSeparators(files)
+# def GetFileList(f):
+    # '''Get all files that have the same name, or are related according to gdalinfo
+        # special cases (eg hdf, ccrs, etc) are handled separately in their respective
+        # metadata functions'''
+    # files=[]
+    # files=glob.glob(os.path.splitext(f)[0]+'.*')
+    # if os.path.exists(os.path.splitext(f)[0]):files.append(os.path.splitext(f)[0])
+    # hdr_dir=os.path.join(os.path.split(f)[0], 'headers') #Cause ACRES creates a 'headers' directory
+    # if os.path.exists(hdr_dir):
+        # files.extend(glob.glob(os.path.join(hdr_dir,'*')))
+
+    # try:
+        ##the GDALDataset object has a GetFileList method, but it is not exposed to the python API
+        ##So use the commandline utility instead and parse the output
+        # exit_code, stdout, stderr=runcmd('gdalinfo  -nogcp -nomd -noct '+f, 'l')
+        # lines=stdout.readlines()
+        # i=0
+        # while i < len(lines):
+            # line=lines[i].strip()
+            # if line[0:5]  == 'Files':
+                # file=os.path.realpath(line.replace('Files:','').strip())
+                # if not file in files:files.append(file)
+                # i+=1
+                # while i < len(lines):
+                    # line=lines[i]
+                    # if line[0:4] == 'Size':
+                        # break
+                    # else:
+                        # file=os.path.realpath(line.strip())
+                        # if not file in files:files.append(file)
+                    # i+=1
+                # break
+            # i+=1
+        # i=0
+    # except:pass
+    # return fixSeparators(files)
 
 class ExcelWriter:
     _files=0

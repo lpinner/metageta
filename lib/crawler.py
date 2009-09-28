@@ -60,8 +60,7 @@ class Crawler:
             for f in ds.filelist:
                 if f in self.files:
                     self.files.remove(f)
-                    self.filecount-=1 
-
+                    self.filecount-=1
             #Fin!
             return ds
         except:

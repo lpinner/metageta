@@ -385,15 +385,19 @@
                       <xsl:value-of select="normalize-space(title)"/>
                     </xsl:when>
                     <xsl:otherwise>
-                      <xsl:choose>
+                      <!--xsl:choose>
                         <xsl:when test="normalize-space(satellite)"><xsl:value-of select="normalize-space(satellite)"/><xsl:value-of select="' '"/></xsl:when>
                         <xsl:otherwise>Unknown satellite </xsl:otherwise>
                       </xsl:choose>
                       <xsl:choose>
                         <xsl:when test="normalize-space(sensor)"><xsl:value-of select="normalize-space(sensor)"/><xsl:value-of select="' '"/></xsl:when>
                         <xsl:otherwise>Unknown sensor </xsl:otherwise>
-                      </xsl:choose>
-                      <xsl:value-of select="normalize-space(filename)"/>
+                      </xsl:choose-->
+                      <xsl:if test="normalize-space(satellite)"><xsl:value-of select="normalize-space(satellite)"/><xsl:value-of select="' '"/></xsl:if>
+                      <xsl:if test="normalize-space(sensor)"><xsl:value-of select="normalize-space(sensor)"/><xsl:value-of select="' '"/></xsl:if>
+                      <xsl:value-of select="normalize-space(filename)"/><xsl:value-of select="' ('"/>
+                      <xsl:value-of select="str:split(cellx,',')[1]"/><!--cellx can have multiple values (e.g. ASTER & ALI) so just pick the first 1-->
+                      <xsl:value-of select="normalize-space(units)"/><xsl:value-of select="')'"/>
                     </xsl:otherwise>
                   </xsl:choose>
                   <xsl:message>

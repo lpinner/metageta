@@ -44,8 +44,10 @@ class Dataset(__dataset__.Dataset):
 
         f=self.fileinfo['filepath']
         self.metadata['satellite']='E01'
-        
-        if re.search(r'\.m[1-4]r$', f):
+        self.metadata['nbits'] = 16
+        self.metadata['datatype']='Int16'
+        self.metadata['nodata']=0
+        if re.search(r'\.m[1-4]r$', f, re.I):
             self.metadata['level']='L1R'
             self.metadata['sensor']='ALI'
 
@@ -77,18 +79,65 @@ class Dataset(__dataset__.Dataset):
                 sd,sz = hdf_sd[3]
                 sd=geometry.OpenDataset(sd)
                 sd_md=sd.GetMetadata()
+                cols=str(int(sd_md['Number of cross track pixels'])*4-30)#Account for the four SCA strips and the overlap between SCA strips
+                rows=sd_md['Number of along track pixels']
+
+                #set up to create multispectral only self._gdaldatset for overview generation
+                if nbands==1:
+                    multi=3
+                    multibands=sd_md['Number of bands']
+                    multicols=cols
+                    multirows=rows
+                else:
+                    multi=0
+                    multibands=nbands
+                    multicols=ncols
+                    multirows=nrows
+                multibands=range(1,int(multibands)+1)
+
                 #Make a csv list of cols, bands
                 ncols=[ncols for i in range(0,nbands)]
                 nrows=[nrows for i in range(0,nbands)]
-                #nbands='%s,%s' % (nbands, sd_md['Number of bands'])
-                nbands=nbands+int(sd_md['Number of bands'])
-                cols=str(int(sd_md['Number of cross track pixels'])*4-30)#Account for the four SCA strips and the overlap between SCA strips
-                rows=sd_md['Number of along track pixels']
                 ncols.extend([cols for i in range(0,sd.RasterCount)]) 
                 nrows.extend([rows for i in range(0,sd.RasterCount)])
+                #nbands='%s,%s' % (nbands, sd_md['Number of bands'])
+                nbands=nbands+int(sd_md['Number of bands'])
                 ncols=','.join(ncols)
                 nrows=','.join(nrows)
 
+            else:
+                #set up to create multispectral only _gdaldatset for overview generation
+                multi=0
+                multibands=range(1,nbands+1)
+                multicols=ncols
+                multirows=nrows
+
+            #create multispectral only _gdaldatset for overview generation
+            #Get all the data files and mosaic the strips
+            #strips=[s for s in utilities.rglob(os.path.dirname(f),r'\.m[1-4]r$',True,re.I,False)]
+            strips=glob.glob(os.path.join(os.path.dirname(f),'*.m[1-4]r'))
+            strips.sort();strips.reverse() #west->east = *.m4r-m1
+            scols=(int(multicols)+30)/4 # +30 handles the 10 pixel overlap
+            xoff=10
+            yoff=400
+            srows=int(multirows)-yoff
+            srcrects=[[0,yoff,scols,srows]]*4
+            dstrects=[]
+            srcrect=[0,yoff,scols,srows]
+            #dstrect=[None,0,scols,srows]
+            files=[]
+            sd,sz = hdf_sd[multi]
+            vrt_opts=[]
+            indatasetlist=[]
+            for i in range(0,4):
+                files.append(sd.replace(f,strips[i]))
+                dstrects.append([i*(scols-xoff),0,scols,srows])
+            self._gdaldataset=geometry.OpenDataset(geometry.CreateMosaicedVRT(files,multibands,srcrects,dstrects,multicols,srows,'Int16'))
+            self._gdaldataset.GetRasterBand(2).SetRasterColorInterpretation(gdal.GCI_BlueBand)
+            self._gdaldataset.GetRasterBand(3).SetRasterColorInterpretation(gdal.GCI_GreenBand)
+            self._gdaldataset.GetRasterBand(4).SetRasterColorInterpretation(gdal.GCI_RedBand)
+            
+            #Extract other metadata
             met=os.path.splitext(f)[0]+'.met'
             for line in open(met, 'r').readlines():
                 if line[0:16]=='Scene Request ID':
@@ -119,12 +168,35 @@ class Dataset(__dataset__.Dataset):
             ncols=[]
             nrows=[]
             nbands=0
-            for band in glob.glob(os.path.dirname(f)+'/eo1*_b*.tif'):
+            bands=glob.glob(os.path.dirname(f)+'/eo1*_b*.tif')
+            for band in bands:
                 band=geometry.OpenDataset(band)
                 ncols.append(str(band.RasterXSize))
                 nrows.append(str(band.RasterYSize))
                 nbands+=1
                 #rb=sd.GetRasterBand(1)
+
+            #get all multi bands for use in overview generation
+            pancols = max(ncols)
+            panindex = ncols.index(pancols)
+            multibands=bands
+            multincols=ncols
+            multinrows=nrows
+            if pancols > min(ncols):#there is a pan band
+                multibands.pop(panindex)
+                multincols.pop(panindex)
+                multinrows.pop(panindex)
+            multibands.sort()
+            self._gdaldataset = geometry.OpenDataset(geometry.CreateSimpleVRT(multibands,multincols[0],multinrows[0],'Int16'))
+            self._gdaldataset.GetRasterBand(2).SetRasterColorInterpretation(gdal.GCI_BlueBand)
+            self._gdaldataset.GetRasterBand(2).SetNoDataValue(0.0)
+            self._gdaldataset.GetRasterBand(3).SetRasterColorInterpretation(gdal.GCI_GreenBand)
+            self._gdaldataset.GetRasterBand(3).SetNoDataValue(0.0)
+            self._gdaldataset.GetRasterBand(4).SetRasterColorInterpretation(gdal.GCI_RedBand)
+            self._gdaldataset.GetRasterBand(4).SetNoDataValue(0.0)
+            #self._stretch=['PERCENT',[1,99]]
+            
+            
             ncols=','.join(ncols)
             nrows=','.join(nrows)
             met=f
@@ -206,13 +278,33 @@ class Dataset(__dataset__.Dataset):
             ncols=[]
             nrows=[]
             nbands=0
+            bands=[]
             for sd,sz in hdf_sd:
-                sd=geometry.OpenDataset(sd)
-                ncols.append(str(sd.RasterXSize))
-                nrows.append(str(sd.RasterYSize))
+                bands.append(sd)
+                ds=geometry.OpenDataset(sd)
+                ncols.append(str(ds.RasterXSize))
+                nrows.append(str(ds.RasterYSize))
                 nbands+=1
+
+            #get all multi bands for use in overview generation
+            pancols = max(ncols)
+            panindex = ncols.index(pancols)
+            multibands=bands
+            multincols=ncols
+            multinrows=nrows
+            if pancols > min(ncols):#there is a pan band
+                multibands.pop(panindex)
+                multincols.pop(panindex)
+                multinrows.pop(panindex)
+            multibands.sort()
+            self._gdaldataset = geometry.OpenDataset(geometry.CreateSimpleVRT(multibands,multincols[0],multinrows[0],'Int16'))
+            self._gdaldataset.GetRasterBand(2).SetRasterColorInterpretation(gdal.GCI_BlueBand)
+            self._gdaldataset.GetRasterBand(3).SetRasterColorInterpretation(gdal.GCI_GreenBand)
+            self._gdaldataset.GetRasterBand(4).SetRasterColorInterpretation(gdal.GCI_RedBand)
+
             ncols=','.join(ncols)
             nrows=','.join(nrows)
+
             met=f.lower().replace('_hdf.l1g','_mtl.l1g')
             md={}
             for line in open(met, 'r'):
@@ -310,12 +402,35 @@ class Dataset(__dataset__.Dataset):
             geoext=[[ulx,uly],[urx,ury],[lrx,lry],[llx,lly],[ulx,uly]]
             prjext=geoext
 
+            #########################################################################################################
+            ##set self._gdaldataset for use in overview generation
+            ##we'll use bands 21, 30 & 43 for RGB (http://edcsns17.cr.usgs.gov/eo1/Hyperion_Spectral_Coverage.htm)
+            ##as they're near the center of the equivalent ALI bands
+
+            ##This generates verrrryyy looong overviews cos hyperion data is one long thin strip eg. 256*3000 etc... 
+            #self._gdaldataset = geometry.CreateVRTCopy(sd)
+            ##Instead we can clip out some of the centre rows
+            #vrtcols=ncols
+            #vrtrows=int(ncols*1.5)
+            #srcrect=[0, int(nrows/2-vrtrows/2),ncols,vrtrows]
+            #dstrect=[0, 0,ncols,vrtrows]
+            ##Or we can fill out the ncols with nodata
+            vrtcols=int(nrows/1.5)
+            vrtrows=nrows
+            srcrect=[0, 0,ncols,nrows]
+            dstrect=[int(nrows/2.5-ncols), 0,ncols,nrows]
+            vrt=geometry.CreateMosaicedVRT([sd.GetDescription()],[43,30,21],[srcrect],[dstrect],vrtcols,vrtrows,self.metadata['datatype'])
+            self._gdaldataset=geometry.OpenDataset(vrt)
+            self._gdaldataset.GetRasterBand(3).SetRasterColorInterpretation(gdal.GCI_BlueBand)
+            self._gdaldataset.GetRasterBand(2).SetRasterColorInterpretation(gdal.GCI_GreenBand)
+            self._gdaldataset.GetRasterBand(1).SetRasterColorInterpretation(gdal.GCI_RedBand)
+            self._gdaldataset.GetRasterBand(3).SetNoDataValue(0)
+            self._gdaldataset.GetRasterBand(2).SetNoDataValue(0)
+            self._gdaldataset.GetRasterBand(1).SetNoDataValue(0)
+            #########################################################################################################
         self.metadata['cols'] = ncols
         self.metadata['rows'] = nrows
         self.metadata['nbands'] = nbands
-        self.metadata['nbits'] = 16
-        self.metadata['datatype']='Int16'
-        self.metadata['nodata']=0
 
         #Geotransform
         ncols=map(int, str(ncols).split(','))

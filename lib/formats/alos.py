@@ -48,9 +48,16 @@ class Dataset(__dataset__.Dataset):
         self.filelist=[r for r in utilities.rglob(os.path.dirname(f))]
         self._led=f
         self._vol=glob.glob(os.path.dirname(f) + '/[Vv][Oo][Ll]*')[0] #volume file
+
+        img_regex=[
+              r'IMG-0[1-4]-ALAV.*_U$',     #ALOS AVNIR-2 img file
+              r'IMG-[HV][HV]-ALPSR.*UD$',  #ALOS PALSAR
+              r'IMG-ALPSM.*\_U[BFN]$'      #ALOS PRISM
+        ]
+        self._imgs=[i for i in utilities.rglob(os.path.dirname(f),'|'.join(img_regex),True,re.I, False)]
+        
         self.fileinfo['filepath']=self._led #change filename to leader file
         self.fileinfo['filename']=os.path.basename(self._led)
-        
     def __getmetadata__(self,f=None):
         '''Read Metadata for an ACRES ALOS AVNIR-2/PRISM/PALSAR format image as GDAL doesn't'''
 
@@ -210,6 +217,10 @@ class Dataset(__dataset__.Dataset):
 
             self.metadata['nbits'] = 16
             self.metadata['datatype']='UInt16'
+
+            #Generate a GDAL Dataset object
+            self._gdaldataset=geometry.OpenDataset(self._imgs[0])
+
         else:        #ALOS AVNIR2/PRISM
             ##Format - http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10285
             
@@ -392,7 +403,19 @@ class Dataset(__dataset__.Dataset):
 
             self.metadata['nbits'] = 8
             self.metadata['datatype'] = 'Byte'
-            
+
+            #Generate a VRT GDAL Dataset object
+            self._imgs.sort()
+            img=self._imgs[0]
+            meta = open(img,'rb').read(1024)
+            start,stop = 187,192
+            record=1
+            recordlength=0
+            offset=utilities.readbinary(meta,(record-1)*recordlength,start,stop)
+            #don't use ALOS provided no. cols, as it doesn't include 'dummy' pixels
+            #vrt=geometry.CreateRawRasterVRT(self._imgs,self.metadata['cols'],self.metadata['rows'],self.metadata['datatype'],self.metadata['nbits'],offset,byteorder='MSB')
+            vrt=geometry.CreateRawRasterVRT(self._imgs,offset,nrows,self.metadata['datatype'],self.metadata['nbits'],offset,byteorder='MSB')
+            self._gdaldataset=geometry.OpenDataset(vrt)
 
         #Reproject corners to lon,lat
         ##geom = geometry.GeomFromExtent(ext)
@@ -425,3 +448,4 @@ class Dataset(__dataset__.Dataset):
         self.metadata['compressionratio']=0
         self.metadata['compressiontype']='None'
         self.extent=ext
+

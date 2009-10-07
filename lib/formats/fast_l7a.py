@@ -127,7 +127,7 @@ class Dataset(__dataset__.Dataset):
         md['rows']=self._gdaldataset.RasterYSize
         
         #Workaround for UTM zones as GDAL does not pick up southern hemisphere
-        #as some FST header don't include a negative zone number to indicate southern hemisphere
+        #as some FST headers don't include a negative zone number to indicate southern hemisphere
         #as per the FAST format definition
         utm=re.search('MAP PROJECTION\s*=\s*UTM',txt)
         if utm:
@@ -226,3 +226,8 @@ class Dataset(__dataset__.Dataset):
         self.extent=ext
 
         for m in md:self.metadata[m]=md[m]
+
+        #Basic raw raster VRT for overview generation
+        vrtbands=bandfiles.values()
+        vrtbands.sort()
+        self._gdaldataset=geometry.OpenDataset(geometry.CreateRawRasterVRT(vrtbands,md['cols'],md['rows'],md['datatype'],md['nbits']))

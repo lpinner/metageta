@@ -4,13 +4,23 @@ Base Dataset class
 Defines the metadata fields and populates some basic info
 '''
 
-import os,time,sys,glob,time
+import os,time,sys,glob,time,math
 import UserDict 
-import utilities, uuid
+import utilities, geometry, uuid
 
 #Import fieldnames
 import __fields__
 
+try:
+    from osgeo import gdal
+    from osgeo import gdalconst
+    from osgeo import osr
+    from osgeo import ogr
+except ImportError:
+    import gdal
+    import gdalconst
+    import osr
+    import ogr
 class Dataset(object):
     '''A base Dataset class'''
     def __new__(self,f):
@@ -21,6 +31,7 @@ class Dataset(object):
         self._metadata={}
         self._extent=[]
         self._filelist=[]
+        self._stretch=None
         
         ##Populate some basic info
         self.fileinfo=utilities.FileInfo(f)
@@ -37,30 +48,120 @@ class Dataset(object):
 
         return self
 
-    # ============= #
-    # Class Methods
-    # ============= #
-    def __getmetadata__(self,*args,**kwargs):
-        '''In case subclasses don't override...'''
-        pass
+    # ==================== #
+    # Public Class Methods
+    # ==================== #
+    #def getoverview(self,*args,**kwargs):
+    #    '''In case subclasses don't override...'''
+    #    pass
+    def getoverview(self,outfile=None,width=800,format='JPG'): 
+        '''
+        Generate overviews for generic imagery
 
+        Override this class if you like, otherwise simply expose a GDALDataset object as self._gdaldataset_
+
+        @type  outfile: string
+        @param outfile: a filepath to the output overview image. If supplied, format is determined from the file extension
+        @type  width:   integer
+        @param width:   image width
+        @type  format:  string
+        @param format:  format to generate overview image, one of ['JPG','PNG','GIF','BMP','TIF']. Not required if outfile is supplied.
+
+        @return:
+            - B{filepath} (if outfile is supplied) B{OR}
+            - B{binary image data} (if outfile is not supplied)
+        '''
+        import overviews
+
+        md=self.metadata
+        ds=self._gdaldataset
+        if not ds:raise AttributeError, 'No GDALDataset object available, overview image can not be generated'
+
+        #Don't rely on the metadata as self._gdaldataset might be a custom VRT
+        ##nbands=md['nbands']
+        ##cols=md['cols']
+        ##rows=md['rows']
+        ##nbits=md['nbits']
+        nbands=ds.RasterCount
+        cols=ds.RasterXSize
+        rows=ds.RasterYSize
+        nbits=gdal.GetDataTypeSize(ds.GetRasterBand(1).DataType)
+
+        stretch_type=None
+        stretch_args=None
+        rgb_bands = {}
+
+        #Check for pre-defined stretch
+        if self._stretch:
+            stretch_type,stretch_args=self._stretch
+
+        #Check for pre-defined rgb bands
+        for i in range(1,nbands+1):
+            gci=ds.GetRasterBand(i).GetRasterColorInterpretation()
+            if   gci == gdal.GCI_RedBand:
+                rgb_bands[0]=i
+            elif gci == gdal.GCI_GreenBand:
+                rgb_bands[1]=i
+            elif gci == gdal.GCI_BlueBand:
+                rgb_bands[2]=i
+            if len(rgb_bands)==3:
+                rgb_bands=rgb_bands[0],rgb_bands[1],rgb_bands[2]
+                break
+
+        #Set some defaults
+        if not stretch_type and not stretch_args:
+            if nbands < 3:
+                #Assume greyscale
+                stretch_type='PERCENT'
+                stretch_args=[2,98]
+                rgb_bands=[1]
+            elif nbands == 3:
+                #Assume RGB
+                if nbits > 8:
+                    stretch_type='PERCENT'
+                    stretch_args=[2,98]
+                else:
+                    stretch_type='NONE'
+                    stretch_args=[]
+                if len(rgb_bands) < 3:rgb_bands=[1,2,3]
+            elif nbands >= 4:
+                stretch_type='PERCENT'
+                stretch_args=[2,98]
+                #stretch_type='STDDEV'
+                #stretch_args=[2]
+                if len(rgb_bands) < 3:rgb_bands=[3,2,1]
+
+        return overviews.getoverview(ds,outfile,width,format,rgb_bands,stretch_type,*stretch_args)
+
+    # ===================== #
+    # Private Class Methods
+    # ===================== #
     def __getfilelist__(self,*args,**kwargs):
         '''Get all files that have the same name (sans .ext), or are related according to gdalinfo
             special cases may be handled separately in their respective format drivers'''
         f=self.fileinfo['filepath']
-        files=glob.glob(os.path.splitext(f)[0]+'.*')
-        if os.path.exists(os.path.splitext(f)[0]):files.append(os.path.splitext(f)[0])
-        hdr_dir=os.path.join(os.path.split(f)[0], 'headers') #Cause ACRES creates a 'headers' directory
-        if os.path.exists(hdr_dir):
-            files.extend(glob.glob(os.path.join(hdr_dir,'*')))
+        files=[]
+        try:
+            files=glob.glob(os.path.splitext(f)[0]+'.*')
+            if os.path.exists(os.path.splitext(f)[0]):files.append(os.path.splitext(f)[0])
+            hdr_dir=os.path.join(os.path.split(f)[0], 'headers') #Cause ACRES creates a 'headers' directory
+            if os.path.exists(hdr_dir):
+                files.extend(glob.glob(os.path.join(hdr_dir,'*')))
+        except:pass # Need to handle errors when dealing with an VRT XML string better...
 
         if self._gdaldataset:
-            files.extend(self._gdaldataset.GetFileList())
+            try:files.extend(self._gdaldataset.GetFileList())
+            except:pass
 
         self._filelist=list(set(utilities.fixSeparators(files))) #list(set([])) filters out duplicates
         
+    def __getmetadata__(self,*args,**kwargs):
+        '''In case subclasses don't override...'''
+        pass
     def __init__(self,*args,**kwargs):
-        pass #just in case a subclass tries to call this method
+        '''In case subclasses don't override...'''
+        pass 
+
 
     # ================ #
     # Class Properties

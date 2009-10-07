@@ -78,22 +78,26 @@ def _NixFileOwner(uid):
     return ownerid,ownername
 
 def FileInfo(filepath):
-    filestat = os.stat(filepath)
     fileinfo = {
-        'size':filestat.st_size,
-        'datemodified':time.strftime(datetimeformat, time.localtime(filestat.st_mtime)),
-        'datecreated': time.strftime(datetimeformat, time.localtime(filestat.st_ctime)),
-        'dateaccessed':time.strftime(datetimeformat, time.localtime(filestat.st_atime))
+        'size':0,
+        'datemodified':'',
+        'datecreated': '',
+        'dateaccessed':''
     }
-    if sys.platform[0:3] =='win':
-        ownerid,ownername=_WinFileOwner(filepath)
-    else:
-        ownerid,ownername=_NixFileOwner(filestat.st_uid)
+    try:
+        filestat = os.stat(filepath)
+        fileinfo['size']=filestat.st_size
+        fileinfo['datemodified']=time.strftime(datetimeformat, time.localtime(filestat.st_mtime))
+        fileinfo['datecreated']=time.strftime(datetimeformat, time.localtime(filestat.st_ctime))
+        fileinfo['dateaccessed']=time.strftime(datetimeformat, time.localtime(filestat.st_atime))
+        if sys.platform[0:3] =='win':
+            ownerid,ownername=_WinFileOwner(filepath)
+        else:
+            ownerid,ownername=_NixFileOwner(filestat.st_uid)
+        fileinfo['ownerid']=ownerid
+        fileinfo['ownername']=ownername
 
-    fileinfo['ownerid']=ownerid
-    fileinfo['ownername']=ownername
-
-    return fileinfo
+    finally:return fileinfo
 
 
 def convertUNC(filepath):

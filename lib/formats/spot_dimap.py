@@ -42,7 +42,6 @@ class Dataset(__default__.Dataset):
         #include every file in the current and upper level directory
         gdalmd=self._gdaldataset.GetMetadata()
         self.metadata['imgdate']=gdalmd['IMAGING_DATE']#ISO 8601 
-        #self.metadata['imgdate']=gdalmd['IMAGING_DATE'].replace('-','')
         self.metadata['satellite']='%s %s' % (gdalmd['MISSION'],gdalmd['MISSION_INDEX'])
         self.metadata['sensor']='%s %s' % (gdalmd['INSTRUMENT'],gdalmd['INSTRUMENT_INDEX'])
         self.metadata['sunelevation'] = float(gdalmd['SUN_ELEVATION'])

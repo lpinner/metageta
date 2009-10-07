@@ -200,7 +200,7 @@ formats.spot_dimap.format_regex" class="py-name" href="#" onclick="return doclin
 <a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line">        <tt class="py-name">md</tt><tt class="py-op">[</tt><tt class="py-string">'rows'</tt><tt class="py-op">]</tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_gdaldataset</tt><tt class="py-op">.</tt><tt class="py-name">RasterYSize</tt> </tt>
 <a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line">         </tt>
 <a name="L129"></a><tt class="py-lineno">129</tt>  <tt class="py-line">        <tt class="py-comment">#Workaround for UTM zones as GDAL does not pick up southern hemisphere</tt> </tt>
-<a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line"><tt class="py-comment"></tt>        <tt class="py-comment">#as some FST header don't include a negative zone number to indicate southern hemisphere</tt> </tt>
+<a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line"><tt class="py-comment"></tt>        <tt class="py-comment">#as some FST headers don't include a negative zone number to indicate southern hemisphere</tt> </tt>
 <a name="L131"></a><tt class="py-lineno">131</tt>  <tt class="py-line"><tt class="py-comment"></tt>        <tt class="py-comment">#as per the FAST format definition</tt> </tt>
 <a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line"><tt class="py-comment"></tt>        <tt class="py-name">utm</tt><tt class="py-op">=</tt><tt class="py-name">re</tt><tt class="py-op">.</tt><tt class="py-name">search</tt><tt class="py-op">(</tt><tt class="py-string">'MAP PROJECTION\s*=\s*UTM'</tt><tt class="py-op">,</tt><tt class="py-name">txt</tt><tt class="py-op">)</tt> </tt>
 <a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">utm</tt><tt class="py-op">:</tt> </tt>
@@ -299,7 +299,12 @@ formats.spot_dimap.format_regex" class="py-name" href="#" onclick="return doclin
 <a name="L226"></a><tt class="py-lineno">226</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-44" class="py-name" targets="Variable formats.__dataset__.Dataset.extent=formats.__dataset__.Dataset-class.html#extent"><a title="formats.__dataset__.Dataset.extent" class="py-name" href="#" onclick="return doclink('link-44', 'extent', 'link-44');">extent</a></tt><tt class="py-op">=</tt><tt class="py-name">ext</tt> </tt>
 <a name="L227"></a><tt class="py-lineno">227</tt>  <tt class="py-line"> </tt>
 <a name="L228"></a><tt class="py-lineno">228</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">m</tt> <tt class="py-keyword">in</tt> <tt class="py-name">md</tt><tt class="py-op">:</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-45" class="py-name"><a title="formats.__dataset__.Dataset.metadata" class="py-name" href="#" onclick="return doclink('link-45', 'metadata', 'link-10');">metadata</a></tt><tt class="py-op">[</tt><tt class="py-name">m</tt><tt class="py-op">]</tt><tt class="py-op">=</tt><tt class="py-name">md</tt><tt class="py-op">[</tt><tt class="py-name">m</tt><tt class="py-op">]</tt> </tt>
-</div></div><a name="L229"></a><tt class="py-lineno">229</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<a name="L229"></a><tt class="py-lineno">229</tt>  <tt class="py-line"> </tt>
+<a name="L230"></a><tt class="py-lineno">230</tt>  <tt class="py-line">        <tt class="py-comment">#Basic raw raster VRT for overview generation</tt> </tt>
+<a name="L231"></a><tt class="py-lineno">231</tt>  <tt class="py-line"><tt class="py-comment"></tt>        <tt class="py-name">vrtbands</tt><tt class="py-op">=</tt><tt class="py-name">bandfiles</tt><tt class="py-op">.</tt><tt class="py-name">values</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L232"></a><tt class="py-lineno">232</tt>  <tt class="py-line">        <tt class="py-name">vrtbands</tt><tt class="py-op">.</tt><tt class="py-name">sort</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L233"></a><tt class="py-lineno">233</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_gdaldataset</tt><tt class="py-op">=</tt><tt id="link-46" class="py-name"><a title="geometry" class="py-name" href="#" onclick="return doclink('link-46', 'geometry', 'link-4');">geometry</a></tt><tt class="py-op">.</tt><tt id="link-47" class="py-name"><a title="geometry.OpenDataset" class="py-name" href="#" onclick="return doclink('link-47', 'OpenDataset', 'link-17');">OpenDataset</a></tt><tt class="py-op">(</tt><tt id="link-48" class="py-name"><a title="geometry" class="py-name" href="#" onclick="return doclink('link-48', 'geometry', 'link-4');">geometry</a></tt><tt class="py-op">.</tt><tt id="link-49" class="py-name" targets="Function geometry.CreateRawRasterVRT()=geometry-module.html#CreateRawRasterVRT"><a title="geometry.CreateRawRasterVRT" class="py-name" href="#" onclick="return doclink('link-49', 'CreateRawRasterVRT', 'link-49');">CreateRawRasterVRT</a></tt><tt class="py-op">(</tt><tt class="py-name">vrtbands</tt><tt class="py-op">,</tt><tt class="py-name">md</tt><tt class="py-op">[</tt><tt class="py-string">'cols'</tt><tt class="py-op">]</tt><tt class="py-op">,</tt><tt class="py-name">md</tt><tt class="py-op">[</tt><tt class="py-string">'rows'</tt><tt class="py-op">]</tt><tt class="py-op">,</tt><tt class="py-name">md</tt><tt class="py-op">[</tt><tt class="py-string">'datatype'</tt><tt class="py-op">]</tt><tt class="py-op">,</tt><tt class="py-name">md</tt><tt class="py-op">[</tt><tt class="py-string">'nbits'</tt><tt class="py-op">]</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L234"></a><tt class="py-lineno">234</tt>  <tt class="py-line"> </tt><script type="text/javascript">
 <!--
 expandto(location.href);
 // -->
@@ -334,7 +339,7 @@ expandto(location.href);
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Wed Aug 26 11:38:07 2009
+    Generated by Epydoc 3.0.1 on Wed Oct 07 14:35:46 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

@@ -166,11 +166,11 @@ def Open(f):
 
     #Try default formats
     try:
-        fr='|'.join(__default__.format_regex)
-        rx=_re.compile(fr, _re.IGNORECASE)
-        if rx.search(f):
-            ds=__default__.Dataset(f)
-            return ds
+        #fr='|'.join(__default__.format_regex)
+        #rx=_re.compile(fr, _re.IGNORECASE)
+        #if rx.search(f):
+        ds=__default__.Dataset(f)
+        return ds
     except Exception,err:
         if debug:
             errinfo=utilities.FormatTraceback(_sys.exc_info()[2],10)

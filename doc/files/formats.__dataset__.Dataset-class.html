@@ -97,12 +97,13 @@ object --+
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="__getmetadata__"></a><span class="summary-sig-name">__getmetadata__</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">*args</span>,
-        <span class="summary-sig-arg">**kwargs</span>)</span><br />
-      In case subclasses don't override...</td>
+          <td><span class="summary-sig"><a href="formats.__dataset__.Dataset-class.html#getoverview" class="summary-sig-name">getoverview</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">outfile</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">width</span>=<span class="summary-sig-default">800</span>,
+        <span class="summary-sig-arg">format</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">JPG</code><code class="variable-quote">'</code></span>)</span><br />
+      Generate overviews for generic imagery</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="formats.__dataset__-pysrc.html#Dataset.__getmetadata__">source&nbsp;code</a></span>
+            <span class="codelink"><a href="formats.__dataset__-pysrc.html#Dataset.getoverview">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -137,10 +138,29 @@ object --+
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
+          <td><span class="summary-sig"><a name="__getmetadata__"></a><span class="summary-sig-name">__getmetadata__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
+      In case subclasses don't override...</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="formats.__dataset__-pysrc.html#Dataset.__getmetadata__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
           <td><span class="summary-sig"><a href="formats.__dataset__.Dataset-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">*args</span>,
         <span class="summary-sig-arg">**kwargs</span>)</span><br />
-      x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
+      In case subclasses don't override...</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="formats.__dataset__-pysrc.html#Dataset.__init__">source&nbsp;code</a></span>
             
@@ -307,6 +327,48 @@ object --+
   </dl>
 </td></tr></table>
 </div>
+<a name="getoverview"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getoverview</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">outfile</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">width</span>=<span class="sig-default">800</span>,
+        <span class="sig-arg">format</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">JPG</code><code class="variable-quote">'</code></span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="formats.__dataset__-pysrc.html#Dataset.getoverview">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Generate overviews for generic imagery</p>
+  <p>Override this class if you like, otherwise simply expose a GDALDataset
+  object as self._gdaldataset_</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>outfile</code></strong> (string) - a filepath to the output overview image. If supplied, format is 
+          determined from the file extension</li>
+        <li><strong class="pname"><code>width</code></strong> (integer) - image width</li>
+        <li><strong class="pname"><code>format</code></strong> (string) - format to generate overview image, one of 
+          ['JPG','PNG','GIF','BMP','TIF']. Not required if outfile is 
+          supplied.</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd><ul>
+            <li>
+              <b>filepath</b> (if outfile is supplied) <b>OR</b>
+            </li>
+            <li>
+              <b>binary image data</b> (if outfile is not supplied)
+            </li>
+          </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
 <a name="__init__"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -324,12 +386,10 @@ object --+
     </td>
   </tr></table>
   
-  <p>x.__init__(...) initializes x; see x.__class__.__doc__ for 
-  signature</p>
+  <p>In case subclasses don't override...</p>
   <dl class="fields">
     <dt>Overrides:
         object.__init__
-        <dd><em class="note">(inherited documentation)</em></dd>
     </dt>
   </dl>
 </td></tr></table>
@@ -452,7 +512,7 @@ object --+
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Wed Aug 26 11:38:05 2009
+    Generated by Epydoc 3.0.1 on Wed Oct 07 14:35:45 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

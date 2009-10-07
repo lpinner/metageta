@@ -101,13 +101,13 @@ def CreateMEF(outdir,xmlfile,uid,overviews=[]):
     '''
     xmldir=_path.dirname(xmlfile)
     curdir=_path.abspath(_os.curdir)
-    mefdir=_os.path.splitext(xmlfile)[0]
-    mefpath='%s.mef'%(mefdir)
-    #mefdir=_os.path.splitext(_os.path.basename(xmlfile))[0]
-    _os.chdir(outdir)
+    mefdir=_path.join(_os.environ['TEMP'],_path.basename(_path.splitext(xmlfile)[0]))
+    mefpath='%s.mef'%(_path.join(outdir,_path.basename(_path.splitext(xmlfile)[0])))
+    #mefdir=_path.splitext(xmlfile)[0]) #to get around 260 char filename limit...
+    #mefpath='%s.mef'%(mefdir)
     try:
-        if _os.path.exists(mefpath):_os.remove(mefpath)
-        if _os.path.exists(mefdir):_sh.rmtree(mefdir)
+        if _path.exists(mefpath):_os.remove(mefpath)
+        if _path.exists(mefdir):_sh.rmtree(mefdir)
         mef=_zip.ZipFile(mefpath,'w',_zip.ZIP_DEFLATED)
         _os.mkdir(mefdir)
         _os.chdir(mefdir)
@@ -124,17 +124,14 @@ def CreateMEF(outdir,xmlfile,uid,overviews=[]):
         for f in _rglob('.'):
             if not _path.isdir(f): mef.write(f)
     finally:
+        try:_os.chdir(curdir)
+        except:pass        
         try:
             mef.close()
             del mef
         except:pass
-        try:_os.chdir(outdir)
-        except:pass
-        #_sh.rmtree(uid)
         try:_sh.rmtree(mefdir)
         except:pass
-        try:_os.chdir(curdir)
-        except:pass        
 #++++++++++++++++++++++++
 #Private methods    
 #++++++++++++++++++++++++

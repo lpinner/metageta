@@ -2,7 +2,8 @@
 Geometry and dataset helper functions
 =====================================
 '''
-import os,math,warnings
+import os,math,warnings,tempfile
+
 
 try:
     from osgeo import gdal
@@ -15,6 +16,9 @@ except ImportError:
     import osr
     import ogr
 
+#========================================================================================================
+#Dataset Utilities
+#========================================================================================================
 def OpenDataset(f,mode=gdalconst.GA_ReadOnly):
     '''Open & return a gdalDataset object'''
     gdal.ErrorReset()
@@ -23,6 +27,9 @@ def OpenDataset(f,mode=gdalconst.GA_ReadOnly):
     gdal.PopErrorHandler()
     return gdalDataset
     
+#========================================================================================================
+#Geometry Utilities
+#========================================================================================================
 def Rotation(gt):   
     '''
     Get rotation angle from a geotransform
@@ -114,6 +121,81 @@ def ReprojectGeom(geom,src_srs,tgt_srs):
     gdal.ErrorReset()
     return geom
 
+#========================================================================================================
+#VRT Utilities
+#========================================================================================================
+def CreateVRTCopy(ds):
+    try:
+        vrtdrv=gdal.GetDriverByName('VRT')
+        vrtds=vrtdrv.CreateCopy('',ds)
+        return vrtds
+    except:
+        return None
+
+def CreateMosaicedVRT(files,bands,srcrects,dstrects,cols,rows,datatype,relativeToVRT=0):
+    try:
+        vrt=[]
+        for i,band in enumerate(bands):
+            vrt.append('  <VRTRasterBand dataType="%s" band="%s">' % (datatype, i+1))
+            for j,f in enumerate(files):
+                vrt.append('    <SimpleSource>')
+                vrt.append('      <SourceFilename relativeToVRT="%s">%s</SourceFilename>' % (relativeToVRT,f))
+                vrt.append('      <SourceProperties RasterXSize="%s" RasterYSize="%s" DataType="%s"/>' % (dstrects[j][2],dstrects[j][3],datatype))
+                vrt.append('      <SourceBand>%s</SourceBand>' % band)
+                vrt.append('      <SrcRect xOff="%s" yOff="%s" xSize="%s" ySize="%s"/>' % (srcrects[j][0],srcrects[j][1],srcrects[j][2],srcrects[j][3]))
+                vrt.append('      <DstRect xOff="%s" yOff="%s" xSize="%s" ySize="%s"/>' % (dstrects[j][0],dstrects[j][1],dstrects[j][2],dstrects[j][3]))
+                vrt.append('    </SimpleSource>')
+                
+            vrt.append('  </VRTRasterBand>')
+        return CreateCustomVRT('\n'.join(vrt),cols,rows)
+    except:
+        raise #return None
+
+def CreateSimpleVRT(bands,cols,rows,datatype,relativeToVRT=0):
+    try:
+        vrt=[]
+        for i,band in enumerate(bands):
+            vrt.append('  <VRTRasterBand dataType="%s" band="%s">' % (datatype, i+1))
+            vrt.append('    <SimpleSource>')
+            vrt.append('      <SourceFilename relativeToVRT="%s">%s</SourceFilename>' % (relativeToVRT,band))
+            vrt.append('      <SourceBand>1</SourceBand>')
+            vrt.append('    </SimpleSource>')
+            vrt.append('  </VRTRasterBand>')
+        return CreateCustomVRT('\n'.join(vrt),cols,rows)
+    except:
+        return None
+
+def CreateRawRasterVRT(bands,cols,rows,datatype,nbits,headeroffset=0,byteorder=None,relativeToVRT=0):
+    '''Create RawRaster VRT from one or more _single_ band files'''
+    try:
+        vrt=[]
+        for i,band in enumerate(bands):
+            vrt.append('  <VRTRasterBand dataType="%s" band="%s" subClass="VRTRawRasterBand">' % (datatype, i+1))
+            vrt.append('    <SourceFilename relativeToVRT="%s">%s</SourceFilename>' % (relativeToVRT,band))
+            vrt.append('    <ImageOffset>%s</ImageOffset>' % (headeroffset))
+            vrt.append('    <PixelOffset>%s</PixelOffset>' % (nbits/8))
+            vrt.append('    <LineOffset>%s</LineOffset>' % (nbits/8 * cols))
+            if byteorder:vrt.append('    <ByteOrder>%s</ByteOrder>' % (byteorder))
+            vrt.append('  </VRTRasterBand>')
+        return CreateCustomVRT('\n'.join(vrt),cols,rows)
+    except:
+        return None
+    return '\n'.join(vrt)
+
+def CreateCustomVRT(vrtxml,vrtcols,vrtrows):
+    try:
+        vrt=[]
+        vrt.append('<VRTDataset rasterXSize="%s" rasterYSize="%s">' % (vrtcols,vrtrows))
+        vrt.append('%s' % vrtxml)
+        vrt.append('</VRTDataset>')
+        return '\n'.join(vrt)
+    except:
+        return None
+    
+
+#========================================================================================================
+#Shapefile Writer
+#========================================================================================================
 class ShapeWriter:
     '''A class for writing geometry and fields to ESRI shapefile format'''
     def __init__(self,shapefile,fields,srs_wkt=None,overwrite=True):

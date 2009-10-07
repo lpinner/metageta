@@ -38,13 +38,31 @@ formats.quickbird.format_regex	formats.quickbird-module.html#format_regex
 formats.spot_dimap	formats.spot_dimap-module.html
 formats.spot_dimap.format_regex	formats.spot_dimap-module.html#format_regex
 geometry	geometry-module.html
+geometry.CreateCustomVRT	geometry-module.html#CreateCustomVRT
+geometry.CreateRawRasterVRT	geometry-module.html#CreateRawRasterVRT
 geometry.GeomFromExtent	geometry-module.html#GeomFromExtent
 geometry.CellSize	geometry-module.html#CellSize
 geometry.SceneCentre	geometry-module.html#SceneCentre
 geometry.ReprojectGeom	geometry-module.html#ReprojectGeom
-geometry.GeoTransformToGCPs	geometry-module.html#GeoTransformToGCPs
 geometry.Rotation	geometry-module.html#Rotation
+geometry.GeoTransformToGCPs	geometry-module.html#GeoTransformToGCPs
+geometry.CreateVRTCopy	geometry-module.html#CreateVRTCopy
 geometry.OpenDataset	geometry-module.html#OpenDataset
+geometry.CreateMosaicedVRT	geometry-module.html#CreateMosaicedVRT
+geometry.CreateSimpleVRT	geometry-module.html#CreateSimpleVRT
+overviews	overviews-module.html
+overviews.HistPercentileValue	overviews-module.html#HistPercentileValue
+overviews.getoverview	overviews-module.html#getoverview
+overviews.ParseColorLUT	overviews-module.html#ParseColorLUT
+overviews.stretch	overviews-module.html#stretch
+overviews.GetDataTypeRange	overviews-module.html#GetDataTypeRange
+overviews._stretch_NONE	overviews-module.html#_stretch_NONE
+overviews._stretch_PERCENT	overviews-module.html#_stretch_PERCENT
+overviews._stretch_COLOURTABLE	overviews-module.html#_stretch_COLOURTABLE
+overviews._stretch_MINMAX	overviews-module.html#_stretch_MINMAX
+overviews._stretch_STDDEV	overviews-module.html#_stretch_STDDEV
+overviews.ExpandedColorLUT	overviews-module.html#ExpandedColorLUT
+overviews._stretch_COLORTABLE	overviews-module.html#_stretch_COLORTABLE
 progresslogger	progresslogger-module.html
 progresslogger.MULTIPLE	progresslogger-module.html#MULTIPLE
 progresslogger.TRUE	progresslogger-module.html#TRUE
@@ -505,6 +523,7 @@ formats.__dataset__.Dataset.__new__	formats.__dataset__.Dataset-class.html#__new
 formats.__dataset__.Dataset.__getfilelist__	formats.__dataset__.Dataset-class.html#__getfilelist__
 formats.__dataset__.Dataset.__classproperty__	formats.__dataset__.Dataset-class.html#__classproperty__
 formats.__dataset__.Dataset.filelist	formats.__dataset__.Dataset-class.html#filelist
+formats.__dataset__.Dataset.getoverview	formats.__dataset__.Dataset-class.html#getoverview
 formats.__dataset__.Dataset.extent	formats.__dataset__.Dataset-class.html#extent
 formats.__dataset__.Dataset.__getmetadata__	formats.__dataset__.Dataset-class.html#__getmetadata__
 formats.__dataset__.Dataset.__init__	formats.__dataset__.Dataset-class.html#__init__
@@ -519,6 +538,7 @@ formats.__dataset__.Dataset.__new__	formats.__dataset__.Dataset-class.html#__new
 formats.__dataset__.Dataset.__getfilelist__	formats.__dataset__.Dataset-class.html#__getfilelist__
 formats.__dataset__.Dataset.__classproperty__	formats.__dataset__.Dataset-class.html#__classproperty__
 formats.__dataset__.Dataset.filelist	formats.__dataset__.Dataset-class.html#filelist
+formats.__dataset__.Dataset.getoverview	formats.__dataset__.Dataset-class.html#getoverview
 formats.__dataset__.Dataset.extent	formats.__dataset__.Dataset-class.html#extent
 formats.__default__.Dataset.__getmetadata__	formats.__default__.Dataset-class.html#__getmetadata__
 formats.__default__.Dataset.__init__	formats.__default__.Dataset-class.html#__init__
@@ -528,6 +548,7 @@ formats.__dataset__.Dataset.__new__	formats.__dataset__.Dataset-class.html#__new
 formats.__dataset__.Dataset.__getfilelist__	formats.__dataset__.Dataset-class.html#__getfilelist__
 formats.__dataset__.Dataset.__classproperty__	formats.__dataset__.Dataset-class.html#__classproperty__
 formats.__dataset__.Dataset.filelist	formats.__dataset__.Dataset-class.html#filelist
+formats.__dataset__.Dataset.getoverview	formats.__dataset__.Dataset-class.html#getoverview
 formats.__dataset__.Dataset.extent	formats.__dataset__.Dataset-class.html#extent
 formats.ali_hyperion.Dataset.__getmetadata__	formats.ali_hyperion.Dataset-class.html#__getmetadata__
 formats.ali_hyperion.Dataset.__init__	formats.ali_hyperion.Dataset-class.html#__init__
@@ -537,6 +558,7 @@ formats.__dataset__.Dataset.__new__	formats.__dataset__.Dataset-class.html#__new
 formats.__dataset__.Dataset.__getfilelist__	formats.__dataset__.Dataset-class.html#__getfilelist__
 formats.__dataset__.Dataset.__classproperty__	formats.__dataset__.Dataset-class.html#__classproperty__
 formats.__dataset__.Dataset.filelist	formats.__dataset__.Dataset-class.html#filelist
+formats.__dataset__.Dataset.getoverview	formats.__dataset__.Dataset-class.html#getoverview
 formats.__dataset__.Dataset.extent	formats.__dataset__.Dataset-class.html#extent
 formats.alos.Dataset.__getmetadata__	formats.alos.Dataset-class.html#__getmetadata__
 formats.alos.Dataset.__init__	formats.alos.Dataset-class.html#__init__
@@ -546,6 +568,7 @@ formats.__dataset__.Dataset.__new__	formats.__dataset__.Dataset-class.html#__new
 formats.__dataset__.Dataset.__getfilelist__	formats.__dataset__.Dataset-class.html#__getfilelist__
 formats.__dataset__.Dataset.__classproperty__	formats.__dataset__.Dataset-class.html#__classproperty__
 formats.__dataset__.Dataset.filelist	formats.__dataset__.Dataset-class.html#filelist
+formats.__dataset__.Dataset.getoverview	formats.__dataset__.Dataset-class.html#getoverview
 formats.__dataset__.Dataset.extent	formats.__dataset__.Dataset-class.html#extent
 formats.aster.Dataset.__getmetadata__	formats.aster.Dataset-class.html#__getmetadata__
 formats.aster.Dataset.__init__	formats.aster.Dataset-class.html#__init__
@@ -555,6 +578,7 @@ formats.__dataset__.Dataset.__new__	formats.__dataset__.Dataset-class.html#__new
 formats.__dataset__.Dataset.__getfilelist__	formats.__dataset__.Dataset-class.html#__getfilelist__
 formats.__dataset__.Dataset.__classproperty__	formats.__dataset__.Dataset-class.html#__classproperty__
 formats.__dataset__.Dataset.filelist	formats.__dataset__.Dataset-class.html#filelist
+formats.__dataset__.Dataset.getoverview	formats.__dataset__.Dataset-class.html#getoverview
 formats.__dataset__.Dataset.extent	formats.__dataset__.Dataset-class.html#extent
 formats.ccrs.Dataset.__getmetadata__	formats.ccrs.Dataset-class.html#__getmetadata__
 formats.ccrs.Dataset.__init__	formats.ccrs.Dataset-class.html#__init__
@@ -564,6 +588,7 @@ formats.__dataset__.Dataset.__new__	formats.__dataset__.Dataset-class.html#__new
 formats.__dataset__.Dataset.__getfilelist__	formats.__dataset__.Dataset-class.html#__getfilelist__
 formats.__dataset__.Dataset.__classproperty__	formats.__dataset__.Dataset-class.html#__classproperty__
 formats.__dataset__.Dataset.filelist	formats.__dataset__.Dataset-class.html#filelist
+formats.__dataset__.Dataset.getoverview	formats.__dataset__.Dataset-class.html#getoverview
 formats.__dataset__.Dataset.extent	formats.__dataset__.Dataset-class.html#extent
 formats.ecw.Dataset.__getmetadata__	formats.ecw.Dataset-class.html#__getmetadata__
 formats.__default__.Dataset.__init__	formats.__default__.Dataset-class.html#__init__
@@ -573,6 +598,7 @@ formats.__dataset__.Dataset.__new__	formats.__dataset__.Dataset-class.html#__new
 formats.__dataset__.Dataset.__getfilelist__	formats.__dataset__.Dataset-class.html#__getfilelist__
 formats.__dataset__.Dataset.__classproperty__	formats.__dataset__.Dataset-class.html#__classproperty__
 formats.__dataset__.Dataset.filelist	formats.__dataset__.Dataset-class.html#filelist
+formats.__dataset__.Dataset.getoverview	formats.__dataset__.Dataset-class.html#getoverview
 formats.__dataset__.Dataset.extent	formats.__dataset__.Dataset-class.html#extent
 formats.envi.Dataset.__getmetadata__	formats.envi.Dataset-class.html#__getmetadata__
 formats.envi.Dataset.__init__	formats.envi.Dataset-class.html#__init__
@@ -582,6 +608,7 @@ formats.__dataset__.Dataset.__new__	formats.__dataset__.Dataset-class.html#__new
 formats.__dataset__.Dataset.__getfilelist__	formats.__dataset__.Dataset-class.html#__getfilelist__
 formats.__dataset__.Dataset.__classproperty__	formats.__dataset__.Dataset-class.html#__classproperty__
 formats.__dataset__.Dataset.filelist	formats.__dataset__.Dataset-class.html#filelist
+formats.__dataset__.Dataset.getoverview	formats.__dataset__.Dataset-class.html#getoverview
 formats.__dataset__.Dataset.extent	formats.__dataset__.Dataset-class.html#extent
 formats.esribil.Dataset.__getmetadata__	formats.esribil.Dataset-class.html#__getmetadata__
 formats.esribil.Dataset.__init__	formats.esribil.Dataset-class.html#__init__
@@ -591,6 +618,7 @@ formats.__dataset__.Dataset.__new__	formats.__dataset__.Dataset-class.html#__new
 formats.__dataset__.Dataset.__getfilelist__	formats.__dataset__.Dataset-class.html#__getfilelist__
 formats.__dataset__.Dataset.__classproperty__	formats.__dataset__.Dataset-class.html#__classproperty__
 formats.__dataset__.Dataset.filelist	formats.__dataset__.Dataset-class.html#filelist
+formats.__dataset__.Dataset.getoverview	formats.__dataset__.Dataset-class.html#getoverview
 formats.__dataset__.Dataset.extent	formats.__dataset__.Dataset-class.html#extent
 formats.esrigrid.Dataset.__getmetadata__	formats.esrigrid.Dataset-class.html#__getmetadata__
 formats.esrigrid.Dataset.__init__	formats.esrigrid.Dataset-class.html#__init__
@@ -600,6 +628,7 @@ formats.__dataset__.Dataset.__new__	formats.__dataset__.Dataset-class.html#__new
 formats.__dataset__.Dataset.__getfilelist__	formats.__dataset__.Dataset-class.html#__getfilelist__
 formats.__dataset__.Dataset.__classproperty__	formats.__dataset__.Dataset-class.html#__classproperty__
 formats.__dataset__.Dataset.filelist	formats.__dataset__.Dataset-class.html#filelist
+formats.__dataset__.Dataset.getoverview	formats.__dataset__.Dataset-class.html#getoverview
 formats.__dataset__.Dataset.extent	formats.__dataset__.Dataset-class.html#extent
 formats.fast_l7a.Dataset.__getmetadata__	formats.fast_l7a.Dataset-class.html#__getmetadata__
 formats.fast_l7a.Dataset.__init__	formats.fast_l7a.Dataset-class.html#__init__
@@ -609,6 +638,7 @@ formats.__dataset__.Dataset.__new__	formats.__dataset__.Dataset-class.html#__new
 formats.__dataset__.Dataset.__getfilelist__	formats.__dataset__.Dataset-class.html#__getfilelist__
 formats.__dataset__.Dataset.__classproperty__	formats.__dataset__.Dataset-class.html#__classproperty__
 formats.__dataset__.Dataset.filelist	formats.__dataset__.Dataset-class.html#filelist
+formats.__dataset__.Dataset.getoverview	formats.__dataset__.Dataset-class.html#getoverview
 formats.__dataset__.Dataset.extent	formats.__dataset__.Dataset-class.html#extent
 formats.jp2.Dataset.__getmetadata__	formats.jp2.Dataset-class.html#__getmetadata__
 formats.__default__.Dataset.__init__	formats.__default__.Dataset-class.html#__init__
@@ -618,6 +648,7 @@ formats.quickbird.Dataset.__getimddata__	formats.quickbird.Dataset-class.html#__
 formats.__dataset__.Dataset.__new__	formats.__dataset__.Dataset-class.html#__new__
 formats.__dataset__.Dataset.__getfilelist__	formats.__dataset__.Dataset-class.html#__getfilelist__
 formats.__dataset__.Dataset.__classproperty__	formats.__dataset__.Dataset-class.html#__classproperty__
+formats.quickbird.Dataset.getoverview	formats.quickbird.Dataset-class.html#getoverview
 formats.__dataset__.Dataset.filelist	formats.__dataset__.Dataset-class.html#filelist
 formats.__dataset__.Dataset.extent	formats.__dataset__.Dataset-class.html#extent
 formats.quickbird.Dataset.__getmetadata__	formats.quickbird.Dataset-class.html#__getmetadata__
@@ -629,6 +660,7 @@ formats.__dataset__.Dataset.__new__	formats.__dataset__.Dataset-class.html#__new
 formats.__dataset__.Dataset.__getfilelist__	formats.__dataset__.Dataset-class.html#__getfilelist__
 formats.__dataset__.Dataset.__classproperty__	formats.__dataset__.Dataset-class.html#__classproperty__
 formats.__dataset__.Dataset.filelist	formats.__dataset__.Dataset-class.html#filelist
+formats.__dataset__.Dataset.getoverview	formats.__dataset__.Dataset-class.html#getoverview
 formats.__dataset__.Dataset.extent	formats.__dataset__.Dataset-class.html#extent
 formats.spot_dimap.Dataset.__getmetadata__	formats.spot_dimap.Dataset-class.html#__getmetadata__
 formats.spot_dimap.Dataset.__init__	formats.spot_dimap.Dataset-class.html#__init__

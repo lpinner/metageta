@@ -85,6 +85,7 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
         actbands=utilities.readbinary(meta,(record-1)*recordlength,start,stop)
         for i in range(0,7): #Loop thru the 7 LS 5 bands
             if actbands[i]=='1':bands.append(str(i+1))
+            self._gdaldataset.GetRasterBand(i+1).SetNoDataValue(0)
         
         #Record 3 - Map projection (scene-related) ancillary record
         record=3

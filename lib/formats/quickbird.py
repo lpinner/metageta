@@ -45,8 +45,10 @@ class Dataset(__default__.Dataset):
         img = os.path.splitext(f)[0]+'.img'
         til = os.path.splitext(f)[0]+'.til'
 
-        if   os.path.exists(tif):__default__.Dataset.__getmetadata__(self, tif)
-        elif os.path.exists(img):__default__.Dataset.__getmetadata__(self, img)
+        if   os.path.exists(tif):
+            __default__.Dataset.__getmetadata__(self, tif)
+        elif os.path.exists(img):
+            __default__.Dataset.__getmetadata__(self, img)
         elif os.path.exists(til):
             vrt=self.__gettilevrt__(til,imddata)
             __default__.Dataset.__getmetadata__(self, vrt)
@@ -199,3 +201,35 @@ class Dataset(__default__.Dataset):
         imddata['bands']=bands
         imddata['nbands']=len(bands)
         return imddata
+
+    def getoverview(self,outfile=None,width=800,format='JPG'): 
+        '''
+        Generate overviews for Quickbird imagery
+
+        @type  outfile: string
+        @param outfile: a filepath to the output overview image. If supplied, format is determined from the file extension
+        @type  width:   integer
+        @param width:   image width
+        @type  format:  string
+        @param format:  format to generate overview image, one of ['JPG','PNG','GIF','BMP','TIF']. Not required if outfile is supplied.
+        @return:        filepath (if outfile is supplied)/binary image data (if outfile is not supplied)
+        '''
+        import overviews
+
+        #First check for a browse graphic, no point re-inventing the wheel...
+        f=self.fileinfo['filepath']
+        browse=os.path.splitext(f)[0]+'-browse.jpg'
+        if os.path.exists(browse):
+
+            ds=geometry.OpenDataset(browse)
+            if not ds:return __default__.Dataset.getoverview(self,outfile,width,format) #Try it the slow way...
+
+            nodata=0
+            bands=[1,2,3]
+
+            #Default stretch type and additional args
+            stretch_type='NONE'
+
+            return overviews.getoverview(ds,outfile,width,format,bands,stretch_type)
+        else: return __default__.Dataset.getoverview(self,outfile,width,format)#Do it the slow way...
+        

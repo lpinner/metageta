@@ -219,3 +219,10 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
         self.metadata['compressiontype']='None'
         self.extent=ext
 
+        #Build gdaldataset object for overviews
+        vrtcols=ncols[0]
+        vrtrows=nrows[0]
+        vrtbands=[sd for sd,sn in hdf_sd[0:4]]#The 4 VNIR bands
+        vrt=geometry.CreateSimpleVRT(vrtbands,vrtrows,vrtcols,datatypes.split(',')[0])
+        self._gdaldataset=geometry.OpenDataset(vrt)    
+            

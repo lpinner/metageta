@@ -228,7 +228,7 @@ class GetArgs:
         lxls=Label(self.root, text="Output spreadsheet:")
         lshp=Label(self.root, text="Output shapefile:")
         llog=Label(self.root, text="Output error log:")
-        lovs=Label(self.root, text="Generate quicklook/thumnail?:")
+        lovs=Label(self.root, text="Generate quicklook/thumbnail?:")
         lnomd=Label(self.root, text="Don't extract metadata (walk)?:")
 
         edir=Entry(self.root, textvariable=sdir)

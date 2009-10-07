@@ -6,7 +6,7 @@ Contains code to show GUI to gather input arguments when none are provided
 To run, call the eponymous batch file which sets the required environment variables
 
 Usage::
-    runcrawler.bat -d dir -x xls -s shp -l log {--nomd} {--gui} {--debug}
+    runcrawler.bat -d dir -x xls -s shp -l log {-o} {--nomd} {--gui} {--debug}
 
 @newfield sysarg: Argument, Arguments
 @sysarg: C{-d [dir]}: Directory to to recursively search for imagery
@@ -28,7 +28,7 @@ import geometry
 import utilities
 import crawler
 
-def main(dir,xls,shp,log, gui=False, debug=False, nomd=False): 
+def main(dir,xls,shp,log, gui=False, debug=False, nomd=False, getovs=False): 
     xls = utilities.checkExt(xls, ['.xls'])
     shp = utilities.checkExt(shp, ['.shp'])
     log = utilities.checkExt(shp, ['.log', '.txt'])
@@ -74,13 +74,14 @@ def main(dir,xls,shp,log, gui=False, debug=False, nomd=False):
                 md.update(fi)
                 pl.info('Extracted metadata from %s, %s of %s files remaining' % (Crawler.file,len(Crawler.files),Crawler.filecount))
                 try:
-                    qlk=os.path.join(os.path.dirname(xls),'%s.%s.qlk.jpg'%(fi['filename'],fi['guid']))
-                    thm=os.path.join(os.path.dirname(xls),'%s.%s.thm.jpg'%(fi['filename'],fi['guid']))
-                    qlk=ds.getoverview(qlk, width=800)
-                    thm=ds.getoverview(thm, width=150)
-                    md['quicklook']=qlk
-                    md['thumbnail']=thm
-                    pl.info('Generated overviews from %s' % Crawler.file)
+                    if getovs:
+                        qlk=os.path.join(os.path.dirname(xls),'%s.%s.qlk.jpg'%(fi['filename'],fi['guid']))
+                        thm=os.path.join(os.path.dirname(xls),'%s.%s.thm.jpg'%(fi['filename'],fi['guid']))
+                        qlk=ds.getoverview(qlk, width=800)
+                        thm=ds.getoverview(thm, width=150)
+                        md['quicklook']=qlk
+                        md['thumbnail']=thm
+                        pl.info('Generated overviews from %s' % Crawler.file)
                 except Exception,err:
                     pl.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
                     pl.debug(utilities.ExceptionInfo(10))
@@ -143,7 +144,7 @@ class Command:
         
 
 class GetArgs:
-    def __init__(self,gui,debug,getmd):
+    def __init__(self,gui,debug,nomd,getovs):
         windowicon=os.environ['CURDIR']+'/lib/wm_icon.ico'
         #base 64 encoded gif images for the GUI buttons
         shp_img = '''
@@ -208,35 +209,54 @@ class GetArgs:
         bdebug.set(debug)
         bgui = BooleanVar()
         bgui.set(gui)
+        bovs = BooleanVar()
+        bovs.set(getovs)
+        bnomd = BooleanVar()
+        bnomd.set(nomd)
 
         dir_ico = PhotoImage(format='gif',data=dir_img)
         xls_ico = PhotoImage(format='gif',data=xls_img)
         shp_ico = PhotoImage(format='gif',data=shp_img)
         log_ico = PhotoImage(format='gif',data=log_img)
+
         sdir = StringVar()
         sxls = StringVar()
         sshp = StringVar()
         slog = StringVar()
+
         ldir=Label(self.root, text="Directory to search:")
         lxls=Label(self.root, text="Output spreadsheet:")
         lshp=Label(self.root, text="Output shapefile:")
         llog=Label(self.root, text="Output error log:")
+        lovs=Label(self.root, text="Generate quicklook/thumnail?:")
+        lnomd=Label(self.root, text="Don't extract metadata (walk)?:")
+
         edir=Entry(self.root, textvariable=sdir)
         exls=Entry(self.root, textvariable=sxls)
         eshp=Entry(self.root, textvariable=sshp)
         elog=Entry(self.root, textvariable=slog)
+        eovs=Checkbutton(self.root, variable=bovs)
+        enomd=Checkbutton(self.root, variable=bnomd)
+
         bdir = Button(self.root,image=dir_ico, command=Command(self.cmdDir, sdir,last_dir))
         bxls = Button(self.root,image=xls_ico, command=Command(self.cmdFile,sxls,[('Excel Spreadsheet','*.xls')],last_dir))
         bshp = Button(self.root,image=shp_ico, command=Command(self.cmdFile,sshp,[('ESRI Shapefile','*.shp')],last_dir))
         blog = Button(self.root,image=log_ico, command=Command(self.cmdFile,slog,[('Log File',('*.txt','*.log'))],last_dir))
-        ldir.grid(row=0, column=0)
-        lxls.grid(row=1, column=0)
-        lshp.grid(row=2, column=0)
-        llog.grid(row=3, column=0)
+
+        ldir.grid(row=0, column=0,sticky=W)
+        lxls.grid(row=1, column=0,sticky=W)
+        lshp.grid(row=2, column=0,sticky=W)
+        llog.grid(row=3, column=0,sticky=W)
+        lovs.grid(row=4, column=0,sticky=W, columnspan=2)
+        lnomd.grid(row=5, column=0,sticky=W, columnspan=2)
+
         edir.grid(row=0, column=1)
         exls.grid(row=1, column=1)
         eshp.grid(row=2, column=1)
         elog.grid(row=3, column=1)
+        eovs.grid(row=4, column=1)
+        enomd.grid(row=5, column=1)
+
         bdir.grid(row=0, column=2)
         bxls.grid(row=1, column=2)
         bshp.grid(row=2, column=2)
@@ -246,10 +266,10 @@ class GetArgs:
         self.root.bind("<Return>", self.cmdOK)
         bOK.config(width=10)
         bCancel = Button(self.root,text="Cancel", command=self.cmdCancel)
-        bOK.grid(row=4, column=1,sticky=E, padx=5,pady=5)
-        bCancel.grid(row=4, column=2,sticky=E, pady=5)
+        bOK.grid(row=6, column=1,sticky=E, padx=5,pady=5)
+        bCancel.grid(row=6, column=2,sticky=E, pady=5)
 
-        self.vars={'dir':sdir,'xls':sxls,'shp':sshp,'log':slog,'gui':bgui,'debug':bdebug}
+        self.vars={'dir':sdir,'xls':sxls,'shp':sshp,'log':slog,'gui':bgui,'debug':bdebug,'getovs':bovs,'nomd':bnomd}
         
         self.root.mainloop()
         
@@ -313,6 +333,6 @@ if __name__ == '__main__':
                       help="Show the GUI progress dialog")
     opts,args = parser.parse_args()
     if not opts.dir or not opts.log or not opts.shp or not opts.xls:
-        GetArgs(True,opts.debug,True) #Show progress GUI.
+        GetArgs(True,opts.debug,opts.nomd,opts.ovs) #Show progress GUI.
     else:
-        main(opts.dir,opts.xls,opts.shp,opts.log,opts.gui,opts.debug,opts.nomd)
+        main(opts.dir,opts.xls,opts.shp,opts.log,opts.gui,opts.debug,opts.nomd,opts.ovs)

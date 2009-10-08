@@ -55,15 +55,36 @@
       <gmd:characterSet>
         <gmd:MD_CharacterSetCode codeList="http://asdd.ga.gov.au/asdd/profileinfo/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8">utf8</gmd:MD_CharacterSetCode>
       </gmd:characterSet>
-      <!--gmd:parentIdentifier gco:nilReason="missing">
-          <gco:CharacterString/>
-      </gmd:parentIdentifier-->
-      <gmd:hierarchyLevel>
-        <gmd:MD_ScopeCode codeList="http://asdd.ga.gov.au/asdd/profileinfo/GAScopeCodeList.xml#MD_ScopeCode" codeListValue="dataset">dataset</gmd:MD_ScopeCode>
-      </gmd:hierarchyLevel>
-      <gmd:hierarchyLevelName>
-        <gco:CharacterString>dataset</gco:CharacterString>
-      </gmd:hierarchyLevelName>
+      <xsl:if test="normalize-space(parentIdentifier)">
+        <gco:CharacterString><xsl:value-of select="parentIdentifier"/></gco:CharacterString>
+      </xsl:if>
+      <xsl:choose>
+          <xsl:when test="normalize-space(hierarchyLevel)">
+        <gmd:CI_RoleCode>
+          <xsl:attribute name="codeList">http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode</xsl:attribute>
+          <xsl:attribute name="codeListValue"><xsl:value-of select="$contact"/></xsl:attribute>
+          <xsl:value-of select="$contact"/>
+        </gmd:CI_RoleCode>
+            <gmd:hierarchyLevel>
+              <gmd:MD_ScopeCode>
+                <xsl:attribute name="codeList">http://asdd.ga.gov.au/asdd/profileinfo/GAScopeCodeList.xml#MD_ScopeCode</xsl:attribute>
+                <xsl:attribute name="codeListValue"><xsl:value-of select="$hierarchyLevel"/></xsl:attribute>
+                <xsl:value-of select="$hierarchyLevel"/>
+              </gmd:MD_ScopeCode>
+            </gmd:hierarchyLevel>
+            <gmd:hierarchyLevelName>
+              <gco:CharacterString><xsl:value-of select="$hierarchyLevel"/></gco:CharacterString>
+            </gmd:hierarchyLevelName>
+          </xsl:when>
+          <xsl:otherwise>
+            <gmd:hierarchyLevel>
+              <gmd:MD_ScopeCode codeList="http://asdd.ga.gov.au/asdd/profileinfo/GAScopeCodeList.xml#MD_ScopeCode" codeListValue="dataset">dataset</gmd:MD_ScopeCode>
+            </gmd:hierarchyLevel>
+            <gmd:hierarchyLevelName>
+              <gco:CharacterString>dataset</gco:CharacterString>
+            </gmd:hierarchyLevelName>
+          </xsl:otherwise>
+      </xsl:choose>
       <gmd:contact>
         <xsl:call-template name="default_contact">
           <xsl:with-param name="contact" select="'publisher'"/>

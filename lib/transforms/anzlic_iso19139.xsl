@@ -425,7 +425,8 @@
             <gco:CharacterString>
               <xsl:choose>
                 <xsl:when test="abstract">
-                  <xsl:value-of select="normalize-space(abstract)"/>
+                  <!--xsl:value-of select="normalize-space(abstract)"/-->
+                  <xsl:value-of select="str:replaceNewLine(abstract)"/>
                 </xsl:when>
                 <xsl:otherwise>
                   <xsl:value-of select="'PLEASE ENTER AN ABSTRACT!'"/>
@@ -575,6 +576,11 @@
               <gmd:keyword>
                 <gco:CharacterString>PHOTOGRAPHY-AND-IMAGERY-Satellite</gco:CharacterString>
               </gmd:keyword>
+              <xsl:for-each select="*[starts-with(name(),'ANZLICKeyword')]">
+                <gmd:keyword>
+                  <gco:CharacterString><xsl:value-of select="."/></gco:CharacterString>
+                </gmd:keyword>
+              </xsl:for-each>
               <gmd:type>
                 <gmd:MD_KeywordTypeCode codeList="http://asdd.ga.gov.au/asdd/profileinfo/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme">theme</gmd:MD_KeywordTypeCode>
               </gmd:type>
@@ -895,7 +901,7 @@
          </gmd:extent>
           <gmd:supplementalInformation>
             <gco:CharacterString>
-              <xsl:for-each select="*[not(self::quicklook)][not(self::thumbnail)]">
+              <xsl:for-each select="*[not(self::quicklook)][not(self::thumbnail)][not(self::abstract)]">
                   <xsl:value-of select="local-name(.)"/>: <xsl:value-of select="."/>
                   <!--xsl:if test="position() != last()">  |  </xsl:if-->
                   <xsl:if test="position() != last()"><xsl:text>&#xA;</xsl:text></xsl:if><!--insert line break-->
@@ -1278,6 +1284,16 @@
             </result>
         </xsl:variable>
         <func:result select="exsl:node-set($retData)/*" />
+    </func:function>
+    <func:function name="str:replaceNewLine">
+        <xsl:param name="strData" />
+        <xsl:variable name="arrData" select="str:split(string($strData), '&#10;')"/>
+        <xsl:variable name="retData">
+            <xsl:for-each select="$arrData">
+                <xsl:value-of select="."/><xsl:if test="position() != last()"><xsl:text>&#xA;</xsl:text></xsl:if><!--insert line break-->
+            </xsl:for-each>
+        </xsl:variable>
+        <func:result select="$retData" />
     </func:function>
 
   

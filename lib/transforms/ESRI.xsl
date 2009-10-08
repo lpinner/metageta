@@ -385,22 +385,21 @@
                       <xsl:value-of select="normalize-space(title)"/>
                     </xsl:when>
                     <xsl:otherwise>
-                      <xsl:choose>
+                      <!--xsl:choose>
                         <xsl:when test="normalize-space(satellite)"><xsl:value-of select="normalize-space(satellite)"/><xsl:value-of select="' '"/></xsl:when>
                         <xsl:otherwise>Unknown satellite </xsl:otherwise>
                       </xsl:choose>
                       <xsl:choose>
                         <xsl:when test="normalize-space(sensor)"><xsl:value-of select="normalize-space(sensor)"/><xsl:value-of select="' '"/></xsl:when>
                         <xsl:otherwise>Unknown sensor </xsl:otherwise>
-                      </xsl:choose>
-                      <xsl:value-of select="normalize-space(filename)"/>
+                      </xsl:choose-->
+                      <xsl:if test="normalize-space(satellite)"><xsl:value-of select="normalize-space(satellite)"/><xsl:value-of select="' '"/></xsl:if>
+                      <xsl:if test="normalize-space(sensor)"><xsl:value-of select="normalize-space(sensor)"/><xsl:value-of select="' '"/></xsl:if>
+                      <xsl:value-of select="normalize-space(filename)"/><xsl:value-of select="' ('"/>
+                      <xsl:value-of select="str:split(cellx,',')[1]"/><!--cellx can have multiple values (e.g. ASTER & ALI) so just pick the first 1-->
+                      <xsl:value-of select="normalize-space(units)"/><xsl:value-of select="')'"/>
                     </xsl:otherwise>
                   </xsl:choose>
-                  <xsl:message>
-                    <xsl:value-of select="normalize-space(satellite)"/><xsl:value-of select="' '"/>
-                    <xsl:value-of select="normalize-space(sensor)"/><xsl:value-of select="' '"/>
-                    <xsl:value-of select="normalize-space(filename)"/>
-                  </xsl:message>
                 </gco:CharacterString>
               </gmd:title>
               <gmd:date>
@@ -426,7 +425,8 @@
             <gco:CharacterString>
               <xsl:choose>
                 <xsl:when test="abstract">
-                  <xsl:value-of select="normalize-space(abstract)"/>
+                  <!--xsl:value-of select="normalize-space(abstract)"/-->
+                  <xsl:value-of select="str:replaceNewLine(abstract)"/>
                 </xsl:when>
                 <xsl:otherwise>
                   <xsl:value-of select="'PLEASE ENTER AN ABSTRACT!'"/>
@@ -450,6 +450,61 @@
               </gmd:maintenanceAndUpdateFrequency>
             </gmd:MD_MaintenanceInformation>
           </gmd:resourceMaintenance>
+          <xsl:if test="normalize-space(quicklook)">
+            <gmd:graphicOverview>
+              <gmd:MD_BrowseGraphic>
+                <gmd:fileName>
+                  <gco:CharacterString>
+                    <xsl:choose>
+                      <xsl:when test="contains(quicklook, '\')">
+                        <xsl:value-of select="str:split(quicklook,'\')[last()]"/>
+                      </xsl:when>
+                      <xsl:when test="contains(quicklook, '/')">
+                        <xsl:value-of select="str:split(quicklook,'/')[last()]"/>
+                      </xsl:when>
+                      <xsl:otherwise>
+                        <xsl:value-of select="normalize-space(quicklook)"/>
+                      </xsl:otherwise>
+                    </xsl:choose>
+                  </gco:CharacterString>
+                </gmd:fileName>
+                <gmd:fileDescription>
+                  <gco:CharacterString>large_thumbnail</gco:CharacterString>
+                </gmd:fileDescription>
+                <gmd:fileType>
+                  <gco:CharacterString><xsl:value-of select="str:split(quicklook,'.')[last()]"/></gco:CharacterString>
+                </gmd:fileType>
+              </gmd:MD_BrowseGraphic>
+            </gmd:graphicOverview>
+          </xsl:if>
+          <xsl:if test="normalize-space(thumbnail)">
+            <gmd:graphicOverview>
+              <gmd:MD_BrowseGraphic>
+                <gmd:fileName>
+                  <gco:CharacterString>
+                    <xsl:choose>
+                      <xsl:when test="contains(thumbnail, '\')">
+                        <xsl:value-of select="str:split(thumbnail,'\')[last()]"/>
+                      </xsl:when>
+                      <xsl:when test="contains(thumbnail, '/')">
+                        <xsl:value-of select="str:split(thumbnail,'/')[last()]"/>
+                      </xsl:when>
+                      <xsl:otherwise>
+                        <xsl:value-of select="normalize-space(thumbnail)"/>
+                      </xsl:otherwise>
+                    </xsl:choose>
+                  </gco:CharacterString>
+                </gmd:fileName>
+                <gmd:fileDescription>
+                  <gco:CharacterString>thumbnail</gco:CharacterString>
+                </gmd:fileDescription>
+                <gmd:fileType>
+                  <gco:CharacterString><xsl:value-of select="str:split(thumbnail,'.')[last()]"/></gco:CharacterString>
+                </gmd:fileType>
+              </gmd:MD_BrowseGraphic>
+            </gmd:graphicOverview>
+          </xsl:if>
+          
           <gmd:resourceFormat>
             <gmd:MD_Format>
               <gmd:name>
@@ -521,6 +576,11 @@
               <gmd:keyword>
                 <gco:CharacterString>PHOTOGRAPHY-AND-IMAGERY-Satellite</gco:CharacterString>
               </gmd:keyword>
+              <xsl:for-each select="*[starts-with(name(),'ANZLICKeyword')]">
+                <gmd:keyword>
+                  <gco:CharacterString><xsl:value-of select="."/></gco:CharacterString>
+                </gmd:keyword>
+              </xsl:for-each>
               <gmd:type>
                 <gmd:MD_KeywordTypeCode codeList="http://asdd.ga.gov.au/asdd/profileinfo/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme">theme</gmd:MD_KeywordTypeCode>
               </gmd:type>
@@ -622,7 +682,7 @@
                 <gco:CharacterString>
                   <xsl:choose>
                     <xsl:when test="useConstraints">
-                      <xsl:value-of select="normalize-space(useLimitation)"/>
+                      <xsl:value-of select="normalize-space(useConstraints)"/>
                     </xsl:when>
                     <xsl:otherwise>Usage constraints: Internal use only.</xsl:otherwise>
                   </xsl:choose>
@@ -639,7 +699,7 @@
                 <gco:CharacterString>
                   <xsl:choose>
                     <xsl:when test="accessConstraints">
-                      <xsl:value-of select="normalize-space(useLimitation)"/>
+                      <xsl:value-of select="normalize-space(accessConstraints)"/>
                     </xsl:when>
                     <xsl:otherwise>Access constraints: Internal access only.</xsl:otherwise>
                   </xsl:choose>
@@ -841,9 +901,10 @@
          </gmd:extent>
           <gmd:supplementalInformation>
             <gco:CharacterString>
-              <xsl:for-each select="./*">
-                <xsl:value-of select="local-name(.)"/>: <xsl:value-of select="."/>
-                <xsl:if test="position() != last()">  |  </xsl:if>
+              <xsl:for-each select="*[not(self::quicklook)][not(self::thumbnail)][not(self::abstract)]">
+                  <xsl:value-of select="local-name(.)"/>: <xsl:value-of select="."/>
+                  <!--xsl:if test="position() != last()">  |  </xsl:if-->
+                  <xsl:if test="position() != last()"><xsl:text>&#xA;</xsl:text></xsl:if><!--insert line break-->
               </xsl:for-each>
             </gco:CharacterString>
           </gmd:supplementalInformation>
@@ -1223,6 +1284,16 @@
             </result>
         </xsl:variable>
         <func:result select="exsl:node-set($retData)/*" />
+    </func:function>
+    <func:function name="str:replaceNewLine">
+        <xsl:param name="strData" />
+        <xsl:variable name="arrData" select="str:split(string($strData), '&#10;')"/>
+        <xsl:variable name="retData">
+            <xsl:for-each select="$arrData">
+                <xsl:value-of select="."/><xsl:if test="position() != last()"><xsl:text>&#xA;</xsl:text></xsl:if><!--insert line break-->
+            </xsl:for-each>
+        </xsl:variable>
+        <func:result select="$retData" />
     </func:function>
 
   

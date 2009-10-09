@@ -250,9 +250,6 @@
   </xsl:template><!--default_custodian-->
   <xsl:template name="other_contact">
     <xsl:param name="contactinfo"/>
-    
-    <xsl:message><xsl:value-of select="$contactinfo"/></xsl:message>
-    
     <xsl:variable name="contact" select="str:toNode($contactinfo)"/>
     <gmd:CI_ResponsibleParty>
       <gmd:individualName gco:nilReason="withheld">

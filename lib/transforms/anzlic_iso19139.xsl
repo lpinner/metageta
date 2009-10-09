@@ -112,23 +112,23 @@
       <xsl:call-template name="distributionInfo"/>
       <xsl:call-template name="dataQualityInfo">
         <xsl:with-param name="DQ_Type">lineage</xsl:with-param>
-        <xsl:with-param name="DQ_Value" select="''"/>
+        <xsl:with-param name="DQ_Value" select="lineage"/>
       </xsl:call-template>
       <xsl:call-template name="dataQualityInfo">
         <xsl:with-param name="DQ_Type">CompletenessOmission</xsl:with-param>
-        <xsl:with-param name="DQ_Value">COMPLETENESS</xsl:with-param>
+        <xsl:with-param name="DQ_Value" select="CompletenessOmission"/>
       </xsl:call-template>
       <xsl:call-template name="dataQualityInfo">
         <xsl:with-param name="DQ_Type">AbsoluteExternalPositionalAccuracy</xsl:with-param>
-        <xsl:with-param name="DQ_Value">POSITIONAL ACCURACY</xsl:with-param>
+        <xsl:with-param name="DQ_Value" select="AbsoluteExternalPositionalAccuracy"/>
       </xsl:call-template>
       <xsl:call-template name="dataQualityInfo">
         <xsl:with-param name="DQ_Type">ConceptualConsistency</xsl:with-param>
-        <xsl:with-param name="DQ_Value">LOGICAL CONSISTENCY</xsl:with-param>
+        <xsl:with-param name="DQ_Value" select="ConceptualConsistency"/>
       </xsl:call-template>
       <xsl:call-template name="dataQualityInfo">
         <xsl:with-param name="DQ_Type">NonQuantitativeAttributeAccuracy</xsl:with-param>
-        <xsl:with-param name="DQ_Value">ATTRIBUTE ACCURACY</xsl:with-param>
+        <xsl:with-param name="DQ_Value" select="NonQuantitativeAttributeAccuracy"/>
       </xsl:call-template>
       <xsl:call-template name="metadataConstraints"/>
     </gmd:MD_Metadata>
@@ -140,9 +140,13 @@
   <xsl:template name="contact">
     <gmd:pointOfContact>
       <xsl:choose>
-        <xsl:when test="custodian">
+        <xsl:when test="normalize-space(custodian)">
+          <xsl:variable name="other_contacts"> <!-- Test for any other contacts-->
+            <!-- http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode -->
+            <xsl:element name="custodian"><xsl:value-of select="custodian"/></xsl:element>
+          </xsl:variable>
           <xsl:call-template name="other_contact">
-            <xsl:with-param name="contact" select="custodian"/>
+            <xsl:with-param name="contactinfo" select="exsl:node-set($other_contacts)/*"/>
           </xsl:call-template>
         </xsl:when>
         <xsl:otherwise>
@@ -151,18 +155,18 @@
       </xsl:choose>
     </gmd:pointOfContact><!--/gmd:pointOfContact-->
     <xsl:variable name="other_contacts"> <!-- Test for any other contacts-->
-        <!-- http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode -->
-        <xsl:element name="creator"><xsl:value-of select="creator"/></xsl:element>
-        <xsl:element name="owner"><xsl:value-of select="owner"/></xsl:element>
-        <xsl:element name="user"><xsl:value-of select="user"/></xsl:element>
-        <xsl:element name="resourceProvider"><xsl:value-of select="resourceProvider"/></xsl:element>
-        <xsl:element name="distributor"><xsl:value-of select="distributor"/></xsl:element>
-        <xsl:element name="originator"><xsl:value-of select="originator"/></xsl:element>
-        <xsl:element name="publisher"><xsl:value-of select="publisher"/></xsl:element>
-        <xsl:element name="pointOfContact"><xsl:value-of select="pointOfContact"/></xsl:element>
-        <xsl:element name="principalInvestigator"><xsl:value-of select="principalInvestigator"/></xsl:element>
-        <xsl:element name="processor"><xsl:value-of select="processor"/></xsl:element>
-        <xsl:element name="author"><xsl:value-of select="author"/></xsl:element>
+      <!-- http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode -->
+      <xsl:element name="creator"><xsl:value-of select="creator"/></xsl:element>
+      <xsl:element name="owner"><xsl:value-of select="owner"/></xsl:element>
+      <xsl:element name="user"><xsl:value-of select="user"/></xsl:element>
+      <xsl:element name="resourceProvider"><xsl:value-of select="resourceProvider"/></xsl:element>
+      <xsl:element name="distributor"><xsl:value-of select="distributor"/></xsl:element>
+      <xsl:element name="originator"><xsl:value-of select="originator"/></xsl:element>
+      <xsl:element name="publisher"><xsl:value-of select="publisher"/></xsl:element>
+      <xsl:element name="pointOfContact"><xsl:value-of select="pointOfContact"/></xsl:element>
+      <xsl:element name="principalInvestigator"><xsl:value-of select="principalInvestigator"/></xsl:element>
+      <xsl:element name="processor"><xsl:value-of select="processor"/></xsl:element>
+      <xsl:element name="author"><xsl:value-of select="author"/></xsl:element>
     </xsl:variable>
     <xsl:for-each select="exsl:node-set($other_contacts)/*">
       <xsl:if test="normalize-space(.)">
@@ -246,6 +250,9 @@
   </xsl:template><!--default_custodian-->
   <xsl:template name="other_contact">
     <xsl:param name="contactinfo"/>
+    
+    <xsl:message><xsl:value-of select="$contactinfo"/></xsl:message>
+    
     <xsl:variable name="contact" select="str:toNode($contactinfo)"/>
     <gmd:CI_ResponsibleParty>
       <gmd:individualName gco:nilReason="withheld">
@@ -1206,7 +1213,8 @@
                   <gmd:DQ_ConformanceResult>
                     <gmd:specification>
                       <gmd:CI_Citation>
-                        <gmd:title><gco:CharacterString><xsl:value-of select="$DQ_Value"/></gco:CharacterString></gmd:title>
+                        <!--gmd:title><gco:CharacterString><xsl:value-of select="$DQ_Value"/></gco:CharacterString></gmd:title-->
+                        <gmd:title><gco:CharacterString><xsl:value-of select="$DQ_Type"/></gco:CharacterString></gmd:title>
                         <!--xsl:call-template name="UnknownDate"/-->
                         <gmd:date>
                           <gmd:CI_Date>
@@ -1218,15 +1226,24 @@
                         </gmd:date>
                       </gmd:CI_Citation>
                     </gmd:specification>
-                    <gmd:explanation>
-                      <gco:CharacterString>Please enter <xsl:value-of select="$DQ_Value"/> text</gco:CharacterString>
-                    </gmd:explanation>
-                      <gmd:pass>
-                        <gco:Boolean>1</gco:Boolean>
-                      </gmd:pass>
-                      <!--gmd:pass gco:nilReason="missing"> <- This fails validation
-                        <gco:Boolean/> 
-                      </gmd:pass-->
+                    <xsl:choose>
+                      <xsl:when test="normalize-space($DQ_Value)">
+                        <gmd:explanation>
+                          <gco:CharacterString><xsl:value-of select="$DQ_Value"/></gco:CharacterString>
+                        </gmd:explanation>
+                      </xsl:when>
+                      <xsl:otherwise>
+                        <gmd:explanation>
+                          <gco:CharacterString>Please enter <xsl:value-of select="$DQ_Type"/> text</gco:CharacterString>
+                        </gmd:explanation>
+                      </xsl:otherwise>
+                    </xsl:choose>
+                    <gmd:pass>
+                      <gco:Boolean>1</gco:Boolean>
+                    </gmd:pass>
+                    <!--gmd:pass gco:nilReason="missing"> <- This fails validation
+                      <gco:Boolean/> 
+                    </gmd:pass-->
                   </gmd:DQ_ConformanceResult>
                 </gmd:result>
               </xsl:element><!--xsl:element name="gmd:DQ_{$DQ_Type}"-->

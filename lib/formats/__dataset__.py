@@ -41,7 +41,8 @@ class Dataset(object):
         self.fileinfo['filename']=os.path.basename(f)
         self.fileinfo['filepath']=f
         self.fileinfo['guid']=self.guid
-        self.fileinfo['metadatadate']=time.strftime(utilities.dateformat+utilities.timeformat,time.localtime())
+        #self.fileinfo['metadatadate']=time.strftime(utilities.datetimeformat,time.localtime()) #Geonetwork is baulking at the yyy-mm-ddThh:mm:ss format
+        self.fileinfo['metadatadate']=time.strftime(utilities.dateformat,time.localtime())  #Just use yyy-mm-dd
 
         ##Initialise the fields
         self.fields=idict(__fields__.fields)#We don't want any fields added/deleted

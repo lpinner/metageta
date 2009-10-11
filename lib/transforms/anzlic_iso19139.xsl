@@ -56,7 +56,9 @@
         <gmd:MD_CharacterSetCode codeList="http://asdd.ga.gov.au/asdd/profileinfo/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8">utf8</gmd:MD_CharacterSetCode>
       </gmd:characterSet>
       <xsl:if test="normalize-space(parentIdentifier)">
-        <gco:CharacterString><xsl:value-of select="parentIdentifier"/></gco:CharacterString>
+        <gmd:parentIdentifier>
+          <gco:CharacterString><xsl:value-of select="parentIdentifier"/></gco:CharacterString>
+        </gmd:parentIdentifier>
       </xsl:if>
       <xsl:choose>
           <xsl:when test="normalize-space(hierarchyLevel)">
@@ -745,28 +747,46 @@
               </gmd:classification>
             </gmd:MD_SecurityConstraints>
           </gmd:resourceConstraints>
-          <gmd:spatialResolution>
-            <gmd:MD_Resolution>
-              <gmd:distance>
-                <gco:Distance>
-                  <xsl:attribute name="uom"><xsl:value-of select="units"/></xsl:attribute>
-                  <xsl:value-of select="str:split(cellx,',')[1]"/>
-                  <!--xsl:value-of select="cellx"/--> <!--cellx can have multiple values (e.g. ASTER & ALI) so just pick the first 1-->
-                </gco:Distance>
-              </gmd:distance>
-            </gmd:MD_Resolution>
-          </gmd:spatialResolution>
-          <gmd:spatialResolution>
-            <gmd:MD_Resolution>
-              <gmd:distance>
-                <gco:Distance>
-                  <xsl:attribute name="uom"><xsl:value-of select="units"/></xsl:attribute>
-                  <xsl:value-of select="str:split(celly,',')[1]"/>
-                  <!--xsl:value-of select="celly"/--> <!--cellx can have multiple values (e.g. ASTER & ALI) so just pick the first 1-->
-                </gco:Distance>
-              </gmd:distance>
-            </gmd:MD_Resolution>
-          </gmd:spatialResolution>
+          <!-- Scale or Resolution -->
+          <xsl:choose>
+            <xsl:when test="normalize-space(scale)">
+              <gmd:spatialResolution>
+                <gmd:MD_Resolution>
+                  <gmd:equivalentScale>
+                    <gmd:MD_RepresentativeFraction>
+                      <gmd:denominator>
+                        <gco:Integer><xsl:value-of select="floor(scale)"/></gco:Integer>
+                      </gmd:denominator>
+                    </gmd:MD_RepresentativeFraction>
+                  </gmd:equivalentScale>
+                </gmd:MD_Resolution>
+              </gmd:spatialResolution>
+            </xsl:when>
+            <xsl:otherwise>
+              <gmd:spatialResolution>
+                <gmd:MD_Resolution>
+                  <gmd:distance>
+                    <gco:Distance>
+                      <xsl:attribute name="uom"><xsl:value-of select="units"/></xsl:attribute>
+                      <xsl:value-of select="str:split(cellx,',')[1]"/>
+                      <!--xsl:value-of select="cellx"/--> <!--cellx can have multiple values (e.g. ASTER & ALI) so just pick the first 1-->
+                    </gco:Distance>
+                  </gmd:distance>
+                </gmd:MD_Resolution>
+              </gmd:spatialResolution>
+              <gmd:spatialResolution>
+                <gmd:MD_Resolution>
+                  <gmd:distance>
+                    <gco:Distance>
+                      <xsl:attribute name="uom"><xsl:value-of select="units"/></xsl:attribute>
+                      <xsl:value-of select="str:split(celly,',')[1]"/>
+                      <!--xsl:value-of select="celly"/--> <!--cellx can have multiple values (e.g. ASTER & ALI) so just pick the first 1-->
+                    </gco:Distance>
+                  </gmd:distance>
+                </gmd:MD_Resolution>
+              </gmd:spatialResolution>
+            </xsl:otherwise>
+          </xsl:choose>
           <gmd:language>
             <gco:CharacterString>eng</gco:CharacterString>
           </gmd:language>

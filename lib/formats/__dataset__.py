@@ -107,6 +107,8 @@ class Dataset(object):
                 rgb_bands[2]=i
             if len(rgb_bands)==3:
                 rgb_bands=rgb_bands[0],rgb_bands[1],rgb_bands[2]
+                stretch_type='NONE'
+                stretch_args=[]
                 break
 
         #Set some defaults

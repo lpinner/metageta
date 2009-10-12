@@ -79,8 +79,8 @@ def main(dir,xls,shp,log, gui=False, debug=False, nomd=False, getovs=False):
                         thm=os.path.join(os.path.dirname(xls),'%s.%s.thm.jpg'%(fi['filename'],fi['guid']))
                         qlk=ds.getoverview(qlk, width=800)
                         thm=ds.getoverview(thm, width=150)
-                        md['quicklook']=qlk
-                        md['thumbnail']=thm
+                        md['quicklook']=utilities.convertUNC(qlk)
+                        md['thumbnail']=utilities.convertUNC(thm)
                         pl.info('Generated overviews from %s' % Crawler.file)
                 except Exception,err:
                     pl.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))

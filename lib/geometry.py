@@ -229,7 +229,9 @@ class ShapeWriter:
                 srs=osr.SpatialReference()
                 srs.ImportFromEPSG(4283)#4326)
                 valid = GeomFromExtent([-180,-90,180,90], srs=srs)
-                if not valid.Contains(geom): raise ValueError, 'Invalid extent coordinates'
+                if not valid.Contains(geom): 
+                    #raise ValueError, 'Invalid extent coordinates'
+                    warnings.warn('Invalid extent coordinates')
 
             lyr=self._shape.GetLayer(0)
             

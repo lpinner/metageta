@@ -103,14 +103,18 @@ def _stretch_PERCENT(vrtcols,vrtrows,ds,bands,low,high,*args):
         nbits=gdal.GetDataTypeSize(srcband.DataType)
         dfScaleSrcMin,dfScaleSrcMax=GetDataTypeRange(srcband.DataType)
         dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = srcband.GetStatistics(1,1)
+        nbins=256
         if nbits == 8:binsize=1
-        else:binsize=2**(nbits/2)
-        nbins=int(math.ceil((dfBandMax-dfBandMin)/binsize))
-        hs=srcband.GetHistogram(dfBandMin-0.5,dfBandMax+0.5, nbins)
+        else:binsize=int(math.ceil((dfBandMax-dfBandMin)/nbins))
+        #if nbits == 8:binsize=1
+        #else:binsize=2**(nbits/2)
+        #nbins=int(math.ceil((dfBandMax-dfBandMin)/binsize))
+        hs=srcband.GetHistogram(dfBandMin-0.5,dfBandMax+0.5, nbins,include_out_of_range=1)
         dfScaleSrcMin=max([dfScaleSrcMin, HistPercentileValue(hs, low, binsize,dfBandMin)])
         dfScaleSrcMax=min([dfScaleSrcMax, HistPercentileValue(hs, high, binsize,dfBandMin)])
         dfScaleDstMin,dfScaleDstMax=0.0,255.0 #Always going to be Byte for output jpegs
-        dfScale = (dfScaleDstMax - dfScaleDstMin) / (dfScaleSrcMax - dfScaleSrcMin)
+        try:dfScale = (dfScaleDstMax - dfScaleDstMin) / (dfScaleSrcMax - dfScaleSrcMin)
+        except:dfScale=1
         dfOffset = -1 * dfScaleSrcMin * dfScale + dfScaleDstMin
 
         vrt.append('  <VRTRasterBand dataType="Byte" band="%s">' % str(bandnum+1))

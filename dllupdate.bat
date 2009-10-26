@@ -4,6 +4,7 @@ echo Updating DLLs, please wait...
 SETLOCAL
 call setenv.bat
 echo %date% %time% > dllupdate.txt
+cd "%GDAL_ROOT%\bin"
 FOR /F "tokens=*" %%D IN ('DIR /B /S *.dll') DO (
     IF EXIST %WINDIR%\system32\%%~nxD (
         ECHO ******************************************************************* >> dllupdate.txt

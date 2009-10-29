@@ -1119,41 +1119,43 @@
             <gmd:MD_DigitalTransferOptions>
                 <!--xsl:for-each select="OnlineResource"-->
                 <xsl:for-each select="*[starts-with(name(),'OnlineResource')]">
+                  <xsl:if test="normalize-space(.)">
                     <xsl:variable name="resource" select="str:toNode(.)"/>
                     <gmd:onLine>
-                        <gmd:CI_OnlineResource>
-                            <gmd:linkage>
-                                <gmd:URL><xsl:value-of select="$resource/URL"/></gmd:URL>
-                            </gmd:linkage>
-                            <gmd:protocol>
-                                <gco:CharacterString><xsl:value-of select="$resource/protocol"/></gco:CharacterString>
-                            </gmd:protocol>
-                            <xsl:choose>
-                              <xsl:when test="normalize-space($resource/name)">
-                                  <gmd:name>
-                                      <gco:CharacterString><xsl:value-of select="$resource/name"/></gco:CharacterString>
-                                  </gmd:name>
-                              </xsl:when>
-                              <xsl:otherwise>
-                                <gmd:name gco:nilReason="missing"><gco:CharacterString/></gmd:name>
-                              </xsl:otherwise>
-                            </xsl:choose>
-                            <xsl:choose>
-                              <xsl:when test="normalize-space($resource/description)">
-                                  <gmd:description><gco:CharacterString><xsl:value-of select="$resource/description"/></gco:CharacterString></gmd:description>
-                              </xsl:when>
-                              <xsl:otherwise><gmd:description gco:nilReason="missing"><gco:CharacterString/></gmd:description></xsl:otherwise>
-                            </xsl:choose>
-                            <xsl:if test="normalize-space($resource/function)">
-                              <gmd:function>
-                                <gmd:CI_OnLineFunctionCode>
-                                  <xsl:attribute name="codeList">http://www.isotc211.org/2005/resources/codeList.xml#CI_OnLineFunctionCode</xsl:attribute>
-                                  <xsl:attribute name="codeListValue"><xsl:value-of select="normalize-space($resource/function)"/></xsl:attribute>
-                                </gmd:CI_OnLineFunctionCode>
-                              </gmd:function>
-                            </xsl:if>
-                        </gmd:CI_OnlineResource>
+                      <gmd:CI_OnlineResource>
+                        <gmd:linkage>
+                          <gmd:URL><xsl:value-of select="$resource/URL"/></gmd:URL>
+                        </gmd:linkage>
+                        <gmd:protocol>
+                          <gco:CharacterString><xsl:value-of select="$resource/protocol"/></gco:CharacterString>
+                        </gmd:protocol>
+                        <xsl:choose>
+                          <xsl:when test="normalize-space($resource/name)">
+                            <gmd:name>
+                              <gco:CharacterString><xsl:value-of select="$resource/name"/></gco:CharacterString>
+                            </gmd:name>
+                          </xsl:when>
+                          <xsl:otherwise>
+                            <gmd:name gco:nilReason="missing"><gco:CharacterString/></gmd:name>
+                          </xsl:otherwise>
+                        </xsl:choose>
+                        <xsl:choose>
+                          <xsl:when test="normalize-space($resource/description)">
+                            <gmd:description><gco:CharacterString><xsl:value-of select="$resource/description"/></gco:CharacterString></gmd:description>
+                          </xsl:when>
+                          <xsl:otherwise><gmd:description gco:nilReason="missing"><gco:CharacterString/></gmd:description></xsl:otherwise>
+                        </xsl:choose>
+                        <xsl:if test="normalize-space($resource/function)">
+                          <gmd:function>
+                            <gmd:CI_OnLineFunctionCode>
+                              <xsl:attribute name="codeList">http://www.isotc211.org/2005/resources/codeList.xml#CI_OnLineFunctionCode</xsl:attribute>
+                              <xsl:attribute name="codeListValue"><xsl:value-of select="normalize-space($resource/function)"/></xsl:attribute>
+                            </gmd:CI_OnLineFunctionCode>
+                          </gmd:function>
+                        </xsl:if>
+                      </gmd:CI_OnlineResource>
                     </gmd:onLine>                            
+                  </xsl:if>
                 </xsl:for-each>
                 <!--gmd:offLine>
                   <gmd:MD_Medium>

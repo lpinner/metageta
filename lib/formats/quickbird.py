@@ -43,12 +43,15 @@ class Dataset(__default__.Dataset):
         
         tif = os.path.splitext(f)[0]+'.tif'
         img = os.path.splitext(f)[0]+'.img'
+        ntf = os.path.splitext(f)[0]+'.ntf'
         til = os.path.splitext(f)[0]+'.til'
 
         if   os.path.exists(tif):
             __default__.Dataset.__getmetadata__(self, tif)
         elif os.path.exists(img):
             __default__.Dataset.__getmetadata__(self, img)
+        elif os.path.exists(ntf):
+            __default__.Dataset.__getmetadata__(self, ntf)
         elif os.path.exists(til):
             vrt=self.__gettilevrt__(til,imddata)
             __default__.Dataset.__getmetadata__(self, vrt)
@@ -59,7 +62,10 @@ class Dataset(__default__.Dataset):
                 elif tmp[-3:].lower()=='img':
                     self.metadata['filetype']='HFA/Erdas Imagine Images (.img)'
                     break
-        else:raise IOError, 'Matching Quickbird imagery TIFF/IMG not found:\n'
+                elif tmp[-3:].lower()=='ntf':
+                    self.metadata['filetype']='NITF/National Imagery Transmission Format (.ntf)'
+                    break
+        else:raise IOError, 'Matching Quickbird imagery TIFF/IMG/NTF not found:\n'
 
         self.metadata['metadata']=open(f).read()
 
@@ -225,7 +231,10 @@ class Dataset(__default__.Dataset):
             if not ds:return __default__.Dataset.getoverview(self,outfile,width,format) #Try it the slow way...
 
             nodata=0
-            bands=[1,2,3]
+            if ds.RasterCount == 1:
+                bands=[1]
+            else:
+                bands=[1,2,3]
 
             #Default stretch type and additional args
             stretch_type='NONE'

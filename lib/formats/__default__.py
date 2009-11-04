@@ -4,6 +4,7 @@ Metadata driver for generic imagery formats including GDAL Virtual Rasters (VRT 
 '''
 
 format_regex=[
+    r'\.ntf$',
     r'\.ers$',
     r'\.img$',
     r'\.ecw$',

@@ -186,6 +186,9 @@ class Dataset(object):
                     else:self._metadata[field]=''
                 self._metadata=idict(self._metadata) #We don't want any fields added/deleted
                 self.__getmetadata__()
+                #Pretty print the SRS
+                srs=osr.SpatialReference(self._metadata['srs'])
+                self._metadata['srs']=srs.ExportToPrettyWkt()
             return self._metadata
 
         def fset(self, *args, **kwargs):

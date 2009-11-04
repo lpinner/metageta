@@ -374,10 +374,12 @@
                 <gco:CharacterString>
                   <xsl:choose>
                   <xsl:when test="not(normalize-space(epsg))">
-                    <xsl:value-of select="srs"/>
+                    <!--xsl:value-of select="srs"/-->
+                    <xsl:value-of select="str:replaceNewLine(srs)"/>
                   </xsl:when>
                   <xsl:when test="normalize-space(epsg) = '0'">
-                    <xsl:value-of select="srs"/>
+                    <!--xsl:value-of select="srs"/-->
+                    <xsl:value-of select="str:replaceNewLine(srs)"/>
                   </xsl:when>
                   <xsl:otherwise>
                     <xsl:value-of select="round(epsg)"/>

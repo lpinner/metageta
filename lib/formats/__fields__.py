@@ -48,6 +48,7 @@ fields={'bands'           :('string',50),
         'sunazimuth'      :'float',
         'sunelevation'    :'float',
         'thumbnail'       :('string',50),
+        'title'           :('string',255),
         'UL'              :('string',25),
         'UR'              :('string',25), 
         'viewangle'       :'float'

@@ -4,7 +4,6 @@ Metadata driver for generic imagery formats including GDAL Virtual Rasters (VRT 
 '''
 
 format_regex=[
-    r'\.ntf$',
     r'\.ers$',
     r'\.img$',
     r'\.ecw$',
@@ -119,7 +118,8 @@ class Dataset(__dataset__.Dataset):
                             self.metadata['compressiontype']="ECW"
                         else:
                             mdis=self._gdaldataset.GetMetadata('IMAGE_STRUCTURE')
-                            self.metadata['compressiontype']=mdis['IMAGE_STRUCTURE']
+                            #self.metadata['compressiontype']=mdis['IMAGE_STRUCTURE']
+                            self.metadata['compressiontype']=mdis['COMPRESSION']
                     except: self.metadata['compressiontype']='Unknown'
                 else: self.metadata['compressiontype']='None'
                 self.extent=ext

@@ -4,11 +4,14 @@ Metadata driver for Digital Globe Quickbird imagery
 @see:Format specification
     U{http://www.digitalglobe.com/digitalglobe2/file.php/646/QuickBird_Imagery_Products-Product_Guide.pdf}
 '''
-format_regex=[r'[0-9][0-9][A-Z]{3,3}.*\.imd$']#Digital Globe Quickbird
+format_regex=[r'[0-9][0-9][A-Z]{3,3}.*\.imd$',
+              r'[0-9][0-9][A-Z]{3,3}.*\.tif$',
+              r'[0-9][0-9][A-Z]{3,3}.*\.img$',
+              r'[0-9][0-9][A-Z]{3,3}.*\.ntf$']#Digital Globe Quickbird
 '''Regular expression list of file formats'''
 
 #import base dataset modules
-#import __dataset__
+import __dataset__
 import __default__
 
 # import other modules (use "_"  prefix to import privately)
@@ -31,11 +34,15 @@ class Dataset(__default__.Dataset):
     '''Subclass of __default__.Dataset class so we get a load of metadata populated automatically'''
     def __init__(self,f):
         self.filelist=glob.glob(os.path.dirname(f)+'/*')
+        if os.path.splitext(f)[1].lower() !='imd':
+            imd=glob.glob(os.path.splitext(f)[0]+'.[Ii][Mm][Dd]')
+            if imd:
+                self.__setfileinfo__(imd[0])
+            else:raise Exception, 'No matching IMD file'
 
     def __getmetadata__(self):
         '''Read Metadata for an Digital Globe Quickbird format image as GDAL doesn't quite get it all...
 
-        @todo: does not handle QB tile files (*til). Must check if GDAL can read them...?
         @todo: Fix QB GDA94 Geographic CS "Unknown datum" problem
         '''
         f=self.fileinfo['filepath']

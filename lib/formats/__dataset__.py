@@ -34,15 +34,7 @@ class Dataset(object):
         self._stretch=None
         
         ##Populate some basic info
-        self.fileinfo=utilities.FileInfo(f)
-        #self.guid=str(uuid.uuid4())
-        #Make the guid reproducible based on filename
-        self.guid=str(uuid.uuid3(uuid.NAMESPACE_DNS,f))
-        self.fileinfo['filename']=os.path.basename(f)
-        self.fileinfo['filepath']=f
-        self.fileinfo['guid']=self.guid
-        #self.fileinfo['metadatadate']=time.strftime(utilities.datetimeformat,time.localtime()) #Geonetwork is baulking at the yyy-mm-ddThh:mm:ss format
-        self.fileinfo['metadatadate']=time.strftime(utilities.dateformat,time.localtime())  #Just use yyy-mm-dd
+        self.__setfileinfo__(f)
 
         ##Initialise the fields
         self.fields=idict(__fields__.fields)#We don't want any fields added/deleted
@@ -106,10 +98,7 @@ class Dataset(object):
             elif gci == gdal.GCI_BlueBand:
                 rgb_bands[2]=i
             if len(rgb_bands)==3:
-                rgb_bands=rgb_bands[0],rgb_bands[1],rgb_bands[2]
-                stretch_type='NONE'
-                stretch_args=[]
-                break
+                rgb_bands=rgb_bands[0],rgb_bands[1],rgb_bands[2] #Make a list from the dict
 
         #Set some defaults
         if not stretch_type and not stretch_args:
@@ -139,6 +128,16 @@ class Dataset(object):
     # ===================== #
     # Private Class Methods
     # ===================== #
+    def __setfileinfo__(self,f):
+        self.fileinfo=utilities.FileInfo(f)
+        #self.guid=str(uuid.uuid4())
+        #Make the guid reproducible based on filename
+        self.guid=str(uuid.uuid3(uuid.NAMESPACE_DNS,f))
+        self.fileinfo['filename']=os.path.basename(f)
+        self.fileinfo['filepath']=f
+        self.fileinfo['guid']=self.guid
+        #self.fileinfo['metadatadate']=time.strftime(utilities.datetimeformat,time.localtime()) #Geonetwork is baulking at the yyy-mm-ddThh:mm:ss format
+        self.fileinfo['metadatadate']=time.strftime(utilities.dateformat,time.localtime())  #Just use yyy-mm-dd
     def __getfilelist__(self,*args,**kwargs):
         '''Get all files that have the same name (sans .ext), or are related according to gdalinfo
             special cases may be handled separately in their respective format drivers'''

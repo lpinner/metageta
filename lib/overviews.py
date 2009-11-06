@@ -105,11 +105,27 @@ def _stretch_PERCENT(vrtcols,vrtrows,ds,bands,low,high,*args):
         dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = srcband.GetStatistics(1,1)
         nbins=256
         if nbits == 8:binsize=1
-        else:binsize=int(math.ceil((dfBandMax-dfBandMin)/nbins))
-        #if nbits == 8:binsize=1
-        #else:binsize=2**(nbits/2)
-        #nbins=int(math.ceil((dfBandMax-dfBandMin)/binsize))
-        hs=srcband.GetHistogram(dfBandMin-0.5,dfBandMax+0.5, nbins,include_out_of_range=1)
+        else:binsize=(dfBandMax-dfBandMin)/nbins
+        #else:binsize=int(math.ceil((dfBandMax-dfBandMin)/nbins))
+        #Compute the histogram w/out the max.min values.
+        #hs=srcband.GetHistogram(dfBandMin-0.5,dfBandMax+0.5, nbins,include_out_of_range=1)
+        hs=srcband.GetHistogram(dfBandMin+dfBandMin*0.0001,dfBandMax-dfBandMax*0.0001, nbins,include_out_of_range=0)
+        #Check that outliers haven't really skewed the histogram
+        #this is a kludge to workaround datasets with multiple nodata values
+        for i in range(0,10):
+            if len([v for v in hs if v > 0]) < nbins/4: #if only 25% of the bins have values...
+                startbin=256
+                lastbin=0
+                for i,bin in enumerate(hs):
+                    if bin > 0:
+                        lastbin=i
+                        if i<startbin:startbin=i
+                dfBandMin=dfBandMin+startbin*binsize
+                dfBandMax=dfBandMin+lastbin*binsize+binsize
+                hs=srcband.GetHistogram(dfBandMin-dfBandMin*0.0001,dfBandMax+dfBandMax*0.0001, nbins,include_out_of_range=0)
+                if nbits == 8:binsize=1
+                else:binsize=(dfBandMax-dfBandMin)/nbins
+            else:break
         dfScaleSrcMin=max([dfScaleSrcMin, HistPercentileValue(hs, low, binsize,dfBandMin)])
         dfScaleSrcMax=min([dfScaleSrcMax, HistPercentileValue(hs, high, binsize,dfBandMin)])
         dfScaleDstMin,dfScaleDstMax=0.0,255.0 #Always going to be Byte for output jpegs

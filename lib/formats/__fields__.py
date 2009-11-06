@@ -3,7 +3,8 @@ Dictionary of field names and data types
 ========================================
 '''
 
-fields={'bands'           :('string',50),
+fields={'abstract'        :'no fieldtype required as this is not included in the shapefile...',
+        'bands'           :('string',50),
         'cellx'           :'float',
         'celly'           :'float',
         'units'           :('string',25),
@@ -24,6 +25,7 @@ fields={'bands'           :('string',50),
         'filetype'        :('string',50),
         'guid'            :('string',36),
         'imgdate'         :('string',25),
+        'lineage'         :'no fieldtype required as this is not included in the shapefile...',
         'level'           :('string',50),
         'LL'              :('string',25),#should probably be separate LLX and LLY etc... fields with 'float' type...
         'LR'              :('string',25),
@@ -44,12 +46,13 @@ fields={'bands'           :('string',50),
         'satellite'       :('string',50),
         'sceneid'         :('string',50),
         'sensor'          :('string',50),
-        'srs'             :('string',255),
+        'srs'             :'no fieldtype required as this is not included in the shapefile...',
         'sunazimuth'      :'float',
         'sunelevation'    :'float',
         'thumbnail'       :('string',50),
-        'title'           :('string',255),
+        'title'           :'no fieldtype required as this is not included in the shapefile...',
         'UL'              :('string',25),
         'UR'              :('string',25), 
+        'useConstraints'  :'no fieldtype required as this is not included in the shapefile...',
         'viewangle'       :'float'
 }

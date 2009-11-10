@@ -45,7 +45,8 @@ def main(dir,xls,shp,log, gui=False, debug=False, nomd=False, getovs=False):
     windowicon=os.environ['CURDIR']+'/lib/wm_icon.ico'
     pl = progresslogger.ProgressLogger('Metadata Crawler',logfile=log, logToConsole=True, logToFile=True, logToGUI=gui, level=level, windowicon=windowicon)
 
-    pl.debug('%s %s %s %s %s %s' % (dir,xls,shp,log,gui,debug))
+    #pl.debug('%s %s %s %s %s %s' % (dir,xls,shp,log,gui,debug))
+    pl.debug(' '.join(sys.argv))
 
     if os.path.exists(xls):
         try:
@@ -333,6 +334,7 @@ if __name__ == '__main__':
                       help="Show the GUI progress dialog")
     opts,args = parser.parse_args()
     if not opts.dir or not opts.log or not opts.shp or not opts.xls:
-        GetArgs(True,opts.debug,opts.nomd,opts.ovs) #Show progress GUI.
+        #GetArgs(True,opts.debug,opts.nomd,opts.ovs) #Show progress GUI.
+        GetArgs(opts.gui,opts.debug,opts.nomd,opts.ovs) #No progress GUI.
     else:
         main(opts.dir,opts.xls,opts.shp,opts.log,opts.gui,opts.debug,opts.nomd,opts.ovs)

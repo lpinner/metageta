@@ -43,7 +43,7 @@ def main(dir,xls,shp,log, gui=False, debug=False, nomd=False, getovs=False):
     else:level=progresslogger.INFO
     
     windowicon=os.environ['CURDIR']+'/lib/wm_icon.ico'
-    pl = progresslogger.ProgressLogger('Metadata Crawler',logfile=log, logToConsole=True, logToFile=True, logToGUI=gui, level=level, windowicon=windowicon)
+    pl = progresslogger.ProgressLogger('MetadataCrawler',logfile=log, logToConsole=True, logToFile=True, logToGUI=gui, level=level, windowicon=windowicon)
 
     #pl.debug('%s %s %s %s %s %s' % (dir,xls,shp,log,gui,debug))
     pl.debug(' '.join(sys.argv))
@@ -67,6 +67,7 @@ def main(dir,xls,shp,log, gui=False, debug=False, nomd=False, getovs=False):
     for ds in Crawler:
         try:
             if not nomd:
+                pl.debug('Attempting to open %s'%Crawler.file)
                 md=ds.metadata
                 geom=ds.extent
                 fi=ds.fileinfo

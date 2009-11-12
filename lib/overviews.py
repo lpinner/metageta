@@ -112,7 +112,7 @@ def _stretch_PERCENT(vrtcols,vrtrows,ds,bands,low,high,*args):
         hs=srcband.GetHistogram(dfBandMin+dfBandMin*0.0001,dfBandMax-dfBandMax*0.0001, nbins,include_out_of_range=0)
         #Check that outliers haven't really skewed the histogram
         #this is a kludge to workaround datasets with multiple nodata values
-        for i in range(0,10):
+        for j in range(0,10):
             if len([v for v in hs if v > 0]) < nbins/4: #if only 25% of the bins have values...
                 startbin=256
                 lastbin=0

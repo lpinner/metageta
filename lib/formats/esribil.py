@@ -20,6 +20,8 @@ class Dataset(__default__.Dataset):
 
     def __init__(self,f):
         if not f:f=self.fileinfo['filepath']
+        lin=open(f).readline().strip() #read first line
+        if lin == 'ENVI':raise NotImplementedError, '%s is not an ESRI bil file.' % f
 
         data_formats=['bil','bip','bsq','flt']
         hdr=os.path.splitext(f)[0]

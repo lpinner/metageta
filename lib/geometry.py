@@ -182,6 +182,60 @@ def CreateRawRasterVRT(bands,cols,rows,datatype,nbits,headeroffset=0,byteorder=N
         return None
     return '\n'.join(vrt)
 
+def CreateBSQRawRasterVRT(f,nbands,cols,rows,datatype,nbits,nodata=0,headeroffset=0,byteorder=None,relativeToVRT=0):
+    '''Create RawRaster VRT from a BSQ'''
+    try:
+        vrt=[]
+        for i in range(nbands):
+            vrt.append('  <VRTRasterBand dataType="%s" band="%s" subClass="VRTRawRasterBand">' % (datatype, i+1))
+            vrt.append('    <SourceFilename relativeToVRT="%s">%s</SourceFilename>' % (relativeToVRT,f))
+            vrt.append('    <NoDataValue>%s</NoDataValue>' % nodata)
+            vrt.append('    <ImageOffset>%s</ImageOffset>' % (headeroffset+nbits/8*i*cols*rows))
+            vrt.append('    <PixelOffset>%s</PixelOffset>' % (nbits/8))
+            vrt.append('    <LineOffset>%s</LineOffset>' % (nbits/8 * cols))
+            if byteorder:vrt.append('    <ByteOrder>%s</ByteOrder>' % (byteorder))
+            vrt.append('  </VRTRasterBand>')
+        return CreateCustomVRT('\n'.join(vrt),cols,rows)
+    except:
+        return None
+    return '\n'.join(vrt)
+
+def CreateBILRawRasterVRT(f,nbands,cols,rows,datatype,nbits,nodata=0,headeroffset=0,byteorder=None,relativeToVRT=0):
+    '''Create RawRaster VRT from a BIL'''
+    try:
+        vrt=[]
+        for i in range(nbands):
+            vrt.append('  <VRTRasterBand dataType="%s" band="%s" subClass="VRTRawRasterBand">' % (datatype, i+1))
+            vrt.append('    <SourceFilename relativeToVRT="%s">%s</SourceFilename>' % (relativeToVRT,f))
+            vrt.append('    <NoDataValue>%s</NoDataValue>' % nodata)
+            vrt.append('    <ImageOffset>%s</ImageOffset>' % (headeroffset+nbits/8*i*cols))
+            vrt.append('    <PixelOffset>%s</PixelOffset>' % (nbits/8))
+            vrt.append('    <LineOffset>%s</LineOffset>' % (nbits/8 * cols))
+            if byteorder:vrt.append('    <ByteOrder>%s</ByteOrder>' % (byteorder))
+            vrt.append('  </VRTRasterBand>')
+        return CreateCustomVRT('\n'.join(vrt),cols,rows)
+    except:
+        return None
+    return '\n'.join(vrt)
+
+def CreateBIPRawRasterVRT(f,nbands,cols,rows,datatype,nbits,nodata=0,headeroffset=0,byteorder=None,relativeToVRT=0):
+    '''Create RawRaster VRT from BIP'''
+    try:
+        vrt=[]
+        for i in range(nbands):
+            vrt.append('  <VRTRasterBand dataType="%s" band="%s" subClass="VRTRawRasterBand">' % (datatype, i+1))
+            vrt.append('    <SourceFilename relativeToVRT="%s">%s</SourceFilename>' % (relativeToVRT,f))
+            vrt.append('    <NoDataValue>%s</NoDataValue>' % nodata)
+            vrt.append('    <ImageOffset>%s</ImageOffset>' % (headeroffset+nbits/8*i))
+            vrt.append('    <PixelOffset>%s</PixelOffset>' % (nbits/8))
+            vrt.append('    <LineOffset>%s</LineOffset>' % (nbits/8 * cols))
+            if byteorder:vrt.append('    <ByteOrder>%s</ByteOrder>' % (byteorder))
+            vrt.append('  </VRTRasterBand>')
+        return CreateCustomVRT('\n'.join(vrt),cols,rows)
+    except:
+        return None
+    return '\n'.join(vrt)
+
 def CreateCustomVRT(vrtxml,vrtcols,vrtrows):
     try:
         vrt=[]

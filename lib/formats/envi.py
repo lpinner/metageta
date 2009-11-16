@@ -38,6 +38,7 @@ class Dataset(__default__.Dataset):
         except IOError,err:             #Handle the odd ENVI files held by SSD (file type = ENVI instead of file type = ENVI standard)
             hdr=self.__parseheader__()
             if hdr['file type']=='ENVI':
+
                 #make a dummy hdr with a dummy 1 byte image file
                 import tempfile,geometry,shutil
 
@@ -55,6 +56,8 @@ class Dataset(__default__.Dataset):
                 __default__.Dataset.__getmetadata__(self, tmpd+'/dummy')
                 del self._gdaldataset
                 shutil.rmtree(tmpd, ignore_errors=True)
+
+                #Make a VRT
                 md=self.metadata
                 byteorder={'':None,'0':'LSB','1':'MSB'}
                 byteorder=byteorder[hdr.get('byte order','')]

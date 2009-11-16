@@ -203,7 +203,8 @@ class ExcelWriter:
                 self._ws.write(self._rows+1, self._cols[field], data[field])
                 dirty=True
         if dirty:self._rows+=1
-
+        self._wb.save(self._file)
+        
     def __del__(self):
         self._wb.save(self._file)
         #del self._ws

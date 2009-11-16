@@ -11,7 +11,6 @@ fields={'abstract'        :'no fieldtype required as this is not included in the
         'cloudcover'      :('string',50),
         'cols'            :'int',
         'compressionratio':'int',
-        'targetratio'     :'int',
         'compressiontype' :('string',50),
         'datatype'        :('string',50),
         'datecreated'     :('string',25),

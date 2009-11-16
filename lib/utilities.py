@@ -236,7 +236,9 @@ def runcmd(cmd, format='s'):
     exit_code=proc.wait()
     return exit_code,stdout,stderr
 class rglob:
-    '''a forward iterator that traverses a directory tree'''
+    '''a forward iterator that traverses a directory tree
+       adapted from os-path-walk-example-3.py - http://effbot.org/librarybook/os-path.htm 
+    '''
     def __init__(self, directory, pattern="*", regex=False, regex_flags=0, recurse=True):
         self.stack = [directory]
         self.pattern = pattern

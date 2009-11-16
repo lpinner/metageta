@@ -27,15 +27,3 @@ class Dataset(__default__.Dataset):
             except:__default__.Dataset.__getmetadata__(self, f)
         else:
             __default__.Dataset.__getmetadata__(self) #autopopulate basic metadata
-        try:
-            path=os.environ['PATH']
-            os.environ['PATH'] = '%s\\bin_ecw;%s' %(os.path.dirname(__file__), os.environ['PATH'])
-            stdin,stdout,stderr=os.popen3('ecw_report.exe "%s"' % f)
-            os.environ['PATH']=path
-            stdout=stdout.readlines()
-            for line in stdout:
-                line=[part.strip() for part in line.split(':')]
-                if line[0].upper() == 'TARGET RATIO':
-                    self.metadata['targetratio']=line[1]
-                    break
-        except:pass

@@ -64,7 +64,8 @@ def main(dir,xls,shp,log, gui=False, debug=False, nomd=False, getovs=False):
     else:level=progresslogger.INFO
     
     windowicon=os.environ['CURDIR']+'/lib/wm_icon.ico'
-    pl = progresslogger.ProgressLogger('MetadataCrawler',logfile=log, logToConsole=True, logToFile=True, logToGUI=gui, level=level, windowicon=windowicon)
+    try:pl = progresslogger.ProgressLogger('MetadataCrawler',logfile=log, logToConsole=True, logToFile=True, logToGUI=gui, level=level, windowicon=windowicon)
+    except:pl = progresslogger.ProgressLogger('MetadataCrawler',logfile=log, logToConsole=True, logToFile=True, logToGUI=gui, level=level)
 
     #pl.debug('%s %s %s %s %s %s' % (dir,xls,shp,log,gui,debug))
     pl.debug(' '.join(sys.argv))
@@ -214,7 +215,8 @@ class GetArgs:
             Ow=='''
         self.root = Tk()
         self.root.title('Metadata Crawler')
-        self.root.wm_iconbitmap(windowicon)
+        try:self.root.wm_iconbitmap(windowicon)
+        except:pass
 
         # Calculate the geometry to centre the app
         scrnWt = self.root.winfo_screenwidth()

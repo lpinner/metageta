@@ -36,7 +36,7 @@ Example:
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-import logging,warnings,random,os,sys,socket,pickle,win32api,threading,Queue,time
+import logging,warnings,random,os,sys,socket,pickle,threading,Queue,time
 from Tkinter import *
 import ScrolledText
 
@@ -102,7 +102,7 @@ class ProgressLogger(logging.Logger):
         warnings.simplefilter('always')
         warnings.showwarning = self.showwarning
 
-    def showwarning(self, msg, cat, fname, lno, file=None):
+    def showwarning(self, msg, cat, fname, lno, file=None, line=None):
         self.warn(msg)
 
     def updateProgress(self,newMax=None):
@@ -138,7 +138,7 @@ class ProgressLoggerHandler(logging.Handler):
         ##as only a single thread will run at a time.
         self.host='localhost'
         self.port= random.randint(1024, 10000)
-        import win32api
+        #import win32api
         try:
             pythonPath = r'%s\pythonw.exe' % os.environ['PYTHONHOME'] #set in setenv.bat
         except:

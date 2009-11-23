@@ -87,10 +87,13 @@ def getoverview(ds,outfile,width,format,bands,stretch_type,*stretch_args):
     vrtxml=stretch(stretch_type,vrtcols,vrtrows,ds,bands,*stretch_args)
     vrtds=geometry.OpenDataset(vrtxml)
     if outfile:
-        ovdriver.CreateCopy(outfile, vrtds)
+        cpds=ovdriver.CreateCopy(outfile, vrtds)
+        if not cpds:raise geometry.GDALError, 'Unable to generate overview image.'
     else:
         fd,fn=tempfile.mkstemp(suffix='.'+format.lower(), prefix='getoverviewtempimage')
-        ovdriver.CreateCopy(fn, vrtds)
+        cpds=ovdriver.CreateCopy(fn, vrtds)
+        if not cpds:raise geometry.GDALError, 'Unable to generate overview image.'
+        
         outfile=os.fdopen(fd).read()
         os.unlink(fn)
     if bTempVRT:
@@ -151,12 +154,15 @@ def _stretch_PERCENT(vrtcols,vrtrows,ds,bands,low,high,*args):
                 if nbits == 8:binsize=1
                 else:binsize=(dfBandMax-dfBandMin)/nbins
             else:break
-        dfScaleSrcMin=max([dfScaleSrcMin, HistPercentileValue(hs, low, binsize,dfBandMin)])
-        dfScaleSrcMax=min([dfScaleSrcMax, HistPercentileValue(hs, high, binsize,dfBandMin)])
-        dfScaleDstMin,dfScaleDstMax=0.0,255.0 #Always going to be Byte for output jpegs
-        try:dfScale = (dfScaleDstMax - dfScaleDstMin) / (dfScaleSrcMax - dfScaleSrcMin)
-        except:dfScale=1
-        dfOffset = -1 * dfScaleSrcMin * dfScale + dfScaleDstMin
+        try:
+            dfScaleSrcMin=max([dfScaleSrcMin, HistPercentileValue(hs, low, binsize,dfBandMin)])
+            dfScaleSrcMax=min([dfScaleSrcMax, HistPercentileValue(hs, high, binsize,dfBandMin)])
+            dfScaleDstMin,dfScaleDstMax=0.0,255.0 #Always going to be Byte for output jpegs
+            dfScale = (dfScaleDstMax - dfScaleDstMin) / (dfScaleSrcMax - dfScaleSrcMin)
+            dfOffset = -1 * dfScaleSrcMin * dfScale + dfScaleDstMin
+        except:
+            dfOffset=0
+            dfScale=1
 
         vrt.append('  <VRTRasterBand dataType="Byte" band="%s">' % str(bandnum+1))
         vrt.append('    <ComplexSource>')

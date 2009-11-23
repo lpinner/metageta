@@ -37,6 +37,26 @@ except ImportError:
     import ogr
 
 #========================================================================================================
+#Custom error class
+#========================================================================================================
+class GDALError(Exception):
+    def __init__(self,msg=None):
+        errtype={
+            gdal.CE_None:'None',
+            gdal.CE_Debug:'Debug',
+            gdal.CE_Warning:'Warning',
+            gdal.CE_Failure:'Failure',
+            gdal.CE_Fatal:'Fatal'
+        }
+        self.errmsg=gdal.GetLastErrorMsg().replace('\n',' ')
+        self.errnum=gdal.GetLastErrorNo()
+        self.errtyp=errtype.get(gdal.GetLastErrorType(), 'None')
+        gdal.ErrorReset()
+        if msg:self.errmsg='\n'.join([msg,self.errmsg])
+        Exception.__init__(self,self.errmsg,self.errnum,self.errtyp)
+    def __str__(self):
+        return '%s\nError Message:%s'%(self.errtyp,self.errmsg)
+#========================================================================================================
 #Dataset Utilities
 #========================================================================================================
 def OpenDataset(f,mode=gdalconst.GA_ReadOnly):
@@ -44,6 +64,7 @@ def OpenDataset(f,mode=gdalconst.GA_ReadOnly):
     gdal.ErrorReset()
     gdal.PushErrorHandler( 'CPLQuietErrorHandler' )
     gdalDataset = gdal.Open(f, mode)
+    if not gdalDataset:raise GDALError, 'Unable to open %s'%f
     gdal.PopErrorHandler()
     return gdalDataset
     

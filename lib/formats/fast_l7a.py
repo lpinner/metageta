@@ -61,6 +61,9 @@ class Dataset(__dataset__.Dataset):
         if not f:f=self.fileinfo['filepath']
         d=os.path.dirname(f)
 
+        if open(f).read(1024).strip()[0]=='<':#HTML file, ignore it.
+            raise NotImplementedError
+        
         if 'HRF' in f.upper():
             self._filetype='HRF'
             #rex='BAND[1-57]\.dat|L7[0-9]{7,7}_[0-9]{11,11}_B[1-57]0\.FST' #not picking up the ACRES .ers files
@@ -139,10 +142,10 @@ class Dataset(__dataset__.Dataset):
             md['bands']='8 (PAN)'
 
         self._gdaldataset = geometry.OpenDataset(hdr)
-        if not self._gdaldataset:
-            errmsg=gdal.GetLastErrorMsg()
-            gdal.ErrorReset()
-            raise IOError, err+'\n'+ errmsg.strip()
+        #if not self._gdaldataset: #Raised in geometry.OpenDataset
+        #    errmsg=gdal.GetLastErrorMsg()
+        #    gdal.ErrorReset()
+        #    raise IOError, err+'\n'+ errmsg.strip()
 
         md['cols']=self._gdaldataset.RasterXSize
         md['rows']=self._gdaldataset.RasterYSize

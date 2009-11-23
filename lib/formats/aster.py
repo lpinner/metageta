@@ -65,9 +65,9 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
         if not f:f=self.fileinfo['filepath']
         self.filelist=glob.glob(os.path.splitext(f)[0]+'.*')
         self._gdaldataset = geometry.OpenDataset(f) 
-        if not self._gdaldataset:
-            errmsg=gdal.GetLastErrorMsg()
-            raise IOError, 'Unable to open %s\n%s' % (f,errmsg.strip())
+        #if not self._gdaldataset: #Handled in geometry.OpenDataset
+        #    errmsg=gdal.GetLastErrorMsg()
+        #    raise IOError, 'Unable to open %s\n%s' % (f,errmsg.strip())
         
         self._hdf_md=self._gdaldataset.GetMetadata()
         if not self._hdf_md.get('INSTRUMENTSHORTNAME')=='ASTER':

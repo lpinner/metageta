@@ -255,8 +255,9 @@ class Dataset(__default__.Dataset):
         browse=os.path.splitext(f)[0]+'-browse.jpg'
         if os.path.exists(browse):
 
-            ds=geometry.OpenDataset(browse)
-            if not ds:return __default__.Dataset.getoverview(self,outfile,width,format) #Try it the slow way...
+            try:ds=geometry.OpenDataset(browse)
+            except:return __default__.Dataset.getoverview(self,outfile,width,format) #Try it the slow way...
+            #if not ds:return __default__.Dataset.getoverview(self,outfile,width,format) #geometry.OpenDataset raises an error now
 
             nodata=0
             if ds.RasterCount == 1:

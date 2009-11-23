@@ -73,9 +73,9 @@ class Dataset(__dataset__.Dataset):
             self.metadata['sensor']='ALI'
 
             gdalDataset = geometry.OpenDataset(f)
-            if not gdalDataset:
-                errmsg=gdal.GetLastErrorMsg()
-                raise IOError, 'Unable to open %s\n%s' % (f,errmsg.strip())
+            #if not gdalDataset: #Error now raised in geometry.OpenDataset
+            #    errmsg=gdal.GetLastErrorMsg()
+            #    raise IOError, 'Unable to open %s\n%s' % (f,errmsg.strip())
 
             self.metadata['filetype'] = '%s/%s (%s %s)' % (gdalDataset.GetDriver().ShortName,
                                                            gdalDataset.GetDriver().LongName,
@@ -282,9 +282,9 @@ class Dataset(__dataset__.Dataset):
             self.metadata['sceneid']=self.metadata['filename'].split('_')[0]
 
             gdalDataset = geometry.OpenDataset(f)
-            if not gdalDataset:
-                errmsg=gdal.GetLastErrorMsg()
-                raise IOError, 'Unable to open %s\n%s' % (f,errmsg.strip())
+            #if not gdalDataset: #Error now raised in geometry.OpenDataset
+            #    errmsg=gdal.GetLastErrorMsg()
+            #    raise IOError, 'Unable to open %s\n%s' % (f,errmsg.strip())
 
             self.metadata['filetype'] = '%s/%s (%s %s)' % (gdalDataset.GetDriver().ShortName,
                                                        gdalDataset.GetDriver().LongName,
@@ -378,9 +378,9 @@ class Dataset(__dataset__.Dataset):
             self.metadata['sensor']='HYPERION'
 
             gdalDataset = geometry.OpenDataset(f)
-            if not gdalDataset:
-                errmsg=gdal.GetLastErrorMsg()
-                raise IOError, 'Unable to open %s\n%s' % (f,errmsg.strip())
+            #if not gdalDataset: #Error now raised in geometry.OpenDataset
+            #    errmsg=gdal.GetLastErrorMsg()
+            #    raise IOError, 'Unable to open %s\n%s' % (f,errmsg.strip())
 
             self.metadata['filetype'] = '%s/%s (%s %s)' % (gdalDataset.GetDriver().ShortName,
                                                            gdalDataset.GetDriver().LongName,

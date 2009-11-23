@@ -58,8 +58,9 @@ reload(transforms)
 def main(xls,xsl,dir,mef=False,log=None,debug=False,gui=False):
     if debug:level=progresslogger.DEBUG
     else:level=progresslogger.INFO
-    #pl = progresslogger.ProgressLogger('Metadata Crawler',logfile=log, logToConsole=True, logToFile=True, logToGUI=gui, level=level, windowicon=windowicon)
-    pl = progresslogger.ProgressLogger('Metadata Transforms', logToConsole=True, logToFile=False, logToGUI=False, level=level)
+    windowicon=os.environ['CURDIR']+'/lib/wm_icon.ico'
+    try:pl = progresslogger.ProgressLogger('Metadata Transforms', logToConsole=True, logToFile=False, logToGUI=False, level=level, windowicon=windowicon)
+    except:pl = progresslogger.ProgressLogger('Metadata Transforms', logToConsole=True, logToFile=False, logToGUI=False, level=level)
 
     for rec in utilities.ExcelReader(xls, list):
         try:
@@ -183,7 +184,8 @@ class GetArgs:
         
         self.root = Tk()
         self.root.title('Metadata Transform')
-        self.root.wm_iconbitmap(windowicon)
+        try:self.root.wm_iconbitmap(windowicon)
+        except:pass
 
         # Calculate the geometry to centre the app
         scrnWt = self.root.winfo_screenwidth()

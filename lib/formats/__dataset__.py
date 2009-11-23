@@ -172,7 +172,8 @@ class Dataset(object):
         except:pass # Need to handle errors when dealing with an VRT XML string better...
 
         if self._gdaldataset:
-            try:files.extend(self._gdaldataset.GetFileList())
+            #try:files.extend(self._gdaldataset.GetFileList()) #GetFileList can return files that don't exist... - e.g. the aux.xml in a read-only directory
+            try:files.extend([os.path.abspath(f) for f in self._gdaldataset.GetFileList() if os.path.exists(f)])
             except:pass
 
         self._filelist=list(set(utilities.fixSeparators(files))) #list(set([])) filters out duplicates

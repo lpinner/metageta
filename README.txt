@@ -6,14 +6,26 @@ See <install>/crawler/license.txt
 *************
 System
 *************
-Requires Windows XP or Vista (only tested on 32 bit OS). 
+Runs on Windows XP or Vista (only tested on 32 bit OS). 
 May require administrative rights, I haven't tested on a PC using a non-admin user account.
 
 It has also been tested and mostly runs on 64 bit Linux (Ubuntu 9.04). 
-There are issues with segfaults and read errors on HDF and NetCDF files. This is a GDAL/HDF/NetCDF issue.
+However, there are issues with segfaults and read errors on HDF and NetCDF files on Ubuntu <=9.10. 
+This is a GDAL/HDF4/NetCDF incompatibility - the UbuntuGIS gdal packages are built against a HDF4 library (libhdf4g)
+which includes an implementation of the netcdf api that is incompatible with the NetCDF library. See http://trac.osgeo.org/gdal/wiki/HDF for more info. 
+The only way around it (currently) is to build your own HDF4 library from source and then link to that when building gdal from source.
+This should not be a problem on current versions of Debian or Ubuntu > 10.04 (lucid lynx) where gdal is/will be built against the new libhdf4-alt library
 
+*************
+Installation
+*************
+Windows:
+Extract to a local directory (e.g. C:\Metadata_Crawler)
+It will run from a network path, but is considerably slower.
 The application contains all the 3rd party libraries and applications required. The MrSID and ECW drivers
 use proprietary SDK's. See mrsid-eula.txt and ecw-eula.txt in the <install>\crawler directory.
+
+Linux: extract the crawler directory somewhere and see below
 
 If you wish to use your own Python and GDAL/OGR installations, you will need the following libraries:
   Python 2.5 or 2.6 and the following non-standard Python libraries: (if you wish to use Python 3.0+, you will need to port the application)
@@ -30,15 +42,9 @@ If you wish to use your own Python and GDAL/OGR installations, you will need the
     or the OSGeo4W plugins (http://trac.osgeo.org/osgeo4w/wiki/pkg-gdal-mrsid & http://trac.osgeo.org/osgeo4w/wiki/pkg-gdal-ecw)
     or the see the UbuntuGIS scripts - gdal-mrsid-build gdal-ecw-build (located in /usr/bin by default if installed from the repos) and see - 
     http://lists.osgeo.org/pipermail/ubuntu/2009-June/000054.html and http://trac.osgeo.org/ubuntugis/wiki/TutorialMrSid
+    You will also have to download and build appropriate libraries for other non-standard GDAL formats. 
+    See http://trac.osgeo.org/gdal/wiki/BuildHints for more info
   
-*************
-Installation
-*************
-Windows:
-Extract to a local directory (e.g. C:\Metadata_Crawler)
-It will run from a network path, but is considerably slower.
-
-Linux: extract the crawler directory somewhere
 
 *************
 Running

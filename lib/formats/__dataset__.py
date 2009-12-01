@@ -95,11 +95,12 @@ class Dataset(object):
         ##cols=md['cols']
         ##rows=md['rows']
         ##nbits=md['nbits']
+        rb=ds.GetRasterBand(1)
         nbands=ds.RasterCount
         cols=ds.RasterXSize
         rows=ds.RasterYSize
-        nbits=gdal.GetDataTypeSize(ds.GetRasterBand(1).DataType)
-
+        nbits=gdal.GetDataTypeSize(rb.DataType)
+        datatype=gdal.GetDataTypeName(rb.DataType)
         stretch_type=None
         stretch_args=None
         rgb_bands = {}
@@ -123,10 +124,27 @@ class Dataset(object):
         #Set some defaults
         if not stretch_type and not stretch_args:
             if nbands < 3:
-                #Assume greyscale
+                #Default - assume greyscale 
                 stretch_type='PERCENT'
                 stretch_args=[2,98]
                 rgb_bands=[1]
+                #But check if there's an attribute table, color table # TODO? or <= 255 unique values 
+                #and change the stretch type to colour table
+                if 'Byte' in datatype or 'Int' in datatype:
+                    ct=rb.GetColorTable()
+                    at=rb.GetDefaultRAT()
+                    if ct and ct.GetCount() > 0:
+                        stretch_type='COLOURTABLE'
+                        stretch_args=[]
+                        rgb_bands=[1]
+                    elif at and at.GetRowCount() > 0:
+                        #if at.GetRowCount() <=256:
+                        #    stretch_type='RANDOM'
+                        #    stretch_args=[at.GetRowCount()]
+                        stretch_type='RANDOM'
+                        stretch_args=[at.GetRowCount()]
+                        rgb_bands=[1,1,1]
+                        
             elif nbands == 3:
                 #Assume RGB
                 if nbits > 8:

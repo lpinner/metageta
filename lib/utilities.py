@@ -23,8 +23,11 @@ Utility helper functions
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-from xlutils import xlrd
-from xlutils import xlwt
+try:
+    from xlutils import xlrd
+    from xlutils import xlwt
+except:
+  import xlrd, xlwt
 import sys, os.path, os, re, struct, glob, shutil,traceback,time
 
 dateformat='%Y-%m-%d'  #ISO 8601
@@ -67,7 +70,7 @@ def _WinFileOwner(filepath):
         d=os.path.split(filepath)
         oShell = win32com.client.Dispatch("Shell.Application")
         oFolder = oShell.NameSpace(d[0])
-        ownerid=oFolder.GetDetailsOf(oFolder.parsename(d[1]), OWNERID)
+        ownerid=str(oFolder.GetDetailsOf(oFolder.parsename(d[1]), OWNERID))
         ownerid=ownerid.split('\\')[-1]
     except: ownerid='0'
     #Too slow...

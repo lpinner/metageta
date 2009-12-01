@@ -38,12 +38,20 @@ class Dataset(__default__.Dataset):
     def __getmetadata__(self,f=None):
         '''Read Metadata for a ECW image as GDAL doesn't quite get it all...'''
         if not f:f=self.fileinfo['filepath']
-        ers=os.path.splitext(f)[0]+'.ers'
-        if os.path.exists(ers):
-            try:
-                __default__.Dataset.__getmetadata__(self, ers) #autopopulate basic metadata
-                self.metadata['filetype']='ECW/ERMapper Compressed Wavelets'
-                self.metadata['compressiontype']='ECW'
-            except:__default__.Dataset.__getmetadata__(self, f)
-        else:
-            __default__.Dataset.__getmetadata__(self) #autopopulate basic metadata
+        #Originally we used the ERS to get metadata as they sometimes hold more info than the ECW
+        #however, this caused segfaults under certain circumstances which were unable to be tracked down.
+        #These circumstances were very repeatable and only occurred when the Crawler iterator returned a
+        #certain ECW dataset, not when it was opened, when metadata was extracted nor even when overviews were generated.
+        #Got me stumped!
+        ##ers=os.path.splitext(f)[0]+'.ers'
+        ##if os.path.exists(ers):
+        ##    try:
+        ##        __default__.Dataset.__getmetadata__(self, ers) #autopopulate basic metadata
+        ##        self.metadata['filetype']='ECW/ERMapper Compressed Wavelets'
+        ##        self.metadata['compressiontype']='ECW'
+        ##    except:__default__.Dataset.__getmetadata__(self, f)
+        ##else:
+        ##    __default__.Dataset.__getmetadata__(self) #autopopulate basic metadata
+        #Leave the ECW driver in place even though all it does is call the default class.
+        #This is so ECWs get processed before any ERSs (which could cause a segfault)
+        __default__.Dataset.__getmetadata__(self) #autopopulate basic metadata

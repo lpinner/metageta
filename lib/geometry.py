@@ -69,6 +69,57 @@ def OpenDataset(f,mode=gdalconst.GA_ReadOnly):
     return gdalDataset
     
 #========================================================================================================
+#Coordinate Utilities
+#========================================================================================================
+def DMS2DD(dms,format): 
+    '''
+    Convert coordinate in degrees, minutes, seconds to decimal degrees
+    @param dms: degrees, minutes, seconds string
+    @param format: format string
+
+    The format parameter is a string of equal length to the DMS string and identifies the position
+    of each of the following elements:
+        H - hemisphere
+        D - degrees
+        M - minutes
+        S - seconds
+        Any other string in the format parameter is ignored
+
+    eg:
+        '27 45 12 E'   = 'DD MM SS H'
+        '027 45 12 E'  = 'DDD MM SS H'
+        '027-45-12-E'  = 'DDD MM SS H'
+        '27,45,12.3 E' = 'DD MM SSSS H'
+        '-27,45,12.3'  = 'DDD MM SSSS'
+        
+    '''
+    if len(dms) != len(format):raise ValueError, 'Format string %s does not match coordinate string %s' % (dms,format)
+    H='';
+    D=''
+    M=''
+    S=''
+    for i,f in enumerate(format):
+        if f=='H':
+            H+=dms[i]
+        elif f=='D':
+            D+=dms[i]
+        elif f=='M':
+            M+=dms[i]
+        elif f=='S':
+            S+=dms[i]
+    dd=float(D)
+    if dd!=abs(dd):#negative value
+        dd=abs(dd)
+        neg=True
+    else:neg=False
+    if M:dd+=float(M)/60.0 #May not have been passed Minutes or Seconds
+    if S:dd+=float(S)/3600.0
+    if neg or (H and H in ['S','W']):
+        dd=dd * -1.0
+
+    return dd
+
+#========================================================================================================
 #Geometry Utilities
 #========================================================================================================
 def Rotation(gt):   

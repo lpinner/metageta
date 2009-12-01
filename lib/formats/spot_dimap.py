@@ -68,7 +68,7 @@ class Dataset(__default__.Dataset):
         self.metadata['sunazimuth'] = float(gdalmd['SUN_AZIMUTH'])
         self.metadata['level'] = gdalmd['PROCESSING_LEVEL']
         self.metadata['viewangle'] = gdalmd['VIEWING_ANGLE']
-        #dom=__xmldom.parse(f) #Takes tooo long to parse the whole damn file, so just read as far as we need...
+        #dom=__xmldom.parse(f) #Takes tooo long to parse the whole file, so just read as far as we need...
         strxml=''
         for line in open(f, 'r'):
             if line.upper().strip()=='<DATA_STRIP>':break

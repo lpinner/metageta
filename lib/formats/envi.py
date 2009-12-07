@@ -85,7 +85,7 @@ class Dataset(__default__.Dataset):
                 if hdr.get('interleave','').upper()=='BSQ':
                     vrt=geometry.CreateBSQRawRasterVRT(self._datafile,md['nbands'],md['cols'],md['rows'],md['datatype'],md['nbits'],nodata,headeroffset=0,byteorder=byteorder,relativeToVRT=0)
                 elif hdr.get('interleave','').upper()=='BIP':
-                    vrt=geometry.CreateBIRawRasterVRT(self._datafile,md['nbands'],md['cols'],md['rows'],md['datatype'],md['nbits'],nodata,headeroffset=0,byteorder=byteorder,relativeToVRT=0)
+                    vrt=geometry.CreateBIPRawRasterVRT(self._datafile,md['nbands'],md['cols'],md['rows'],md['datatype'],md['nbits'],nodata,headeroffset=0,byteorder=byteorder,relativeToVRT=0)
                 else:#Assume bil
                     vrt=geometry.CreateBILRawRasterVRT(self._datafile,md['nbands'],md['cols'],md['rows'],md['datatype'],md['nbits'],nodata,headeroffset=0,byteorder=byteorder,relativeToVRT=0)
                 self._gdaldataset=geometry.OpenDataset(vrt)

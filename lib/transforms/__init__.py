@@ -79,8 +79,14 @@ def DictToXML(dic,root):
     doc=_Dom.implementation.createRootNode('file:///%s.xml'%root)
     docelement = doc.createElementNS(None, root)
     for col in dic:
+        dat=dic[col]
+        if type(dat) is unicode:
+            dat=dat.encode('ascii','xmlcharrefreplace')
+        elif type(dat) is str:
+            dat=dat.decode('latin-1').encode('ascii','xmlcharrefreplace')
+        else:dat=str(dat)
         child=doc.createElementNS(None, col)
-        text=doc.createTextNode(str(dic[col]))
+        text=doc.createTextNode(dat)
         child.appendChild(text)
         docelement.appendChild(child)
 
@@ -92,9 +98,16 @@ def ListToXML(lst,root):
     '''Transform a metadata record to a flat XML string'''
     doc=_Dom.implementation.createRootNode('file:///%s.xml'%root)
     docelement = doc.createElementNS(None, root)
-    for col in lst:
-        child=doc.createElementNS(None, col[0])
-        text=doc.createTextNode(str(col[1]))
+    for fld in lst:
+        col=fld[0]
+        dat=fld[1]
+        if type(dat) is unicode:
+            dat=dat.encode('ascii','xmlcharrefreplace')
+        elif type(dat) is str:
+            dat=dat.decode('latin-1').encode('ascii','xmlcharrefreplace')
+        else:dat=str(dat)
+        child=doc.createElementNS(None, col)
+        text=doc.createTextNode(dat)
         child.appendChild(text)
         docelement.appendChild(child)
 

@@ -41,6 +41,7 @@ except ImportError:
     import gdalconst
     import osr
     import ogr
+gdal.AllRegister()
 class Dataset(object):
     '''A base Dataset class'''
     def __new__(self,f):
@@ -101,6 +102,7 @@ class Dataset(object):
         rows=ds.RasterYSize
         nbits=gdal.GetDataTypeSize(rb.DataType)
         datatype=gdal.GetDataTypeName(rb.DataType)
+        nodata=rb.GetNoDataValue()
         stretch_type=None
         stretch_args=None
         rgb_bands = {}
@@ -128,22 +130,20 @@ class Dataset(object):
                 stretch_type='PERCENT'
                 stretch_args=[2,98]
                 rgb_bands=[1]
-                #But check if there's an attribute table, color table # TODO? or <= 255 unique values 
+                #But check if there's an attribute table or color table
                 #and change the stretch type to colour table
-                if 'Byte' in datatype or 'Int' in datatype:
+                if datatype in ['Byte', 'Int16', 'UInt16']:
                     ct=rb.GetColorTable()
                     at=rb.GetDefaultRAT()
                     if ct and ct.GetCount() > 0:
                         stretch_type='COLOURTABLE'
                         stretch_args=[]
-                        rgb_bands=[1]
                     elif at and at.GetRowCount() > 0:
                         #if at.GetRowCount() <=256:
                         #    stretch_type='RANDOM'
-                        #    stretch_args=[at.GetRowCount()]
+                        #    stretch_args=[]
                         stretch_type='RANDOM'
-                        stretch_args=[at.GetRowCount()]
-                        rgb_bands=[1,1,1]
+                        stretch_args=[]
                         
             elif nbands == 3:
                 #Assume RGB

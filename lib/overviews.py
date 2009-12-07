@@ -130,14 +130,14 @@ def _stretch_PERCENT(vrtcols,vrtrows,ds,bands,low,high,*args):
         srcband=ds.GetRasterBand(band)
         nbits=gdal.GetDataTypeSize(srcband.DataType)
         dfScaleSrcMin,dfScaleSrcMax=GetDataTypeRange(srcband.DataType)
-        dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = srcband.GetStatistics(1,1)
+        dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = srcband.GetStatistics(0,0)
         nbins=256
         if nbits == 8:binsize=1
         else:binsize=(dfBandMax-dfBandMin)/nbins
         #else:binsize=int(math.ceil((dfBandMax-dfBandMin)/nbins))
         #Compute the histogram w/out the max.min values.
         #hs=srcband.GetHistogram(dfBandMin-0.5,dfBandMax+0.5, nbins,include_out_of_range=1)
-        hs=srcband.GetHistogram(dfBandMin+dfBandMin*0.0001,dfBandMax-dfBandMax*0.0001, nbins,include_out_of_range=0)
+        hs=srcband.GetHistogram(dfBandMin+abs(dfBandMin)*0.0001,dfBandMax-abs(dfBandMax)*0.0001, nbins,include_out_of_range=0,approx_ok=0)
         #Check that outliers haven't really skewed the histogram
         #this is a kludge to workaround datasets with multiple nodata values
         for j in range(0,10):
@@ -150,7 +150,7 @@ def _stretch_PERCENT(vrtcols,vrtrows,ds,bands,low,high,*args):
                         if i<startbin:startbin=i
                 dfBandMin=dfBandMin+startbin*binsize
                 dfBandMax=dfBandMin+lastbin*binsize+binsize
-                hs=srcband.GetHistogram(dfBandMin-dfBandMin*0.0001,dfBandMax+dfBandMax*0.0001, nbins,include_out_of_range=0)
+                hs=srcband.GetHistogram(dfBandMin-abs(dfBandMin)*0.0001,dfBandMax+abs(dfBandMax)*0.0001, nbins,include_out_of_range=0,approx_ok=0)
                 if nbits == 8:binsize=1
                 else:binsize=(dfBandMax-dfBandMin)/nbins
             else:break
@@ -223,12 +223,8 @@ def _stretch_STDDEV(vrtcols,vrtrows,ds,bands,std,*args):
         vrt.append('  </VRTRasterBand>')
     return '\n'.join(vrt)
 
-def _stretch_COLOURTABLE(vrtcols,vrtrows,ds,bands,clr,*args):
+def _stretch_UNIQUE(vrtcols,vrtrows,ds,bands,vals,*args):
     vrt=[]
-    srcband=ds.GetRasterBand(1)
-    nvals=2**(gdal.GetDataTypeSize(srcband.DataType))
-    lut=ExpandedColorLUT(clr,nvals)
-    #lut=ParseColorLUT(clr)
     for band,clr in enumerate(['Red','Green','Blue']):
         vrt.append('  <VRTRasterBand dataType="Byte" band="%s">' % str(band+1))
         vrt.append('    <ColorInterp>%s</ColorInterp>' % clr)
@@ -237,11 +233,75 @@ def _stretch_COLOURTABLE(vrtcols,vrtrows,ds,bands,clr,*args):
         vrt.append('      <SourceBand>1</SourceBand>')
         vrt.append('      <SrcRect xOff="0" yOff="0" xSize="%s" ySize="%s"/>' % (ds.RasterXSize,ds.RasterYSize))
         vrt.append('      <DstRect xOff="0" yOff="0" xSize="%s" ySize="%s"/>' % (vrtcols,vrtrows))
-        vrt.append('      <LUT>\n        %s\n      </LUT>' % ',\n        '.join(['%s:%s' % (v[0], v[band+1]) for v in lut]))
+        vrt.append('      <LUT>%s</LUT>' % ','.join(['%s:%s' % (v[0], v[band+1]) for v in vals]))
         vrt.append('    </ComplexSource>')
         vrt.append('  </VRTRasterBand>')
     return '\n'.join(vrt)
-_stretch_COLORTABLE=_stretch_COLOURTABLE #SYNONYM for the yanks
+
+def _stretch_RANDOM(vrtcols,vrtrows,ds,bands,*args):
+    from random import randint as r
+    rb=ds.GetRasterBand(bands[0])
+    nodata=rb.GetNoDataValue()
+    min,max=map(int,rb.ComputeRasterMinMax())
+    vals=[]
+    for i in range(min,max+1):#build random RGBA tuple
+        if i == nodata:vals.append((i,255,255,255,0))
+        else:vals.append((i,r(0,255),r(0,255),r(0,255),255))
+    return _stretch_UNIQUE(vrtcols,vrtrows,ds,bands,vals)
+
+def _stretch_COLOURTABLE(vrtcols,vrtrows,ds,bands,*args):
+    ##This is a workaround for GDAL not liking color tables with negative or missing values
+    rb=ds.GetRasterBand(bands[0])
+    nodata=rb.GetNoDataValue()
+    ct=rb.GetColorTable()
+    min,max=map(int,rb.ComputeRasterMinMax())
+    rat=rb.GetHistogram(min, max, abs(min)+abs(max)+1, 1, 0)
+    vals=[]
+    i=0
+    for v,r in zip(range(min,max+1),rat):
+        if v != nodata and r > 0:
+            ce=[v]
+            ce.extend(ct.GetColorEntry(i))
+            vals.append(ce)
+            i+=1
+        else:vals.append([v,255,255,255,0])
+    return _stretch_UNIQUE(vrtcols,vrtrows,ds,bands,vals)
+##def _stretch_COLOURTABLE(vrtcols,vrtrows,ds,bands,*args):
+##    vrt=[]
+##    colours=['Red','Green','Blue']
+##    for index, colour in enumerate(colours):
+##        vrt.append('  <VRTRasterBand dataType="Byte" band="%s">' % str(index+1))
+##        vrt.append('    <ColorInterp>%s</ColorInterp>' % colour)
+##        vrt.append('    <ComplexSource>')
+##        vrt.append('      <SourceFilename relativeToVRT="0">%s</SourceFilename>' % ds.GetDescription())
+##        vrt.append('      <SourceBand>%s</SourceBand>' % bands[0])
+##        vrt.append('      <SrcRect xOff="0" yOff="0" xSize="%s" ySize="%s"/>' % (ds.RasterXSize,ds.RasterYSize))
+##        vrt.append('      <DstRect xOff="0" yOff="0" xSize="%s" ySize="%s"/>' % (vrtcols,vrtrows))
+##        vrt.append('      <ColorTableComponent>%s</ColorTableComponent>' % str(index+1))
+##        vrt.append('    </ComplexSource>')
+##        vrt.append('  </VRTRasterBand>')
+##    return '\n'.join(vrt)
+_stretch_COLORTABLE=_stretch_COLOURTABLE #Synonym for the norteamericanos
+
+##def _stretch_COLOURTABLELUT(vrtcols,vrtrows,ds,bands,clr,*args):
+##    vrt=[]
+##    srcband=ds.GetRasterBand(1)
+##    nvals=2**(gdal.GetDataTypeSize(srcband.DataType))
+##    lut=ExpandedColorLUT(clr,nvals)
+##    #lut=ParseColorLUT(clr)
+##    for band,clr in enumerate(['Red','Green','Blue']):
+##        vrt.append('  <VRTRasterBand dataType="Byte" band="%s">' % str(band+1))
+##        vrt.append('    <ColorInterp>%s</ColorInterp>' % clr)
+##        vrt.append('    <ComplexSource>')
+##        vrt.append('      <SourceFilename relativeToVRT="0">%s</SourceFilename>' % ds.GetDescription())
+##        vrt.append('      <SourceBand>1</SourceBand>')
+##        vrt.append('      <SrcRect xOff="0" yOff="0" xSize="%s" ySize="%s"/>' % (ds.RasterXSize,ds.RasterYSize))
+##        vrt.append('      <DstRect xOff="0" yOff="0" xSize="%s" ySize="%s"/>' % (vrtcols,vrtrows))
+##        vrt.append('      <LUT>\n        %s\n      </LUT>' % ',\n        '.join(['%s:%s' % (v[0], v[band+1]) for v in lut]))
+##        vrt.append('    </ComplexSource>')
+##        vrt.append('  </VRTRasterBand>')
+##    return '\n'.join(vrt)
+##_stretch_COLORTABLELUT=_stretch_COLOURTABLELUT #SYNONYM for the norteamericanos
 #========================================================================================================
 #Helper functions
 #========================================================================================================

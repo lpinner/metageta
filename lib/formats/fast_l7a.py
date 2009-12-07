@@ -81,7 +81,7 @@ class Dataset(__dataset__.Dataset):
         self.filelist.extend([f for f in utilities.rglob(d,rex,regex=True, regex_flags=re.I, recurse=False)]) #bands
         pass
     def __getmetadata__(self):
-        '''Read Metadata for an ACRES Landsat FastL7A format image as GDAL doesn't.
+        '''Read Metadata for an ACRES Landsat FastL7A format image as GDAL doesn't get it all.
         Format description: http://www.ga.gov.au/image_cache/GA10348.pdf
 
         Note:
@@ -90,48 +90,72 @@ class Dataset(__dataset__.Dataset):
         hpn = ~15m pan             (band 8)
         '''
         
-        hdr=self.fileinfo['filepath']
-        d=os.path.dirname(hdr)
-        
+        f=self.fileinfo['filepath']
+        d=os.path.dirname(f)
+        hdr=open(f).read()
+        err='Unable to open %s' % f
+
         md=self.metadata
         md['filesize']=sum([os.path.getsize(file) for file in self.filelist])
+        md['filetype'] = 'FAST/EOSAT FAST Format'
+        
+        rl=1536#recordlength
 
-        err='Unable to open %s' % hdr
-        
-        txt=open(hdr).read()
-        rex=re.compile('L7[0-9]{7,7}_[0-9]{11,11}_B[1-8][0-2]\.FST', re.I)
-        bandnames=rex.findall(txt)
-        
-        rename=False
+        ######################################
+        ##Record 1 - administrative
+        ######################################
+        rec=1
+
+        req_id=utilities.readascii(hdr,(rec-1)*rl,9,28)
+        loc=utilities.readascii(hdr,(rec-1)*rl,35,51)
+        acquisition_date=utilities.readascii(hdr,(rec-1)*rl,71,78)
+        md['imgdate']='%s-%s-%s'%(acquisition_date[:4],acquisition_date[4:6],acquisition_date[6:])
+        md['satellite']=utilities.readascii(hdr,(rec-1)*rl,92,101)
+        md['sensor']=utilities.readascii(hdr,(rec-1)*rl,111,120)
+        md['mode']=utilities.readascii(hdr,(rec-1)*rl,135,140)
+        md['viewangle']=float(utilities.readascii(hdr,(rec-1)*rl,154,159))
+        product_type=utilities.readascii(hdr,(rec-1)*rl,655,672)
+        product_size=utilities.readascii(hdr,(rec-1)*rl,688,697)
+        level=utilities.readascii(hdr,(rec-1)*rl,741,751)
+        md['resampling']=utilities.readascii(hdr,(rec-1)*rl,765,766)
+        md['cols']=int(utilities.readascii(hdr,(rec-1)*rl,843,847))
+        md['rows']=int(utilities.readascii(hdr,(rec-1)*rl,865,869))
+        md['cellx']=float(utilities.readascii(hdr,(rec-1)*rl,954,959))
+        md['celly']=md['cellx']
+        md['nbits']=8         #int(utilities.readascii(hdr,(rec-1)*rl,984,985)) always 8 bit
+        md['datatype']='Byte' 
+        md['nodata']=0 
+        bands_present=utilities.readascii(hdr,(rec-1)*rl,1056,1087)
+
+        bandindices=[[1131,1159],[1170,1198],[1211,1239],[1250,1278],[1291,1319],[1330,1358]]
         bandfiles={}
-        for band in bandnames:
-            dat_u=os.path.join(d,band.upper())
-            dat_l=os.path.join(d,band.lower())
-            if dat_u in self.filelist:
-                dat=dat_u
-                bandfiles[dat]=dat
-            elif dat_l in self.filelist:
-                dat=dat_l
-                bandfiles[dat]=dat
-            else:#Have to rename the data files so GDAL can read them from ACRES format (band*.dat) to Fast format (l7*.fst)...
-                dat=os.path.join(d,band)
-                bandid=band[23:25]
-                if bandid == '61':bandid='6l'
-                elif bandid == '62':bandid='6h'
-                else:bandid=bandid[0]
+        for i in bandindices:
+            band=utilities.readascii(hdr,(rec-1)*rl,i[0],i[1])
+            if band:
+                dat_u=os.path.join(d,band.upper())
+                dat_l=os.path.join(d,band.lower())
+                if dat_u in self.filelist:
+                    dat=dat_u
+                    bandfiles[dat]=dat
+                elif dat_l in self.filelist:
+                    dat=dat_l
+                    bandfiles[dat]=dat
+                else:#Assume ACRES format (band*.dat) instead Fast format (l7*.fst)...
+                    dat=os.path.join(d,band)
+                    bandid=band[23:25]
+                    if bandid == '61':bandid='6l'
+                    elif bandid == '62':bandid='6h'
+                    else:bandid=bandid[0]
 
-                bnd_u=os.path.join(d,'BAND%s.DAT' %bandid.upper())
-                bnd_l=os.path.join(d,'band%s.dat' %bandid.lower())
-                if bnd_u in self.filelist:bnd=bnd_u
-                elif bnd_l in self.filelist:bnd=bnd_l
-                else:raise IOError, err
-                
-                os.rename(bnd,dat)
-                rename=True
-                bandfiles[dat]=bnd
-
-        nbands=len(bandnames)
-        bandnums=[]
+                    bnd_u=os.path.join(d,'BAND%s.DAT' %bandid.upper())
+                    bnd_l=os.path.join(d,'band%s.dat' %bandid.lower())
+                    if bnd_u in self.filelist:bnd=bnd_u
+                    elif bnd_l in self.filelist:bnd=bnd_l
+                    else:raise IOError, err
+                    
+                    bandfiles[dat]=bnd
+            else:break
+        md['nbands']=len(bandfiles)
 
         md['sceneid']=os.path.basename(bandfiles.keys()[0])[3:21] #Use path/row & aquisition date as sceneid - L7f[ppprrr_rrrYYYYMMDD]_AAA.FST 
         if self._filetype=='HRF':
@@ -141,117 +165,117 @@ class Dataset(__dataset__.Dataset):
         elif self._filetype=='HPN':
             md['bands']='8 (PAN)'
 
-        self._gdaldataset = geometry.OpenDataset(hdr)
-        #if not self._gdaldataset: #Raised in geometry.OpenDataset
-        #    errmsg=gdal.GetLastErrorMsg()
-        #    gdal.ErrorReset()
-        #    raise IOError, err+'\n'+ errmsg.strip()
+        ######################################
+        ##Record 2 - radiometric
+        ######################################
+        #Move along, nothing to see here...
 
-        md['cols']=self._gdaldataset.RasterXSize
-        md['rows']=self._gdaldataset.RasterYSize
-        
+        ######################################
+        ##Record 3 - geometric
+        ######################################
+        rec=3
+        map_projection=utilities.readascii(hdr,(rec-1)*rl,32,35)
+        prjcode=spatialreferences.GCTP_PROJECTIONS.get(map_projection,0)
+        ellipsoid=utilities.readascii(hdr,(rec-1)*rl,48,65)
+        ellcode=spatialreferences.GCTP_ELLIPSOIDS.get(ellipsoid,0)
+        datum=utilities.readascii(hdr,(rec-1)*rl,74,79)
+        zone=utilities.readascii(hdr,(rec-1)*rl,521,526)
+
         #Workaround for UTM zones as GDAL does not pick up southern hemisphere
         #as some FST headers don't include a negative zone number to indicate southern hemisphere
         #as per the FAST format definition
-        utm=re.search('MAP PROJECTION\s*=\s*UTM',txt)
-        if utm:
-            #Workaround for GDA94 datum as GDAL only recognises "NAD27" "NAD83" "WGS84" "ELLIPSOID"
-            #as per the FAST format definition
-            gda=re.search('DATUM\s*=\s*GDA',txt)
-            zone=re.findall('MAP ZONE\s*=\s*([0-9][0-9])',txt)[0]
-            if gda:
-                epsg=int('283'+zone)
-            else:
-                if re.findall(r'UL\s*=.*[EW]\s*[0-9]{6,6}\.[0-9]{4,4}([NS])',txt)[0]=='S':#Southern hemishpere
-                    epsg=int('327'+zone) #Assume WGS84
-                else:         #North
-                    epsg=int('326'+zone)
-            srs = osr.SpatialReference()
-            srs.ImportFromEPSG(epsg)
-            md['srs']=srs.ExportToWkt()
-            md['epsg']=epsg
-            md['units']='m'
-        else:
-            md['srs']=self._gdaldataset.GetProjection()
-            md['epsg'] = spatialreferences.IdentifyAusEPSG(md['srs'])
-            md['units'] = spatialreferences.GetLinearUnitsName(md['srs'])
-        md['filetype'] = self._gdaldataset.GetDriver().ShortName+'/'+self._gdaldataset.GetDriver().LongName
+        zone=int(zone) if zone else 0
+
+        usgs_indices = ((110,133),#Semi-major axis
+                        (135,158),#Semi-minor axis
+                        (161,184),
+                        (186,209),
+                        (211,234),
+                        (241,264),
+                        (266,289),
+                        (291,314),
+                        (321,344),
+                        (346,369),
+                        (371,394),
+                        (401,424),
+                        (426,449),
+                        (451,474),
+                        (481,504))
+        usgs_params=[]
+        for i in usgs_indices:
+            p=utilities.readascii(hdr,(rec-1)*rl,i[0],i[1])
+            if p:usgs_params.append(float(p))
+            else:usgs_params.append(0.0)
+
+        ulx=geometry.DMS2DD(utilities.readascii(hdr,(rec-1)*rl,566,578), 'DDDMMSSSSSSSH')
+        uly=geometry.DMS2DD(utilities.readascii(hdr,(rec-1)*rl,580,591),  'DDMMSSSSSSSH')
+        urx=geometry.DMS2DD(utilities.readascii(hdr,(rec-1)*rl,646,658), 'DDDMMSSSSSSSH')
+        ury=geometry.DMS2DD(utilities.readascii(hdr,(rec-1)*rl,660,671),  'DDMMSSSSSSSH')
+        lrx=geometry.DMS2DD(utilities.readascii(hdr,(rec-1)*rl,726,738), 'DDDMMSSSSSSSH')
+        lry=geometry.DMS2DD(utilities.readascii(hdr,(rec-1)*rl,740,751),  'DDMMSSSSSSSH')
+        llx=geometry.DMS2DD(utilities.readascii(hdr,(rec-1)*rl,806,818), 'DDDMMSSSSSSSH')
+        lly=geometry.DMS2DD(utilities.readascii(hdr,(rec-1)*rl,820,831),  'DDMMSSSSSSSH')
+        ext=[[ulx,uly],[urx,ury],[lrx,lry],[llx,lly],[ulx,uly]]
         
-        rb=self._gdaldataset.GetRasterBand(1)
-        md['datatype']=gdal.GetDataTypeName(rb.DataType)
-        md['nbits']=gdal.GetDataTypeSize(rb.DataType)
-        nodata=rb.GetNoDataValue()
-        if nodata:md['nodata']=nodata
-        else:
-            if md['datatype'][0:4] in ['Byte','UInt']: md['nodata']=0 #Unsigned, assume 0
-            else:md['nodata']=-2**(md['nbits']-1)                     #Signed, assume min value in data range
-       
-        geotransform=self._gdaldataset.GetGeoTransform()
-        metadata=self._gdaldataset.GetMetadata()
-
-        gcps=geometry.GeoTransformToGCPs(geotransform,md['cols'],md['rows'])
-
-        ext=[[gcp.GCPX, gcp.GCPY] for gcp in gcps]
-        ext.append([gcps[0].GCPX, gcps[0].GCPY])#Add the 1st point to close the polygon)
-
-        #Reproject corners to lon,lat
-        geom = geometry.GeomFromExtent(ext)
-        src_srs=osr.SpatialReference()
-        src_srs.ImportFromWkt(md['srs'])
-        tgt_srs=osr.SpatialReference()
-        tgt_srs.ImportFromEPSG(4326)
-        geom=geometry.ReprojectGeom(geom,src_srs,tgt_srs)
-        points=geom.GetBoundary()
-        ext=[[points.GetX(i),points.GetY(i)] for i in range(0,points.GetPointCount())]
-
-        md['cellx'],md['celly']=geometry.CellSize(geotransform)
-        md['rotation']=geometry.Rotation(geotransform)
         md['UL']='%s,%s' % tuple(ext[0])
         md['UR']='%s,%s' % tuple(ext[1])
         md['LR']='%s,%s' % tuple(ext[2])
         md['LL']='%s,%s' % tuple(ext[3])
-            
-        metadata=self._gdaldataset.GetMetadata()
 
-        md['satellite']=metadata['SATELLITE']
-        md['sensor']=metadata['SENSOR']
-        md['imgdate'] = time.strftime('%Y-%m-%d',time.strptime(metadata['ACQUISITION_DATE'],'%Y%m%d')) #ISO 8601 
-        #md['imgdate']=metadata['ACQUISITION_DATE']
-        md['nbands']=nbands
-        if abs(md['rotation']) < 1.0: md['orientation']='Map oriented'
-        else: md['orientation']='Path oriented'
-        #md['bands'] = ','.join(bandnums)
-        p=re.compile(r'RESAMPLING\s*=\s*([A-Z]{2,2})', re.IGNORECASE)
-        md['resampling']=p.findall(txt)[0]
-        p=re.compile(r'LOOK ANGLE\s*=\s*([0-9]{1,2}\.[0-9]{1,2})', re.IGNORECASE)
-        md['viewangle']=p.findall(txt)[0]
-        p=re.compile(r'SUN AZIMUTH ANGLE\s*=\s*([0-9]{1,2}\.[0-9]{1,2})', re.IGNORECASE)
-        md['sunazimuth']=p.findall(txt)[0]
-        p=re.compile(r'SUN ELEVATION ANGLE\s*=\s*([0-9]{1,2}\.[0-9]{1,2})', re.IGNORECASE)
-        md['sunelevation']=p.findall(txt)[0]
-        p=re.compile(r'TYPE OF PROCESSING\s*=\s*(SYSTEMATIC|SYSTERRAIN|PRECISION|TERRAIN)', re.IGNORECASE)
-        level=p.findall(txt)[0]
+        if zone > 0 and uly < 0:zone*=-1
+        srs=osr.SpatialReference()
+        srs.ImportFromUSGS(prjcode,zone,usgs_params,ellcode)
+        if datum=='GDA':#Workaround for GDA94 datum as GDAL does not recognise it
+                       #as per the FAST format definition
+            if map_projection=='UTM':
+                epsg=28300+abs(zone)
+                srs.ImportFromEPSG(epsg)
+                md['srs']=srs.ExportToWkt()
+                md['epsg']=epsg
+                md['units']='m'
+            else:
+                srs.SetGeogCS('GDA94','Geocentric_Datum_of_Australia_1994','GRS 1980', usgs_params[0], 298.257)
+                md['srs']=srs.ExportToWkt()
+                md['epsg'] = spatialreferences.IdentifyAusEPSG(md['srs'])
+                md['units'] = spatialreferences.GetLinearUnitsName(md['srs'])
+        else:
+            md['srs']=srs.ExportToWkt()
+            md['epsg'] = spatialreferences.IdentifyAusEPSG(md['srs'])
+            md['units'] = spatialreferences.GetLinearUnitsName(md['srs'])
+
+        md['rotation']=float(utilities.readascii(hdr,(rec-1)*rl,995,1000))
+        if abs(md['rotation']) < 1:
+            md['orientation']='Map oriented'
+            md['rotation']=0.0
+        else:md['orientation']='Path oriented'
+        md['sunelevation']=utilities.readascii(hdr,(rec-1)*rl,1062,1065)
+        md['sunazimuth']=utilities.readascii(hdr,(rec-1)*rl,1086,1090)
+
+        
+        try:##Open dataset 
+            self._gdaldataset = geometry.OpenDataset(f)
+            metadata=self._gdaldataset.GetMetadata()
+            md['metadata']='\n'.join(['%s: %s' %(m,metadata[m]) for m in metadata])
+        except:#build a VRT dataset - if we want to use this fgor anything other than overview generation, should probably fill out the geotransform, srs, metadata etc...
+            bands=bandfiles.values()
+            bands.sort()
+            vrtxml=geometry.CreateRawRasterVRT(bands,md['cols'],md['rows'], md['datatype'],md['nbits'])
+            self._gdaldataset = geometry.OpenDataset(vrtxml)
+            md['metadata']=hdr
+
+        if self._filetype=='HRF':
+            self._gdaldataset.GetRasterBand(4).SetRasterColorInterpretation(gdal.GCI_BlueBand)
+            self._gdaldataset.GetRasterBand(3).SetRasterColorInterpretation(gdal.GCI_GreenBand)
+            self._gdaldataset.GetRasterBand(2).SetRasterColorInterpretation(gdal.GCI_RedBand)
+
         if level == 'SYSTEMATIC'  :md['level'] = '1G '
         elif level == 'SYSTERRAIN':md['level'] = '1Gt'
         elif level == 'PRECISION' :md['level'] = '1P'
         elif level == 'TERRAIN'   :md['level'] = '1T'
-        md['metadata']='\n'.join(['%s: %s' %(m,metadata[m]) for m in metadata])
+
         md['compressionratio']=0
         md['compressiontype']='None'
         
-        #Rename the data files back to what they were
-        self._gdaldataset=None #Release gdal locks on the files
-        rb=None
-        del self._gdaldataset
-        del rb
-        if rename:
-            for band in bandfiles:os.rename(band,bandfiles[band])
-
         self.extent=ext
 
         for m in md:self.metadata[m]=md[m]
-
-        #Basic raw raster VRT for overview generation
-        vrtbands=bandfiles.values()
-        vrtbands.sort()
-        self._gdaldataset=geometry.OpenDataset(geometry.CreateRawRasterVRT(vrtbands,md['cols'],md['rows'],md['datatype'],md['nbits']))

@@ -38,7 +38,6 @@ except ImportError:
 #==============================================================================
 #Constants
 #==============================================================================
-
 SRS_UNITS_CONV={ 
     'meter':                'm',
     'metre':                'm',
@@ -61,14 +60,37 @@ SRS_UNITS_CONV={
 }
 '''Convert from GDAL-OSR to ISO 19115 metadata unit of measure.
 
-Mostly from ogr_srs_api.h (with some extras thrown in just in case...)::
-  define SRS_UL_METER            "Meter"
-  define SRS_UL_FOOT             "Foot (International)" /* or just "FOOT"? */
-  define SRS_UL_US_FOOT          "U.S. Foot" /* or "US survey foot" */
-  define SRS_UL_NAUTICAL_MILE    "Nautical Mile"
-  define SRS_UA_DEGREE           "degree"
-  define SRS_UA_RADIAN           "radian"
-'''
+Mostly from ogr_srs_api.h (with some extras thrown in just in case...)'''
+
+##Copyright notice from ogr_srs_api.h as required by the MIT license
+##/******************************************************************************
+## * $Id$
+## *
+## * Project:  OpenGIS Simple Features Reference Implementation
+## * Purpose:  C API and constant declarations for OGR Spatial References.
+## * Author:   Frank Warmerdam, warmerdam@pobox.com
+## *
+## ******************************************************************************
+## * Copyright (c) 2000, Frank Warmerdam
+## *
+## * Permission is hereby granted, free of charge, to any person obtaining a
+## * copy of this software and associated documentation files (the "Software"),
+## * to deal in the Software without restriction, including without limitation
+## * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+## * and/or sell copies of the Software, and to permit persons to whom the
+## * Software is furnished to do so, subject to the following conditions:
+## *
+## * The above copyright notice and this permission notice shall be included
+## * in all copies or substantial portions of the Software.
+## *
+## * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+## * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+## * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+## * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+## * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+## * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+## * DEALINGS IN THE SOFTWARE.
+## ****************************************************************************/
 
 #Geog/Projected EPSG codes
 AUS_GEOGCS=(
@@ -122,6 +144,106 @@ AUS_PROJCS=(
     28357, #GDA94 / MGA zone 57
     28358  #GDA94 / MGA zone 58
 )
+#************************************************************************#
+#*  GCTP projection codes.                                              *#
+#************************************************************************#
+GCTP_PROJECTIONS={'GEO':      0, ## Geographic
+                  'UTM':      1, ## Universal Transverse Mercator (UTM)
+                  'SPCS':     2, ## State Plane Coordinates
+                  'ALBERS':   3, ## Albers Conical Equal Area
+                  'LAMCC':    4, ## Lambert Conformal Conic
+                  'MERCAT':   5, ## Mercator
+                  'PS':       6, ## Polar Stereographic
+                  'POLYC':    7, ## Polyconic
+                  'EQUIDC':   8, ## Equidistant Conic
+                  'TM':       9, ## Transverse Mercator
+                  'STEREO':  10, ## Stereographic
+                  'LAMAZ':   11, ## Lambert Azimuthal Equal Area
+                  'AZMEQD':  12, ## Azimuthal Equidistant
+                  'GNOMON':  13, ## Gnomonic
+                  'ORTHO':   14, ## Orthographic
+                  'GVNSP':   15, ## General Vertical Near-Side Perspective
+                  'SNSOID':  16, ## Sinusiodal
+                  'EQRECT':  17, ## Equirectangular
+                  'MILLER':  18, ## Miller Cylindrical
+                  'VGRINT':  19, ## Van der Grinten
+                  'HOM':     20, ## (Hotine) Oblique Mercator 
+                  'ROBIN':   21, ## Robinson
+                  'SOM':     22, ## Space Oblique Mercator (SOM)
+                  'ALASKA':  23, ## Alaska Conformal
+                  'GOODE':   24, ## Interrupted Goode Homolosine 
+                  'MOLL':    25, ## Mollweide
+                  'IMOLL':   26, ## Interrupted Mollweide
+                  'HAMMER':  27, ## Hammer
+                  'WAGIV':   28, ## Wagner IV
+                  'WAGVII':  29, ## Wagner VII
+                  'OBEQA':   30, ## Oblated Equal Area
+                  'ISINUS1': 31, ## Integerized Sinusoidal Grid (the same as 99)
+                  'CEA':     97, ## Cylindrical Equal Area (Grid corners set in meters for EASE grid) 
+                  'BCEA':    98, ## Cylindrical Equal Area (Grid corners set in DMS degs for EASE grid) 
+                  'ISINUS':  99  ## Integerized Sinusoidal Grid (added by Raj Gejjagaraguppe ARC for MODIS) 
+}
+'''USGS projection codes ported from ogr_srs_usgs.cpp'''
+
+#************************************************************************#
+#*  GCTP ellipsoid codes.                                               *#
+#************************************************************************#
+GCTP_ELLIPSOIDS={'CLARKE1866'         : 0,
+                 'CLARKE1880'         : 1,
+                 'BESSEL'             : 2,
+                 'INTERNATIONAL1967'  : 3,
+                 'INTERNATIONAL1909'  : 4,
+                 'WGS72'              : 5,
+                 'EVEREST'            : 6,
+                 'WGS66 '             : 7,
+                 'GRS1980'            : 8,
+                 'GRS80'              : 8,
+                 'AIRY  '             : 9,
+                 'MODIFIED_EVEREST'   :10,
+                 'MODIFIED_AIRY'      :11,
+                 'WGS84'              :12,
+                 'SOUTHEAST_ASIA'     :13,
+                 'AUSTRALIAN_NATIONAL':14,
+                 'KRASSOVSKY'         :15,
+                 'HOUGH'              :16,
+                 'MERCURY1960'        :17,
+                 'MODIFIED_MERCURY'   :18,
+                 'SPHERE'             :19
+}
+'''USGS ellipsoid codes ported from ogr_srs_usgs.cpp'''
+
+##Copyright notice from ogr_srs_api.h as required by the MIT license
+##/******************************************************************************
+## * $Id$
+## *
+## * Project:  OpenGIS Simple Features Reference Implementation
+## * Purpose:  OGRSpatialReference translation to/from USGS georeferencing
+## *           information (used in GCTP package).
+## * Author:   Andrey Kiselev, dron@ak4719.spb.edu
+## *
+## ******************************************************************************
+## * Copyright (c) 2004, Andrey Kiselev <dron@ak4719.spb.edu>
+## *
+## * Permission is hereby granted, free of charge, to any person obtaining a
+## * copy of this software and associated documentation files (the "Software"),
+## * to deal in the Software without restriction, including without limitation
+## * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+## * and/or sell copies of the Software, and to permit persons to whom the
+## * Software is furnished to do so, subject to the following conditions:
+## *
+## * The above copyright notice and this permission notice shall be included
+## * in all copies or substantial portions of the Software.
+## *
+## * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+## * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+## * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+## * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+## * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+## * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+## * DEALINGS IN THE SOFTWARE.
+## ****************************************************************************/
+
+
 #==============================================================================
 #Functions
 #==============================================================================

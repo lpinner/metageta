@@ -81,13 +81,6 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
         #SCENE PARAMETERS
         ##################
         sceneid=utilities.readbinary(meta,(record-1)*recordlength,37,52)
-        self.metadata['rotation']=float(utilities.readbinary(meta,(record-1)*recordlength,437,452))
-        if abs(self.metadata['rotation']) < 1:
-            self.metadata['orientation']='Map oriented'
-            self.metadata['rotation']=0.0
-        else:self.metadata['orientation']='Path oriented'
-        self.metadata['sunazimuth']=float(utilities.readbinary(meta,(record-1)*recordlength,469,484))
-        self.metadata['sunelevation']=float(utilities.readbinary(meta,(record-1)*recordlength,485,500))
 
         uly=geometry.DMS2DD(utilities.readbinary(meta,(record-1)*recordlength,149,164),'HDDDMMSS')
         ulx=geometry.DMS2DD(utilities.readbinary(meta,(record-1)*recordlength,165,180),'HDDDMMSS')
@@ -102,6 +95,13 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
         ######################
         #IMAGING PARAMETERS
         ######################
+        self.metadata['rotation']=float(utilities.readbinary(meta,(record-1)*recordlength,437,452))
+        if abs(self.metadata['rotation']) < 1:
+            self.metadata['orientation']='Map oriented'
+            self.metadata['rotation']=0.0
+        else:self.metadata['orientation']='Path oriented'
+        self.metadata['sunazimuth']=float(utilities.readbinary(meta,(record-1)*recordlength,469,484))
+        self.metadata['sunelevation']=float(utilities.readbinary(meta,(record-1)*recordlength,485,500))
         imgdate=utilities.readbinary(meta,(record-1)*recordlength,581,612)
         self.metadata['imgdate']=time.strftime('%Y-%m-%d',time.strptime(imgdate[0:8],'%Y%m%d')) #ISO 8601 
         satellite=utilities.readbinary(meta,(record-1)*recordlength,613,628)
@@ -120,8 +120,12 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
         cellx=float(utilities.readbinary(meta,(record-1)*recordlength,1381,1396))
         celly=float(utilities.readbinary(meta,(record-1)*recordlength,1397,1412))
 
+        #################################################
+        #Ancillary "Ephemeris / Attitude" record,
+        #################################################
+        record=3
+        viewangle=float(utilities.readbinary(meta,(record-1)*recordlength,3065,3076))
         
-
         #################################################
         #Map projection (scene-related) ancillary record
         #################################################
@@ -170,6 +174,7 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
         self.metadata['sensor']=sensor
         self.metadata['filetype'] ='CEOS/SPOT CCT Format'
         self.metadata['filesize']=sum([os.path.getsize(file) for file in self.filelist])
+        self.metadata['sceneid'] = sceneid
         self.metadata['srs'] = srs
         self.metadata['epsg'] = epsg
         self.metadata['units'] = units
@@ -180,6 +185,7 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
         self.metadata['nbits'] = 8
         self.metadata['datatype'] = 'Byte'
         self.metadata['nodata'] = 0
+        self.metadata['mode'] = mode
         self.metadata['cellx'],self.metadata['celly']=map(float,[cellx,celly])
         self.metadata['UL']='%s,%s' % tuple(ext[0])
         self.metadata['UR']='%s,%s' % tuple(ext[1])

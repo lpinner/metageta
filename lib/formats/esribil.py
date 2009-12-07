@@ -34,7 +34,7 @@ format_regex=[r'\.hdr$']
 import __default__
 
 # import other modules (use "_"  prefix to import privately)
-import sys, os
+import sys, os, geometry
 
 class Dataset(__default__.Dataset): 
     '''Subclass of __default__.Dataset class so we get a load of metadata populated automatically'''
@@ -44,15 +44,23 @@ class Dataset(__default__.Dataset):
         lin=open(f).readline().strip() #read first line
         if lin == 'ENVI':raise NotImplementedError, '%s is not an ESRI bil file.' % f
 
-        data_formats=['bil','bip','bsq','flt']
+        data_formats=['','.bil','.bip','.bsq','.flt'] #added '' as TerraScan can create "bils" with no file extension
         hdr=os.path.splitext(f)[0]
         for fmt in data_formats:
-            dat='%s.%s' % (hdr,fmt)
+            dat=hdr+fmt
             if os.path.exists(dat):break
             else: dat=False
         if dat:self._datafile=dat
         else:raise NotImplementedError, '%s is not an ESRI bil file.' % f
     def __getmetadata__(self,f=None):
         '''Read Metadata for a ESRI Bil image as GDAL doesn't work if you pass the header file...'''
-        __default__.Dataset.__getmetadata__(self, self._datafile) #autopopulate basic metadata
+        try:__default__.Dataset.__getmetadata__(self, self._datafile) #autopopulate basic metadata
+        except geometry.GDALError,err:
+            if 'HFAEntry' in err.errmsg:#Sometimes AUX files can cause problems. AUXs seem to be handled by the HFA (ERDAS Imagine) driver,
+                                        #so deregister it and try again. We won't get as much info though :(
+                hfa=__default__.gdal.GetDriverByName('HFA') 
+                hfa.Deregister()
+                __default__.Dataset.__getmetadata__(self, self._datafile)
+                __default__.gdal.AllRegister()
+            else:raise #Something else caused it, reraise the error
         

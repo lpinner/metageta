@@ -50,6 +50,8 @@ def FormatTraceback(trbk, maxTBlevel):
 
 def readbinary(data,offset, start, stop):
     return ''.join(struct.unpack('s' * (stop-start+1), data[offset+start-1:offset+stop])).strip()
+def readascii(data,offset,start,stop):
+    return data[start+offset-1:stop+offset].strip()
 
 def ByteOrder():
     from struct import pack
@@ -204,7 +206,8 @@ class ExcelWriter:
         self._heading.font = font        
 
         if os.path.exists(xls):os.remove(xls)
-        self._wb = xlwt.Workbook()
+        self._wb = xlwt.Workbook(encoding='latin-1')
+        #self._wb.encoding='latin-1'
         self.AddSheet()
 
     def AddSheet(self):
@@ -223,7 +226,6 @@ class ExcelWriter:
             self.AddSheet()
         for field in data:
             if self._cols.has_key(field):
-                if type(data[field]) is unicode:data[field]=str(data[field])
                 self._ws.write(self._rows+1, self._cols[field], data[field])
                 dirty=True
         if dirty:self._rows+=1

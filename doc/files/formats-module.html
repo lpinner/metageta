@@ -251,9 +251,13 @@
     <li> <strong class="uidlink"><a href="formats.esrigrid-module.html">formats.esrigrid</a></strong>: <em class="summary">&nbsp;</em>    </li>
     <li> <strong class="uidlink"><a href="formats.fast_l7a-module.html">formats.fast_l7a</a></strong>: <em class="summary">&nbsp;</em>    </li>
     <li> <strong class="uidlink"><a href="formats.jp2-module.html">formats.jp2</a></strong>: <em class="summary">&nbsp;</em>    </li>
+    <li> <strong class="uidlink"><a href="formats.netcdf-module.html">formats.netcdf</a></strong>: <em class="summary">Metadata driver for NetCDF imagery 
+        ======================================</em>    </li>
     <li> <strong class="uidlink"><a href="formats.nitf-module.html">formats.nitf</a></strong>: <em class="summary">Metadata driver for NITF imagery 
         ======================================</em>    </li>
     <li> <strong class="uidlink"><a href="formats.quickbird-module.html">formats.quickbird</a></strong>: <em class="summary">&nbsp;</em>    </li>
+    <li> <strong class="uidlink"><a href="formats.spot_cap-module.html">formats.spot_cap</a></strong>: <em class="summary">Metadata driver for SPOT 1-4 imagery 
+        =======================================================</em>    </li>
     <li> <strong class="uidlink"><a href="formats.spot_dimap-module.html">formats.spot_dimap</a></strong>: <em class="summary">&nbsp;</em>    </li>
   </ul></td></tr>
 </table>
@@ -349,10 +353,10 @@ yc'&gt;,
  'LR': ('string', 25),
  'UL': ('string', 25),
  'UR': ('string', 25),
+ 'abstract': 'no fieldtype required as this is not included in the sha\
+pefile...',
  'bands': ('string', 50),
  'cellx': 'float',
- 'celly': 'float',
- 'cloudcover': ('string', 50),
 ..."><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">LL</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">string</code><code class="variable-quote">'</code><code class="variable-op">, </code>25<code class="variable-group">)</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">LR</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">string</code><code class="variable-quote">'</code><code class="variable-op">, </code>25<code class="variable-group">)</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">UL</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-ellipsis">...</code></code>
     </td>
   </tr>
@@ -505,10 +509,10 @@ yc'&gt;<code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">LR</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">string</code><code class="variable-quote">'</code><code class="variable-op">, </code>25<code class="variable-group">)</code><code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">UL</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">string</code><code class="variable-quote">'</code><code class="variable-op">, </code>25<code class="variable-group">)</code><code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">UR</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">string</code><code class="variable-quote">'</code><code class="variable-op">, </code>25<code class="variable-group">)</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">abstract</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">no fieldtype required as this is not included in the sha</code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+<code class="variable-string">pefile...</code><code class="variable-quote">'</code><code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">bands</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">string</code><code class="variable-quote">'</code><code class="variable-op">, </code>50<code class="variable-group">)</code><code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">cellx</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">float</code><code class="variable-quote">'</code><code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">celly</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">float</code><code class="variable-quote">'</code><code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">cloudcover</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">string</code><code class="variable-quote">'</code><code class="variable-op">, </code>50<code class="variable-group">)</code><code class="variable-op">,</code>
 <code class="variable-ellipsis">...</code>
 </pre></td></tr></table>
 </dd>
@@ -544,7 +548,7 @@ yc'&gt;<code class="variable-op">,</code>
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Nov 06 08:52:39 2009
+    Generated by Epydoc 3.0.1 on Mon Dec 07 10:58:08 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

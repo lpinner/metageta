@@ -80,6 +80,13 @@
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
+        <a href="geometry.GDALError-class.html" class="summary-name">GDALError</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
         <a href="geometry.ShapeWriter-class.html" class="summary-name">ShapeWriter</a><br />
       A class for writing geometry and fields to ESRI shapefile format
     </td>
@@ -113,6 +120,26 @@
       Open &amp; return a gdalDataset object</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="geometry-pysrc.html#OpenDataset">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="geometry-module.html#DMS2DD" class="summary-sig-name">DMS2DD</a>(<span class="summary-sig-arg">dms</span>,
+        <span class="summary-sig-arg">format</span>)</span><br />
+      Convert coordinate in degrees, minutes, seconds to decimal degrees
+@param dms: degrees, minutes, seconds string
+@param format: format string</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="geometry-pysrc.html#DMS2DD">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -318,6 +345,84 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
+          <td><span class="summary-sig"><a name="CreateBSQRawRasterVRT"></a><span class="summary-sig-name">CreateBSQRawRasterVRT</span>(<span class="summary-sig-arg">f</span>,
+        <span class="summary-sig-arg">nbands</span>,
+        <span class="summary-sig-arg">cols</span>,
+        <span class="summary-sig-arg">rows</span>,
+        <span class="summary-sig-arg">datatype</span>,
+        <span class="summary-sig-arg">nbits</span>,
+        <span class="summary-sig-arg">nodata</span>=<span class="summary-sig-default">0</span>,
+        <span class="summary-sig-arg">headeroffset</span>=<span class="summary-sig-default">0</span>,
+        <span class="summary-sig-arg">byteorder</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">relativeToVRT</span>=<span class="summary-sig-default">0</span>)</span><br />
+      Create RawRaster VRT from a BSQ</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="geometry-pysrc.html#CreateBSQRawRasterVRT">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="CreateBILRawRasterVRT"></a><span class="summary-sig-name">CreateBILRawRasterVRT</span>(<span class="summary-sig-arg">f</span>,
+        <span class="summary-sig-arg">nbands</span>,
+        <span class="summary-sig-arg">cols</span>,
+        <span class="summary-sig-arg">rows</span>,
+        <span class="summary-sig-arg">datatype</span>,
+        <span class="summary-sig-arg">nbits</span>,
+        <span class="summary-sig-arg">nodata</span>=<span class="summary-sig-default">0</span>,
+        <span class="summary-sig-arg">headeroffset</span>=<span class="summary-sig-default">0</span>,
+        <span class="summary-sig-arg">byteorder</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">relativeToVRT</span>=<span class="summary-sig-default">0</span>)</span><br />
+      Create RawRaster VRT from a BIL</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="geometry-pysrc.html#CreateBILRawRasterVRT">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="CreateBIPRawRasterVRT"></a><span class="summary-sig-name">CreateBIPRawRasterVRT</span>(<span class="summary-sig-arg">f</span>,
+        <span class="summary-sig-arg">nbands</span>,
+        <span class="summary-sig-arg">cols</span>,
+        <span class="summary-sig-arg">rows</span>,
+        <span class="summary-sig-arg">datatype</span>,
+        <span class="summary-sig-arg">nbits</span>,
+        <span class="summary-sig-arg">nodata</span>=<span class="summary-sig-default">0</span>,
+        <span class="summary-sig-arg">headeroffset</span>=<span class="summary-sig-default">0</span>,
+        <span class="summary-sig-arg">byteorder</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">relativeToVRT</span>=<span class="summary-sig-default">0</span>)</span><br />
+      Create RawRaster VRT from BIP</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="geometry-pysrc.html#CreateBIPRawRasterVRT">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
           <td><span class="summary-sig"><a name="CreateCustomVRT"></a><span class="summary-sig-name">CreateCustomVRT</span>(<span class="summary-sig-arg">vrtxml</span>,
         <span class="summary-sig-arg">vrtcols</span>,
         <span class="summary-sig-arg">vrtrows</span>)</span></td>
@@ -349,6 +454,48 @@
   </td>
 </tr>
 </table>
+<a name="DMS2DD"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">DMS2DD</span>(<span class="sig-arg">dms</span>,
+        <span class="sig-arg">format</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="geometry-pysrc.html#DMS2DD">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <pre class="literalblock">
+
+Convert coordinate in degrees, minutes, seconds to decimal degrees
+@param dms: degrees, minutes, seconds string
+@param format: format string
+
+The format parameter is a string of equal length to the DMS string and identifies the position
+of each of the following elements:
+    H - hemisphere
+    D - degrees
+    M - minutes
+    S - seconds
+    Any other string in the format parameter is ignored
+
+eg:
+    '27 45 12 E'   = 'DD MM SS H'
+    '027 45 12 E'  = 'DDD MM SS H'
+    '027-45-12-E'  = 'DDD MM SS H'
+    '27,45,12.3 E' = 'DD MM SSSS H'
+    '-27,45,12.3'  = 'DDD MM SSSS'
+    
+
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
 <a name="Rotation"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -507,7 +654,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Nov 06 08:52:39 2009
+    Generated by Epydoc 3.0.1 on Mon Dec 07 10:58:09 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

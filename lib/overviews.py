@@ -241,12 +241,11 @@ def _stretch_UNIQUE(vrtcols,vrtrows,ds,bands,vals,*args):
 def _stretch_RANDOM(vrtcols,vrtrows,ds,bands,*args):
     from random import randint as r
     rb=ds.GetRasterBand(bands[0])
-    nodata=rb.GetNoDataValue()
+    nodata=int(rb.GetNoDataValue())
     min,max=map(int,rb.ComputeRasterMinMax())
-    vals=[]
+    vals=[(nodata,255,255,255,0)]
     for i in range(min,max+1):#build random RGBA tuple
-        if i == nodata:vals.append((i,255,255,255,0))
-        else:vals.append((i,r(0,255),r(0,255),r(0,255),255))
+        if i != nodata:vals.append((i,r(0,255),r(0,255),r(0,255),255))
     return _stretch_UNIQUE(vrtcols,vrtrows,ds,bands,vals)
 
 def _stretch_COLOURTABLE(vrtcols,vrtrows,ds,bands,*args):

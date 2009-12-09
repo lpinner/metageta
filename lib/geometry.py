@@ -22,9 +22,8 @@ Geometry and dataset helper functions
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
-import os,math,warnings,tempfile
-
-
+import os,math,warnings,tempfile,re
+import utilities
 try:
     from osgeo import gdal
     from osgeo import gdalconst
@@ -59,15 +58,85 @@ class GDALError(Exception):
 #========================================================================================================
 #Dataset Utilities
 #========================================================================================================
-def OpenDataset(f,mode=gdalconst.GA_ReadOnly):
-    '''Open & return a gdalDataset object'''
+def OpenDataset(filepath,mode=gdalconst.GA_ReadOnly):
+    ''' Open & return a gdalDataset object
+        @param filepath: path to dataset
+    '''
+
     gdal.ErrorReset()
     gdal.PushErrorHandler( 'CPLQuietErrorHandler' )
-    gdalDataset = gdal.Open(f, mode)
-    if not gdalDataset:raise GDALError, 'Unable to open %s'%f
+    gdalDataset = gdal.Open(filepath, mode)
+    if not gdalDataset:raise GDALError, 'Unable to open %s'%filepath
     gdal.PopErrorHandler()
     return gdalDataset
+
+def ParseGDALinfo(filepath):
+    ''' Very basic gdalinfo parser, does not include colo(u)r tables, raster attribute tables
+        @param filepath: path to dataset
+    '''
     
+    metadata={}
+    extent=[]
+
+    cmd='gdalinfo -noct '+filepath
+    exit_code,stdout,stderr=utilities.runcmd(cmd)
+    if exit_code != 0: raise Exception, stderr
+    
+    decimal=r'([-+]?\d+\.?\d+e?[-+]?\d+?)'
+
+    rex=r'Size is (\d+),\s*(\d+)'
+    rex=re.compile(rex, re.I)
+    rex=rex.findall(stdout)
+    if rex:metadata['cols'],metadata['rows']=[int(r) for r in rex[0]]
+
+    rex=r'Coordinate System is:\s*(.*\])'
+    rex=re.compile(rex, re.I)
+    rex=rex.findall(' '.join([s.strip() for s in stdout.split('\n')]))
+    if rex:metadata['srs']=rex[0]
+
+
+    rex=r'Pixel Size\s*=\s*\(%s,%s\)' % (decimal,decimal)
+    rex=re.compile(rex, re.I)
+    rex=rex.findall(stdout)
+    if rex:metadata['cellx'],metadata['celly']=[float(r) for r in rex[0]]
+
+    rex=r'Upper Left\s*\(\s*%s\s*,\s*%s\)' % (decimal,decimal)
+    rex=re.compile(rex, re.I)
+    rex=rex.findall(stdout)
+    if rex:extent.append([float(r) for r in rex[0]])
+
+    rex=r'Upper Right\s*\(\s*%s\s*,\s*%s\)' % (decimal,decimal)
+    rex=re.compile(rex, re.I)
+    rex=rex.findall(stdout)
+    if rex:extent.append([float(r) for r in rex[0]])
+
+    rex=r'Lower Left\s*\(\s*%s\s*,\s*%s\)' % (decimal,decimal)
+    rex=re.compile(rex, re.I)
+    rex=rex.findall(stdout)
+    if rex:extent.append([float(r) for r in rex[0]])
+
+    rex=r'Lower Right\s*\(\s*%s\s*,\s*%s\)' % (decimal,decimal)
+    rex=re.compile(rex, re.I)
+    rex=rex.findall(stdout)
+    if rex:extent.append([float(r) for r in rex[0]])
+
+    rex=r'Band \d'
+    rex=re.compile(rex, re.I)
+    rex=rex.findall(stdout)
+    if rex:metadata['nbands']=len(rex)
+
+    rex=r'Type=(%s)' % '|'.join([gdal.GetDataTypeName(dt) for dt in range(0,gdal.GDT_TypeCount)])
+    rex=re.compile(rex, re.I)
+    rex=rex.findall(stdout)
+    if rex:metadata['datatype']=rex[0]
+    
+    rex=r'NoData Value='+decimal
+    rex=re.compile(rex, re.I)
+    rex=rex.findall(stdout)
+    if rex:metadata['nodata']=rex[0]
+
+    return metadata,extent
+
 #========================================================================================================
 #Coordinate Utilities
 #========================================================================================================

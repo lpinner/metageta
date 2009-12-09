@@ -32,18 +32,27 @@ format_regex=[r'hdr\.adf$']
 import __default__
 
 # import other modules (use "_"  prefix to import privately)
-import sys, os,glob
+import sys, os,glob,geometry,utilities
 
 class Dataset(__default__.Dataset): 
     '''Subclass of __default__.Dataset class so we get a load of metadata populated automatically'''
     def __init__(self,f):
         ''' Set the filename from <path>\hdr.adf to <path>'''
-        grddir=os.path.dirname(f)
-        self.fileinfo['filepath']=grddir
-        self.fileinfo['filename']=os.path.basename(grddir)
-        self.filelist=glob.glob(grddir+'*')
-        self.filelist.extend(glob.glob(grddir+'/*'))
+        self._adf=f
+        self.fileinfo['filepath']=os.path.dirname(f)
+        self.fileinfo['filename']=os.path.basename(self.fileinfo['filepath'])
+        self.filelist=glob.glob(self.fileinfo['filepath']+'.*')
+        self.filelist.extend(glob.glob(self.fileinfo['filepath']+'/*'))
     def __getmetadata__(self):
         '''Read Metadata for a ESRI GRID dataset'''
-        __default__.Dataset.__getmetadata__(self, self.fileinfo['filepath']) #autopopulate basic metadata
+        #__default__.Dataset.__getmetadata__(self, self.fileinfo['filepath']) #autopopulate basic metadata
+        try:__default__.Dataset.__getmetadata__(self,  self.fileinfo['filepath']) #autopopulate basic metadata
+        except geometry.GDALError,err:
+            if 'aux' in err.errmsg.lower():#Sometimes AUX files can cause problems, workaround, cd to the grid dir.
+                curdir = os.path.abspath(os.path.curdir)
+                os.chdir(self.fileinfo['filepath'])
+                __default__.Dataset.__getmetadata__(self,  os.path.basename(self._adf))
+                self._gdaldataset.SetDescription(self._adf)
+                os.chdir(curdir)
+            else:raise #Something else caused it, reraise the error
         if self.metadata['compressiontype']=='Unknown':self.metadata['compressiontype']='RLE'

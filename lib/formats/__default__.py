@@ -71,7 +71,7 @@ class Dataset(__dataset__.Dataset):
         if not f:f=self.fileinfo['filepath']
         try:
             cwd=os.path.abspath(os.curdir)
-            if os.path.exists(f):
+            if os.path.exists(f) and os.path.dirname(f):
                 p=os.path.split(f)[0]
                 os.chdir(p)
             self._gdaldataset= geometry.OpenDataset(f)

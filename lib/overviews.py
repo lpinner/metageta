@@ -257,13 +257,14 @@ def _stretch_COLOURTABLE(vrtcols,vrtrows,ds,bands,*args):
     rat=rb.GetHistogram(min, max, abs(min)+abs(max)+1, 1, 0)
     vals=[]
     i=0
-    for v,r in zip(range(min,max+1),rat):
-        if v != nodata and r > 0:
-            ce=[v]
+    ct_count=ct.GetCount()
+    for val,count in zip(range(min,max+1),rat):
+        if val != nodata and count > 0 and i < ct_count: #Bugfix - sometime there are more values than
+            ce=[val]                                     #colortable entries which causes gdal to segfault
             ce.extend(ct.GetColorEntry(i))
             vals.append(ce)
             i+=1
-        else:vals.append([v,255,255,255,0])
+        else:vals.append([val,255,255,255,0])
     return _stretch_UNIQUE(vrtcols,vrtrows,ds,bands,vals)
 ##def _stretch_COLOURTABLE(vrtcols,vrtrows,ds,bands,*args):
 ##    vrt=[]

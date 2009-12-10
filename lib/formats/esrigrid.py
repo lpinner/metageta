@@ -56,3 +56,11 @@ class Dataset(__default__.Dataset):
                 os.chdir(curdir)
             else:raise #Something else caused it, reraise the error
         if self.metadata['compressiontype']=='Unknown':self.metadata['compressiontype']='RLE'
+
+    def getoverview(self,outfile=None,width=800,format='JPG'):
+        '''Override the default method if there is a .clr file'''
+        clr=glob.glob(self.fileinfo['filepath']+'.[cC][lL][rR]')
+        if clr:
+            clr=clr[0]
+            self._stretch=['COLOURTABLELUT',[clr]]
+        return __default__.Dataset.getoverview(self,outfile,width,format)

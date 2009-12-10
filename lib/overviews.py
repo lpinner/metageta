@@ -266,7 +266,7 @@ def _stretch_COLOURTABLE(vrtcols,vrtrows,ds,bands,*args):
             i+=1
         else:vals.append([val,255,255,255,0])
     return _stretch_UNIQUE(vrtcols,vrtrows,ds,bands,vals)
-##def _stretch_COLOURTABLE(vrtcols,vrtrows,ds,bands,*args):
+##def _stretch_COLOURTABLE(vrtcols,vrtrows,ds,bands,*args): #gdal doesn't handle esri colour tables with missing or negative values
 ##    vrt=[]
 ##    colours=['Red','Green','Blue']
 ##    for index, colour in enumerate(colours):
@@ -283,25 +283,24 @@ def _stretch_COLOURTABLE(vrtcols,vrtrows,ds,bands,*args):
 ##    return '\n'.join(vrt)
 _stretch_COLORTABLE=_stretch_COLOURTABLE #Synonym for the norteamericanos
 
-##def _stretch_COLOURTABLELUT(vrtcols,vrtrows,ds,bands,clr,*args):
-##    vrt=[]
-##    srcband=ds.GetRasterBand(1)
-##    nvals=2**(gdal.GetDataTypeSize(srcband.DataType))
-##    lut=ExpandedColorLUT(clr,nvals)
-##    #lut=ParseColorLUT(clr)
-##    for band,clr in enumerate(['Red','Green','Blue']):
-##        vrt.append('  <VRTRasterBand dataType="Byte" band="%s">' % str(band+1))
-##        vrt.append('    <ColorInterp>%s</ColorInterp>' % clr)
-##        vrt.append('    <ComplexSource>')
-##        vrt.append('      <SourceFilename relativeToVRT="0">%s</SourceFilename>' % ds.GetDescription())
-##        vrt.append('      <SourceBand>1</SourceBand>')
-##        vrt.append('      <SrcRect xOff="0" yOff="0" xSize="%s" ySize="%s"/>' % (ds.RasterXSize,ds.RasterYSize))
-##        vrt.append('      <DstRect xOff="0" yOff="0" xSize="%s" ySize="%s"/>' % (vrtcols,vrtrows))
-##        vrt.append('      <LUT>\n        %s\n      </LUT>' % ',\n        '.join(['%s:%s' % (v[0], v[band+1]) for v in lut]))
-##        vrt.append('    </ComplexSource>')
-##        vrt.append('  </VRTRasterBand>')
-##    return '\n'.join(vrt)
-##_stretch_COLORTABLELUT=_stretch_COLOURTABLELUT #SYNONYM for the norteamericanos
+def _stretch_COLOURTABLELUT(vrtcols,vrtrows,ds,bands,clr,*args):
+    vrt=[]
+    srcband=ds.GetRasterBand(1)
+    nvals=2**(gdal.GetDataTypeSize(srcband.DataType))
+    lut=ExpandedColorLUT(clr,nvals)
+    for band,clr in enumerate(['Red','Green','Blue']):
+        vrt.append('  <VRTRasterBand dataType="Byte" band="%s">' % str(band+1))
+        vrt.append('    <ColorInterp>%s</ColorInterp>' % clr)
+        vrt.append('    <ComplexSource>')
+        vrt.append('      <SourceFilename relativeToVRT="0">%s</SourceFilename>' % ds.GetDescription())
+        vrt.append('      <SourceBand>1</SourceBand>')
+        vrt.append('      <SrcRect xOff="0" yOff="0" xSize="%s" ySize="%s"/>' % (ds.RasterXSize,ds.RasterYSize))
+        vrt.append('      <DstRect xOff="0" yOff="0" xSize="%s" ySize="%s"/>' % (vrtcols,vrtrows))
+        vrt.append('      <LUT>\n        %s\n      </LUT>' % ',\n        '.join(['%s:%s' % (v[0], v[band+1]) for v in lut]))
+        vrt.append('    </ComplexSource>')
+        vrt.append('  </VRTRasterBand>')
+    return '\n'.join(vrt)
+_stretch_COLORTABLELUT=_stretch_COLOURTABLELUT #SYNONYM for the norteamericanos
 #========================================================================================================
 #Helper functions
 #========================================================================================================
@@ -409,7 +408,6 @@ def ParseColorLUT(f):
     return clr
 
 def ExpandedColorLUT(f,nvals):
-    #lut=parseColorLUT(f)
     lut=iter(ParseColorLUT(f))
     tbl=[]
     rng=range(0,nvals)

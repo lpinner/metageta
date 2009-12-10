@@ -63,4 +63,10 @@ class Dataset(__default__.Dataset):
                 __default__.Dataset.__getmetadata__(self, self._datafile)
                 __default__.gdal.AllRegister()
             else:raise #Something else caused it, reraise the error
-        
+    def getoverview(self,outfile=None,width=800,format='JPG'):
+        '''Override the default method if there is a .clr file'''
+        clr=glob.glob(self.fileinfo['filepath'][:-3]+'.[cC][lL][rR]')
+        if clr:
+            clr=clr[0]
+            self._stretch=['COLOURTABLELUT',[clr]]
+        return __default__.Dataset.getoverview(self,outfile,width,format)

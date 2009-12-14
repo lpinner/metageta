@@ -3,7 +3,7 @@ Base Dataset class
 ==================
 Defines the metadata fields and populates some basic info
 
-@todo: implement ESRI PGDB rasters (depends on GDAL I think)
+@todo: implement ESRI PGDB rasters (depends on GDAL)
 '''
 
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
@@ -112,7 +112,7 @@ class Dataset(object):
 
         #Check for pre-defined stretch
         if self._stretch:
-            stretch_type,stretch_args=self._stretch
+            stretch_type,rgb_bands,stretch_args=self._stretch
 
         #Check for pre-defined rgb bands
         for i in range(1,nbands+1):
@@ -163,7 +163,7 @@ class Dataset(object):
                 #stretch_type='STDDEV'
                 #stretch_args=[2]
                 if len(rgb_bands) < 3:rgb_bands=[3,2,1]
-
+        if not rgb_bands:rgb_bands=[1]
         return overviews.getoverview(ds,outfile,width,format,rgb_bands,stretch_type,*stretch_args)
 
     # ===================== #

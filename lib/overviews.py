@@ -293,20 +293,21 @@ def _stretch_STDDEV(vrtcols,vrtrows,ds,bands,std):
         vrt.append('  </VRTRasterBand>')
     return '\n'.join(vrt)
 
-def _stretch_UNIQUE(vrtcols,vrtrows,ds,band,vals):
+def _stretch_UNIQUE(vrtcols,vrtrows,ds,bands,vals):
     ''' Unique values stretch.
 
         For further info on VRT's, see the U{GDAL VRT Tutorial<http://www.gdal.org/gdal_vrttut.html>}
 
-        @type ds:     C{gdal.Dataset}
-        @param ds:    A gdal dataset object
-        @type band:   C{int}
-        @param band:  Band number to output. Band numbers are not zero indexed.
-        @type vals:   C{list/tuple}
-        @param vals:  List of cell values and R,G,B[,A] values e.g [(12, 0,0,0), (25, 255,255,255)]
-        @rtype:       C{xml}
-        @return:      VRT XML string
+        @type ds:      C{gdal.Dataset}
+        @param ds:     A gdal dataset object
+        @type bands:   C{[int]}
+        @param bands:  Band number to output. Band numbers are not zero indexed.
+        @type vals:    C{list/tuple}
+        @param vals:   List of cell values and R,G,B[,A] values e.g [(12, 0,0,0), (25, 255,255,255)]
+        @rtype:        C{xml}
+        @return:       VRT XML string
     '''
+    band=bands[0]
     vrt=[]
     for iclr,clr in enumerate(['Red','Green','Blue']):
         vrt.append('  <VRTRasterBand dataType="Byte" band="%s">' % str(iclr+1))
@@ -321,18 +322,19 @@ def _stretch_UNIQUE(vrtcols,vrtrows,ds,band,vals):
         vrt.append('  </VRTRasterBand>')
     return '\n'.join(vrt)
 
-def _stretch_RANDOM(vrtcols,vrtrows,ds,band):
+def _stretch_RANDOM(vrtcols,vrtrows,ds,bands):
     ''' Random values stretch.
 
         For further info on VRT's, see the U{GDAL VRT Tutorial<http://www.gdal.org/gdal_vrttut.html>}
 
-        @type ds:     C{gdal.Dataset}
-        @param ds:    A gdal dataset object
-        @type band:   C{int}
-        @param band:  Band number to output. Band numbers are not zero indexed.
-        @rtype:       C{xml}
-        @return:      VRT XML string
+        @type ds:      C{gdal.Dataset}
+        @param ds:     A gdal dataset object
+        @type bands:   C{[int]}
+        @param bands:  Band number to output. Band numbers are not zero indexed.
+        @rtype:        C{xml}
+        @return:       VRT XML string
     '''
+    band=bands[0]
     from random import randint as r
     rb=ds.GetRasterBand(bands[0])
     nodata=int(rb.GetNoDataValue())
@@ -340,9 +342,9 @@ def _stretch_RANDOM(vrtcols,vrtrows,ds,band):
     vals=[(nodata,255,255,255,0)]
     for i in range(min,max+1):#build random RGBA tuple
         if i != nodata:vals.append((i,r(0,255),r(0,255),r(0,255),255))
-    return _stretch_UNIQUE(vrtcols,vrtrows,ds,band,vals)
+    return _stretch_UNIQUE(vrtcols,vrtrows,ds,bands,vals)
 
-def _stretch_COLOURTABLE(vrtcols,vrtrows,ds,band):
+def _stretch_COLOURTABLE(vrtcols,vrtrows,ds,bands):
     ''' Colour table stretch.
 
         This is a workaround for GDAL not liking color tables with negative or missing values.
@@ -350,13 +352,14 @@ def _stretch_COLOURTABLE(vrtcols,vrtrows,ds,band):
         
         For further info on VRT's, see the U{GDAL VRT Tutorial<http://www.gdal.org/gdal_vrttut.html>}
 
-        @type ds:     C{gdal.Dataset}
-        @param ds:    A gdal dataset object
-        @type band:   C{int}
-        @param band:  Band number to output. Band numbers are not zero indexed.
-        @rtype:       C{xml}
-        @return:      VRT XML string
+        @type ds:      C{gdal.Dataset}
+        @param ds:     A gdal dataset object
+        @type bands:   C{[int]}
+        @param bands:  Band number to output. Band numbers are not zero indexed.
+        @rtype:        C{xml}
+        @return:       VRT XML string
     '''
+    band=bands[0]
     rb=ds.GetRasterBand(band)
     nodata=rb.GetNoDataValue()
     ct=rb.GetColorTable()
@@ -372,7 +375,7 @@ def _stretch_COLOURTABLE(vrtcols,vrtrows,ds,band):
             vals.append(ce)
             i+=1
         else:vals.append([val,255,255,255,0])
-    return _stretch_UNIQUE(vrtcols,vrtrows,ds,band,vals)
+    return _stretch_UNIQUE(vrtcols,vrtrows,ds,bands,vals)
 ##def _stretch_COLOURTABLE(vrtcols,vrtrows,ds,bands): #gdal doesn't handle esri colour tables with missing or negative values
 ##    vrt=[]
 ##    colours=['Red','Green','Blue']
@@ -390,7 +393,7 @@ def _stretch_COLOURTABLE(vrtcols,vrtrows,ds,band):
 ##    return '\n'.join(vrt)
 _stretch_COLORTABLE=_stretch_COLOURTABLE #Synonym for the norteamericanos
 
-def _stretch_COLOURTABLELUT(vrtcols,vrtrows,ds,band,clr):
+def _stretch_COLOURTABLELUT(vrtcols,vrtrows,ds,bands,clr):
     ''' Colour table file LUT stretch.
 
         This is a workaround for GDAL not liking color tables with negative or missing values.
@@ -398,17 +401,18 @@ def _stretch_COLOURTABLELUT(vrtcols,vrtrows,ds,band,clr):
 
         For further info on VRT's, see the U{GDAL VRT Tutorial<http://www.gdal.org/gdal_vrttut.html>}
 
-        @type ds:     C{gdal.Dataset}
-        @param ds:    A gdal dataset object
-        @type band:   C{int}
-        @param band:  Band number to output. Band numbers are not zero indexed.
-        @type clr:    C{str}
-        @param clr:   Path to colour lookup file.
-                      See file format in L{ParseColourLUT<ParseColourLUT>}
-        @rtype:       C{xml}
-        @return:      VRT XML string
+        @type ds:      C{gdal.Dataset}
+        @param ds:     A gdal dataset object
+        @type bands:   C{[int]}
+        @param bands:  Band number to output. Band numbers are not zero indexed.
+        @type clr:     C{str}
+        @param clr:    Path to colour lookup file.
+                       See file format in L{ParseColourLUT<ParseColourLUT>}
+        @rtype:        C{xml}
+        @return:       VRT XML string
     '''
     vrt=[]
+    band=bands[0]
     srcband=ds.GetRasterBand(band)
     nvals=2**(gdal.GetDataTypeSize(srcband.DataType))
     lut=ExpandedColorLUT(clr,nvals)

@@ -62,5 +62,5 @@ class Dataset(__default__.Dataset):
         clr=glob.glob(self.fileinfo['filepath']+'.[cC][lL][rR]')
         if clr:
             clr=clr[0]
-            self._stretch=['COLOURTABLELUT',[clr]]
+            self._stretch=['COLOURTABLELUT',[1],[clr]]
         return __default__.Dataset.getoverview(self,outfile,width,format)

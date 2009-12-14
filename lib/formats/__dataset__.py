@@ -2,6 +2,8 @@
 Base Dataset class
 ==================
 Defines the metadata fields and populates some basic info
+
+@todo: implement ESRI PGDB rasters (depends on GDAL I think)
 '''
 
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
@@ -47,6 +49,10 @@ class Dataset(object):
     def __new__(self,f):
         ##Initialise the class object
         self=object.__new__(self)
+        
+        #Little kludge to avoid ESRI PGDB rasters for now
+        d=os.path.abspath(os.path.dirname(f))
+        if d[-4:].lower() == '.gdb': raise Exception, 'Unable to open rasters stored in an ESRI PGDB %s'%f
         
         self._gdaldataset=None
         self._metadata={}

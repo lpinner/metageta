@@ -1,20 +1,13 @@
 '''
 Metadata driver for ASTER imagery
-=================================
 
-@see:Format specifications
-
-    U{http:#www.gdal.org/frmt_hdf4.html}
-    
-    U{http://asterweb.jpl.nasa.gov/documents/ASTER_L1_Product_Spec_Ver_1.3_July01.pdf}
-    
-    U{http://asterweb.jpl.nasa.gov/content/03_data/04_Documents/ASTER_L1_Product_Spec_Ver_1.3_July01.pdf} (inc description of GCTP projection parameters)
-    
-    U{http://lpdaac.usgs.gov/aster/ASTER_GeoRef_FINAL.pdf}
-    
-    U{http://www.science.aster.ersdac.or.jp/en/documnts/users_guide/index.html}
-    
-    U{http://www.science.aster.ersdac.or.jp/en/documnts/pdf/ASTER_Ref_V1.pdf}
+B{Format specifications}:
+    - U{http:#www.gdal.org/frmt_hdf4.html}
+    - U{http://asterweb.jpl.nasa.gov/documents/ASTER_L1_Product_Spec_Ver_1.3_July01.pdf}
+    - U{http://asterweb.jpl.nasa.gov/content/03_data/04_Documents/ASTER_L1_Product_Spec_Ver_1.3_July01.pdf} (inc description of GCTP projection parameters)
+    - U{http://lpdaac.usgs.gov/aster/ASTER_GeoRef_FINAL.pdf}
+    - U{http://www.science.aster.ersdac.or.jp/en/documnts/users_guide/index.html}
+    - U{http://www.science.aster.ersdac.or.jp/en/documnts/pdf/ASTER_Ref_V1.pdf}
 '''
 
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts

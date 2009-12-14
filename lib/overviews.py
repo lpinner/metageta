@@ -1,6 +1,5 @@
 '''
 Generate overviews for imagery
-==============================
 '''
 
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
@@ -40,21 +39,22 @@ def getoverview(ds,outfile,width,format,bands,stretch_type,*stretch_args):
     '''
     Generate overviews for imagery
 
-    @type  ds:      GDALDataset
+    @type  ds:      C{GDALDataset}
     @param ds:      a GDALDataset object
-    @type  outfile: string
+    @type  outfile: C{str}
     @param outfile: a filepath to the output overview image. If supplied, format is determined from the file extension
-    @type  width:   integer
+    @type  width:   C{int}
     @param width:   output image width
-    @type  format:  string
+    @type  format:  C{str}
     @param format:  format to generate overview image, one of ['JPG','PNG','GIF','BMP','TIF']. Not required if outfile is supplied.
-    @type  bands:   list
+    @type  bands:   C{list}
     @param bands:   list of band numbers (base 1) in processing order - e.g [3,2,1]
-    @type  stretch_type:  string
-    @param stretch_type:  stretch to apply to overview image, one of ['NONE','PERCENT','MINMAX','STDDEV','COLOURTABLE'].
-    @type  stretch_args:  various
+    @type  stretch_type:  C{str}
+    @param stretch_type:  stretch to apply to overview image, 
+                          one of [L{NONE<_stretch_NONE>},L{PERCENT<_stretch_PERCENT>},L{MINMAX<_stretch_MINMAX>},L{STDDEV<_stretch_STDDEV>},L{COLOURTABLE<_stretch_COLOURTABLE>},L{COLOURTABLELUT<_stretch_COLOURTABLELUT>},L{RANDOM<_stretch_RANDOM>},L{UNIQUE<_stretch_UNIQUE>}].
+    @type stretch_args:   C{list}
     @param stretch_args:  args to pass to the stretch algorithms 
-
+    @rtype:         C{str}
     @return:        filepath (if outfile is supplied)/binary image data (if outfile is not supplied)
     '''
     #mapping table for file extension -> GDAL format code
@@ -104,10 +104,38 @@ def getoverview(ds,outfile,width,format,bands,stretch_type,*stretch_args):
 #Stretch algorithms
 #========================================================================================================
 def stretch(stretchType,vrtcols,vrtrows,*args):
-    vrt=globals()['_stretch_'+stretchType.upper()](vrtcols,vrtrows,*args)
+    '''Calls the requested stretch function.
+
+        For further info on VRT's, see the U{GDAL VRT Tutorial<http://www.gdal.org/gdal_vrttut.html>}
+
+        @type stretchType:  C{str}
+        @param stretchType: One of COLORTABLE, COLORTABLELUT, COLOURTABLE, COLOURTABLELUT,
+                                   MINMAX, NONE, PERCENT, RANDOM, STDDEV, UNIQUE
+        @type vrtcols:      C{int}
+        @param vrtcols:     The number of columns in the output VRT
+        @type vrtrows:      C{int}
+        @param vrtrows:     The number of rows in the output VRT
+        @param args:        Other args
+        @rtype:             C{xml}
+        @return:            VRT XML string
+    '''
+    stretch=globals()['_stretch_'+stretchType.upper()]
+    vrt=stretch(vrtcols,vrtrows,*args)
     return geometry.CreateCustomVRT(vrt,vrtcols,vrtrows)
 
-def _stretch_NONE(vrtcols,vrtrows,ds,bands,*args):
+def _stretch_NONE(vrtcols,vrtrows,ds,bands):
+    ''' No stretch.
+
+        For further info on VRT's, see the U{GDAL VRT Tutorial<http://www.gdal.org/gdal_vrttut.html>}
+
+        @type ds:     C{gdal.Dataset}
+        @param ds:    A gdal dataset object
+        @type bands:  C{[int,...,int]}
+        @param bands: A list of band numbers to output (in output order). E.g [4,2,1]
+                      Band numbers are not zero indexed.
+        @rtype:       C{xml}
+        @return:      VRT XML string
+    '''
     vrt=[]
     for bandnum, band in enumerate(bands):
         srcband=ds.GetRasterBand(band)
@@ -121,7 +149,23 @@ def _stretch_NONE(vrtcols,vrtrows,ds,bands,*args):
         vrt.append('  </VRTRasterBand>')
     return '\n'.join(vrt)
 
-def _stretch_PERCENT(vrtcols,vrtrows,ds,bands,low,high,*args):
+def _stretch_PERCENT(vrtcols,vrtrows,ds,bands,low,high):
+    ''' Min, max percentage stretch.
+
+        For further info on VRT's, see the U{GDAL VRT Tutorial<http://www.gdal.org/gdal_vrttut.html>}
+
+        @type ds:     C{gdal.Dataset}
+        @param ds:    A gdal dataset object
+        @type bands:  C{[int,...,int]}
+        @param bands: A list of band numbers to output (in output order). E.g [4,2,1]
+                      Band numbers are not zero indexed.
+        @type low:    C{float}
+        @param low:   Minimum percentage
+        @type high:   C{float}
+        @param high:  Maximum percentage
+        @rtype:       C{xml}
+        @return:      VRT XML string
+    '''
     if low >=1:
         low=low/100.0
         high=high/100.0
@@ -176,7 +220,19 @@ def _stretch_PERCENT(vrtcols,vrtrows,ds,bands,low,high,*args):
         vrt.append('  </VRTRasterBand>')
     return '\n'.join(vrt)
 
-def _stretch_MINMAX(vrtcols,vrtrows,ds,bands,*args):
+def _stretch_MINMAX(vrtcols,vrtrows,ds,bands):
+    ''' Minimum-maximum stretch.
+
+        For further info on VRT's, see the U{GDAL VRT Tutorial<http://www.gdal.org/gdal_vrttut.html>}
+
+        @type ds:     C{gdal.Dataset}
+        @param ds:    A gdal dataset object
+        @type bands:  C{[int,...,int]}
+        @param bands: A list of band numbers to output (in output order). E.g [4,2,1]
+                      Band numbers are not zero indexed.
+        @rtype:       C{xml}
+        @return:      VRT XML string
+    '''
     vrt=[]
     for bandnum, band in enumerate(bands):
         srcband=ds.GetRasterBand(band)
@@ -198,7 +254,21 @@ def _stretch_MINMAX(vrtcols,vrtrows,ds,bands,*args):
         vrt.append('  </VRTRasterBand>')
     return '\n'.join(vrt)
 
-def _stretch_STDDEV(vrtcols,vrtrows,ds,bands,std,*args):
+def _stretch_STDDEV(vrtcols,vrtrows,ds,bands,std):
+    ''' Standard deviation stretch.
+
+        For further info on VRT's, see the U{GDAL VRT Tutorial<http://www.gdal.org/gdal_vrttut.html>}
+
+        @type ds:     C{gdal.Dataset}
+        @param ds:    A gdal dataset object
+        @type bands:  C{[int,...,int]}
+        @param bands: A list of band numbers to output (in output order). E.g [4,2,1]
+                      Band numbers are not zero indexed.
+        @type std:    float
+        @param std:   Standard deviation
+        @rtype:       C{xml}
+        @return:      VRT XML string
+    '''
     vrt=[]
     for bandnum, band in enumerate(bands):
         srcband=ds.GetRasterBand(band)
@@ -223,22 +293,46 @@ def _stretch_STDDEV(vrtcols,vrtrows,ds,bands,std,*args):
         vrt.append('  </VRTRasterBand>')
     return '\n'.join(vrt)
 
-def _stretch_UNIQUE(vrtcols,vrtrows,ds,bands,vals,*args):
+def _stretch_UNIQUE(vrtcols,vrtrows,ds,band,vals):
+    ''' Unique values stretch.
+
+        For further info on VRT's, see the U{GDAL VRT Tutorial<http://www.gdal.org/gdal_vrttut.html>}
+
+        @type ds:     C{gdal.Dataset}
+        @param ds:    A gdal dataset object
+        @type band:   C{int}
+        @param band:  Band number to output. Band numbers are not zero indexed.
+        @type vals:   C{list/tuple}
+        @param vals:  List of cell values and R,G,B[,A] values e.g [(12, 0,0,0), (25, 255,255,255)]
+        @rtype:       C{xml}
+        @return:      VRT XML string
+    '''
     vrt=[]
-    for band,clr in enumerate(['Red','Green','Blue']):
-        vrt.append('  <VRTRasterBand dataType="Byte" band="%s">' % str(band+1))
+    for iclr,clr in enumerate(['Red','Green','Blue']):
+        vrt.append('  <VRTRasterBand dataType="Byte" band="%s">' % str(iclr+1))
         vrt.append('    <ColorInterp>%s</ColorInterp>' % clr)
         vrt.append('    <ComplexSource>')
         vrt.append('      <SourceFilename relativeToVRT="0">%s</SourceFilename>' % ds.GetDescription())
-        vrt.append('      <SourceBand>1</SourceBand>')
+        vrt.append('      <SourceBand>%s</SourceBand>'%band)
         vrt.append('      <SrcRect xOff="0" yOff="0" xSize="%s" ySize="%s"/>' % (ds.RasterXSize,ds.RasterYSize))
         vrt.append('      <DstRect xOff="0" yOff="0" xSize="%s" ySize="%s"/>' % (vrtcols,vrtrows))
-        vrt.append('      <LUT>%s</LUT>' % ','.join(['%s:%s' % (v[0], v[band+1]) for v in vals]))
+        vrt.append('      <LUT>%s</LUT>' % ','.join(['%s:%s' % (v[0], v[iclr+1]) for v in vals]))
         vrt.append('    </ComplexSource>')
         vrt.append('  </VRTRasterBand>')
     return '\n'.join(vrt)
 
-def _stretch_RANDOM(vrtcols,vrtrows,ds,bands,*args):
+def _stretch_RANDOM(vrtcols,vrtrows,ds,band):
+    ''' Random values stretch.
+
+        For further info on VRT's, see the U{GDAL VRT Tutorial<http://www.gdal.org/gdal_vrttut.html>}
+
+        @type ds:     C{gdal.Dataset}
+        @param ds:    A gdal dataset object
+        @type band:   C{int}
+        @param band:  Band number to output. Band numbers are not zero indexed.
+        @rtype:       C{xml}
+        @return:      VRT XML string
+    '''
     from random import randint as r
     rb=ds.GetRasterBand(bands[0])
     nodata=int(rb.GetNoDataValue())
@@ -246,11 +340,24 @@ def _stretch_RANDOM(vrtcols,vrtrows,ds,bands,*args):
     vals=[(nodata,255,255,255,0)]
     for i in range(min,max+1):#build random RGBA tuple
         if i != nodata:vals.append((i,r(0,255),r(0,255),r(0,255),255))
-    return _stretch_UNIQUE(vrtcols,vrtrows,ds,bands,vals)
+    return _stretch_UNIQUE(vrtcols,vrtrows,ds,band,vals)
 
-def _stretch_COLOURTABLE(vrtcols,vrtrows,ds,bands,*args):
-    ##This is a workaround for GDAL not liking color tables with negative or missing values
-    rb=ds.GetRasterBand(bands[0])
+def _stretch_COLOURTABLE(vrtcols,vrtrows,ds,band):
+    ''' Colour table stretch.
+
+        This is a workaround for GDAL not liking color tables with negative or missing values.
+        U{r3253<http://trac.osgeo.org/gdal/ticket/3253>}
+        
+        For further info on VRT's, see the U{GDAL VRT Tutorial<http://www.gdal.org/gdal_vrttut.html>}
+
+        @type ds:     C{gdal.Dataset}
+        @param ds:    A gdal dataset object
+        @type band:   C{int}
+        @param band:  Band number to output. Band numbers are not zero indexed.
+        @rtype:       C{xml}
+        @return:      VRT XML string
+    '''
+    rb=ds.GetRasterBand(band)
     nodata=rb.GetNoDataValue()
     ct=rb.GetColorTable()
     min,max=map(int,rb.ComputeRasterMinMax())
@@ -261,12 +368,12 @@ def _stretch_COLOURTABLE(vrtcols,vrtrows,ds,bands,*args):
     for val,count in zip(range(min,max+1),rat):
         if val != nodata and count > 0 and i < ct_count: #Bugfix - sometime there are more values than
             ce=[val]                                     #colortable entries which causes gdal to segfault
-            ce.extend(ct.GetColorEntry(i))
+            ce.extend(ct.GetColorEntry(i))               #http://trac.osgeo.org/gdal/ticket/3271
             vals.append(ce)
             i+=1
         else:vals.append([val,255,255,255,0])
-    return _stretch_UNIQUE(vrtcols,vrtrows,ds,bands,vals)
-##def _stretch_COLOURTABLE(vrtcols,vrtrows,ds,bands,*args): #gdal doesn't handle esri colour tables with missing or negative values
+    return _stretch_UNIQUE(vrtcols,vrtrows,ds,band,vals)
+##def _stretch_COLOURTABLE(vrtcols,vrtrows,ds,bands): #gdal doesn't handle esri colour tables with missing or negative values
 ##    vrt=[]
 ##    colours=['Red','Green','Blue']
 ##    for index, colour in enumerate(colours):
@@ -283,28 +390,52 @@ def _stretch_COLOURTABLE(vrtcols,vrtrows,ds,bands,*args):
 ##    return '\n'.join(vrt)
 _stretch_COLORTABLE=_stretch_COLOURTABLE #Synonym for the norteamericanos
 
-def _stretch_COLOURTABLELUT(vrtcols,vrtrows,ds,bands,clr,*args):
+def _stretch_COLOURTABLELUT(vrtcols,vrtrows,ds,band,clr):
+    ''' Colour table file LUT stretch.
+
+        This is a workaround for GDAL not liking color tables with negative or missing values.
+        U{r3253<http://trac.osgeo.org/gdal/ticket/3253>}
+
+        For further info on VRT's, see the U{GDAL VRT Tutorial<http://www.gdal.org/gdal_vrttut.html>}
+
+        @type ds:     C{gdal.Dataset}
+        @param ds:    A gdal dataset object
+        @type band:   C{int}
+        @param band:  Band number to output. Band numbers are not zero indexed.
+        @type clr:    C{str}
+        @param clr:   Path to colour lookup file.
+                      See file format in L{ParseColourLUT<ParseColourLUT>}
+        @rtype:       C{xml}
+        @return:      VRT XML string
+    '''
     vrt=[]
-    srcband=ds.GetRasterBand(1)
+    srcband=ds.GetRasterBand(band)
     nvals=2**(gdal.GetDataTypeSize(srcband.DataType))
     lut=ExpandedColorLUT(clr,nvals)
-    for band,clr in enumerate(['Red','Green','Blue']):
-        vrt.append('  <VRTRasterBand dataType="Byte" band="%s">' % str(band+1))
+    for iclr,clr in enumerate(['Red','Green','Blue']):
+        vrt.append('  <VRTRasterBand dataType="Byte" band="%s">' % str(iclr+1))
         vrt.append('    <ColorInterp>%s</ColorInterp>' % clr)
         vrt.append('    <ComplexSource>')
         vrt.append('      <SourceFilename relativeToVRT="0">%s</SourceFilename>' % ds.GetDescription())
         vrt.append('      <SourceBand>1</SourceBand>')
         vrt.append('      <SrcRect xOff="0" yOff="0" xSize="%s" ySize="%s"/>' % (ds.RasterXSize,ds.RasterYSize))
         vrt.append('      <DstRect xOff="0" yOff="0" xSize="%s" ySize="%s"/>' % (vrtcols,vrtrows))
-        vrt.append('      <LUT>\n        %s\n      </LUT>' % ',\n        '.join(['%s:%s' % (v[0], v[band+1]) for v in lut]))
+        vrt.append('      <LUT>\n        %s\n      </LUT>' % ',\n        '.join(['%s:%s' % (v[0], v[iclr+1]) for v in lut]))
         vrt.append('    </ComplexSource>')
         vrt.append('  </VRTRasterBand>')
     return '\n'.join(vrt)
-_stretch_COLORTABLELUT=_stretch_COLOURTABLELUT #SYNONYM for the norteamericanos
+_stretch_COLORTABLELUT=_stretch_COLOURTABLELUT #Synonym for the norteamericanos
 #========================================================================================================
 #Helper functions
 #========================================================================================================
 def GetDataTypeRange(datatype):
+    ''' Calculate data type range
+
+        @type datatype:   C{int}
+        @param datatype:  gdal data type constant
+        @rtype:           C{[int,int]}
+        @return:          Min and max value for data type
+    '''
     nbits   =gdal.GetDataTypeSize(datatype)
     datatype=gdal.GetDataTypeName(datatype)
     if datatype[0:4] in ['Byte','UInt']:
@@ -314,13 +445,22 @@ def GetDataTypeRange(datatype):
         dfScaleSrcMin=-2**(nbits-1) #Signed
         dfScaleSrcMax= 2**(nbits-1)
     return (dfScaleSrcMin,dfScaleSrcMax)
-def HistPercentileValue(inhist, percent, binsize,lowerlimit):
-    """
-    Returns the score at a given percentile relative to the distribution
-    given by inhist.
+def HistPercentileValue(inhist, percent, binsize, lowerlimit):
+    ''' Returns the score at a given percentile relative to the distribution given by inhist.
 
-    Usage:   histpercentilevalue(inhist, percent, binsize,lowerlimit)
-    """
+        Usage:   histpercentilevalue(inhist, percent, binsize,lowerlimit)
+
+        @type inhist:       C{list}
+        @param inhist:      gdal histogram
+        @type percent:      C{float}
+        @param percent:     percentile to return score for
+        @type binsize:      C{float}
+        @param binsize:     width of histogram bins
+        @type lowerlimit:   C{float}
+        @param lowerlimit:  min value of histogram
+        @rtype:             C{float}
+        @return:            score at a given percentile
+    '''
     
     # NOTE this function is from "python-statlib" - http://code.google.com/p/python-statlib/
     #
@@ -358,13 +498,16 @@ def HistPercentileValue(inhist, percent, binsize,lowerlimit):
     score = lowerlimit+binsize*i-binsize
     return score
 
-def ParseColorLUT(f):
-    """Open and parse a colour lookup table, stripping out comment characters
-       Lines must be space separated
-       Format is: pixel red green blue [optional alpha]
-       Pixel value may be a range (eg 15-20)
-       The following comment characters may be used '#' '//' ';' '/*'
-       Example:
+def ParseColourLUT(filepath):
+    ''' Open and parse a colour lookup table
+    
+        Values must be space separated. Comment characters are stripped out.
+        Format is: C{pixel red green blue [optional alpha]}.
+        Pixel value may be a range (eg 15-20).
+        The following comment characters may be used: C{'#' '//' ';' '/*'}.
+
+        Example::
+        
                 #value   R   G   B   A
                  11-15   255 0   0   255 #(red)
                  16      255 165 0   255 #(orange)
@@ -372,10 +515,15 @@ def ParseColorLUT(f):
                  19      0   255 0   255 /*(green)
                  21      0   0   255 255 /*(blue)
                  98      0   255 255 255 ;(cyan)
-                 99-255  160 32  240 255 ;(purple)           
-    """
+                 99-255  160 32  240 255 ;(purple)
+
+        @type filepath:   C{str}
+        @param filepath:  Path to colour lookup file
+        @rtype:           C{list}
+        @return:          List of cell values and R,G,B,A values e.g ((12,0,0,0,255), (25,255,255,255,0))
+    '''
     commentchars=['#','//',';','/*']
-    lut=open(f,'r')
+    lut=open(filepath,'r')
     clr=[]
     for line in lut:
         line=line.strip()
@@ -398,17 +546,41 @@ def ParseColorLUT(f):
                 i,j=[int(val) for val in line[0].split('-')]
                 for val in range(i,j+1):
                     line=[str(val),r,g,b,a]
-                    #yield line
                     clr.append(line)
             else:
-                #yield line
                 clr.append(line)
     #close and exit
     lut.close() 
     return clr
+ParseColorLUT=ParseColourLUT #Synonym for the norteamericanos
 
-def ExpandedColorLUT(f,nvals):
-    lut=iter(ParseColorLUT(f))
+def ExpandedColourLUT(filepath,nvals):
+    ''' Open and parse a colour lookup table, expanding missing values as required.
+    
+        Values must be space separated. Comment characters are stripped out.
+        Format is: C{pixel red green blue [optional alpha]}.
+        Pixel value may be a range (eg 15-20).
+        The following comment characters may be used: C{'#' '//' ';' '/*'}.
+
+        Example::
+        
+                #value   R   G   B   A
+                 11-15   255 0   0   255 #(red)
+                 16      255 165 0   255 #(orange)
+                 18      255 255 0   255 #(yellow)
+                 19      0   255 0   255 /*(green)
+                 21      0   0   255 255 /*(blue)
+                 98      0   255 255 255 ;(cyan)
+                 99-255  160 32  240 255 ;(purple)
+
+        @type filepath:   C{str}
+        @param filepath:  Path to colour lookup file
+        @type nvals:      C{int}
+        @param nvals:     Number of values
+        @rtype:           C{list}
+        @return:          List of cell and R,G,B,A values e.g ((12,0,0,0,255), (25,255,255,255,0))
+    '''
+    lut=iter(ParseColourLUT(filepath))
     tbl=[]
     rng=range(0,nvals)
     val,red,green,blue,alpha=lut.next()
@@ -418,7 +590,7 @@ def ExpandedColorLUT(f,nvals):
             try:val,red,green,blue,alpha=lut.next()
             except:pass #No more color table entries
         else:clr = (str(r),'255','255','255','0') #default - white/transparent
-        #yield clr
         tbl.append(clr)
     return tbl
+ExpandedColorLUT=ExpandedColourLUT #Synonym for the norteamericanos
 

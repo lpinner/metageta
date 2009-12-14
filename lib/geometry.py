@@ -1,6 +1,7 @@
-'''
-Geometry and dataset helper functions
-=====================================
+''' Geometry and dataset helper functions
+
+    @todo: Does the module name I{really} describe its functions anymore?
+           It doesn't just do geometry now...
 '''
 
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
@@ -39,7 +40,14 @@ except ImportError:
 #Custom error class
 #========================================================================================================
 class GDALError(Exception):
+    ''' For raising GDAL related errors '''
     def __init__(self,msg=None):
+        ''' For raising GDAL related errors
+
+            @type msg: C{str}
+            @param msg: Initial message to include with GDAL the error message
+            @return None
+        '''
         errtype={
             gdal.CE_None:'None',
             gdal.CE_Debug:'Debug',
@@ -54,13 +62,23 @@ class GDALError(Exception):
         if msg:self.errmsg='\n'.join([msg,self.errmsg])
         Exception.__init__(self,self.errmsg,self.errnum,self.errtyp)
     def __str__(self):
+        ''' For printing GDAL related errors 
+
+            @rtype:  C{str}
+            @return: String representation of the exception
+        '''
+
         return '%s\nError Message:%s'%(self.errtyp,self.errmsg)
 #========================================================================================================
 #Dataset Utilities
 #========================================================================================================
 def OpenDataset(filepath,mode=gdalconst.GA_ReadOnly):
     ''' Open & return a gdalDataset object
-        @param filepath: path to dataset
+
+        @type    filepath: C{str}
+        @param   filepath: path to dataset
+        @rtype:  C{osgeo.gdal.Dataset}
+        @return: GDAL Dataset
     '''
 
     gdal.ErrorReset()
@@ -71,8 +89,12 @@ def OpenDataset(filepath,mode=gdalconst.GA_ReadOnly):
     return gdalDataset
 
 def ParseGDALinfo(filepath):
-    ''' Very basic gdalinfo parser, does not include colo(u)r tables, raster attribute tables
-        @param filepath: path to dataset
+    ''' Very basic gdalinfo parser, does not include colo(u)r tables, raster attribute tables.
+
+        @type    filepath: C{str}
+        @param   filepath: path to dataset
+        @rtype:  C{(dict,list)}
+        @return: GDAL info,extent coordinates
     '''
     
     metadata={}
@@ -140,30 +162,33 @@ def ParseGDALinfo(filepath):
 #========================================================================================================
 #Coordinate Utilities
 #========================================================================================================
-def DMS2DD(dms,format): 
-    '''
-    Convert coordinate in degrees, minutes, seconds to decimal degrees
-    @param dms: degrees, minutes, seconds string
-    @param format: format string
+def DMS2DD(dms,format):
+    ''' Convert coordinate in degrees, minutes, seconds to decimal degrees.
 
-    The format parameter is a string of equal length to the DMS string and identifies the position
-    of each of the following elements:
-        H - hemisphere
-        D - degrees
-        M - minutes
-        S - seconds
-        Any other string in the format parameter is ignored
+        @type  dms: str
+        @param dms: degrees, minutes, seconds
+        @type  format: str
+        @param format: The format parameter is a string of equal length to the DMS string
+        and identifies the position of each of the following elements. Any other string in
+        the format parameter is ignored.
 
-    eg:
-        '27 45 12 E'   = 'DD MM SS H'
-        '027 45 12 E'  = 'DDD MM SS H'
-        '027-45-12-E'  = 'DDD MM SS H'
-        '27,45,12.3 E' = 'DD MM SSSS H'
-        '-27,45,12.3'  = 'DDD MM SSSS'
-        
+            - H - hemisphere
+            - D - degrees
+            - M - minutes
+            - S - seconds
+
+        eg:
+            - C{'27 45 12 E'   = 'DD MM SS H'}
+            - C{'027 45 12 E'  = 'DDD MM SS H'}
+            - C{'027-45-12-E'  = 'DDD MM SS H'}
+            - C{'27,45,12.3 E' = 'DD MM SSSS H'}
+            - C{'-27,45,12.3'  = 'DDD MM SSSS'}
+
+        @rtype: C{float}
+        @return: decimal degrees
     '''
     if len(dms) != len(format):raise ValueError, 'Format string %s does not match coordinate string %s' % (dms,format)
-    H='';
+    H=''
     D=''
     M=''
     S=''
@@ -192,29 +217,38 @@ def DMS2DD(dms,format):
 #Geometry Utilities
 #========================================================================================================
 def Rotation(gt):   
-    '''
-    Get rotation angle from a geotransform
-    @param gt: geotransform
+    ''' Get rotation angle from a geotransform
+        @type gt: C{tuple/list}
+        @param gt: geotransform
+        @rtype: C{float}
+        @return: rotation angle
     '''
     try:return math.degrees(math.tanh(gt[2]/gt[5]))
     except:return 0
 
 def CellSize(gt):   
-    '''
-    Get cell size from a geotransform
-    @param gt: geotransform
+    ''' Get cell size from a geotransform
+
+        @type gt:  C{tuple/list}
+        @param gt: geotransform
+        @rtype:    C{(float,float)}
+        @return:   (x,y) cell size
     '''
     cellx=round(math.hypot(gt[1],gt[4]),7)
     celly=round(math.hypot(gt[2],gt[5]),7)
     return (cellx,celly)
 
 def SceneCentre(gt,cols,rows):
-    '''
-    Get scene centre from a geotransform.
-    
-    @param gt: geotransform
-    @param cols: number of columns in the dataset
-    @param rows: number of rows in the dataset
+    ''' Get scene centre from a geotransform.
+        
+        @type gt: C{tuple/list}
+        @param gt: geotransform
+        @type cols: C{int}
+        @param cols: number of columns in the dataset
+        @type rows: C{int}
+        @param rows: number of rows in the dataset
+        @rtype:    C{(float,float)}
+        @return:   Scene centre coordinates
     '''
     px = cols/2
     py = rows/2
@@ -223,15 +257,19 @@ def SceneCentre(gt,cols,rows):
     return x,y
 
 def GeoTransformToGCPs(gt,cols,rows):
-    ''' 
-    Form a gcp list from a geotransform using the 4 corners.
+    ''' Form a gcp list from a geotransform using the 4 corners.
 
-    This function is meant to be used to convert a geotransform
-    to gcp's so that the geocoded information can be reprojected.
+        This function is meant to be used to convert a geotransform
+        to gcp's so that the geocoded information can be reprojected.
 
-    @param gt: geotransform to convert to gcps
-    @param cols: number of columns in the dataset
-    @param rows: number of rows in the dataset
+        @type gt:   C{tuple/list}
+        @param gt: geotransform to convert to gcps
+        @type cols:   C{int}
+        @param cols: number of columns in the dataset
+        @type rows:   C{int}
+        @param rows: number of rows in the dataset
+        @rtype:    C{[gcp,...,gcp]}
+        @return:   List of GCP objects
     '''
     ###############################################################################
     # This code is modified from the GeoTransformToGCPs function 
@@ -281,7 +319,17 @@ def GeoTransformToGCPs(gt,cols,rows):
     return gcp_list
 
 def GeomFromExtent(ext,srs=None,srs_wkt=None):
+    ''' Get and OGR geometry object from a extent list
+        
+        @type ext:  C{tuple/list}
+        @param ext: extent coordinates
+        @type srs:  C{str}
+        @param srs: SRS WKT string
+        @rtype:     C{ogr.Geometry}
+        @return:    Geometry object
+    '''
     if type(ext[0]) is list or type(ext[0]) is tuple: #is it a list of xy pairs
+        if ext[0] != ext[-1]:ext.append(ext[0])
         wkt = 'POLYGON ((%s))' % ','.join(map(' '.join, [map(str, i) for i in ext]))
     else: #it's a list of xy values
         xmin,ymin,xmax,ymax=ext
@@ -293,12 +341,16 @@ def GeomFromExtent(ext,srs=None,srs_wkt=None):
     return geom
 
 def ReprojectGeom(geom,src_srs,tgt_srs):
-    ''' 
-    Reproject a geometry object.
+    ''' Reproject a geometry object.
 
-    @param geom: GDAL geometry object
-    @param src_srs: GDAL (OSR) SpatialReference object
-    @param tgt_srs: GDAL (OSR) SpatialReference object
+        @type geom:     C{ogr.Geometry}
+        @param geom:    OGR geometry object
+        @type src_srs:  C{osr.SpatialReference}
+        @param src_srs: OSR SpatialReference object
+        @type tgt_srs:  C{osr.SpatialReference}
+        @param tgt_srs: OSR SpatialReference object
+        @rtype:         C{ogr.Geometry}
+        @return:        OGRGeometry object
     '''
     gdal.ErrorReset()
     gdal.PushErrorHandler( 'CPLQuietErrorHandler' )
@@ -314,6 +366,13 @@ def ReprojectGeom(geom,src_srs,tgt_srs):
 #VRT Utilities
 #========================================================================================================
 def CreateVRTCopy(ds):
+    ''' Create a VRT copy of a gdal.Dataset object.
+
+        @type ds:  C{gdal.Dataset}
+        @param ds: Dataset object
+        @rtype:    C{gdal.Dataset}
+        @return:   VRT Dataset object
+    '''
     try:
         vrtdrv=gdal.GetDriverByName('VRT')
         vrtds=vrtdrv.CreateCopy('',ds)
@@ -322,6 +381,34 @@ def CreateVRTCopy(ds):
         return None
 
 def CreateMosaicedVRT(files,bands,srcrects,dstrects,cols,rows,datatype,relativeToVRT=0):
+    ''' Create a VRT XML string that mosaics datasets.
+
+        For further info on VRT's, see the U{GDAL VRT Tutorial<http://www.gdal.org/gdal_vrttut.html>}
+
+        @type files:          C{[str,...,str]}
+        @param files:         List of files to mosaic
+        @type bands:          C{[int,...,int]}
+        @param bands:         List of band numbers (1 based). Eg. [1,2,3] will mosaic
+                              the first band from each file into the 1st band of the output VRT, etc.
+                              
+        @type srcrects:       C{[SrcRect,...,SrcRect]}
+        @param srcrects:      List of SrcRects, one per file, in image not map units. E.g [[0,0,512,512],...]
+                              will be output as <SrcRect xOff="0" yOff="0" xSize="512" ySize="512"/>.
+                              The SrcRect allows you to subset your input image.
+        @type dstrects:       C{[DstRect,...,DstRect]}
+        @param dstrects:      List of DstRects, One per file, in image not map units. E.g [[512,512,1024,1024],...]
+                              will be output as <DstRect xOff="512" yOff="512" xSize="1024" ySize="1024"/>
+                              The DstRect determines the spatial position of the input image in the mosaic.
+        @type cols:           C{int}
+        @param cols:          The number of columns in the output mosaic
+        @type rows:           C{int}
+        @param rows:          The number of rows in the output mosaic
+        @type datatype:       C{str}
+        @param datatype:      GDAL datatype name. Eg. Byte, Int32, UInt16
+
+        @rtype:               C{xml}
+        @return:              VRT XML string
+    '''
     try:
         vrt=[]
         for i,band in enumerate(bands):
@@ -334,13 +421,29 @@ def CreateMosaicedVRT(files,bands,srcrects,dstrects,cols,rows,datatype,relativeT
                 vrt.append('      <SrcRect xOff="%s" yOff="%s" xSize="%s" ySize="%s"/>' % (srcrects[j][0],srcrects[j][1],srcrects[j][2],srcrects[j][3]))
                 vrt.append('      <DstRect xOff="%s" yOff="%s" xSize="%s" ySize="%s"/>' % (dstrects[j][0],dstrects[j][1],dstrects[j][2],dstrects[j][3]))
                 vrt.append('    </SimpleSource>')
-                
             vrt.append('  </VRTRasterBand>')
         return CreateCustomVRT('\n'.join(vrt),cols,rows)
     except:
         raise #return None
 
 def CreateSimpleVRT(bands,cols,rows,datatype,relativeToVRT=0):
+    ''' Create a VRT XML string with a simple source from one or more datasets,
+        each dataset will be output as a separate band.
+
+        For further info on VRT's, see the U{GDAL VRT Tutorial<http://www.gdal.org/gdal_vrttut.html>}
+
+        @type bands:          C{[str,...,str]}
+        @param bands:         List of files. The first file becomes the first band and so forth.
+        @type cols:           C{int}
+        @param cols:          The number of columns in the output VRT
+        @type rows:           C{int}
+        @param rows:          The number of rows in the output VRT
+        @type datatype:       C{str}
+        @param datatype:      GDAL datatype name. Eg. Byte, Int32, UInt16
+
+        @rtype:               C{xml}
+        @return:              VRT XML string
+    '''
     try:
         vrt=[]
         for i,band in enumerate(bands):
@@ -354,10 +457,31 @@ def CreateSimpleVRT(bands,cols,rows,datatype,relativeToVRT=0):
     except:
         return None
 
-def CreateRawRasterVRT(bands,cols,rows,datatype,nbits,headeroffset=0,byteorder=None,relativeToVRT=0):
-    '''Create RawRaster VRT from one or more _single_ band files'''
+def CreateRawRasterVRT(bands,cols,rows,datatype,headeroffset=0,byteorder=None,relativeToVRT=0):
+    ''' Create RawRaster VRT from one or more _single_ band files
+
+        For further info on VRT's, see the U{GDAL VRT Tutorial<http://www.gdal.org/gdal_vrttut.html>}
+
+        @type bands:          C{[str,...,str]}
+        @param bands:         List of files. The first file becomes the first band and so forth.
+        @type cols:           C{int}
+        @param cols:          The number of columns in the output VRT
+        @type rows:           C{int}
+        @param rows:          The number of rows in the output VRT
+        @type datatype:       C{str}
+        @param datatype:      GDAL datatype name. Eg. Byte, Int32, UInt16
+        @type headeroffset:   C{int}
+        @param headeroffset:  Number of bytes to skip at the start of the file
+        @type byteorder:      C{str}
+        @param byteorder:     Byte order of the file (MSB or LSB)
+
+        @rtype:               C{xml}
+        @return:              VRT XML string
+    '''
+
     try:
         vrt=[]
+        nbits=gdal.GetDataTypeSize(gdal.GetDataTypeByName(datatype))
         for i,band in enumerate(bands):
             vrt.append('  <VRTRasterBand dataType="%s" band="%s" subClass="VRTRawRasterBand">' % (datatype, i+1))
             vrt.append('    <SourceFilename relativeToVRT="%s">%s</SourceFilename>' % (relativeToVRT,band))
@@ -371,13 +495,39 @@ def CreateRawRasterVRT(bands,cols,rows,datatype,nbits,headeroffset=0,byteorder=N
         return None
     return '\n'.join(vrt)
 
-def CreateBSQRawRasterVRT(f,nbands,cols,rows,datatype,nbits,nodata=0,headeroffset=0,byteorder=None,relativeToVRT=0):
-    '''Create RawRaster VRT from a BSQ'''
+def CreateBSQRawRasterVRT(filename,nbands,cols,rows,datatype,nodata=0,headeroffset=0,byteorder=None,relativeToVRT=0):
+    ''' Create RawRaster VRT from a BSQ
+
+        BSQ = Band-Sequential or Band-Interleaved    
+
+        For further info on VRT's, see the U{GDAL VRT Tutorial<http://www.gdal.org/gdal_vrttut.html>}
+
+        @type filename:       C{str}
+        @param filename:      File name
+        @type nbands:         C{int}
+        @param nbands:        The number of bands in the output VRT (<= nbands in input file)
+        @type cols:           C{int}
+        @param cols:          The number of columns in the output VRT
+        @type rows:           C{int}
+        @param rows:          The number of rows in the output VRT
+        @type datatype:       C{str}
+        @param datatype:      GDAL datatype name. Eg. Byte, Int32, UInt16
+        @type nodata:         C{float}
+        @param nodata:        No data/Null value
+        @type headeroffset:   C{int}
+        @param headeroffset:  Number of bytes to skip at the start of the file
+        @type byteorder:      C{str}
+        @param byteorder:     Byte order of the file (MSB or LSB)
+
+        @rtype:               C{xml}
+        @return:              VRT XML string
+    '''
     try:
         vrt=[]
+        nbits=gdal.GetDataTypeSize(gdal.GetDataTypeByName(datatype))
         for i in range(nbands):
             vrt.append('  <VRTRasterBand dataType="%s" band="%s" subClass="VRTRawRasterBand">' % (datatype, i+1))
-            vrt.append('    <SourceFilename relativeToVRT="%s">%s</SourceFilename>' % (relativeToVRT,f))
+            vrt.append('    <SourceFilename relativeToVRT="%s">%s</SourceFilename>' % (relativeToVRT,filename))
             vrt.append('    <NoDataValue>%s</NoDataValue>' % nodata)
             vrt.append('    <ImageOffset>%s</ImageOffset>' % (headeroffset+nbits/8*i*cols*rows))
             vrt.append('    <PixelOffset>%s</PixelOffset>' % (nbits/8))
@@ -389,13 +539,39 @@ def CreateBSQRawRasterVRT(f,nbands,cols,rows,datatype,nbits,nodata=0,headeroffse
         return None
     return '\n'.join(vrt)
 
-def CreateBILRawRasterVRT(f,nbands,cols,rows,datatype,nbits,nodata=0,headeroffset=0,byteorder=None,relativeToVRT=0):
-    '''Create RawRaster VRT from a BIL'''
+def CreateBILRawRasterVRT(filename,nbands,cols,rows,datatype,nbits,nodata=0,headeroffset=0,byteorder=None,relativeToVRT=0):
+    '''Create RawRaster VRT from a BIL
+
+        BIL = Band-Interleaved-by-Line or Row-Interleaved
+
+        For further info on VRT's, see the U{GDAL VRT Tutorial<http://www.gdal.org/gdal_vrttut.html>}
+
+        @type filename:       C{str}
+        @param filename:      File name
+        @type nbands:         C{int}
+        @param nbands:        The number of bands in the output VRT (<= nbands in input file)
+        @type cols:           C{int}
+        @param cols:          The number of columns in the output VRT
+        @type rows:           C{int}
+        @param rows:          The number of rows in the output VRT
+        @type datatype:       C{str}
+        @param datatype:      GDAL datatype name. Eg. Byte, Int32, UInt16
+        @type nodata:         C{float}
+        @param nodata:        No data/Null value
+        @type headeroffset:   C{int}
+        @param headeroffset:  Number of bytes to skip at the start of the file
+        @type byteorder:      C{str}
+        @param byteorder:     Byte order of the file (MSB or LSB)
+
+        @rtype:               C{xml}
+        @return:              VRT XML string
+    '''
     try:
         vrt=[]
+        nbits=gdal.GetDataTypeSize(gdal.GetDataTypeByName(datatype))
         for i in range(nbands):
             vrt.append('  <VRTRasterBand dataType="%s" band="%s" subClass="VRTRawRasterBand">' % (datatype, i+1))
-            vrt.append('    <SourceFilename relativeToVRT="%s">%s</SourceFilename>' % (relativeToVRT,f))
+            vrt.append('    <SourceFilename relativeToVRT="%s">%s</SourceFilename>' % (relativeToVRT,filename))
             vrt.append('    <NoDataValue>%s</NoDataValue>' % nodata)
             vrt.append('    <ImageOffset>%s</ImageOffset>' % (headeroffset+nbits/8*i*cols))
             vrt.append('    <PixelOffset>%s</PixelOffset>' % (nbits/8))
@@ -407,13 +583,39 @@ def CreateBILRawRasterVRT(f,nbands,cols,rows,datatype,nbits,nodata=0,headeroffse
         return None
     return '\n'.join(vrt)
 
-def CreateBIPRawRasterVRT(f,nbands,cols,rows,datatype,nbits,nodata=0,headeroffset=0,byteorder=None,relativeToVRT=0):
-    '''Create RawRaster VRT from BIP'''
+def CreateBIPRawRasterVRT(filename,nbands,cols,rows,datatype,nbits,nodata=0,headeroffset=0,byteorder=None,relativeToVRT=0):
+    '''Create RawRaster VRT from BIP
+
+        BIP = Band-Interleaved-by-Pixel or Pixel-Interleaved
+
+        For further info on VRT's, see the U{GDAL VRT Tutorial<http://www.gdal.org/gdal_vrttut.html>}
+
+        @type filename:       C{str}
+        @param filename:      File name
+        @type nbands:         C{int}
+        @param nbands:        The number of bands in the output VRT (<= nbands in input file)
+        @type cols:           C{int}
+        @param cols:          The number of columns in the output VRT
+        @type rows:           C{int}
+        @param rows:          The number of rows in the output VRT
+        @type datatype:       C{str}
+        @param datatype:      GDAL datatype name. Eg. Byte, Int32, UInt16
+        @type nodata:         C{float}
+        @param nodata:        No data/Null value
+        @type headeroffset:   C{int}
+        @param headeroffset:  Number of bytes to skip at the start of the file
+        @type byteorder:      C{str}
+        @param byteorder:     Byte order of the file (MSB or LSB)
+
+        @rtype:               C{xml}
+        @return:              VRT XML string
+    '''
     try:
         vrt=[]
+        nbits=gdal.GetDataTypeSize(gdal.GetDataTypeByName(datatype))
         for i in range(nbands):
             vrt.append('  <VRTRasterBand dataType="%s" band="%s" subClass="VRTRawRasterBand">' % (datatype, i+1))
-            vrt.append('    <SourceFilename relativeToVRT="%s">%s</SourceFilename>' % (relativeToVRT,f))
+            vrt.append('    <SourceFilename relativeToVRT="%s">%s</SourceFilename>' % (relativeToVRT,filename))
             vrt.append('    <NoDataValue>%s</NoDataValue>' % nodata)
             vrt.append('    <ImageOffset>%s</ImageOffset>' % (headeroffset+nbits/8*i))
             vrt.append('    <PixelOffset>%s</PixelOffset>' % (nbits/8))
@@ -442,14 +644,24 @@ def CreateCustomVRT(vrtxml,vrtcols,vrtrows):
 class ShapeWriter:
     '''A class for writing geometry and fields to ESRI shapefile format'''
     def __init__(self,shapefile,fields,srs_wkt=None,overwrite=True):
-        '''Open the shapefile for writing or appending'''
+        '''Open the shapefile for writing or appending.
+
+            @type shapefile:  C{gdal.Dataset}
+            @param shapefile: Dataset object
+            @type fields:     C{dict}
+            @param fields:    L{Fields dict<formats.fields>}
+            @type srs_wkt:    C{str}
+            @param srs_wkt:   Spatial reference system WKT
+            @type overwrite:  C{boolean}
+            @param overwrite: Overwrite or append to shapefile
+        '''
         try:
             gdal.ErrorReset()
             self._srs=osr.SpatialReference()
             self.fields=[]
             if srs_wkt:self._srs.ImportFromWkt(srs_wkt)
             else:self._srs.ImportFromEPSG(4283) #default=GDA94 Geographic
-            self._shape=self.OpenShapefile(shapefile,fields,overwrite)
+            self._shape=self.__openshapefile__(shapefile,fields,overwrite)
         except Exception, err:
             self.__error__(err)
 
@@ -465,7 +677,13 @@ class ShapeWriter:
         raise err.__class__, errmsg
         
     def WriteRecord(self,extent,attributes):
-        '''Write record'''
+        '''Write record
+
+            @type extent:      C{list}
+            @param extent:     [[ulx,uly],[urx,ury],[lrx,lry],[llx,lly]]
+            @type attributes:  C{dict}
+            @param attributes: Must match field names passed to __init__()
+        '''        
         try:
             geom=GeomFromExtent(extent,self._srs)
             if self._srs.IsGeographic(): #basic coordinate bounds test. Can't do for projected though
@@ -487,7 +705,7 @@ class ShapeWriter:
         except Exception, err:
             self.__error__(err)
 
-    def OpenShapefile(self, shapefile,fields,overwrite):
+    def __openshapefile__(self, shapefile,fields,overwrite):
         '''Open the shapefile for writing or appending'''
         try:
             driver = ogr.GetDriverByName('ESRI Shapefile')

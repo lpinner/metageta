@@ -1,15 +1,19 @@
 '''
-Iterator for metadata crawling
-==============================
+Iterator for metadata crawling.
 
 Example:
+    >>> import crawler
+    >>> Crawler=crawler.Crawler('Some directory to crawl')
+    >>> #Loop thru dataset objects returned by Crawler
+    >>> for dataset in Crawler:
+    >>>     metadata=dataset.metadata
 
->>> import crawler
->>> Crawler=crawler.Crawler('Some directory to crawl')
->>> #Loop thru dataset objects returned by Crawler
->>> for dataset in Crawler:
->>>     metadata=dataset.metadata
-
+@todo:  
+    - Make this faster!!! It's verrry slow on large filesystems...
+    - Explore removing regular expression and searching using fnmatch instead
+    - Can this be rewritten to yield files as they're found instead of building a complete list of files first? Probably.
+      However, the multiple loops are there to ensure certain types of files are dealt with first, but perhaps that logic
+      needs to be handled by the formats library
 '''
 
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
@@ -36,12 +40,15 @@ import utilities
 import formats
 import re
 
-debug=False
-'''Default debug option'''
-
 class Crawler:
-    "Iterator for metadata crawling"
+    ''' Iterator for metadata crawling'''
     def __init__(self,dir):
+        ''' Iterator for metadata crawling
+
+            @type  dir: C{str}
+            @param dir: The directory to start the metadata crawl.
+        '''
+
         format_regex  = formats.format_regex
 
         #Build a dict of matching files and regexes then sort according to the priority of the regex formats 
@@ -66,6 +73,9 @@ class Crawler:
         return self
 
     def next(self):
+        ''' @rtype:  C{Dataset}
+            @return: Return the next Dataset or raise StopIteration
+        '''
         #Have we finished?
         if len(self.files) == 0:
             raise StopIteration

@@ -13,6 +13,7 @@ Usage::
 @sysarg: C{-d dir}: Directory to write XML files to.
 
 @todo: Set up logging & debug properly. Enable selecting if MEF is created regardless of whether overviews exist
+@todo: Fix the splashscreen, it's conflicting with the GetArgs GUI and needs to be sorted out - low priority...
 '''
 
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
@@ -44,18 +45,38 @@ import os,sys,glob
 #startup=CallBack()
 #if len(sys.argv) == 1:SplashScreen(callback=startup.check)
 
-from Tkinter import *
+#from Tkinter import *
+import Tkinter
 import tkFileDialog
 
 from Ft.Xml import Domlette as Dom
 import utilities
 import transforms
 import progresslogger
-reload(transforms)
+
 #Turn off the splashscreen
 #startup.value=True
 
 def main(xls,xsl,dir,mef=False,log=None,debug=False,gui=False):
+    '''
+    Run the Metadata Transform
+
+    @type  xls: C{str}
+    @param xls: Excel spreadsheet to read metadata from
+    @type  xsl: C{str}
+    @param xsl: XSL transform {*.xsl|%s}
+    @type  dir: C{str}
+    @param dir: The directory to output metadata XML to
+    @type  mef: C{boolean}
+    @param mef: Create Metadata Exchange Format (MEF) file
+    @type  log: C{boolean}
+    @param log: Log file
+    @type  debug: C{boolean}
+    @param debug: Turn debug output on
+    @type  gui: C{boolean}
+    @param gui: Show the GUI progress dialog [Not yet implemented]
+    ''' % '|'.join(['"%s"'%s for s in transforms.transforms.keys()])
+
     if debug:level=progresslogger.DEBUG
     else:level=progresslogger.INFO
     windowicon=os.environ['CURDIR']+'/lib/wm_icon.ico'
@@ -102,7 +123,12 @@ class Command:
         apply(self.func, self.args, self.kwargs)
         
 
-class DropList(Widget):
+class DropList(Tkinter.Widget):
+    '''
+    A Tkinter DropList menu
+
+    Derived from http://effbot.org/tkinterbook/menu.htm
+    '''
     def __init__(self, root, options, stringvar, cnf={},**kwargs):
         self.root=root
         self.tk=root
@@ -119,10 +145,10 @@ class DropList(Widget):
 
         stringvar.set(options[0]) # default value
 
-        self.frame=Frame(root,relief="sunken", bd=2,background='white')#,width=fwidth)
-        self._lt=Label(self.frame,textvariable=stringvar, bd=0,relief="sunken",activebackground='white',background='white',width=ltwidth)
-        self._lb=Label(self.frame,text=arrow,relief="raised", bd=2)
-        self._m=Menu(root, tearoff=0,background='white')
+        self.frame=Tkinter.Frame(root,relief="sunken", bd=2,background='white')#,width=fwidth)
+        self._lt=Tkinter.Label(self.frame,textvariable=stringvar, bd=0,relief="sunken",activebackground='white',background='white',width=ltwidth)
+        self._lb=Tkinter.Label(self.frame,text=arrow,relief="raised", bd=2)
+        self._m=Tkinter.Menu(root, tearoff=0,background='white')
 
         for o in options:
             self._m.add_command(label=o, command=Command(stringvar.set,o))
@@ -141,7 +167,9 @@ class DropList(Widget):
         self.frame.grid(*args, **kw)
 
 class GetArgs:
+    '''Pop up a GUI dialog to gather arguments'''
     def __init__(self):
+        '''Build and show the GUI dialog'''
 
         windowicon=os.environ['CURDIR']+'/lib/wm_icon.ico'
 
@@ -182,7 +210,7 @@ class GetArgs:
             8f///ywBAAAADwAQAAAEWBDJSeW76Or9Vn4f5zzOAp5kOo5AC2QOMxaFQcrP+zDCUzyNROAhkL14
             pEJDcQiMijqkIXEYDIsOXWwU6N5Yn5VKpSWYz2fwRcwmldFo9bidhc3Hrrw+HwEAOw=='''
         
-        self.root = Tk()
+        self.root = Tkinter.Tk()
         self.root.title('Metadata Transform')
         try:self.root.wm_iconbitmap(windowicon)
         except:pass
@@ -196,58 +224,58 @@ class GetArgs:
         appYPos = (scrnHt / 2) - (appHt / 2)
         self.root.geometry('+%d+%d' % (appXPos, appYPos))
 
-        last_dir = StringVar()
+        last_dir = Tkinter.StringVar()
         last_dir.set('C:\\')
 
-        xls_ico = PhotoImage(format='gif',data=xls_img)
-        xsl_ico = PhotoImage(format='gif',data=xsl_img)
-        dir_ico = PhotoImage(format='gif',data=dir_img)
+        xls_ico = Tkinter.PhotoImage(format='gif',data=xls_img)
+        xsl_ico = Tkinter.PhotoImage(format='gif',data=xsl_img)
+        dir_ico = Tkinter.PhotoImage(format='gif',data=dir_img)
 
-        sxls = StringVar()
-        sxsl = StringVar()
-        sdir = StringVar()
-        smef = IntVar()
+        sxls = Tkinter.StringVar()
+        sxsl = Tkinter.StringVar()
+        sdir = Tkinter.StringVar()
+        smef = Tkinter.IntVar()
 
-        lxls=Label(self.root, text="Input spreadsheet:")
-        lxsl=Label(self.root, text="XSL Stylesheet:")
-        ldir=Label(self.root, text="Output directory:")
-        lmef=Label(self.root, text="Create MEF:")
+        lxls=Tkinter.Label(self.root, text="Input spreadsheet:")
+        lxsl=Tkinter.Label(self.root, text="XSL Stylesheet:")
+        ldir=Tkinter.Label(self.root, text="Output directory:")
+        lmef=Tkinter.Label(self.root, text="Create MEF:")
 
         self.transforms=transforms.transforms.keys()
 
-        # exls=Entry(self.root, textvariable=sxls)
+        # exls=Tkinter.Entry(self.root, textvariable=sxls)
         # exsl=DropList(self.root,options,sxsl)
-        # edir=Entry(self.root, textvariable=sdir)
+        # edir=Tkinter.Entry(self.root, textvariable=sdir)
         exsl=DropList(self.root,self.transforms,sxsl)
-        exls=Entry(self.root, textvariable=sxls, width=exsl.width)
-        edir=Entry(self.root, textvariable=sdir, width=exsl.width)
-        emef=Checkbutton(self.root, variable=smef, text="",onvalue=True, offvalue=False)
+        exls=Tkinter.Entry(self.root, textvariable=sxls, width=exsl.width)
+        edir=Tkinter.Entry(self.root, textvariable=sdir, width=exsl.width)
+        emef=Tkinter.Checkbutton(self.root, variable=smef, text="",onvalue=True, offvalue=False)
 
-        bxls = Button(self.root,image=xls_ico, command=Command(self.cmdFile,sxls,[('Excel Spreadsheet','*.xls')],last_dir))
-        bxsl = Label(self.root,image=xsl_ico)
-        bdir = Button(self.root,image=dir_ico, command=Command(self.cmdDir, sdir,last_dir))
+        bxls = Tkinter.Button(self.root,image=xls_ico, command=Command(self.cmdFile,sxls,[('Excel Spreadsheet','*.xls')],last_dir))
+        bxsl = Tkinter.Label(self.root,image=xsl_ico)
+        bdir = Tkinter.Button(self.root,image=dir_ico, command=Command(self.cmdDir, sdir,last_dir))
 
-        lxls.grid(row=0, column=0, sticky=W)
-        lxsl.grid(row=1, column=0, sticky=W)
-        ldir.grid(row=2, column=0, sticky=W)
-        #lmef.grid(row=3, column=0, sticky=W)
+        lxls.grid(row=0, column=0, sticky=Tkinter.W)
+        lxsl.grid(row=1, column=0, sticky=Tkinter.W)
+        ldir.grid(row=2, column=0, sticky=Tkinter.W)
+        #lmef.grid(row=3, column=0, sticky=Tkinter.W)
 
-        exls.grid(row=0, column=1, sticky=W)
-        exsl.grid(row=1, column=1, sticky=W)
-        edir.grid(row=2, column=1, sticky=W)
+        exls.grid(row=0, column=1, sticky=Tkinter.W)
+        exsl.grid(row=1, column=1, sticky=Tkinter.W)
+        edir.grid(row=2, column=1, sticky=Tkinter.W)
 
-        #emef.grid(row=3, column=1, sticky=W)
+        #emef.grid(row=3, column=1, sticky=Tkinter.W)
 
-        bxls.grid(row=0, column=2, sticky=E)
-        bxsl.grid(row=1, column=2, sticky=E)
-        bdir.grid(row=2, column=2, sticky=E)
+        bxls.grid(row=0, column=2, sticky=Tkinter.E)
+        bxsl.grid(row=1, column=2, sticky=Tkinter.E)
+        bdir.grid(row=2, column=2, sticky=Tkinter.E)
 
-        bOK = Button(self.root,text="Ok", command=self.cmdOK)
+        bOK = Tkinter.Button(self.root,text="Ok", command=self.cmdOK)
         self.root.bind("<Return>", self.cmdOK)
         bOK.config(width=10)
-        bCancel = Button(self.root,text="Cancel", command=self.cmdCancel)
-        bOK.grid(row=4, column=1,sticky=E, padx=5,pady=5)
-        bCancel.grid(row=4, column=2,sticky=E, pady=5)
+        bCancel = Tkinter.Button(self.root,text="Cancel", command=self.cmdCancel)
+        bOK.grid(row=4, column=1,sticky=Tkinter.E, padx=5,pady=5)
+        bCancel.grid(row=4, column=2,sticky=Tkinter.E, pady=5)
 
         scrnWt = self.root.winfo_screenwidth()
         scrnHt = self.root.winfo_screenheight()

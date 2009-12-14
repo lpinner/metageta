@@ -1,9 +1,8 @@
 '''
 Metadata driver for SPOT 1-4 imagery
-=======================================================
-@see:Format specification
-    
-    U{http://www.spotimage.com/automne_modules_files/standard/public/p555_fileLINKEDFILE1_cap.pdf}
+
+B{Format specification}:
+    - U{http://www.spotimage.com/automne_modules_files/standard/public/p555_fileLINKEDFILE1_cap.pdf}
 '''
 
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
@@ -50,8 +49,8 @@ except ImportError:
     
 class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
     def __init__(self,f=None):
+        '''Open the dataset'''
         if not f:f=self.fileinfo['filepath']
-        self.filelist=[r for r in utilities.rglob(os.path.dirname(f))] #everything in this dir and below.
 
         led=glob.glob(os.path.dirname(f) + '/[Ll][Ee][Aa][Dd]*')[0] #volume file
         meta = open(led,'rb').read()
@@ -62,9 +61,10 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
         satellite=utilities.readbinary(meta,(record-1)*recordlength,613,628)
         if not satellite[0:4] == 'SPOT':
             raise NotImplementedError #This error gets ignored in __init__.Open()
+        self.filelist=[r for r in utilities.rglob(os.path.dirname(f))] #everything in this dir and below.
 
     def __getmetadata__(self,f=None):
-        
+        '''Populate metadata'''
         if not f:f=self.fileinfo['filepath']
         self._gdaldataset = geometry.OpenDataset(f)
 

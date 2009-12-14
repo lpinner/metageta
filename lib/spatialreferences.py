@@ -1,6 +1,5 @@
 '''
 Spatial reference helper functions
-==================================
 '''
 
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
@@ -92,14 +91,15 @@ Mostly from ogr_srs_api.h (with some extras thrown in just in case...)'''
 ## * DEALINGS IN THE SOFTWARE.
 ## ****************************************************************************/
 
-#Geog/Projected EPSG codes
 AUS_GEOGCS=(
     4202, #AGD66
     4203, #AGD84
     4283, #GDA94
     4326, #WGS 84
-    32622  #WGS 84 / Plate Carree
+    32622 #WGS 84 / Plate Carree
 )
+'''Geographic EPSG codes'''
+
 AUS_PROJCS=(
     3032, #WGS 84 / Australian Antarctic Polar Stereographic
     3033, #WGS 84 / Australian Antarctic Lambert
@@ -144,6 +144,8 @@ AUS_PROJCS=(
     28357, #GDA94 / MGA zone 57
     28358  #GDA94 / MGA zone 58
 )
+'''Projected EPSG codes'''
+
 #************************************************************************#
 #*  GCTP projection codes.                                              *#
 #************************************************************************#
@@ -248,7 +250,14 @@ GCTP_ELLIPSOIDS={'CLARKE1866'         : 0,
 #Functions
 #==============================================================================
 def IdentifyAusEPSG(wkt):
+    '''Identify common EPSG codes used in Australia from OGC WKT
     
+        @type wkt:  C{str}
+        @param wkt: WKT SRS string
+        @rtype:     C{int}
+        @return:    EPSG code
+    '''
+
     se=osr.SpatialReference()
     sw=osr.SpatialReference(wkt)
     
@@ -274,6 +283,13 @@ def IdentifyAusEPSG(wkt):
     return int(epsg)
 
 def GetLinearUnitsName(wkt):
+    ''' Identify linear units
+        @type wkt:  C{str}
+        @param wkt: WKT SRS string
+        @rtype:     C{str}
+        @return:    Linear untit code (m,ft,dd, etc.)
+    '''
+
     sw=osr.SpatialReference(wkt)
     name = 'Meter' #Default
     if sw.IsProjected():

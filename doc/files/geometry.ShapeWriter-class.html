@@ -83,12 +83,12 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="__init__"></a><span class="summary-sig-name">__init__</span>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="geometry.ShapeWriter-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">shapefile</span>,
         <span class="summary-sig-arg">fields</span>,
         <span class="summary-sig-arg">srs_wkt</span>=<span class="summary-sig-default">None</span>,
         <span class="summary-sig-arg">overwrite</span>=<span class="summary-sig-default">True</span>)</span><br />
-      Open the shapefile for writing or appending</td>
+      Open the shapefile for writing or appending.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="geometry-pysrc.html#ShapeWriter.__init__">source&nbsp;code</a></span>
             
@@ -138,7 +138,7 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="WriteRecord"></a><span class="summary-sig-name">WriteRecord</span>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="geometry.ShapeWriter-class.html#WriteRecord" class="summary-sig-name">WriteRecord</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">extent</span>,
         <span class="summary-sig-arg">attributes</span>)</span><br />
       Write record</td>
@@ -157,13 +157,13 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="OpenShapefile"></a><span class="summary-sig-name">OpenShapefile</span>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a name="__openshapefile__"></a><span class="summary-sig-name">__openshapefile__</span>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">shapefile</span>,
         <span class="summary-sig-arg">fields</span>,
         <span class="summary-sig-arg">overwrite</span>)</span><br />
       Open the shapefile for writing or appending</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="geometry-pysrc.html#ShapeWriter.OpenShapefile">source&nbsp;code</a></span>
+            <span class="codelink"><a href="geometry-pysrc.html#ShapeWriter.__openshapefile__">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -172,6 +172,82 @@
     </td>
   </tr>
 </table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Method Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-MethodDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">shapefile</span>,
+        <span class="sig-arg">fields</span>,
+        <span class="sig-arg">srs_wkt</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">overwrite</span>=<span class="sig-default">True</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="geometry-pysrc.html#ShapeWriter.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Open the shapefile for writing or appending.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>shapefile</code></strong> (<code>gdal.Dataset</code>) - Dataset object</li>
+        <li><strong class="pname"><code>fields</code></strong> (<code>dict</code>) - <a href="formats-module.html#fields" class="link">Fields dict</a></li>
+        <li><strong class="pname"><code>srs_wkt</code></strong> (<code>str</code>) - Spatial reference system WKT</li>
+        <li><strong class="pname"><code>overwrite</code></strong> (<code>boolean</code>) - Overwrite or append to shapefile</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="WriteRecord"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">WriteRecord</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">extent</span>,
+        <span class="sig-arg">attributes</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="geometry-pysrc.html#ShapeWriter.WriteRecord">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Write record</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>extent</code></strong> (<code>list</code>) - [[ulx,uly],[urx,ury],[lrx,lry],[llx,lly]]</li>
+        <li><strong class="pname"><code>attributes</code></strong> (<code>dict</code>) - Must match field names passed to __init__()</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
 <!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
        bgcolor="#a0c0ff" cellspacing="0">
@@ -200,7 +276,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Mon Dec 07 10:58:09 2009
+    Generated by Epydoc 3.0.1 on Mon Dec 14 13:04:22 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

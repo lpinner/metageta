@@ -1,6 +1,5 @@
 '''
 Utility helper functions
-========================
 '''
 
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
@@ -34,7 +33,68 @@ dateformat='%Y-%m-%d'  #ISO 8601
 timeformat='%H:%M:%S' #ISO 8601
 datetimeformat='%sT%s' % (dateformat,timeformat)
 
+def runcmd(cmd, format='s'):
+    ''' Run a command
+        @type     cmd:  C{str}
+        @param    cmd:  Command (inc arguments) to run
+        @rtype:   C{tuple}
+        @return:  Returns (exit_code,stdout,stderr)
+    '''
+    import subprocess
+    proc = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
+    if format.lower() == 's': #string output
+        stdout,stderr=proc.communicate()
+    #elif format.lower() == 'f': #file object output #doesn't flush IO buffer, causes python to hang
+    #    stdout,stderr=proc.stdout,proc.stderr
+    elif format.lower() == 'l': #list output
+        stdout,stderr=proc.stdout.readlines(),proc.stderr.readlines()
+    #else:raise TypeError, "fomat argument must be in ['s','f','l'] (string, file, list)"
+    else:raise TypeError, "fomat argument must be in ['s','l'] (string or list format)"
+    exit_code=proc.wait()
+    return exit_code,stdout,stderr
+
+def which(name, returnfirst=True, flags=os.F_OK | os.X_OK, path=None):
+    ''' Search PATH for executable files with the given name.
+    
+        On newer versions of MS-Windows, the PATHEXT environment variable will be
+        set to the list of file extensions for files considered executable. This
+        will normally include things like ".EXE". This fuction will also find files
+        with the given name ending with any of these extensions.
+
+        On MS-Windows the only flag that has any meaning is os.F_OK. Any other
+        flags will be ignored.
+        
+        Derived mostly from U{http://code.google.com/p/waf/issues/detail?id=531} with
+        additions from Brian Curtins patch - U{http://bugs.python.org/issue444582}
+
+        @type name: C{str}
+        @param name: The name for which to search.
+        @type returnfirst: C{boolean}
+        @param returnfirst: Return the first executable found.
+        @type flags: C{int}
+        @param flags: Arguments to U{os.access<http://docs.python.org/library/os.html#os.access>}.
+
+        @rtype: C{list}
+        @param: A list of the full paths to files found, in the order in which they were found.
+    '''
+    result = []
+    exts = filter(None, os.environ.get('PATHEXT', '').split(os.pathsep))
+    if not path:
+        path = os.environ.get("PATH", os.defpath)
+    for p in os.environ.get('PATH', '').split(os.pathsep):
+        p = os.path.join(p, name)
+        if os.access(p, flags):
+            if returnfirst:return p
+            else:result.append(p)
+        for e in exts:
+            pext = p + e
+            if os.access(pext, flags):
+                if returnfirst:return pext
+                else:result.append(pext)
+    return result
+
 def ExceptionInfo(maxTBlevel=0):
+    '''Get info about the last exception'''
     cla, exc, trbk = sys.exc_info()
     excName = cla.__name__
     if maxTBlevel > 0:
@@ -46,14 +106,45 @@ def ExceptionInfo(maxTBlevel=0):
         return '%s: %s' % (excName, str(exc))
 
 def FormatTraceback(trbk, maxTBlevel):
+    '''Format traceback'''
     return 'Traceback (most recent call last): '+''.join(traceback.format_tb(trbk, maxTBlevel))
 
 def readbinary(data,offset, start, stop):
+    ''' Read binary data
+        @type    data:   C{str}
+        @param   data:   data read from binary file
+        @type    offset: C{int}
+        @param   offset: Number of bytes to skip
+        @type    start:  C{int}
+        @param   start:  Byte to start reading from (from offset, not beginning of data)
+        @type    stop:   C{int}
+        @param   stop:   Byte to stop reading at (from offset, not beginning of data)
+        @rtype:          C{str}
+        @return:         String
+    '''
     return ''.join(struct.unpack('s' * (stop-start+1), data[offset+start-1:offset+stop])).strip()
+
 def readascii(data,offset,start,stop):
+    ''' Read ASCII data
+        @type    data:   C{str}
+        @param   data:   data read from ASCII file
+        @type    offset: C{int}
+        @param   offset: Number of characters to skip
+        @type    start:  C{int}
+        @param   start:  Character to start reading from (from offset, not beginning of data)
+        @type    stop:   C{int}
+        @param   stop:   Character to stop reading at (from offset, not beginning of data)
+        @rtype:          C{str}
+        @return:         String
+    '''
     return data[start+offset-1:stop+offset].strip()
 
 def ByteOrder():
+    ''' Determine byte order of host machine.
+
+        @rtype:          C{str}
+        @return:         String
+    '''
     from struct import pack
     if pack('<h', 1) == pack('=h',1):
         return 'LSB'
@@ -104,6 +195,13 @@ def _NixFileOwner(uid):
     return ownerid,ownername
 
 def FileInfo(filepath):
+    ''' File information.
+
+        @type    filepath: C{str}
+        @param   filepath: Path to file
+        @rtype:  C{dict}
+        @return: Dictionary containing file: size, datemodified, datecreated, dateaccessed, ownerid & ownername
+    '''
     fileinfo = {
         'size':0,
         'datemodified':'',
@@ -116,7 +214,7 @@ def FileInfo(filepath):
         fileinfo['datemodified']=time.strftime(datetimeformat, time.localtime(filestat.st_mtime))
         fileinfo['datecreated']=time.strftime(datetimeformat, time.localtime(filestat.st_ctime))
         fileinfo['dateaccessed']=time.strftime(datetimeformat, time.localtime(filestat.st_atime))
-        if sys.platform[0:3] =='win':
+        if sys.platform[0:3].lower()=='win':
             ownerid,ownername=_WinFileOwner(filepath)
         else:
             ownerid,ownername=_NixFileOwner(filestat.st_uid)
@@ -127,7 +225,14 @@ def FileInfo(filepath):
 
 
 def convertUNC(filepath):
-    if sys.platform[0:3] =='win':
+    ''' Convert file path to UNC.
+
+        @type    filepath: C{str}
+        @param   filepath: Path to file
+        @rtype:  C{str}
+        @return: UNC filepath (if on Windows)
+    '''
+    if sys.platform[0:3].lower()=='win':
         import win32wnet
         if type(filepath) is list or type(filepath) is tuple: #is it a list of filepaths
             uncpath=[]
@@ -140,59 +245,46 @@ def convertUNC(filepath):
     else:uncpath=filepath
     return uncpath
 
-def fixSeparators(f):
-    if type(f) in [list,tuple]:
-        return [os.path.normpath(i) for i in f]
+def fixSeparators(filepath):
+    ''' Fix up any mixed forward/backward slahes in file path/s.
+
+        @type    filepath: C{str/list}
+        @param   filepath: Path to file/s
+        @rtype:  C{str/list}
+        @return: Path to file/s
+    '''
+    if type(filepath) in [list,tuple]:
+        return [os.path.normpath(i) for i in filepath]
     else:
-        return os.path.normpath(f)
+        return os.path.normpath(filepath)
 
-def checkExt(var,vals):
-    vars=os.path.splitext(var)
-    if vars[1] not in (vals):
-        return vars[0]+vals[0]
+def checkExt(filepath,ext):
+    ''' Check a file has an allowed extension or apply a default extension if it has none.
+
+        @type    filepath: C{str}
+        @param   filepath: Path to file
+        @type    ext: C{[str,...,str]}
+        @param   ext: Allowed file extensions, ext[0] is the default
+        @rtype:  C{str}
+        @return: Path to file with updated extension
+    '''
+    vars=os.path.splitext(filepath)
+    if vars[1] not in (ext):
+        return vars[0]+ext[0]
     else:
-        return var
-
-# def GetFileList(f):
-    # '''Get all files that have the same name, or are related according to gdalinfo
-        # special cases (eg hdf, ccrs, etc) are handled separately in their respective
-        # metadata functions'''
-    # files=[]
-    # files=glob.glob(os.path.splitext(f)[0]+'.*')
-    # if os.path.exists(os.path.splitext(f)[0]):files.append(os.path.splitext(f)[0])
-    # hdr_dir=os.path.join(os.path.split(f)[0], 'headers') #Cause ACRES creates a 'headers' directory
-    # if os.path.exists(hdr_dir):
-        # files.extend(glob.glob(os.path.join(hdr_dir,'*')))
-
-    # try:
-        ##the GDALDataset object has a GetFileList method, but it is not exposed to the python API
-        ##So use the commandline utility instead and parse the output
-        # exit_code, stdout, stderr=runcmd('gdalinfo  -nogcp -nomd -noct '+f, 'l')
-        # lines=stdout.readlines()
-        # i=0
-        # while i < len(lines):
-            # line=lines[i].strip()
-            # if line[0:5]  == 'Files':
-                # file=os.path.realpath(line.replace('Files:','').strip())
-                # if not file in files:files.append(file)
-                # i+=1
-                # while i < len(lines):
-                    # line=lines[i]
-                    # if line[0:4] == 'Size':
-                        # break
-                    # else:
-                        # file=os.path.realpath(line.strip())
-                        # if not file in files:files.append(file)
-                    # i+=1
-                # break
-            # i+=1
-        # i=0
-    # except:pass
-    # return fixSeparators(files)
+        return filepath
 
 class ExcelWriter:
-    _files=0
+    ''' A simple spreadsheet writer'''
+
     def __init__(self,xls,fields):
+        ''' A simple spreadsheet writer.
+        
+            @type    xls: C{str}
+            @param   xls: Path to xls file
+            @type    fields: C{list}
+            @param   fields: List of column/field headers
+        '''
         fields.sort()
         self._file=xls
         self._fields=fields
@@ -208,9 +300,9 @@ class ExcelWriter:
         if os.path.exists(xls):os.remove(xls)
         self._wb = xlwt.Workbook(encoding='latin-1')
         #self._wb.encoding='latin-1'
-        self.AddSheet()
+        self.__addsheet__()
 
-    def AddSheet(self):
+    def __addsheet__(self):
         self._sheets+=1
         self._ws = self._wb.add_sheet('Sheet %s'%self._sheets)
         #self._ws.keep_leading_zeros()
@@ -221,9 +313,14 @@ class ExcelWriter:
         self._rows = 0
         
     def WriteRecord(self,data):
+        ''' Write a record
+        
+            @type    data: C{dict}
+            @param   data: Dict containing column headers (dict.keys()) and values (dict.values())
+        '''
         dirty=False
         if self._rows > 65535:
-            self.AddSheet()
+            self.__addsheet__()
         for field in data:
             if self._cols.has_key(field):
                 self._ws.write(self._rows+1, self._cols[field], data[field])
@@ -237,35 +334,47 @@ class ExcelWriter:
         #del self._wb
     
 
-def ExcelReader(xls,returntype=dict):
-    wb=xlrd.open_workbook(xls)
-    for ws in wb.sheets():
+class ExcelReader:
+    '''A simple spreadsheet reader'''
+    def __init__(self,xls,returntype=dict):
+        ''' A simple spreadsheet reader.
+        
+            @type    xls: C{str}
+            @param   xls: Path to xls file
+            @type    returntype: C{type}
+            @param   returntype: dict or list
+        '''
+        self.wb=xlrd.open_workbook(xls)
+        self.returntype=returntype
+    def __getitem__(self, index):
+        i=index/65535
+        j=index-i*65535
+        ws=self.wb.sheets()[i]
         headers=[c.value for c in ws.row(0)]
-        for i in range(1,ws.nrows):
-            cells=[c.value for c in ws.row(i)]
-            if returntype is dict:
-                yield dict(zip(headers,cells))
-            else:
-                yield zip(headers,cells)
+        cells=[c.value for c in ws.row(j+1)]
+        if self.returntype is dict:
+            return dict(zip(headers,cells))
+        else:
+            return zip(headers,cells)
 
-def runcmd(cmd, format='s'):
-    import subprocess
-    proc = subprocess.Popen(cmd, shell=True, stdin=subprocess.PIPE,stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-    if format.lower() == 's': #string output
-        stdout,stderr=proc.communicate()
-    #elif format.lower() == 'f': #file object output #doesn't flush IO buffer, causes python to hang
-    #    stdout,stderr=proc.stdout,proc.stderr
-    elif format.lower() == 'l': #list output
-        stdout,stderr=proc.stdout.readlines(),proc.stderr.readlines()
-    #else:raise TypeError, "fomat argument must be in ['s','f','l'] (string, file, list)"
-    else:raise TypeError, "fomat argument must be in ['s','l'] (string or list format)"
-    exit_code=proc.wait()
-    return exit_code,stdout,stderr
 class rglob:
-    '''a forward iterator that traverses a directory tree
+    '''A recursive/regex enhanced glob
        adapted from os-path-walk-example-3.py - http://effbot.org/librarybook/os-path.htm 
     '''
     def __init__(self, directory, pattern="*", regex=False, regex_flags=0, recurse=True):
+        ''' @type    directory: C{str}
+            @param   directory: Path to xls file
+            @type    pattern: C{type}
+            @param   pattern: Regular expression/wildcard pattern to match files against
+            @type    regex: C{boolean}
+            @param   regex: Use regular expression matching (if False, use fnmatch)
+                            See U{http://docs.python.org/library/re.html}
+            @type    regex_flags: C{int}
+            @param   regex_flags: Flags to pass to the regular expression compiler.
+                                  See U{http://docs.python.org/library/re.html}
+            @type    recurse: C{boolean} 
+            @param   recurse: Recurse into the directory?
+        '''
         self.stack = [directory]
         self.pattern = pattern
         self.regex = regex

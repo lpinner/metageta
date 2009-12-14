@@ -57,7 +57,7 @@
 </table>
 <!-- ==================== MODULE DESCRIPTION ==================== -->
 <h1 class="epydoc">Module spatialreferences</h1><p class="nomargin-top"><span class="codelink"><a href="spatialreferences-pysrc.html">source&nbsp;code</a></span></p>
-<h1 class="heading">Spatial reference helper functions</h1>
+<p>Spatial reference helper functions</p>
 
 <!-- ==================== FUNCTIONS ==================== -->
 <a name="section-Functions"></a>
@@ -78,11 +78,12 @@
 </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type"><code>int</code></span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="IdentifyAusEPSG"></a><span class="summary-sig-name">IdentifyAusEPSG</span>(<span class="summary-sig-arg">wkt</span>)</span></td>
+          <td><span class="summary-sig"><a href="spatialreferences-module.html#IdentifyAusEPSG" class="summary-sig-name">IdentifyAusEPSG</a>(<span class="summary-sig-arg">wkt</span>)</span><br />
+      Identify common EPSG codes used in Australia from OGC WKT</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="spatialreferences-pysrc.html#IdentifyAusEPSG">source&nbsp;code</a></span>
             
@@ -94,11 +95,12 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type"><code>str</code></span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="GetLinearUnitsName"></a><span class="summary-sig-name">GetLinearUnitsName</span>(<span class="summary-sig-arg">wkt</span>)</span></td>
+          <td><span class="summary-sig"><a href="spatialreferences-module.html#GetLinearUnitsName" class="summary-sig-name">GetLinearUnitsName</a>(<span class="summary-sig-arg">wkt</span>)</span><br />
+      Identify linear units</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="spatialreferences-pysrc.html#GetLinearUnitsName">source&nbsp;code</a></span>
             
@@ -146,7 +148,8 @@
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a name="AUS_GEOGCS"></a><span class="summary-name">AUS_GEOGCS</span> = <code title="(4202, 4203, 4283, 4326, 32622)"><code class="variable-group">(</code>4202<code class="variable-op">, </code>4203<code class="variable-op">, </code>4283<code class="variable-op">, </code>4326<code class="variable-op">, </code>32622<code class="variable-group">)</code></code>
+        <a name="AUS_GEOGCS"></a><span class="summary-name">AUS_GEOGCS</span> = <code title="(4202, 4203, 4283, 4326, 32622)"><code class="variable-group">(</code>4202<code class="variable-op">, </code>4203<code class="variable-op">, </code>4283<code class="variable-op">, </code>4326<code class="variable-op">, </code>32622<code class="variable-group">)</code></code><br />
+      Geographic EPSG codes
     </td>
   </tr>
 <tr>
@@ -161,7 +164,8 @@
  3112,
  3308,
  3577,
-..."><code class="variable-group">(</code>3032<code class="variable-op">, </code>3033<code class="variable-op">, </code>3107<code class="variable-op">, </code>3110<code class="variable-op">, </code>3111<code class="variable-op">, </code>3112<code class="variable-op">, </code>3308<code class="variable-op">, </code>3577<code class="variable-op">, </code><code class="variable-ellipsis">...</code></code>
+..."><code class="variable-group">(</code>3032<code class="variable-op">, </code>3033<code class="variable-op">, </code>3107<code class="variable-op">, </code>3110<code class="variable-op">, </code>3111<code class="variable-op">, </code>3112<code class="variable-op">, </code>3308<code class="variable-op">, </code>3577<code class="variable-op">, </code><code class="variable-ellipsis">...</code></code><br />
+      Projected EPSG codes
     </td>
   </tr>
 <tr>
@@ -197,6 +201,75 @@
     </td>
   </tr>
 </table>
+<!-- ==================== FUNCTION DETAILS ==================== -->
+<a name="section-FunctionDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Function Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-FunctionDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="IdentifyAusEPSG"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">IdentifyAusEPSG</span>(<span class="sig-arg">wkt</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="spatialreferences-pysrc.html#IdentifyAusEPSG">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Identify common EPSG codes used in Australia from OGC WKT</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>wkt</code></strong> (<code>str</code>) - WKT SRS string</li>
+    </ul></dd>
+    <dt>Returns: <code>int</code></dt>
+        <dd>EPSG code</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="GetLinearUnitsName"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">GetLinearUnitsName</span>(<span class="sig-arg">wkt</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="spatialreferences-pysrc.html#GetLinearUnitsName">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Identify linear units</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>wkt</code></strong> (<code>str</code>) - WKT SRS string</li>
+    </ul></dd>
+    <dt>Returns: <code>str</code></dt>
+        <dd>Linear untit code (m,ft,dd, etc.)</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
 <!-- ==================== VARIABLES DETAILS ==================== -->
 <a name="section-VariablesDetails"></a>
 <table class="details" border="1" cellpadding="3"
@@ -249,7 +322,7 @@
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <h3 class="epydoc">AUS_PROJCS</h3>
-  
+  <p>Projected EPSG codes</p>
   <dl class="fields">
   </dl>
   <dl class="fields">
@@ -350,7 +423,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Mon Dec 07 10:58:09 2009
+    Generated by Epydoc 3.0.1 on Mon Dec 14 13:04:21 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

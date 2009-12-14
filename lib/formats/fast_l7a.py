@@ -1,12 +1,11 @@
 '''
 Metadata driver for ACRES Landsat FastL7A imagery
-=================================================
 
-@see:Format specification
-    U{http://www.ga.gov.au/image_cache/GA10348.pdf}
+B{Format specification}:
+    - U{http://www.ga.gov.au/image_cache/GA10348.pdf}
 
-@see:General info
-    U{http://www.ga.gov.au/remote-sensing/satellites-sensors/landsat}
+B{General info}:
+    - U{http://www.ga.gov.au/remote-sensing/satellites-sensors/landsat}
 '''
 
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
@@ -259,7 +258,7 @@ class Dataset(__dataset__.Dataset):
         except:#build a VRT dataset - if we want to use this fgor anything other than overview generation, should probably fill out the geotransform, srs, metadata etc...
             bands=bandfiles.values()
             bands.sort()
-            vrtxml=geometry.CreateRawRasterVRT(bands,md['cols'],md['rows'], md['datatype'],md['nbits'])
+            vrtxml=geometry.CreateRawRasterVRT(bands,md['cols'],md['rows'], md['datatype'])
             self._gdaldataset = geometry.OpenDataset(vrtxml)
             md['metadata']=hdr
 

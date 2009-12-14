@@ -58,6 +58,8 @@
 </table>
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class ExcelWriter</h1><p class="nomargin-top"><span class="codelink"><a href="utilities-pysrc.html#ExcelWriter">source&nbsp;code</a></span></p>
+<p>A simple spreadsheet writer</p>
+
 <!-- ==================== INSTANCE METHODS ==================== -->
 <a name="section-InstanceMethods"></a>
 <table class="summary" border="1" cellpadding="3"
@@ -81,9 +83,10 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="__init__"></a><span class="summary-sig-name">__init__</span>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="utilities.ExcelWriter-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">xls</span>,
-        <span class="summary-sig-arg">fields</span>)</span></td>
+        <span class="summary-sig-arg">fields</span>)</span><br />
+      A simple spreadsheet writer.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="utilities-pysrc.html#ExcelWriter.__init__">source&nbsp;code</a></span>
             
@@ -99,9 +102,9 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="AddSheet"></a><span class="summary-sig-name">AddSheet</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td><span class="summary-sig"><a name="__addsheet__"></a><span class="summary-sig-name">__addsheet__</span>(<span class="summary-sig-arg">self</span>)</span></td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="utilities-pysrc.html#ExcelWriter.AddSheet">source&nbsp;code</a></span>
+            <span class="codelink"><a href="utilities-pysrc.html#ExcelWriter.__addsheet__">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -115,8 +118,9 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="WriteRecord"></a><span class="summary-sig-name">WriteRecord</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">data</span>)</span></td>
+          <td><span class="summary-sig"><a href="utilities.ExcelWriter-class.html#WriteRecord" class="summary-sig-name">WriteRecord</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">data</span>)</span><br />
+      Write a record</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="utilities-pysrc.html#ExcelWriter.WriteRecord">source&nbsp;code</a></span>
             
@@ -143,31 +147,77 @@
     </td>
   </tr>
 </table>
-<!-- ==================== CLASS VARIABLES ==================== -->
-<a name="section-ClassVariables"></a>
-<table class="summary" border="1" cellpadding="3"
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr bgcolor="#70b0f0" class="table-header">
   <td colspan="2" class="table-header">
     <table border="0" cellpadding="0" cellspacing="0" width="100%">
       <tr valign="top">
-        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="left"><span class="table-header">Method Details</span></td>
         <td align="right" valign="top"
-         ><span class="options">[<a href="#section-ClassVariables"
+         ><span class="options">[<a href="#section-MethodDetails"
          class="privatelink" onclick="toggle_private();"
          >hide private</a>]</span></td>
       </tr>
     </table>
   </td>
 </tr>
-<tr class="private">
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a name="_files"></a><span class="summary-name">_files</span> = <code title="0">0</code>
-    </td>
-  </tr>
 </table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">xls</span>,
+        <span class="sig-arg">fields</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="utilities-pysrc.html#ExcelWriter.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>A simple spreadsheet writer.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>xls</code></strong> (<code>str</code>) - Path to xls file</li>
+        <li><strong class="pname"><code>fields</code></strong> (<code>list</code>) - List of column/field headers</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="WriteRecord"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">WriteRecord</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">data</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="utilities-pysrc.html#ExcelWriter.WriteRecord">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Write a record</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>data</code></strong> (<code>dict</code>) - Dict containing column headers (dict.keys()) and values 
+          (dict.values())</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
 <!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
        bgcolor="#a0c0ff" cellspacing="0">
@@ -196,7 +246,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Mon Dec 07 10:58:09 2009
+    Generated by Epydoc 3.0.1 on Mon Dec 14 13:04:22 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

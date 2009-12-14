@@ -65,9 +65,6 @@ class Dataset(object):
     # ==================== #
     # Public Class Methods
     # ==================== #
-    #def getoverview(self,*args,**kwargs):
-    #    '''In case subclasses don't override...'''
-    #    pass
     def getoverview(self,outfile=None,width=800,format='JPG'): 
         '''
         Generate overviews for generic imagery
@@ -177,8 +174,8 @@ class Dataset(object):
         #self.fileinfo['metadatadate']=time.strftime(utilities.datetimeformat,time.localtime()) #Geonetwork is baulking at the yyy-mm-ddThh:mm:ss format
         self.fileinfo['metadatadate']=time.strftime(utilities.dateformat,time.localtime())  #Just use yyy-mm-dd
     def __getfilelist__(self,*args,**kwargs):
-        '''Get all files that have the same name (sans .ext), or are related according to gdalinfo
-            special cases may be handled separately in their respective format drivers'''
+        '''Get all files that have the same name (sans .ext), or are related according to gdalinfo.
+            Special cases may be handled separately in their respective format drivers.'''
         f=self.fileinfo['filepath']
         files=[]
         try:
@@ -273,8 +270,8 @@ class Dataset(object):
         return locals()
 
 class idict(UserDict.IterableUserDict):
-    '''The idict class. An immutable dictionary.
-       modified from http://code.activestate.com/recipes/498072/
+    '''An immutable dictionary.
+       Modified from http://code.activestate.com/recipes/498072/
        to inherit UserDict.IterableUserDict
     '''
     def __setitem__(self, key, val):

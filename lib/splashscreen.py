@@ -2,6 +2,8 @@
 This is the beginnings of a splash screen cos the GUI's in runcrawler.py and runtransforms.py take sooo long to start up...
 ===========================================================================================================================
 
+No, they don't take long at all to load when run from C:\ drive. They take ages when the app is run from a network drive
+
 Modified from Activestate Recipe 534124: Elegant Tkinter Splash Screen U{http://code.activestate.com/recipes/534124} 
 by Luke Pinner (ERIN) to support threading & callback functions.
 
@@ -28,7 +30,8 @@ by Luke Pinner (ERIN) to support threading & callback functions.
 # THE SOFTWARE.
 
 import threading,os
-from Tkinter import *
+#from Tkinter import *
+import Tkinter
 class SplashScreen(threading.Thread):
     def __init__(self, imagefile=None, imagedata=None, timeout=0.001, callback=lambda:True):
     
@@ -37,11 +40,11 @@ class SplashScreen(threading.Thread):
             imagefile=os.path.splitext(__file__)[0]+'.gif'
         if not timeout   and not callback: raise Exception,'Timeout (secs) or boolean callback function required!'
 
-        self._root              = Tk()
+        self._root              = Tkinter.Tk()
         self._splash            = None
 
-        if imagefile:self._image = PhotoImage(file=imagefile)
-        else:        self._image = PhotoImage(data=imagedata)
+        if imagefile:self._image = Tkinter.PhotoImage(file=imagefile)
+        else:        self._image = Tkinter.PhotoImage(data=imagedata)
         self._timeout  = timeout
         self._callback = callback
 
@@ -63,7 +66,7 @@ class SplashScreen(threading.Thread):
 
         self._root.overrideredirect(1)
         self._root.geometry('+%d+%d' % (imgXPos, imgYPos))
-        Label(self._root, image=self._image, cursor='watch').pack()
+        Tkinter.Label(self._root, image=self._image, cursor='watch').pack()
 
         # Force Tk to draw the splash screen outside of mainloop()
         #self._splash.update()

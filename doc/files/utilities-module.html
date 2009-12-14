@@ -57,7 +57,7 @@
 </table>
 <!-- ==================== MODULE DESCRIPTION ==================== -->
 <h1 class="epydoc">Module utilities</h1><p class="nomargin-top"><span class="codelink"><a href="utilities-pysrc.html">source&nbsp;code</a></span></p>
-<h1 class="heading">Utility helper functions</h1>
+<p>Utility helper functions</p>
 
 <!-- ==================== CLASSES ==================== -->
 <a name="section-Classes"></a>
@@ -80,7 +80,16 @@
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="utilities.ExcelWriter-class.html" class="summary-name">ExcelWriter</a>
+        <a href="utilities.ExcelWriter-class.html" class="summary-name">ExcelWriter</a><br />
+      A simple spreadsheet writer
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="utilities.ExcelReader-class.html" class="summary-name">ExcelReader</a><br />
+      A simple spreadsheet reader
     </td>
   </tr>
 <tr>
@@ -88,7 +97,7 @@
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
         <a href="utilities.rglob-class.html" class="summary-name">rglob</a><br />
-      a forward iterator that traverses a directory tree adapted from 
+      A recursive/regex enhanced glob adapted from 
         os-path-walk-example-3.py - 
         http://effbot.org/librarybook/os-path.htm
     </td>
@@ -113,11 +122,50 @@
 </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type"><code>tuple</code></span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="utilities-module.html#runcmd" class="summary-sig-name">runcmd</a>(<span class="summary-sig-arg">cmd</span>,
+        <span class="summary-sig-arg">format</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">s</code><code class="variable-quote">'</code></span>)</span><br />
+      Run a command</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="utilities-pysrc.html#runcmd">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type"><code>list</code></span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="utilities-module.html#which" class="summary-sig-name">which</a>(<span class="summary-sig-arg">name</span>,
+        <span class="summary-sig-arg">returnfirst</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">flags</span>=<span class="summary-sig-default">1</span>,
+        <span class="summary-sig-arg">path</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Search PATH for executable files with the given name.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="utilities-pysrc.html#which">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="ExceptionInfo"></a><span class="summary-sig-name">ExceptionInfo</span>(<span class="summary-sig-arg">maxTBlevel</span>=<span class="summary-sig-default">0</span>)</span></td>
+          <td><span class="summary-sig"><a name="ExceptionInfo"></a><span class="summary-sig-name">ExceptionInfo</span>(<span class="summary-sig-arg">maxTBlevel</span>=<span class="summary-sig-default">0</span>)</span><br />
+      Get info about the last exception</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="utilities-pysrc.html#ExceptionInfo">source&nbsp;code</a></span>
             
@@ -134,7 +182,8 @@
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a name="FormatTraceback"></a><span class="summary-sig-name">FormatTraceback</span>(<span class="summary-sig-arg">trbk</span>,
-        <span class="summary-sig-arg">maxTBlevel</span>)</span></td>
+        <span class="summary-sig-arg">maxTBlevel</span>)</span><br />
+      Format traceback</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="utilities-pysrc.html#FormatTraceback">source&nbsp;code</a></span>
             
@@ -146,14 +195,15 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type"><code>str</code></span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="readbinary"></a><span class="summary-sig-name">readbinary</span>(<span class="summary-sig-arg">data</span>,
+          <td><span class="summary-sig"><a href="utilities-module.html#readbinary" class="summary-sig-name">readbinary</a>(<span class="summary-sig-arg">data</span>,
         <span class="summary-sig-arg">offset</span>,
         <span class="summary-sig-arg">start</span>,
-        <span class="summary-sig-arg">stop</span>)</span></td>
+        <span class="summary-sig-arg">stop</span>)</span><br />
+      Read binary data</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="utilities-pysrc.html#readbinary">source&nbsp;code</a></span>
             
@@ -165,14 +215,15 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type"><code>str</code></span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="readascii"></a><span class="summary-sig-name">readascii</span>(<span class="summary-sig-arg">data</span>,
+          <td><span class="summary-sig"><a href="utilities-module.html#readascii" class="summary-sig-name">readascii</a>(<span class="summary-sig-arg">data</span>,
         <span class="summary-sig-arg">offset</span>,
         <span class="summary-sig-arg">start</span>,
-        <span class="summary-sig-arg">stop</span>)</span></td>
+        <span class="summary-sig-arg">stop</span>)</span><br />
+      Read ASCII data</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="utilities-pysrc.html#readascii">source&nbsp;code</a></span>
             
@@ -184,11 +235,12 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type"><code>str</code></span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="ByteOrder"></a><span class="summary-sig-name">ByteOrder</span>()</span></td>
+          <td><span class="summary-sig"><a href="utilities-module.html#ByteOrder" class="summary-sig-name">ByteOrder</a>()</span><br />
+      Determine byte order of host machine.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="utilities-pysrc.html#ByteOrder">source&nbsp;code</a></span>
             
@@ -232,11 +284,12 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type"><code>dict</code></span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="FileInfo"></a><span class="summary-sig-name">FileInfo</span>(<span class="summary-sig-arg">filepath</span>)</span></td>
+          <td><span class="summary-sig"><a href="utilities-module.html#FileInfo" class="summary-sig-name">FileInfo</a>(<span class="summary-sig-arg">filepath</span>)</span><br />
+      File information.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="utilities-pysrc.html#FileInfo">source&nbsp;code</a></span>
             
@@ -248,11 +301,12 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type"><code>str</code></span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="convertUNC"></a><span class="summary-sig-name">convertUNC</span>(<span class="summary-sig-arg">filepath</span>)</span></td>
+          <td><span class="summary-sig"><a href="utilities-module.html#convertUNC" class="summary-sig-name">convertUNC</a>(<span class="summary-sig-arg">filepath</span>)</span><br />
+      Convert file path to UNC.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="utilities-pysrc.html#convertUNC">source&nbsp;code</a></span>
             
@@ -264,11 +318,12 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type"><code>str/list</code></span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="fixSeparators"></a><span class="summary-sig-name">fixSeparators</span>(<span class="summary-sig-arg">f</span>)</span></td>
+          <td><span class="summary-sig"><a href="utilities-module.html#fixSeparators" class="summary-sig-name">fixSeparators</a>(<span class="summary-sig-arg">filepath</span>)</span><br />
+      Fix up any mixed forward/backward slahes in file path/s.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="utilities-pysrc.html#fixSeparators">source&nbsp;code</a></span>
             
@@ -280,48 +335,16 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type"><code>str</code></span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="checkExt"></a><span class="summary-sig-name">checkExt</span>(<span class="summary-sig-arg">var</span>,
-        <span class="summary-sig-arg">vals</span>)</span></td>
+          <td><span class="summary-sig"><a href="utilities-module.html#checkExt" class="summary-sig-name">checkExt</a>(<span class="summary-sig-arg">filepath</span>,
+        <span class="summary-sig-arg">ext</span>)</span><br />
+      Check a file has an allowed extension or apply a default extension if
+      it has none.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="utilities-pysrc.html#checkExt">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="ExcelReader"></a><span class="summary-sig-name">ExcelReader</span>(<span class="summary-sig-arg">xls</span>,
-        <span class="summary-sig-arg">returntype</span>=<span class="summary-sig-default">&lt;type 'dict'&gt;</span>)</span></td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="utilities-pysrc.html#ExcelReader">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="runcmd"></a><span class="summary-sig-name">runcmd</span>(<span class="summary-sig-arg">cmd</span>,
-        <span class="summary-sig-arg">format</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">s</code><code class="variable-quote">'</code></span>)</span></td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="utilities-pysrc.html#runcmd">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -369,6 +392,283 @@
     </td>
   </tr>
 </table>
+<!-- ==================== FUNCTION DETAILS ==================== -->
+<a name="section-FunctionDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Function Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-FunctionDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="runcmd"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">runcmd</span>(<span class="sig-arg">cmd</span>,
+        <span class="sig-arg">format</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">s</code><code class="variable-quote">'</code></span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="utilities-pysrc.html#runcmd">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Run a command</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>cmd</code></strong> (<code>str</code>) - Command (inc arguments) to run</li>
+    </ul></dd>
+    <dt>Returns: <code>tuple</code></dt>
+        <dd>Returns (exit_code,stdout,stderr)</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="which"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">which</span>(<span class="sig-arg">name</span>,
+        <span class="sig-arg">returnfirst</span>=<span class="sig-default">True</span>,
+        <span class="sig-arg">flags</span>=<span class="sig-default">1</span>,
+        <span class="sig-arg">path</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="utilities-pysrc.html#which">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Search PATH for executable files with the given name.</p>
+  <p>On newer versions of MS-Windows, the PATHEXT environment variable will
+  be set to the list of file extensions for files considered executable. 
+  This will normally include things like &quot;.EXE&quot;. This fuction 
+  will also find files with the given name ending with any of these 
+  extensions.</p>
+  <p>On MS-Windows the only flag that has any meaning is os.F_OK. Any other
+  flags will be ignored.</p>
+  <p>Derived mostly from <a 
+  href="http://code.google.com/p/waf/issues/detail?id=531" 
+  target="_top">http://code.google.com/p/waf/issues/detail?id=531</a> with 
+  additions from Brian Curtins patch - <a 
+  href="http://bugs.python.org/issue444582" 
+  target="_top">http://bugs.python.org/issue444582</a></p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>name</code></strong> (<code>str</code>) - The name for which to search.</li>
+        <li><strong class="pname"><code>returnfirst</code></strong> (<code>boolean</code>) - Return the first executable found.</li>
+        <li><strong class="pname"><code>flags</code></strong> (<code>int</code>) - Arguments to <a 
+          href="http://docs.python.org/library/os.html#os.access" 
+          target="_top">os.access</a>.</li>
+    </ul></dd>
+    <dt>Returns: <code>list</code></dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="readbinary"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">readbinary</span>(<span class="sig-arg">data</span>,
+        <span class="sig-arg">offset</span>,
+        <span class="sig-arg">start</span>,
+        <span class="sig-arg">stop</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="utilities-pysrc.html#readbinary">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Read binary data</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>data</code></strong> (<code>str</code>) - data read from binary file</li>
+        <li><strong class="pname"><code>offset</code></strong> (<code>int</code>) - Number of bytes to skip</li>
+        <li><strong class="pname"><code>start</code></strong> (<code>int</code>) - Byte to start reading from (from offset, not beginning of data)</li>
+        <li><strong class="pname"><code>stop</code></strong> (<code>int</code>) - Byte to stop reading at (from offset, not beginning of data)</li>
+    </ul></dd>
+    <dt>Returns: <code>str</code></dt>
+        <dd>String</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="readascii"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">readascii</span>(<span class="sig-arg">data</span>,
+        <span class="sig-arg">offset</span>,
+        <span class="sig-arg">start</span>,
+        <span class="sig-arg">stop</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="utilities-pysrc.html#readascii">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Read ASCII data</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>data</code></strong> (<code>str</code>) - data read from ASCII file</li>
+        <li><strong class="pname"><code>offset</code></strong> (<code>int</code>) - Number of characters to skip</li>
+        <li><strong class="pname"><code>start</code></strong> (<code>int</code>) - Character to start reading from (from offset, not beginning of 
+          data)</li>
+        <li><strong class="pname"><code>stop</code></strong> (<code>int</code>) - Character to stop reading at (from offset, not beginning of data)</li>
+    </ul></dd>
+    <dt>Returns: <code>str</code></dt>
+        <dd>String</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="ByteOrder"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">ByteOrder</span>()</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="utilities-pysrc.html#ByteOrder">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Determine byte order of host machine.</p>
+  <dl class="fields">
+    <dt>Returns: <code>str</code></dt>
+        <dd>String</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="FileInfo"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">FileInfo</span>(<span class="sig-arg">filepath</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="utilities-pysrc.html#FileInfo">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>File information.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>filepath</code></strong> (<code>str</code>) - Path to file</li>
+    </ul></dd>
+    <dt>Returns: <code>dict</code></dt>
+        <dd>Dictionary containing file: size, datemodified, datecreated, 
+          dateaccessed, ownerid &amp; ownername</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="convertUNC"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">convertUNC</span>(<span class="sig-arg">filepath</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="utilities-pysrc.html#convertUNC">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Convert file path to UNC.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>filepath</code></strong> (<code>str</code>) - Path to file</li>
+    </ul></dd>
+    <dt>Returns: <code>str</code></dt>
+        <dd>UNC filepath (if on Windows)</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="fixSeparators"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">fixSeparators</span>(<span class="sig-arg">filepath</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="utilities-pysrc.html#fixSeparators">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Fix up any mixed forward/backward slahes in file path/s.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>filepath</code></strong> (<code>str/list</code>) - Path to file/s</li>
+    </ul></dd>
+    <dt>Returns: <code>str/list</code></dt>
+        <dd>Path to file/s</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="checkExt"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">checkExt</span>(<span class="sig-arg">filepath</span>,
+        <span class="sig-arg">ext</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="utilities-pysrc.html#checkExt">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Check a file has an allowed extension or apply a default extension if 
+  it has none.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>filepath</code></strong> (<code>str</code>) - Path to file</li>
+        <li><strong class="pname"><code>ext</code></strong> (<code>[str,...,str]</code>) - Allowed file extensions, ext[0] is the default</li>
+    </ul></dd>
+    <dt>Returns: <code>str</code></dt>
+        <dd>Path to file with updated extension</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
 <!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
        bgcolor="#a0c0ff" cellspacing="0">
@@ -397,7 +697,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Mon Dec 07 10:58:09 2009
+    Generated by Epydoc 3.0.1 on Mon Dec 14 13:04:21 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

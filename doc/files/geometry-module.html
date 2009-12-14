@@ -57,9 +57,14 @@
 </table>
 <!-- ==================== MODULE DESCRIPTION ==================== -->
 <h1 class="epydoc">Module geometry</h1><p class="nomargin-top"><span class="codelink"><a href="geometry-pysrc.html">source&nbsp;code</a></span></p>
-<h1 class="heading">Geometry and dataset helper functions</h1>
+<p>Geometry and dataset helper functions</p>
 
-<!-- ==================== CLASSES ==================== -->
+<hr />
+<div class="fields">      <p><strong>To Do:</strong>
+        Does the module name <i>really</i> describe its functions anymore? It 
+    doesn't just do geometry now...
+      </p>
+</div><!-- ==================== CLASSES ==================== -->
 <a name="section-Classes"></a>
 <table class="summary" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
@@ -80,7 +85,8 @@
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="geometry.GDALError-class.html" class="summary-name">GDALError</a>
+        <a href="geometry.GDALError-class.html" class="summary-name">GDALError</a><br />
+      For raising GDAL related errors
     </td>
   </tr>
 <tr>
@@ -111,11 +117,11 @@
 </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type"><code>osgeo.gdal.Dataset</code></span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="OpenDataset"></a><span class="summary-sig-name">OpenDataset</span>(<span class="summary-sig-arg">f</span>,
+          <td><span class="summary-sig"><a href="geometry-module.html#OpenDataset" class="summary-sig-name">OpenDataset</a>(<span class="summary-sig-arg">filepath</span>,
         <span class="summary-sig-arg">mode</span>=<span class="summary-sig-default">0</span>)</span><br />
       Open &amp; return a gdalDataset object</td>
           <td align="right" valign="top">
@@ -129,15 +135,31 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type"><code>(dict,list)</code></span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="geometry-module.html#ParseGDALinfo" class="summary-sig-name">ParseGDALinfo</a>(<span class="summary-sig-arg">filepath</span>)</span><br />
+      Very basic gdalinfo parser, does not include colo(u)r tables, raster 
+      attribute tables.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="geometry-pysrc.html#ParseGDALinfo">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type"><code>float</code></span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="geometry-module.html#DMS2DD" class="summary-sig-name">DMS2DD</a>(<span class="summary-sig-arg">dms</span>,
         <span class="summary-sig-arg">format</span>)</span><br />
-      Convert coordinate in degrees, minutes, seconds to decimal degrees
-@param dms: degrees, minutes, seconds string
-@param format: format string</td>
+      Convert coordinate in degrees, minutes, seconds to decimal degrees.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="geometry-pysrc.html#DMS2DD">source&nbsp;code</a></span>
             
@@ -149,7 +171,7 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type"><code>float</code></span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -166,7 +188,7 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type"><code>(float,float)</code></span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -183,7 +205,7 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type"><code>(float,float)</code></span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -202,7 +224,7 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type"><code>[gcp,...,gcp]</code></span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -221,13 +243,14 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type"><code>ogr.Geometry</code></span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="GeomFromExtent"></a><span class="summary-sig-name">GeomFromExtent</span>(<span class="summary-sig-arg">ext</span>,
+          <td><span class="summary-sig"><a href="geometry-module.html#GeomFromExtent" class="summary-sig-name">GeomFromExtent</a>(<span class="summary-sig-arg">ext</span>,
         <span class="summary-sig-arg">srs</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">srs_wkt</span>=<span class="summary-sig-default">None</span>)</span></td>
+        <span class="summary-sig-arg">srs_wkt</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Get and OGR geometry object from a extent list</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="geometry-pysrc.html#GeomFromExtent">source&nbsp;code</a></span>
             
@@ -239,7 +262,7 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type"><code>ogr.Geometry</code></span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -258,11 +281,12 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type"><code>gdal.Dataset</code></span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="CreateVRTCopy"></a><span class="summary-sig-name">CreateVRTCopy</span>(<span class="summary-sig-arg">ds</span>)</span></td>
+          <td><span class="summary-sig"><a href="geometry-module.html#CreateVRTCopy" class="summary-sig-name">CreateVRTCopy</a>(<span class="summary-sig-arg">ds</span>)</span><br />
+      Create a VRT copy of a gdal.Dataset object.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="geometry-pysrc.html#CreateVRTCopy">source&nbsp;code</a></span>
             
@@ -274,18 +298,19 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type"><code>xml</code></span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="CreateMosaicedVRT"></a><span class="summary-sig-name">CreateMosaicedVRT</span>(<span class="summary-sig-arg">files</span>,
+          <td><span class="summary-sig"><a href="geometry-module.html#CreateMosaicedVRT" class="summary-sig-name">CreateMosaicedVRT</a>(<span class="summary-sig-arg">files</span>,
         <span class="summary-sig-arg">bands</span>,
         <span class="summary-sig-arg">srcrects</span>,
         <span class="summary-sig-arg">dstrects</span>,
         <span class="summary-sig-arg">cols</span>,
         <span class="summary-sig-arg">rows</span>,
         <span class="summary-sig-arg">datatype</span>,
-        <span class="summary-sig-arg">relativeToVRT</span>=<span class="summary-sig-default">0</span>)</span></td>
+        <span class="summary-sig-arg">relativeToVRT</span>=<span class="summary-sig-default">0</span>)</span><br />
+      Create a VRT XML string that mosaics datasets.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="geometry-pysrc.html#CreateMosaicedVRT">source&nbsp;code</a></span>
             
@@ -297,15 +322,17 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type"><code>xml</code></span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="CreateSimpleVRT"></a><span class="summary-sig-name">CreateSimpleVRT</span>(<span class="summary-sig-arg">bands</span>,
+          <td><span class="summary-sig"><a href="geometry-module.html#CreateSimpleVRT" class="summary-sig-name">CreateSimpleVRT</a>(<span class="summary-sig-arg">bands</span>,
         <span class="summary-sig-arg">cols</span>,
         <span class="summary-sig-arg">rows</span>,
         <span class="summary-sig-arg">datatype</span>,
-        <span class="summary-sig-arg">relativeToVRT</span>=<span class="summary-sig-default">0</span>)</span></td>
+        <span class="summary-sig-arg">relativeToVRT</span>=<span class="summary-sig-default">0</span>)</span><br />
+      Create a VRT XML string with a simple source from one or more 
+      datasets, each dataset will be output as a separate band.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="geometry-pysrc.html#CreateSimpleVRT">source&nbsp;code</a></span>
             
@@ -317,15 +344,14 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type"><code>xml</code></span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="CreateRawRasterVRT"></a><span class="summary-sig-name">CreateRawRasterVRT</span>(<span class="summary-sig-arg">bands</span>,
+          <td><span class="summary-sig"><a href="geometry-module.html#CreateRawRasterVRT" class="summary-sig-name">CreateRawRasterVRT</a>(<span class="summary-sig-arg">bands</span>,
         <span class="summary-sig-arg">cols</span>,
         <span class="summary-sig-arg">rows</span>,
         <span class="summary-sig-arg">datatype</span>,
-        <span class="summary-sig-arg">nbits</span>,
         <span class="summary-sig-arg">headeroffset</span>=<span class="summary-sig-default">0</span>,
         <span class="summary-sig-arg">byteorder</span>=<span class="summary-sig-default">None</span>,
         <span class="summary-sig-arg">relativeToVRT</span>=<span class="summary-sig-default">0</span>)</span><br />
@@ -341,16 +367,15 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type"><code>xml</code></span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="CreateBSQRawRasterVRT"></a><span class="summary-sig-name">CreateBSQRawRasterVRT</span>(<span class="summary-sig-arg">f</span>,
+          <td><span class="summary-sig"><a href="geometry-module.html#CreateBSQRawRasterVRT" class="summary-sig-name">CreateBSQRawRasterVRT</a>(<span class="summary-sig-arg">filename</span>,
         <span class="summary-sig-arg">nbands</span>,
         <span class="summary-sig-arg">cols</span>,
         <span class="summary-sig-arg">rows</span>,
         <span class="summary-sig-arg">datatype</span>,
-        <span class="summary-sig-arg">nbits</span>,
         <span class="summary-sig-arg">nodata</span>=<span class="summary-sig-default">0</span>,
         <span class="summary-sig-arg">headeroffset</span>=<span class="summary-sig-default">0</span>,
         <span class="summary-sig-arg">byteorder</span>=<span class="summary-sig-default">None</span>,
@@ -367,11 +392,11 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type"><code>xml</code></span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="CreateBILRawRasterVRT"></a><span class="summary-sig-name">CreateBILRawRasterVRT</span>(<span class="summary-sig-arg">f</span>,
+          <td><span class="summary-sig"><a href="geometry-module.html#CreateBILRawRasterVRT" class="summary-sig-name">CreateBILRawRasterVRT</a>(<span class="summary-sig-arg">filename</span>,
         <span class="summary-sig-arg">nbands</span>,
         <span class="summary-sig-arg">cols</span>,
         <span class="summary-sig-arg">rows</span>,
@@ -393,11 +418,11 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type"><code>xml</code></span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="CreateBIPRawRasterVRT"></a><span class="summary-sig-name">CreateBIPRawRasterVRT</span>(<span class="summary-sig-arg">f</span>,
+          <td><span class="summary-sig"><a href="geometry-module.html#CreateBIPRawRasterVRT" class="summary-sig-name">CreateBIPRawRasterVRT</a>(<span class="summary-sig-arg">filename</span>,
         <span class="summary-sig-arg">nbands</span>,
         <span class="summary-sig-arg">cols</span>,
         <span class="summary-sig-arg">rows</span>,
@@ -454,6 +479,58 @@
   </td>
 </tr>
 </table>
+<a name="OpenDataset"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">OpenDataset</span>(<span class="sig-arg">filepath</span>,
+        <span class="sig-arg">mode</span>=<span class="sig-default">0</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="geometry-pysrc.html#OpenDataset">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Open &amp; return a gdalDataset object</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>filepath</code></strong> (<code>str</code>) - path to dataset</li>
+    </ul></dd>
+    <dt>Returns: <code>osgeo.gdal.Dataset</code></dt>
+        <dd>GDAL Dataset</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="ParseGDALinfo"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">ParseGDALinfo</span>(<span class="sig-arg">filepath</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="geometry-pysrc.html#ParseGDALinfo">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Very basic gdalinfo parser, does not include colo(u)r tables, raster 
+  attribute tables.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>filepath</code></strong> (<code>str</code>) - path to dataset</li>
+    </ul></dd>
+    <dt>Returns: <code>(dict,list)</code></dt>
+        <dd>GDAL info,extent coordinates</dd>
+  </dl>
+</td></tr></table>
+</div>
 <a name="DMS2DD"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -469,30 +546,50 @@
     </td>
   </tr></table>
   
-  <pre class="literalblock">
-
-Convert coordinate in degrees, minutes, seconds to decimal degrees
-@param dms: degrees, minutes, seconds string
-@param format: format string
-
-The format parameter is a string of equal length to the DMS string and identifies the position
-of each of the following elements:
-    H - hemisphere
-    D - degrees
-    M - minutes
-    S - seconds
-    Any other string in the format parameter is ignored
-
-eg:
-    '27 45 12 E'   = 'DD MM SS H'
-    '027 45 12 E'  = 'DDD MM SS H'
-    '027-45-12-E'  = 'DDD MM SS H'
-    '27,45,12.3 E' = 'DD MM SSSS H'
-    '-27,45,12.3'  = 'DDD MM SSSS'
-    
-
-</pre>
+  <p>Convert coordinate in degrees, minutes, seconds to decimal 
+  degrees.</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>dms</code></strong> (str) - degrees, minutes, seconds</li>
+        <li><strong class="pname"><code>format</code></strong> (str) - The format parameter is a string of equal length to the DMS 
+          string and identifies the position of each of the following 
+          elements. Any other string in the format parameter is ignored.
+          <ul>
+            <li>
+              H - hemisphere
+            </li>
+            <li>
+              D - degrees
+            </li>
+            <li>
+              M - minutes
+            </li>
+            <li>
+              S - seconds
+            </li>
+          </ul>
+          <p>eg:</p>
+          <ul>
+            <li>
+              <code>'27 45 12 E'   = 'DD MM SS H'</code>
+            </li>
+            <li>
+              <code>'027 45 12 E'  = 'DDD MM SS H'</code>
+            </li>
+            <li>
+              <code>'027-45-12-E'  = 'DDD MM SS H'</code>
+            </li>
+            <li>
+              <code>'27,45,12.3 E' = 'DD MM SSSS H'</code>
+            </li>
+            <li>
+              <code>'-27,45,12.3'  = 'DDD MM SSSS'</code>
+            </li>
+          </ul></li>
+    </ul></dd>
+    <dt>Returns: <code>float</code></dt>
+        <dd>decimal degrees</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -514,8 +611,10 @@ eg:
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>gt</code></strong> - geotransform</li>
+        <li><strong class="pname"><code>gt</code></strong> (<code>tuple/list</code>) - geotransform</li>
     </ul></dd>
+    <dt>Returns: <code>float</code></dt>
+        <dd>rotation angle</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -537,8 +636,10 @@ eg:
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>gt</code></strong> - geotransform</li>
+        <li><strong class="pname"><code>gt</code></strong> (<code>tuple/list</code>) - geotransform</li>
     </ul></dd>
+    <dt>Returns: <code>(float,float)</code></dt>
+        <dd>(x,y) cell size</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -562,10 +663,12 @@ eg:
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>gt</code></strong> - geotransform</li>
-        <li><strong class="pname"><code>cols</code></strong> - number of columns in the dataset</li>
-        <li><strong class="pname"><code>rows</code></strong> - number of rows in the dataset</li>
+        <li><strong class="pname"><code>gt</code></strong> (<code>tuple/list</code>) - geotransform</li>
+        <li><strong class="pname"><code>cols</code></strong> (<code>int</code>) - number of columns in the dataset</li>
+        <li><strong class="pname"><code>rows</code></strong> (<code>int</code>) - number of rows in the dataset</li>
     </ul></dd>
+    <dt>Returns: <code>(float,float)</code></dt>
+        <dd>Scene centre coordinates</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -591,10 +694,40 @@ eg:
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>gt</code></strong> - geotransform to convert to gcps</li>
-        <li><strong class="pname"><code>cols</code></strong> - number of columns in the dataset</li>
-        <li><strong class="pname"><code>rows</code></strong> - number of rows in the dataset</li>
+        <li><strong class="pname"><code>gt</code></strong> (<code>tuple/list</code>) - geotransform to convert to gcps</li>
+        <li><strong class="pname"><code>cols</code></strong> (<code>int</code>) - number of columns in the dataset</li>
+        <li><strong class="pname"><code>rows</code></strong> (<code>int</code>) - number of rows in the dataset</li>
     </ul></dd>
+    <dt>Returns: <code>[gcp,...,gcp]</code></dt>
+        <dd>List of GCP objects</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="GeomFromExtent"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">GeomFromExtent</span>(<span class="sig-arg">ext</span>,
+        <span class="sig-arg">srs</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">srs_wkt</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="geometry-pysrc.html#GeomFromExtent">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get and OGR geometry object from a extent list</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>ext</code></strong> (<code>tuple/list</code>) - extent coordinates</li>
+        <li><strong class="pname"><code>srs</code></strong> (<code>str</code>) - SRS WKT string</li>
+    </ul></dd>
+    <dt>Returns: <code>ogr.Geometry</code></dt>
+        <dd>Geometry object</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -618,10 +751,301 @@ eg:
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>geom</code></strong> - GDAL geometry object</li>
-        <li><strong class="pname"><code>src_srs</code></strong> - GDAL (OSR) SpatialReference object</li>
-        <li><strong class="pname"><code>tgt_srs</code></strong> - GDAL (OSR) SpatialReference object</li>
+        <li><strong class="pname"><code>geom</code></strong> (<code>ogr.Geometry</code>) - OGR geometry object</li>
+        <li><strong class="pname"><code>src_srs</code></strong> (<code>osr.SpatialReference</code>) - OSR SpatialReference object</li>
+        <li><strong class="pname"><code>tgt_srs</code></strong> (<code>osr.SpatialReference</code>) - OSR SpatialReference object</li>
     </ul></dd>
+    <dt>Returns: <code>ogr.Geometry</code></dt>
+        <dd>OGRGeometry object</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="CreateVRTCopy"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">CreateVRTCopy</span>(<span class="sig-arg">ds</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="geometry-pysrc.html#CreateVRTCopy">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Create a VRT copy of a gdal.Dataset object.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>ds</code></strong> (<code>gdal.Dataset</code>) - Dataset object</li>
+    </ul></dd>
+    <dt>Returns: <code>gdal.Dataset</code></dt>
+        <dd>VRT Dataset object</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="CreateMosaicedVRT"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">CreateMosaicedVRT</span>(<span class="sig-arg">files</span>,
+        <span class="sig-arg">bands</span>,
+        <span class="sig-arg">srcrects</span>,
+        <span class="sig-arg">dstrects</span>,
+        <span class="sig-arg">cols</span>,
+        <span class="sig-arg">rows</span>,
+        <span class="sig-arg">datatype</span>,
+        <span class="sig-arg">relativeToVRT</span>=<span class="sig-default">0</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="geometry-pysrc.html#CreateMosaicedVRT">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Create a VRT XML string that mosaics datasets.</p>
+  <p>For further info on VRT's, see the <a 
+  href="http://www.gdal.org/gdal_vrttut.html" target="_top">GDAL VRT 
+  Tutorial</a></p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>files</code></strong> (<code>[str,...,str]</code>) - List of files to mosaic</li>
+        <li><strong class="pname"><code>bands</code></strong> (<code>[int,...,int]</code>) - List of band numbers (1 based). Eg. [1,2,3] will mosaic the first
+          band from each file into the 1st band of the output VRT, etc.</li>
+        <li><strong class="pname"><code>srcrects</code></strong> (<code>[SrcRect,...,SrcRect]</code>) - List of SrcRects, one per file, in image not map units. E.g 
+          [[0,0,512,512],...] will be output as &lt;SrcRect 
+          xOff=&quot;0&quot; yOff=&quot;0&quot; xSize=&quot;512&quot; 
+          ySize=&quot;512&quot;/&gt;. The SrcRect allows you to subset your
+          input image.</li>
+        <li><strong class="pname"><code>dstrects</code></strong> (<code>[DstRect,...,DstRect]</code>) - List of DstRects, One per file, in image not map units. E.g 
+          [[512,512,1024,1024],...] will be output as &lt;DstRect 
+          xOff=&quot;512&quot; yOff=&quot;512&quot; xSize=&quot;1024&quot; 
+          ySize=&quot;1024&quot;/&gt; The DstRect determines the spatial 
+          position of the input image in the mosaic.</li>
+        <li><strong class="pname"><code>cols</code></strong> (<code>int</code>) - The number of columns in the output mosaic</li>
+        <li><strong class="pname"><code>rows</code></strong> (<code>int</code>) - The number of rows in the output mosaic</li>
+        <li><strong class="pname"><code>datatype</code></strong> (<code>str</code>) - GDAL datatype name. Eg. Byte, Int32, UInt16</li>
+    </ul></dd>
+    <dt>Returns: <code>xml</code></dt>
+        <dd>VRT XML string</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="CreateSimpleVRT"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">CreateSimpleVRT</span>(<span class="sig-arg">bands</span>,
+        <span class="sig-arg">cols</span>,
+        <span class="sig-arg">rows</span>,
+        <span class="sig-arg">datatype</span>,
+        <span class="sig-arg">relativeToVRT</span>=<span class="sig-default">0</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="geometry-pysrc.html#CreateSimpleVRT">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Create a VRT XML string with a simple source from one or more 
+  datasets, each dataset will be output as a separate band.</p>
+  <p>For further info on VRT's, see the <a 
+  href="http://www.gdal.org/gdal_vrttut.html" target="_top">GDAL VRT 
+  Tutorial</a></p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>bands</code></strong> (<code>[str,...,str]</code>) - List of files. The first file becomes the first band and so 
+          forth.</li>
+        <li><strong class="pname"><code>cols</code></strong> (<code>int</code>) - The number of columns in the output VRT</li>
+        <li><strong class="pname"><code>rows</code></strong> (<code>int</code>) - The number of rows in the output VRT</li>
+        <li><strong class="pname"><code>datatype</code></strong> (<code>str</code>) - GDAL datatype name. Eg. Byte, Int32, UInt16</li>
+    </ul></dd>
+    <dt>Returns: <code>xml</code></dt>
+        <dd>VRT XML string</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="CreateRawRasterVRT"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">CreateRawRasterVRT</span>(<span class="sig-arg">bands</span>,
+        <span class="sig-arg">cols</span>,
+        <span class="sig-arg">rows</span>,
+        <span class="sig-arg">datatype</span>,
+        <span class="sig-arg">headeroffset</span>=<span class="sig-default">0</span>,
+        <span class="sig-arg">byteorder</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">relativeToVRT</span>=<span class="sig-default">0</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="geometry-pysrc.html#CreateRawRasterVRT">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Create RawRaster VRT from one or more _single_ band files</p>
+  <p>For further info on VRT's, see the <a 
+  href="http://www.gdal.org/gdal_vrttut.html" target="_top">GDAL VRT 
+  Tutorial</a></p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>bands</code></strong> (<code>[str,...,str]</code>) - List of files. The first file becomes the first band and so 
+          forth.</li>
+        <li><strong class="pname"><code>cols</code></strong> (<code>int</code>) - The number of columns in the output VRT</li>
+        <li><strong class="pname"><code>rows</code></strong> (<code>int</code>) - The number of rows in the output VRT</li>
+        <li><strong class="pname"><code>datatype</code></strong> (<code>str</code>) - GDAL datatype name. Eg. Byte, Int32, UInt16</li>
+        <li><strong class="pname"><code>headeroffset</code></strong> (<code>int</code>) - Number of bytes to skip at the start of the file</li>
+        <li><strong class="pname"><code>byteorder</code></strong> (<code>str</code>) - Byte order of the file (MSB or LSB)</li>
+    </ul></dd>
+    <dt>Returns: <code>xml</code></dt>
+        <dd>VRT XML string</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="CreateBSQRawRasterVRT"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">CreateBSQRawRasterVRT</span>(<span class="sig-arg">filename</span>,
+        <span class="sig-arg">nbands</span>,
+        <span class="sig-arg">cols</span>,
+        <span class="sig-arg">rows</span>,
+        <span class="sig-arg">datatype</span>,
+        <span class="sig-arg">nodata</span>=<span class="sig-default">0</span>,
+        <span class="sig-arg">headeroffset</span>=<span class="sig-default">0</span>,
+        <span class="sig-arg">byteorder</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">relativeToVRT</span>=<span class="sig-default">0</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="geometry-pysrc.html#CreateBSQRawRasterVRT">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Create RawRaster VRT from a BSQ</p>
+  <p>BSQ = Band-Sequential or Band-Interleaved</p>
+  <p>For further info on VRT's, see the <a 
+  href="http://www.gdal.org/gdal_vrttut.html" target="_top">GDAL VRT 
+  Tutorial</a></p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>filename</code></strong> (<code>str</code>) - File name</li>
+        <li><strong class="pname"><code>nbands</code></strong> (<code>int</code>) - The number of bands in the output VRT (&lt;= nbands in input 
+          file)</li>
+        <li><strong class="pname"><code>cols</code></strong> (<code>int</code>) - The number of columns in the output VRT</li>
+        <li><strong class="pname"><code>rows</code></strong> (<code>int</code>) - The number of rows in the output VRT</li>
+        <li><strong class="pname"><code>datatype</code></strong> (<code>str</code>) - GDAL datatype name. Eg. Byte, Int32, UInt16</li>
+        <li><strong class="pname"><code>nodata</code></strong> (<code>float</code>) - No data/Null value</li>
+        <li><strong class="pname"><code>headeroffset</code></strong> (<code>int</code>) - Number of bytes to skip at the start of the file</li>
+        <li><strong class="pname"><code>byteorder</code></strong> (<code>str</code>) - Byte order of the file (MSB or LSB)</li>
+    </ul></dd>
+    <dt>Returns: <code>xml</code></dt>
+        <dd>VRT XML string</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="CreateBILRawRasterVRT"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">CreateBILRawRasterVRT</span>(<span class="sig-arg">filename</span>,
+        <span class="sig-arg">nbands</span>,
+        <span class="sig-arg">cols</span>,
+        <span class="sig-arg">rows</span>,
+        <span class="sig-arg">datatype</span>,
+        <span class="sig-arg">nbits</span>,
+        <span class="sig-arg">nodata</span>=<span class="sig-default">0</span>,
+        <span class="sig-arg">headeroffset</span>=<span class="sig-default">0</span>,
+        <span class="sig-arg">byteorder</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">relativeToVRT</span>=<span class="sig-default">0</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="geometry-pysrc.html#CreateBILRawRasterVRT">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Create RawRaster VRT from a BIL</p>
+  <p>BIL = Band-Interleaved-by-Line or Row-Interleaved</p>
+  <p>For further info on VRT's, see the <a 
+  href="http://www.gdal.org/gdal_vrttut.html" target="_top">GDAL VRT 
+  Tutorial</a></p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>filename</code></strong> (<code>str</code>) - File name</li>
+        <li><strong class="pname"><code>nbands</code></strong> (<code>int</code>) - The number of bands in the output VRT (&lt;= nbands in input 
+          file)</li>
+        <li><strong class="pname"><code>cols</code></strong> (<code>int</code>) - The number of columns in the output VRT</li>
+        <li><strong class="pname"><code>rows</code></strong> (<code>int</code>) - The number of rows in the output VRT</li>
+        <li><strong class="pname"><code>datatype</code></strong> (<code>str</code>) - GDAL datatype name. Eg. Byte, Int32, UInt16</li>
+        <li><strong class="pname"><code>nodata</code></strong> (<code>float</code>) - No data/Null value</li>
+        <li><strong class="pname"><code>headeroffset</code></strong> (<code>int</code>) - Number of bytes to skip at the start of the file</li>
+        <li><strong class="pname"><code>byteorder</code></strong> (<code>str</code>) - Byte order of the file (MSB or LSB)</li>
+    </ul></dd>
+    <dt>Returns: <code>xml</code></dt>
+        <dd>VRT XML string</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="CreateBIPRawRasterVRT"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">CreateBIPRawRasterVRT</span>(<span class="sig-arg">filename</span>,
+        <span class="sig-arg">nbands</span>,
+        <span class="sig-arg">cols</span>,
+        <span class="sig-arg">rows</span>,
+        <span class="sig-arg">datatype</span>,
+        <span class="sig-arg">nbits</span>,
+        <span class="sig-arg">nodata</span>=<span class="sig-default">0</span>,
+        <span class="sig-arg">headeroffset</span>=<span class="sig-default">0</span>,
+        <span class="sig-arg">byteorder</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">relativeToVRT</span>=<span class="sig-default">0</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="geometry-pysrc.html#CreateBIPRawRasterVRT">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Create RawRaster VRT from BIP</p>
+  <p>BIP = Band-Interleaved-by-Pixel or Pixel-Interleaved</p>
+  <p>For further info on VRT's, see the <a 
+  href="http://www.gdal.org/gdal_vrttut.html" target="_top">GDAL VRT 
+  Tutorial</a></p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>filename</code></strong> (<code>str</code>) - File name</li>
+        <li><strong class="pname"><code>nbands</code></strong> (<code>int</code>) - The number of bands in the output VRT (&lt;= nbands in input 
+          file)</li>
+        <li><strong class="pname"><code>cols</code></strong> (<code>int</code>) - The number of columns in the output VRT</li>
+        <li><strong class="pname"><code>rows</code></strong> (<code>int</code>) - The number of rows in the output VRT</li>
+        <li><strong class="pname"><code>datatype</code></strong> (<code>str</code>) - GDAL datatype name. Eg. Byte, Int32, UInt16</li>
+        <li><strong class="pname"><code>nodata</code></strong> (<code>float</code>) - No data/Null value</li>
+        <li><strong class="pname"><code>headeroffset</code></strong> (<code>int</code>) - Number of bytes to skip at the start of the file</li>
+        <li><strong class="pname"><code>byteorder</code></strong> (<code>str</code>) - Byte order of the file (MSB or LSB)</li>
+    </ul></dd>
+    <dt>Returns: <code>xml</code></dt>
+        <dd>VRT XML string</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -654,7 +1078,7 @@ eg:
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Mon Dec 07 10:58:09 2009
+    Generated by Epydoc 3.0.1 on Mon Dec 14 13:04:21 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

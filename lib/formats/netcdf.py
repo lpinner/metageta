@@ -1,8 +1,8 @@
 '''
 Metadata driver for NetCDF imagery
-======================================
-@see:Format specification
-    U{http://www.unidata.ucar.edu/software/netcdf}
+
+B{Format specification}:
+    - U{http://www.unidata.ucar.edu/software/netcdf}
 '''
 
 

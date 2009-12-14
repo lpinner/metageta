@@ -1,6 +1,5 @@
 '''
 Provide GUI & file progress logging
-===================================
 
 Example:
 
@@ -37,8 +36,10 @@ Example:
 # THE SOFTWARE.
 
 import logging,warnings,random,os,sys,socket,pickle,threading,Queue,time
-from Tkinter import *
+#from Tkinter import *
+import Tkinter
 import ScrolledText
+import utilities
 
 #Define some constants
 DEBUG=logging.DEBUG
@@ -138,11 +139,9 @@ class ProgressLoggerHandler(logging.Handler):
         ##as only a single thread will run at a time.
         self.host='localhost'
         self.port= random.randint(1024, 10000)
-        #import win32api
-        try:
-            pythonPath = r'%s\pythonw.exe' % os.environ['PYTHONHOME'] #set in setenv.bat
-        except:
-            pythonPath = r'%s\bin\pythonw.exe' % os.environ['GDAL_ROOT'] #set in setenv.bat
+        if sys.platform[0:3].lower()=='win':python = 'pythonw.exe'
+        else: python = 'python'
+        pythonPath=utilities.which(python)
         pythonScript=__file__
         parameterList = [pythonPath, pythonScript, self.host,str(self.port),name,str(maxprogress)]
         if windowicon:parameterList.append(windowicon)
@@ -186,7 +185,7 @@ class ProgressLoggerHandler(logging.Handler):
         
 
 class ProgressLoggerServer:
-    ''' Provide a Progress Bar Logging GUI '''
+    ''' Provide a Progress Bar Logging Server '''
 
     def __init__(self,host,port,name=None, maxprogress=100, windowicon=None):
         self.server=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -251,26 +250,26 @@ class ProgressLoggerGUI(threading.Thread):
         Initializes the instance - set up the Tkinter progress bar and log output.
         '''
 
-        self.master=Tk()
+        self.master=Tkinter.Tk()
         if self.windowicon:self.master.wm_iconbitmap(self.windowicon)
         self.master.protocol("WM_DELETE_WINDOW", self.onOk)
         self.master.title(self.name)
         self.master.geometry("700x800")
         
         ''' Pack text message '''
-        Label(self.master, text='Progress', anchor=NW, justify=LEFT).pack(fill=X)
+        Tkinter.Label(self.master, text='Progress', anchor=Tkinter.NW, justify=Tkinter.LEFT).pack(fill=Tkinter.X)
 
         ''' Pack progress bar '''
         self.progress_bar = ProgressBarView(self.master, max=self.maxprogress)
-        self.progress_bar.pack(fill=X)
+        self.progress_bar.pack(fill=Tkinter.X)
 
         ''' Pack log window '''
-        self.logwnd = ScrolledText.ScrolledText(self.master, width=60, height=12, state=DISABLED)
-        self.logwnd.pack(fill=BOTH, expand=1)
+        self.logwnd = ScrolledText.ScrolledText(self.master, width=60, height=12, state=Tkinter.DISABLED)
+        self.logwnd.pack(fill=Tkinter.BOTH, expand=1)
 
         ''' Pack OK button '''
-        self.ok = Button(self.master, text="OK", width=10, command=self.onOk, state=DISABLED)
-        self.ok.pack(side=RIGHT, padx=5, pady=5)
+        self.ok = Tkinter.Button(self.master, text="OK", width=10, command=self.onOk, state=Tkinter.DISABLED)
+        self.ok.pack(side=Tkinter.RIGHT, padx=5, pady=5)
 
         self.checkQueue()
         self.master.mainloop()
@@ -295,7 +294,7 @@ class ProgressLoggerGUI(threading.Thread):
         eventName = msg[0]
         eventMsg  = msg[1]
         if msg == 'EXIT':
-            self.ok.configure(state=ACTIVE)
+            self.ok.configure(state=Tkinter.ACTIVE)
             self.master.bind("<Return>", self.onOk)
             self.keepchecking=False
         elif eventName == 'PROGRESS':
@@ -303,7 +302,7 @@ class ProgressLoggerGUI(threading.Thread):
             self.progress+=1
             self.progress_bar.updateProgress(self.progress, newMax=max)
             if self.progress>=max:
-                self.ok.configure(state=ACTIVE)
+                self.ok.configure(state=Tkinter.ACTIVE)
                 self.master.bind("<Return>", self.onOk)
         else:
             self.onLogMessage(eventMsg)
@@ -311,11 +310,11 @@ class ProgressLoggerGUI(threading.Thread):
     def onLogMessage(self, msg):
         ''' Display log message '''
         w = self.logwnd
-        w.configure(state=NORMAL)
-        w.insert(END, msg)
-        w.insert(END, "\n")
-        w.see(END)
-        w.configure(state=DISABLED)
+        w.configure(state=Tkinter.NORMAL)
+        w.insert(Tkinter.END, msg)
+        w.insert(Tkinter.END, "\n")
+        w.see(Tkinter.END)
+        w.configure(state=Tkinter.DISABLED)
         
     def onOk(self, event=None):
         self.master.withdraw()
@@ -329,106 +328,105 @@ class ProgressLoggerGUI(threading.Thread):
         except:pass        
 
 class ProgressBarView: 
-  def __init__(self, master=None, orientation='horizontal',
-      min=0, max=100, width=100, height=None,
-      doLabel=1, appearance=None,
-      fillColor=None, background=None,
-      labelColor=None, labelFont=None,
-      labelText='', labelFormat="%d%%",
-      value=0.1, bd=2):
-    # preserve various values
-    self.master=master
-    self.orientation=orientation
-    self.min=min
-    self.max=max
-    self.doLabel=doLabel
-    self.labelText=labelText
-    self.labelFormat=labelFormat
-    self.value=value
-    if (fillColor == None) or (background == None) or (labelColor == None):
-      # We have no system color names under linux. So use a workaround.
-      #btn = Button(font=labelFont)
-      btn = Button(master, text='0', font=labelFont)
-      if fillColor == None:
-        fillColor  = btn['foreground']
-      if background == None:
-        background = btn['disabledforeground']
-      if labelColor == None:
-        labelColor = btn['background']
-    if height == None:
-      l = Label(font=labelFont)
-      height = l.winfo_reqheight()
-    self.width      = width
-    self.height     = height
-    self.fillColor  = fillColor
-    self.labelFont  = labelFont
-    self.labelColor = labelColor
-    self.background = background
-    #
-    # Create components
-    #
-    self.frame=Frame(master, relief=appearance, bd=bd, width=width, height=height)
-    self.canvas=Canvas(self.frame, bd=0,
-        highlightthickness=0, background=background, width=width, height=height)
-    self.scale=self.canvas.create_rectangle(0, 0, width, height,
-        fill=fillColor)
-    self.label=self.canvas.create_text(width / 2, height / 2,
-        text=labelText, anchor=CENTER, fill=labelColor, font=self.labelFont)
-    self.canvas.pack(fill=BOTH)
-    self.update()
-    self.canvas.bind('<Configure>', self.onResize) # monitor size changes
+    '''A progress bar widget
+       
+       Modified from U{http://www.faqts.com/knowledge_base/view.phtml/aid/2718/fid/264} and U{http://www.sarfrosh.com/URDU/teachings/HP/BIN/BlockTracker.py}
+    '''
+    def __init__(self, master=None, orientation='horizontal',
+          min=0, max=100, width=100, height=None,
+          doLabel=1, appearance=None,
+          fillColor=None, background=None,
+          labelColor=None, labelFont=None,
+          labelText='', labelFormat="%d%%",
+          value=0.1, bd=2):
+        # preserve various values
+        self.master=master
+        self.orientation=orientation
+        self.min=min
+        self.max=max
+        self.doLabel=doLabel
+        self.labelText=labelText
+        self.labelFormat=labelFormat
+        self.value=value
+        if (fillColor == None) or (background == None) or (labelColor == None):
+            # We have no system color names under linux. So use a workaround.
+            #btn = Tkinter.Button(font=labelFont)
+            btn = Tkinter.Button(master, text='0', font=labelFont)
+            if fillColor == None:
+                fillColor  = btn['foreground']
+            if background == None:
+                background = btn['disabledforeground']
+            if labelColor == None:
+                labelColor = btn['background']
+        if height == None:
+            l = Tkinter.Label(font=labelFont)
+            height = l.winfo_reqheight()
+        self.width      = width
+        self.height     = height
+        self.fillColor  = fillColor
+        self.labelFont  = labelFont
+        self.labelColor = labelColor
+        self.background = background
+        #
+        # Create components
+        #
+        self.frame=Tkinter.Frame(master, relief=appearance, bd=bd, width=width, height=height)
+        self.canvas=Tkinter.Canvas(self.frame, bd=0,
+            highlightthickness=0, background=background, width=width, height=height)
+        self.scale=self.canvas.create_rectangle(0, 0, width, height,
+            fill=fillColor)
+        self.label=self.canvas.create_text(width / 2, height / 2,
+            text=labelText, anchor=Tkinter.CENTER, fill=labelColor, font=self.labelFont)
+        self.canvas.pack(fill=Tkinter.BOTH)
+        self.update()
+        self.canvas.bind('<Configure>', self.onResize) # monitor size changes
 
-  def onResize(self, event):
-    if (self.width == event.width) and (self.height == event.height):
-      return
-    # Set new sizes
-    self.width  = event.width
-    self.height = event.height
-    # Move label
-    self.canvas.coords(self.label, event.width/2, event.height/2)
-    # Display bar in new sizes
-    self.update()
+    def onResize(self, event):
+        if (self.width == event.width) and (self.height == event.height):
+            return
+        # Set new sizes
+        self.width  = event.width
+        self.height = event.height
+        # Move label
+        self.canvas.coords(self.label, event.width/2, event.height/2)
+        # Display bar in new sizes
+        self.update()
 
-  def updateProgress(self, newValue, newMax=None):
-    if newMax:
-      self.max = newMax
-    self.value = newValue
-    self.update()
+    def updateProgress(self, newValue, newMax=None):
+        if newMax:self.max = newMax
+        self.value = newValue
+        self.update()
 
-  def pack(self, *args, **kw):
-    self.frame.pack(*args, **kw)
+    def pack(self, *args, **kw):
+        self.frame.pack(*args, **kw)
 
-  def update(self):
-    # Trim the values to be between min and max
-    value=float(self.value)
-    max=float(self.max)
-    min=float(self.min)
-    if value > max:
-      value = max
-    if value < min:
-      value = min
-    # Adjust the rectangle
-    if self.orientation == "horizontal":
-      self.canvas.coords(self.scale, 0, 0,
-          value / max * self.width, self.height)
-    else:
-      self.canvas.coords(self.scale, 0,
-          self.height - (value / max*self.height),
-          self.width, self.height)
-    # And update the label
-    if self.doLabel:
-      if value:
-        if value >= 0:
-          pvalue = int((value / max) * 100.0)
+    def update(self):
+        # Trim the values to be between min and max
+        value=float(self.value)
+        max=float(self.max)
+        min=float(self.min)
+        if value > max:
+            value = max
+        if value < min:
+            value = min
+        # Adjust the rectangle
+        if self.orientation == "horizontal":
+            self.canvas.coords(self.scale, 0, 0, value / max * self.width, self.height)
         else:
-          pvalue = 0
-        self.canvas.itemconfig(self.label, text=self.labelFormat % pvalue)
-      else:
-        self.canvas.itemconfig(self.label, text='')
-    else:
-      self.canvas.itemconfig(self.label, text=self.labelFormat %
-          self.labelText)
-    self.canvas.update_idletasks()
+          self.canvas.coords(self.scale, 0, self.height - (value / max*self.height), self.width, self.height)
+        # And update the label
+        if self.doLabel:
+            if value:
+                if value >= 0:
+                    pvalue = int((value / max) * 100.0)
+                else:
+                    pvalue = 0
+                self.canvas.itemconfig(self.label, text=self.labelFormat % pvalue)
+            else:
+                self.canvas.itemconfig(self.label, text='')
+        else:
+            self.canvas.itemconfig(self.label, text=self.labelFormat % self.labelText)
+        self.canvas.update_idletasks()
 
 if __name__ == '__main__':
     kwargs={}

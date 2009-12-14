@@ -1,8 +1,8 @@
 '''
 Metadata driver for Digital Globe Quickbird imagery
-===================================================
-@see:Format specification
-    U{http://www.digitalglobe.com/digitalglobe2/file.php/646/QuickBird_Imagery_Products-Product_Guide.pdf}
+
+B{Format specification}:
+    - U{http://www.digitalglobe.com/digitalglobe2/file.php/646/QuickBird_Imagery_Products-Product_Guide.pdf}
 '''
 
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts

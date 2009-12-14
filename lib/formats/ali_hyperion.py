@@ -1,6 +1,6 @@
 '''
 Metadata driver for EO1 ALI (L1G & L1R) & Hyperion (L1R) images
-===============================================================
+
 @see:Format specifications
 
   HDF format:U{http://www.gdal.org/frmt_hdf4.html}

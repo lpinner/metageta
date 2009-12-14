@@ -1,8 +1,9 @@
 '''
 Metadata driver for ESRI Bil imagery
-====================================
-@see:Format specification
-    U{http://webhelp.esri.com/arcgisdesktop/9.2/index.cfm?id=2527&pid=2519&topicname=BIL,_BIP,_and_BSQ_raster_files}
+
+B{Format specification}:
+    - U{http://webhelp.esri.com/arcgisdesktop/9.2/index.cfm?id=2527&pid=2519&topicname=BIL,_BIP,_and_BSQ_raster_files}
+
 @todo: Generic BIL/BIP/BSQ...?
 
 '''

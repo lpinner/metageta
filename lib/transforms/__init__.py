@@ -1,6 +1,7 @@
 '''
+XSL transforms
+==============
 Utility functions to assist XSL transforms
-==========================================
 '''
 
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts

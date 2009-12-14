@@ -1,6 +1,5 @@
 '''
 Script to run the Metadata Crawler
-==================================
 
 Contains code to show GUI to gather input arguments when none are provided
 To run, call the eponymous batch file which sets the required environment variables
@@ -40,8 +39,9 @@ Usage::
 # THE SOFTWARE.
 
 import sys, os, re,time
-from Tkinter import *
+import Tkinter 
 import tkFileDialog
+import tkMessageBox
 
 import progresslogger
 import formats
@@ -50,6 +50,26 @@ import utilities
 import crawler
 
 def main(dir,xls,shp,log, gui=False, debug=False, nomd=False, getovs=False): 
+    """ Run the Metadata Crawler
+
+        @type  dir: C{str}
+        @param dir: The directory to start the metadata crawl.
+        @type  xls: C{str}
+        @param xls: Excel spreadsheet to write metadata to
+        @type  shp: C{str}
+        @param shp: Shapefile to write extents to
+        @type  log: C{str}
+        @param log: Log file
+        @type  gui: C{boolean}
+        @param gui: Show the GUI progress dialog
+        @type  debug: C{boolean}
+        @param debug: Turn debug output on
+        @type  nomd: C{boolean}
+        @param nomd: Extract metadata (crawl), if False just get basic file info (walk)
+        @type  getovs: C{boolean}
+        @param getovs: Generate overview (quicklook/thumbnail) images
+        @return:  C{None}
+    """
     xls = utilities.checkExt(xls, ['.xls'])
     shp = utilities.checkExt(shp, ['.shp'])
     log = utilities.checkExt(shp, ['.log', '.txt'])
@@ -168,7 +188,10 @@ class Command:
         
 
 class GetArgs:
+    '''Pop up a GUI dialog to gather arguments'''
     def __init__(self,gui,debug,nomd,getovs):
+        '''Build and show the GUI dialog'''
+
         windowicon=os.environ['CURDIR']+'/lib/wm_icon.ico'
         #base 64 encoded gif images for the GUI buttons
         shp_img = '''
@@ -213,7 +236,7 @@ class GetArgs:
             ABAALAAAAAAQABAAAAViICSOUNMwjEOOhyIUyhAbzMoAgJAQi9EjtRGAIXgUjw9CUDR8OJ9OJakJ
             fUqFjCSBZ11CqNWkt7ndLqLjbFg8zZa5bOw6znSfoVfm3clYIP5eEH4EAQFlCAsrEH2ICygoJCEA
             Ow=='''
-        self.root = Tk()
+        self.root = Tkinter.Tk()
         self.root.title('Metadata Crawler')
         try:self.root.wm_iconbitmap(windowicon)
         except:pass
@@ -227,53 +250,53 @@ class GetArgs:
         appYPos = (scrnHt / 2) - (appHt / 2)
         self.root.geometry('+%d+%d' % (appXPos, appYPos))
         
-        last_dir = StringVar()
+        last_dir = Tkinter.StringVar()
         last_dir.set('C:\\')
 
-        bdebug = BooleanVar()
+        bdebug = Tkinter.BooleanVar()
         bdebug.set(debug)
-        bgui = BooleanVar()
+        bgui = Tkinter.BooleanVar()
         bgui.set(gui)
-        bovs = BooleanVar()
+        bovs = Tkinter.BooleanVar()
         bovs.set(getovs)
-        bnomd = BooleanVar()
+        bnomd = Tkinter.BooleanVar()
         bnomd.set(nomd)
 
-        dir_ico = PhotoImage(format='gif',data=dir_img)
-        xls_ico = PhotoImage(format='gif',data=xls_img)
-        shp_ico = PhotoImage(format='gif',data=shp_img)
-        log_ico = PhotoImage(format='gif',data=log_img)
+        dir_ico = Tkinter.PhotoImage(format='gif',data=dir_img)
+        xls_ico = Tkinter.PhotoImage(format='gif',data=xls_img)
+        shp_ico = Tkinter.PhotoImage(format='gif',data=shp_img)
+        log_ico = Tkinter.PhotoImage(format='gif',data=log_img)
 
-        sdir = StringVar()
-        sxls = StringVar()
-        sshp = StringVar()
-        slog = StringVar()
+        sdir = Tkinter.StringVar()
+        sxls = Tkinter.StringVar()
+        sshp = Tkinter.StringVar()
+        slog = Tkinter.StringVar()
 
-        ldir=Label(self.root, text="Directory to search:")
-        lxls=Label(self.root, text="Output spreadsheet:")
-        lshp=Label(self.root, text="Output shapefile:")
-        llog=Label(self.root, text="Output error log:")
-        lovs=Label(self.root, text="Generate quicklook/thumbnail?:")
-        lnomd=Label(self.root, text="Don't extract metadata (walk)?:")
+        ldir=Tkinter.Label(self.root, text="Directory to search:")
+        lxls=Tkinter.Label(self.root, text="Output spreadsheet:")
+        lshp=Tkinter.Label(self.root, text="Output shapefile:")
+        llog=Tkinter.Label(self.root, text="Output error log:")
+        lovs=Tkinter.Label(self.root, text="Generate quicklook/thumbnail?:")
+        lnomd=Tkinter.Label(self.root, text="Don't extract metadata (walk)?:")
 
-        edir=Entry(self.root, textvariable=sdir)
-        exls=Entry(self.root, textvariable=sxls)
-        eshp=Entry(self.root, textvariable=sshp)
-        elog=Entry(self.root, textvariable=slog)
-        eovs=Checkbutton(self.root, variable=bovs)
-        enomd=Checkbutton(self.root, variable=bnomd)
+        edir=Tkinter.Entry(self.root, textvariable=sdir)
+        exls=Tkinter.Entry(self.root, textvariable=sxls)
+        eshp=Tkinter.Entry(self.root, textvariable=sshp)
+        elog=Tkinter.Entry(self.root, textvariable=slog)
+        eovs=Tkinter.Checkbutton(self.root, variable=bovs)
+        enomd=Tkinter.Checkbutton(self.root, variable=bnomd)
 
-        bdir = Button(self.root,image=dir_ico, command=Command(self.cmdDir, sdir,last_dir))
-        bxls = Button(self.root,image=xls_ico, command=Command(self.cmdFile,sxls,[('Excel Spreadsheet','*.xls')],last_dir))
-        bshp = Button(self.root,image=shp_ico, command=Command(self.cmdFile,sshp,[('ESRI Shapefile','*.shp')],last_dir))
-        blog = Button(self.root,image=log_ico, command=Command(self.cmdFile,slog,[('Log File',('*.txt','*.log'))],last_dir))
+        bdir = Tkinter.Button(self.root,image=dir_ico, command=Command(self.cmdDir, sdir,last_dir))
+        bxls = Tkinter.Button(self.root,image=xls_ico, command=Command(self.cmdFile,sxls,[('Excel Spreadsheet','*.xls')],last_dir))
+        bshp = Tkinter.Button(self.root,image=shp_ico, command=Command(self.cmdFile,sshp,[('ESRI Shapefile','*.shp')],last_dir))
+        blog = Tkinter.Button(self.root,image=log_ico, command=Command(self.cmdFile,slog,[('Log File',('*.txt','*.log'))],last_dir))
 
-        ldir.grid(row=0, column=0,sticky=W)
-        lxls.grid(row=1, column=0,sticky=W)
-        lshp.grid(row=2, column=0,sticky=W)
-        llog.grid(row=3, column=0,sticky=W)
-        lovs.grid(row=4, column=0,sticky=W, columnspan=2)
-        lnomd.grid(row=5, column=0,sticky=W, columnspan=2)
+        ldir.grid(row=0, column=0,sticky=Tkinter.W)
+        lxls.grid(row=1, column=0,sticky=Tkinter.W)
+        lshp.grid(row=2, column=0,sticky=Tkinter.W)
+        llog.grid(row=3, column=0,sticky=Tkinter.W)
+        lovs.grid(row=4, column=0,sticky=Tkinter.W, columnspan=2)
+        lnomd.grid(row=5, column=0,sticky=Tkinter.W, columnspan=2)
 
         edir.grid(row=0, column=1)
         exls.grid(row=1, column=1)
@@ -287,12 +310,12 @@ class GetArgs:
         bshp.grid(row=2, column=2)
         blog.grid(row=3, column=2)
 
-        bOK = Button(self.root,text="Ok", command=self.cmdOK)
+        bOK = Tkinter.Button(self.root,text="Ok", command=self.cmdOK)
         self.root.bind("<Return>", self.cmdOK)
         bOK.config(width=10)
-        bCancel = Button(self.root,text="Cancel", command=self.cmdCancel)
-        bOK.grid(row=6, column=1,sticky=E, padx=5,pady=5)
-        bCancel.grid(row=6, column=2,sticky=E, pady=5)
+        bCancel = Tkinter.Button(self.root,text="Cancel", command=self.cmdCancel)
+        bOK.grid(row=6, column=1,sticky=Tkinter.E, padx=5,pady=5)
+        bCancel.grid(row=6, column=2,sticky=Tkinter.E, pady=5)
 
         self.vars={'dir':sdir,'xls':sxls,'shp':sshp,'log':slog,'gui':bgui,'debug':bdebug,'getovs':bovs,'nomd':bnomd}
         
@@ -330,12 +353,6 @@ class GetArgs:
 #========================================================================================================
 #Above is for the GUI if run without arguments
 #========================================================================================================
-def StrToBool(val):
-    if type(val) is str:
-        if val =='True': return True
-        if val =='False': return False
-    else: return val
-    
 if __name__ == '__main__':
     import optparse
     description='Run the metadata crawler'
@@ -358,7 +375,7 @@ if __name__ == '__main__':
                       help="Show the GUI progress dialog")
     opts,args = parser.parse_args()
     if not opts.dir or not opts.log or not opts.shp or not opts.xls:
-        #GetArgs(True,opts.debug,opts.nomd,opts.ovs) #Show progress GUI.
-        GetArgs(opts.gui,opts.debug,opts.nomd,opts.ovs) #No progress GUI.
+        GetArgs(True,opts.debug,opts.nomd,opts.ovs) #Show progress GUI.
+        #GetArgs(opts.gui,opts.debug,opts.nomd,opts.ovs) #No progress GUI.
     else:
         main(opts.dir,opts.xls,opts.shp,opts.log,opts.gui,opts.debug,opts.nomd,opts.ovs)

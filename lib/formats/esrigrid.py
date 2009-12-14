@@ -1,8 +1,8 @@
 '''
 Metadata driver for ESRI GRIDs
-==============================
-@see:Format specification
-    U{http://home.gdal.org/projects/aigrid/aigrid_format.html}
+
+B{Format specification}:
+    - U{http://home.gdal.org/projects/aigrid/aigrid_format.html}
 '''
 
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts

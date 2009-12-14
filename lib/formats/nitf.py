@@ -1,8 +1,8 @@
 '''
 Metadata driver for NITF imagery
-======================================
-@see:Format specification
-    U{http://www.gwg.nga.mil/ntb/baseline/documents.html}
+
+B{Format specification}:
+    - U{http://www.gwg.nga.mil/ntb/baseline/documents.html}
 
 @todo:GDAL upscales non standard bit depths. e.g 11 bit data is treated as 16 bit.
 Currently the NITF driver reports the upscaled bit depth.

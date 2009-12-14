@@ -60,9 +60,9 @@
 <pre class="py-src">
 <a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-docstring">'''</tt> </tt>
 <a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-docstring">Metadata driver for Digital Globe Quickbird imagery</tt> </tt>
-<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-docstring">===================================================</tt> </tt>
-<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-docstring">@see:Format specification</tt> </tt>
-<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-docstring">    U{http://www.digitalglobe.com/digitalglobe2/file.php/646/QuickBird_Imagery_Products-Product_Guide.pdf}</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-docstring">B{Format specification}:</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-docstring">    - U{http://www.digitalglobe.com/digitalglobe2/file.php/646/QuickBird_Imagery_Products-Product_Guide.pdf}</tt> </tt>
 <a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-docstring">'''</tt> </tt>
 <a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"> </tt>
 <a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts</tt> </tt>
@@ -476,7 +476,9 @@ formats.netcdf.Dataset
 formats.nitf.Dataset
 formats.quickbird.Dataset
 formats.spot_cap.Dataset
-formats.spot_dimap.Dataset" class="py-name" href="#" onclick="return doclink('link-68', 'Dataset', 'link-9');">Dataset</a></tt><tt class="py-op">.</tt><tt id="link-69" class="py-name" targets="Method formats.__dataset__.Dataset.getoverview()=formats.__dataset__.Dataset-class.html#getoverview,Method formats.quickbird.Dataset.getoverview()=formats.quickbird.Dataset-class.html#getoverview,Function overviews.getoverview()=overviews-module.html#getoverview"><a title="formats.__dataset__.Dataset.getoverview
+formats.spot_dimap.Dataset" class="py-name" href="#" onclick="return doclink('link-68', 'Dataset', 'link-9');">Dataset</a></tt><tt class="py-op">.</tt><tt id="link-69" class="py-name" targets="Method formats.__dataset__.Dataset.getoverview()=formats.__dataset__.Dataset-class.html#getoverview,Method formats.esribil.Dataset.getoverview()=formats.esribil.Dataset-class.html#getoverview,Method formats.esrigrid.Dataset.getoverview()=formats.esrigrid.Dataset-class.html#getoverview,Method formats.quickbird.Dataset.getoverview()=formats.quickbird.Dataset-class.html#getoverview,Function overviews.getoverview()=overviews-module.html#getoverview"><a title="formats.__dataset__.Dataset.getoverview
+formats.esribil.Dataset.getoverview
+formats.esrigrid.Dataset.getoverview
 formats.quickbird.Dataset.getoverview
 overviews.getoverview" class="py-name" href="#" onclick="return doclink('link-69', 'getoverview', 'link-69');">getoverview</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt><tt class="py-name">outfile</tt><tt class="py-op">,</tt><tt class="py-name">width</tt><tt class="py-op">,</tt><tt class="py-name">format</tt><tt class="py-op">)</tt> <tt class="py-comment">#Try it the slow way...</tt> </tt>
 <a name="L260"></a><tt class="py-lineno">260</tt>  <tt class="py-line">            <tt class="py-comment">#if not ds:return __default__.Dataset.getoverview(self,outfile,width,format) #geometry.OpenDataset raises an error now</tt> </tt>
@@ -491,6 +493,8 @@ overviews.getoverview" class="py-name" href="#" onclick="return doclink('link-69
 <a name="L269"></a><tt class="py-lineno">269</tt>  <tt class="py-line"><tt class="py-comment"></tt>            <tt class="py-name">stretch_type</tt><tt class="py-op">=</tt><tt class="py-string">'NONE'</tt> </tt>
 <a name="L270"></a><tt class="py-lineno">270</tt>  <tt class="py-line"> </tt>
 <a name="L271"></a><tt class="py-lineno">271</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt id="link-70" class="py-name"><a title="overviews" class="py-name" href="#" onclick="return doclink('link-70', 'overviews', 'link-64');">overviews</a></tt><tt class="py-op">.</tt><tt id="link-71" class="py-name"><a title="formats.__dataset__.Dataset.getoverview
+formats.esribil.Dataset.getoverview
+formats.esrigrid.Dataset.getoverview
 formats.quickbird.Dataset.getoverview
 overviews.getoverview" class="py-name" href="#" onclick="return doclink('link-71', 'getoverview', 'link-69');">getoverview</a></tt><tt class="py-op">(</tt><tt class="py-name">ds</tt><tt class="py-op">,</tt><tt class="py-name">outfile</tt><tt class="py-op">,</tt><tt class="py-name">width</tt><tt class="py-op">,</tt><tt class="py-name">format</tt><tt class="py-op">,</tt><tt class="py-name">bands</tt><tt class="py-op">,</tt><tt class="py-name">stretch_type</tt><tt class="py-op">)</tt> </tt>
 <a name="L272"></a><tt class="py-lineno">272</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> <tt class="py-keyword">return</tt> <tt id="link-72" class="py-name"><a title="formats.__default__" class="py-name" href="#" onclick="return doclink('link-72', '__default__', 'link-2');">__default__</a></tt><tt class="py-op">.</tt><tt id="link-73" class="py-name"><a title="formats.__dataset__.Dataset
@@ -510,6 +514,8 @@ formats.nitf.Dataset
 formats.quickbird.Dataset
 formats.spot_cap.Dataset
 formats.spot_dimap.Dataset" class="py-name" href="#" onclick="return doclink('link-73', 'Dataset', 'link-9');">Dataset</a></tt><tt class="py-op">.</tt><tt id="link-74" class="py-name"><a title="formats.__dataset__.Dataset.getoverview
+formats.esribil.Dataset.getoverview
+formats.esrigrid.Dataset.getoverview
 formats.quickbird.Dataset.getoverview
 overviews.getoverview" class="py-name" href="#" onclick="return doclink('link-74', 'getoverview', 'link-69');">getoverview</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt><tt class="py-name">outfile</tt><tt class="py-op">,</tt><tt class="py-name">width</tt><tt class="py-op">,</tt><tt class="py-name">format</tt><tt class="py-op">)</tt><tt class="py-comment">#Do it the slow way...</tt> </tt>
 </div></div><a name="L273"></a><tt class="py-lineno">273</tt>  <tt class="py-line"> </tt><script type="text/javascript">
@@ -547,7 +553,7 @@ expandto(location.href);
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Mon Dec 07 10:58:12 2009
+    Generated by Epydoc 3.0.1 on Mon Dec 14 13:04:23 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

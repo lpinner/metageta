@@ -1,6 +1,6 @@
 '''
-Metadata driver for JP2 imagery
-===============================
+Metadata driver for JPEG2000 imagery
+
 '''
 
 

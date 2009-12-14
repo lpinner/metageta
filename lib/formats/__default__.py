@@ -1,6 +1,7 @@
 '''
+Default Dataset class
+=====================
 Metadata driver for generic imagery formats including GDAL Virtual Rasters (VRT files and xml strings)
-=======================================================================================================
 '''
 
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts

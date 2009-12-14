@@ -10,11 +10,11 @@ for %%a in (%*) do (
 )
 if %nargs%==0 set gui=1
 if /i "%gui%"=="0" (
-    call python.exe runcrawler.py %*
+    call python.exe runcrawler.py %* --debug
     pause
 ) else (
     REM Not using the GUI until I sort out the disconnection bug
-    call python.exe runcrawler.py %* 
+    call python.exe runcrawler.py %*  --debug
     pause
     rem start "Crawler" /b pythonw.exe runcrawler.py --gui %*
 )

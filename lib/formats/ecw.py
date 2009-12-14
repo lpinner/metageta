@@ -1,6 +1,5 @@
 '''
 Metadata driver for ECW imagery
-===============================
 '''
 
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts

@@ -1,8 +1,9 @@
 '''
 Metadata driver for SPOT DIMAP imagery
-======================================
-@see:Format specification
-    U{http://www.spotimage.fr/dimap/spec/documentation/refdoc.htm}
+
+B{Format specification}:
+    - U{http://www.spotimage.fr/dimap/spec/documentation/refdoc.htm}
+
 @todo: GDALINFO is pretty slow (4+ sec), check that this driver is not that slow...
 '''
 
@@ -53,6 +54,7 @@ except ImportError:
 class Dataset(__default__.Dataset): 
     '''Subclass of __default__.Dataset class so we get a load of metadata populated automatically'''
     def __init__(self,f):
+        '''Open the dataset'''
         if not f:f=self.fileinfo['filepath']
         self.filelist=[r for r in glob.glob('%s/*'%os.path.dirname(f))]
     def __getmetadata__(self,f=None):

@@ -1,17 +1,14 @@
 '''
 Metadata driver for ACRES ALOS AVNIR-2/PRISM/PALSAR imagery
-===========================================================
-Supports:
-ALOS AVNIR2/PRISM
-PALSAR (Level 1.5 only, Level 1.0 not (yet?) implemented)
 
-@see:Format specifications
-    
-    PALSAR Level 1.0: U{http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10287}
+B{Supports}:
+    - ALOS AVNIR2/PRISM
+    - ALOS PALSAR (Level 1.5 only, Level 1.0 not (yet?) implemented)
 
-    PALSAR Level 1.1/1.5: U{http://www.eorc.jaxa.jp/ALOS/doc/fdata/PALSAR_x_Format_EK.pdf}
-
-    ALOS AVNIR2/PRISM: U{http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10285}
+B{Format specifications}:
+    - PALSAR Level 1.0: U{http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10287}
+    - PALSAR Level 1.1/1.5: U{http://www.eorc.jaxa.jp/ALOS/doc/fdata/PALSAR_x_Format_EK.pdf}
+    - ALOS AVNIR2/PRISM: U{http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10285}
 '''
 
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
@@ -434,8 +431,8 @@ class Dataset(__dataset__.Dataset):
             recordlength=0
             offset=utilities.readbinary(meta,(record-1)*recordlength,start,stop)
             #don't use ALOS provided no. cols, as it doesn't include 'dummy' pixels
-            #vrt=geometry.CreateRawRasterVRT(self._imgs,self.metadata['cols'],self.metadata['rows'],self.metadata['datatype'],self.metadata['nbits'],offset,byteorder='MSB')
-            vrt=geometry.CreateRawRasterVRT(self._imgs,offset,nrows,self.metadata['datatype'],self.metadata['nbits'],offset,byteorder='MSB')
+            #vrt=geometry.CreateRawRasterVRT(self._imgs,self.metadata['cols'],self.metadata['rows'],self.metadata['datatype'],offset,byteorder='MSB')
+            vrt=geometry.CreateRawRasterVRT(self._imgs,offset,nrows,self.metadata['datatype'],offset,byteorder='MSB')
             self._gdaldataset=geometry.OpenDataset(vrt)
 
         #Reproject corners to lon,lat

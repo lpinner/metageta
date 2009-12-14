@@ -1,9 +1,8 @@
 '''
 Metadata driver for ACRES Landsat CCRS/SPOT 1-4 imagery
-=======================================================
-@see:Format specification
-    
-    U{http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10349}
+
+B{Format specification}:    
+    - U{http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10349}
 '''
 
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
@@ -50,6 +49,7 @@ except ImportError:
     
 class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
     def __init__(self,f=None):
+        '''Open the dataset'''
         if not f:f=self.fileinfo['filepath']
         self.filelist=[r for r in utilities.rglob(os.path.dirname(f))] #everything in this dir and below.
 
@@ -72,6 +72,7 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
         if not satellite[0:7] == 'LANDSAT':
             raise NotImplementedError #This error gets ignored in __init__.Open()
     def __getmetadata__(self,f=None):
+        '''Populate the metadata'''
         if not f:f=self.fileinfo['filepath']
         self._gdaldataset = geometry.OpenDataset(f)
 

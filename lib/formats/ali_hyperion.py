@@ -1,15 +1,3 @@
-'''
-Metadata driver for EO1 ALI (L1G & L1R) & Hyperion (L1R) images
-
-@see:Format specifications
-
-  HDF format:U{http://www.gdal.org/frmt_hdf4.html}
-
-  Hyperion/ALI format:U{http://eo1.usgs.gov/userGuide/index.php}
-
-@todo: extract stuff from FDGC metadata?
-'''
-
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -29,6 +17,19 @@ Metadata driver for EO1 ALI (L1G & L1R) & Hyperion (L1R) images
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+
+'''
+Metadata driver for EO1 ALI (L1G & L1R) & Hyperion (L1R) images
+
+@see:Format specifications
+
+  HDF format:U{http://www.gdal.org/frmt_hdf4.html}
+
+  Hyperion/ALI format:U{http://eo1.usgs.gov/userGuide/index.php}
+
+@todo: extract stuff from FDGC metadata?
+'''
+
 
 format_regex=[r'eo1.*\.[lm]1r$',     #EO1 ALI (L1R) & Hyperion
               r'eo1.*_hdf\.l1g$',    #EO1 ALI (L1G) HDF

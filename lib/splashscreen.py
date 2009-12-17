@@ -1,14 +1,3 @@
-'''
-This is the beginnings of a splash screen cos the GUI's in runcrawler.py and runtransforms.py take sooo long to start up...
-===========================================================================================================================
-
-No, they don't take long at all to load when run from C:\ drive. They take ages when the app is run from a network drive
-
-Modified from Activestate Recipe 534124: Elegant Tkinter Splash Screen U{http://code.activestate.com/recipes/534124} 
-by Luke Pinner (ERIN) to support threading & callback functions.
-
-'''
-
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -28,6 +17,19 @@ by Luke Pinner (ERIN) to support threading & callback functions.
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+
+'''
+Splashscreen for startup
+========================
+Pop up a splashscreen on startup
+
+This is the beginnings of a splash screen cos the GUI's in runcrawler.py and runtransforms.py take sooo long to start up...
+No, they don't take long at all to load when run from C:\ drive. They take ages when the app is run from a network drive
+
+Modified from Activestate Recipe 534124: Elegant Tkinter Splash Screen U{http://code.activestate.com/recipes/534124} 
+by Luke Pinner (ERIN) to support threading & callback functions.
+
+'''
 
 import threading,os
 #from Tkinter import *

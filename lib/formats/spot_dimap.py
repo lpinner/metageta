@@ -1,12 +1,3 @@
-'''
-Metadata driver for SPOT DIMAP imagery
-
-B{Format specification}:
-    - U{http://www.spotimage.fr/dimap/spec/documentation/refdoc.htm}
-
-@todo: GDALINFO is pretty slow (4+ sec), check that this driver is not that slow...
-'''
-
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,6 +17,15 @@ B{Format specification}:
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+
+'''
+Metadata driver for SPOT DIMAP imagery
+
+B{Format specification}:
+    - U{http://www.spotimage.fr/dimap/spec/documentation/refdoc.htm}
+
+@todo: GDALINFO is pretty slow (4+ sec), check that this driver is not that slow...
+'''
 
 format_regex=[r'metadata\.dim$'] #SPOT DIMAP
 '''Regular expression list of file formats'''

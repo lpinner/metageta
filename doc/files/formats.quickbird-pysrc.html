@@ -31,7 +31,7 @@
       <th class="navbar" align="right" width="100%">
         <table border="0" cellpadding="0" cellspacing="0">
           <tr><th class="navbar" align="center"
-            >Metadata Crawler</th>
+            >Extract and Transform Metadata (ETA)</th>
           </tr></table></th>
   </tr>
 </table>
@@ -58,33 +58,33 @@
 </table>
 <h1 class="epydoc">Source Code for <a href="formats.quickbird-module.html">Module formats.quickbird</a></h1>
 <pre class="py-src">
-<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-docstring">'''</tt> </tt>
-<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-docstring">Metadata driver for Digital Globe Quickbird imagery</tt> </tt>
-<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
-<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-docstring">B{Format specification}:</tt> </tt>
-<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-docstring">    - U{http://www.digitalglobe.com/digitalglobe2/file.php/646/QuickBird_Imagery_Products-Product_Guide.pdf}</tt> </tt>
-<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-docstring">'''</tt> </tt>
-<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"> </tt>
-<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts</tt> </tt>
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># Permission is hereby granted, free of charge, to any person obtaining a copy</tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># of this software and associated documentation files (the "Software"), to deal</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># in the Software without restriction, including without limitation the rights</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># copies of the Software, and to permit persons to whom the Software is</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># furnished to do so, subject to the following conditions:</tt> </tt>
 <a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
-<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># Permission is hereby granted, free of charge, to any person obtaining a copy</tt> </tt>
-<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># of this software and associated documentation files (the "Software"), to deal</tt> </tt>
-<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># in the Software without restriction, including without limitation the rights</tt> </tt>
-<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># to use, copy, modify, merge, publish, distribute, sublicense, and/or sell</tt> </tt>
-<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># copies of the Software, and to permit persons to whom the Software is</tt> </tt>
-<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># furnished to do so, subject to the following conditions:</tt> </tt>
-<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
-<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># The above copyright notice and this permission notice shall be included in</tt> </tt>
-<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># all copies or substantial portions of the Software.</tt> </tt>
-<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
-<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</tt> </tt>
-<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</tt> </tt>
-<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</tt> </tt>
-<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</tt> </tt>
-<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</tt> </tt>
-<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN</tt> </tt>
-<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># THE SOFTWARE.</tt> </tt>
-<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line"><tt class="py-comment"></tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># The above copyright notice and this permission notice shall be included in</tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># all copies or substantial portions of the Software.</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,</tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER</tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,</tt> </tt>
+<a name="L18"></a><tt class="py-lineno"> 18</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN</tt> </tt>
+<a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment"># THE SOFTWARE.</tt> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line"><tt class="py-comment"></tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"><tt class="py-docstring">'''</tt> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"><tt class="py-docstring">Metadata driver for Digital Globe Quickbird imagery</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"><tt class="py-docstring">B{Format specification}:</tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"><tt class="py-docstring">    - U{http://www.digitalglobe.com/digitalglobe2/file.php/646/QuickBird_Imagery_Products-Product_Guide.pdf}</tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"><tt class="py-docstring">'''</tt> </tt>
+<a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line"> </tt>
 <a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line"><tt id="link-0" class="py-name" targets="Variable formats.__default__.format_regex=formats.__default__-module.html#format_regex,Variable formats.ali_hyperion.format_regex=formats.ali_hyperion-module.html#format_regex,Variable formats.alos.format_regex=formats.alos-module.html#format_regex,Variable formats.aster.format_regex=formats.aster-module.html#format_regex,Variable formats.ccrs.format_regex=formats.ccrs-module.html#format_regex,Variable formats.ecw.format_regex=formats.ecw-module.html#format_regex,Variable formats.envi.format_regex=formats.envi-module.html#format_regex,Variable formats.esribil.format_regex=formats.esribil-module.html#format_regex,Variable formats.esrigrid.format_regex=formats.esrigrid-module.html#format_regex,Variable formats.fast_l7a.format_regex=formats.fast_l7a-module.html#format_regex,Variable formats.format_regex=formats-module.html#format_regex,Variable formats.jp2.format_regex=formats.jp2-module.html#format_regex,Variable formats.netcdf.format_regex=formats.netcdf-module.html#format_regex,Variable formats.nitf.format_regex=formats.nitf-module.html#format_regex,Variable formats.quickbird.format_regex=formats.quickbird-module.html#format_regex,Variable formats.spot_cap.format_regex=formats.spot_cap-module.html#format_regex,Variable formats.spot_dimap.format_regex=formats.spot_dimap-module.html#format_regex"><a title="formats.__default__.format_regex
 formats.ali_hyperion.format_regex
 formats.alos.format_regex
@@ -444,23 +444,24 @@ formats.spot_dimap.Dataset.__getmetadata__" class="py-name" href="#" onclick="re
 </div><a name="L240"></a><tt class="py-lineno">240</tt>  <tt class="py-line">        <tt class="py-docstring">'''</tt> </tt>
 <a name="L241"></a><tt class="py-lineno">241</tt>  <tt class="py-line"><tt class="py-docstring">        Generate overviews for Quickbird imagery</tt> </tt>
 <a name="L242"></a><tt class="py-lineno">242</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
-<a name="L243"></a><tt class="py-lineno">243</tt>  <tt class="py-line"><tt class="py-docstring">        @type  outfile: string</tt> </tt>
+<a name="L243"></a><tt class="py-lineno">243</tt>  <tt class="py-line"><tt class="py-docstring">        @type  outfile: str</tt> </tt>
 <a name="L244"></a><tt class="py-lineno">244</tt>  <tt class="py-line"><tt class="py-docstring">        @param outfile: a filepath to the output overview image. If supplied, format is determined from the file extension</tt> </tt>
-<a name="L245"></a><tt class="py-lineno">245</tt>  <tt class="py-line"><tt class="py-docstring">        @type  width:   integer</tt> </tt>
+<a name="L245"></a><tt class="py-lineno">245</tt>  <tt class="py-line"><tt class="py-docstring">        @type  width:   int</tt> </tt>
 <a name="L246"></a><tt class="py-lineno">246</tt>  <tt class="py-line"><tt class="py-docstring">        @param width:   image width</tt> </tt>
-<a name="L247"></a><tt class="py-lineno">247</tt>  <tt class="py-line"><tt class="py-docstring">        @type  format:  string</tt> </tt>
+<a name="L247"></a><tt class="py-lineno">247</tt>  <tt class="py-line"><tt class="py-docstring">        @type  format:  str</tt> </tt>
 <a name="L248"></a><tt class="py-lineno">248</tt>  <tt class="py-line"><tt class="py-docstring">        @param format:  format to generate overview image, one of ['JPG','PNG','GIF','BMP','TIF']. Not required if outfile is supplied.</tt> </tt>
-<a name="L249"></a><tt class="py-lineno">249</tt>  <tt class="py-line"><tt class="py-docstring">        @return:        filepath (if outfile is supplied)/binary image data (if outfile is not supplied)</tt> </tt>
-<a name="L250"></a><tt class="py-lineno">250</tt>  <tt class="py-line"><tt class="py-docstring">        '''</tt> </tt>
-<a name="L251"></a><tt class="py-lineno">251</tt>  <tt class="py-line">        <tt class="py-keyword">import</tt> <tt id="link-64" class="py-name" targets="Module overviews=overviews-module.html"><a title="overviews" class="py-name" href="#" onclick="return doclink('link-64', 'overviews', 'link-64');">overviews</a></tt> </tt>
-<a name="L252"></a><tt class="py-lineno">252</tt>  <tt class="py-line"> </tt>
-<a name="L253"></a><tt class="py-lineno">253</tt>  <tt class="py-line">        <tt class="py-comment">#First check for a browse graphic, no point re-inventing the wheel...</tt> </tt>
-<a name="L254"></a><tt class="py-lineno">254</tt>  <tt class="py-line"><tt class="py-comment"></tt>        <tt class="py-name">f</tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">fileinfo</tt><tt class="py-op">[</tt><tt class="py-string">'filepath'</tt><tt class="py-op">]</tt> </tt>
-<a name="L255"></a><tt class="py-lineno">255</tt>  <tt class="py-line">        <tt class="py-name">browse</tt><tt class="py-op">=</tt><tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">splitext</tt><tt class="py-op">(</tt><tt class="py-name">f</tt><tt class="py-op">)</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt><tt class="py-op">+</tt><tt class="py-string">'-browse.jpg'</tt> </tt>
-<a name="L256"></a><tt class="py-lineno">256</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">exists</tt><tt class="py-op">(</tt><tt class="py-name">browse</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
-<a name="L257"></a><tt class="py-lineno">257</tt>  <tt class="py-line"> </tt>
-<a name="L258"></a><tt class="py-lineno">258</tt>  <tt class="py-line">            <tt class="py-keyword">try</tt><tt class="py-op">:</tt><tt class="py-name">ds</tt><tt class="py-op">=</tt><tt id="link-65" class="py-name"><a title="geometry" class="py-name" href="#" onclick="return doclink('link-65', 'geometry', 'link-4');">geometry</a></tt><tt class="py-op">.</tt><tt id="link-66" class="py-name"><a title="geometry.OpenDataset" class="py-name" href="#" onclick="return doclink('link-66', 'OpenDataset', 'link-54');">OpenDataset</a></tt><tt class="py-op">(</tt><tt class="py-name">browse</tt><tt class="py-op">)</tt> </tt>
-<a name="L259"></a><tt class="py-lineno">259</tt>  <tt class="py-line">            <tt class="py-keyword">except</tt><tt class="py-op">:</tt><tt class="py-keyword">return</tt> <tt id="link-67" class="py-name"><a title="formats.__default__" class="py-name" href="#" onclick="return doclink('link-67', '__default__', 'link-2');">__default__</a></tt><tt class="py-op">.</tt><tt id="link-68" class="py-name"><a title="formats.__dataset__.Dataset
+<a name="L249"></a><tt class="py-lineno">249</tt>  <tt class="py-line"><tt class="py-docstring">        @rtype:         str</tt> </tt>
+<a name="L250"></a><tt class="py-lineno">250</tt>  <tt class="py-line"><tt class="py-docstring">        @return:        filepath (if outfile is supplied)/binary image data (if outfile is not supplied)</tt> </tt>
+<a name="L251"></a><tt class="py-lineno">251</tt>  <tt class="py-line"><tt class="py-docstring">        '''</tt> </tt>
+<a name="L252"></a><tt class="py-lineno">252</tt>  <tt class="py-line">        <tt class="py-keyword">import</tt> <tt id="link-64" class="py-name" targets="Module overviews=overviews-module.html"><a title="overviews" class="py-name" href="#" onclick="return doclink('link-64', 'overviews', 'link-64');">overviews</a></tt> </tt>
+<a name="L253"></a><tt class="py-lineno">253</tt>  <tt class="py-line"> </tt>
+<a name="L254"></a><tt class="py-lineno">254</tt>  <tt class="py-line">        <tt class="py-comment">#First check for a browse graphic, no point re-inventing the wheel...</tt> </tt>
+<a name="L255"></a><tt class="py-lineno">255</tt>  <tt class="py-line"><tt class="py-comment"></tt>        <tt class="py-name">f</tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">fileinfo</tt><tt class="py-op">[</tt><tt class="py-string">'filepath'</tt><tt class="py-op">]</tt> </tt>
+<a name="L256"></a><tt class="py-lineno">256</tt>  <tt class="py-line">        <tt class="py-name">browse</tt><tt class="py-op">=</tt><tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">splitext</tt><tt class="py-op">(</tt><tt class="py-name">f</tt><tt class="py-op">)</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt><tt class="py-op">+</tt><tt class="py-string">'-browse.jpg'</tt> </tt>
+<a name="L257"></a><tt class="py-lineno">257</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">exists</tt><tt class="py-op">(</tt><tt class="py-name">browse</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L258"></a><tt class="py-lineno">258</tt>  <tt class="py-line"> </tt>
+<a name="L259"></a><tt class="py-lineno">259</tt>  <tt class="py-line">            <tt class="py-keyword">try</tt><tt class="py-op">:</tt><tt class="py-name">ds</tt><tt class="py-op">=</tt><tt id="link-65" class="py-name"><a title="geometry" class="py-name" href="#" onclick="return doclink('link-65', 'geometry', 'link-4');">geometry</a></tt><tt class="py-op">.</tt><tt id="link-66" class="py-name"><a title="geometry.OpenDataset" class="py-name" href="#" onclick="return doclink('link-66', 'OpenDataset', 'link-54');">OpenDataset</a></tt><tt class="py-op">(</tt><tt class="py-name">browse</tt><tt class="py-op">)</tt> </tt>
+<a name="L260"></a><tt class="py-lineno">260</tt>  <tt class="py-line">            <tt class="py-keyword">except</tt><tt class="py-op">:</tt><tt class="py-keyword">return</tt> <tt id="link-67" class="py-name"><a title="formats.__default__" class="py-name" href="#" onclick="return doclink('link-67', '__default__', 'link-2');">__default__</a></tt><tt class="py-op">.</tt><tt id="link-68" class="py-name"><a title="formats.__dataset__.Dataset
 formats.__default__.Dataset
 formats.ali_hyperion.Dataset
 formats.alos.Dataset
@@ -481,23 +482,23 @@ formats.esribil.Dataset.getoverview
 formats.esrigrid.Dataset.getoverview
 formats.quickbird.Dataset.getoverview
 overviews.getoverview" class="py-name" href="#" onclick="return doclink('link-69', 'getoverview', 'link-69');">getoverview</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt><tt class="py-name">outfile</tt><tt class="py-op">,</tt><tt class="py-name">width</tt><tt class="py-op">,</tt><tt class="py-name">format</tt><tt class="py-op">)</tt> <tt class="py-comment">#Try it the slow way...</tt> </tt>
-<a name="L260"></a><tt class="py-lineno">260</tt>  <tt class="py-line">            <tt class="py-comment">#if not ds:return __default__.Dataset.getoverview(self,outfile,width,format) #geometry.OpenDataset raises an error now</tt> </tt>
-<a name="L261"></a><tt class="py-lineno">261</tt>  <tt class="py-line"><tt class="py-comment"></tt> </tt>
-<a name="L262"></a><tt class="py-lineno">262</tt>  <tt class="py-line">            <tt class="py-name">nodata</tt><tt class="py-op">=</tt><tt class="py-number">0</tt> </tt>
-<a name="L263"></a><tt class="py-lineno">263</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">ds</tt><tt class="py-op">.</tt><tt class="py-name">RasterCount</tt> <tt class="py-op">==</tt> <tt class="py-number">1</tt><tt class="py-op">:</tt> </tt>
-<a name="L264"></a><tt class="py-lineno">264</tt>  <tt class="py-line">                <tt class="py-name">bands</tt><tt class="py-op">=</tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">]</tt> </tt>
-<a name="L265"></a><tt class="py-lineno">265</tt>  <tt class="py-line">            <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
-<a name="L266"></a><tt class="py-lineno">266</tt>  <tt class="py-line">                <tt class="py-name">bands</tt><tt class="py-op">=</tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">,</tt><tt class="py-number">2</tt><tt class="py-op">,</tt><tt class="py-number">3</tt><tt class="py-op">]</tt> </tt>
-<a name="L267"></a><tt class="py-lineno">267</tt>  <tt class="py-line"> </tt>
-<a name="L268"></a><tt class="py-lineno">268</tt>  <tt class="py-line">            <tt class="py-comment">#Default stretch type and additional args</tt> </tt>
-<a name="L269"></a><tt class="py-lineno">269</tt>  <tt class="py-line"><tt class="py-comment"></tt>            <tt class="py-name">stretch_type</tt><tt class="py-op">=</tt><tt class="py-string">'NONE'</tt> </tt>
-<a name="L270"></a><tt class="py-lineno">270</tt>  <tt class="py-line"> </tt>
-<a name="L271"></a><tt class="py-lineno">271</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt id="link-70" class="py-name"><a title="overviews" class="py-name" href="#" onclick="return doclink('link-70', 'overviews', 'link-64');">overviews</a></tt><tt class="py-op">.</tt><tt id="link-71" class="py-name"><a title="formats.__dataset__.Dataset.getoverview
+<a name="L261"></a><tt class="py-lineno">261</tt>  <tt class="py-line">            <tt class="py-comment">#if not ds:return __default__.Dataset.getoverview(self,outfile,width,format) #geometry.OpenDataset raises an error now</tt> </tt>
+<a name="L262"></a><tt class="py-lineno">262</tt>  <tt class="py-line"><tt class="py-comment"></tt> </tt>
+<a name="L263"></a><tt class="py-lineno">263</tt>  <tt class="py-line">            <tt class="py-name">nodata</tt><tt class="py-op">=</tt><tt class="py-number">0</tt> </tt>
+<a name="L264"></a><tt class="py-lineno">264</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">ds</tt><tt class="py-op">.</tt><tt class="py-name">RasterCount</tt> <tt class="py-op">==</tt> <tt class="py-number">1</tt><tt class="py-op">:</tt> </tt>
+<a name="L265"></a><tt class="py-lineno">265</tt>  <tt class="py-line">                <tt class="py-name">bands</tt><tt class="py-op">=</tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">]</tt> </tt>
+<a name="L266"></a><tt class="py-lineno">266</tt>  <tt class="py-line">            <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L267"></a><tt class="py-lineno">267</tt>  <tt class="py-line">                <tt class="py-name">bands</tt><tt class="py-op">=</tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">,</tt><tt class="py-number">2</tt><tt class="py-op">,</tt><tt class="py-number">3</tt><tt class="py-op">]</tt> </tt>
+<a name="L268"></a><tt class="py-lineno">268</tt>  <tt class="py-line"> </tt>
+<a name="L269"></a><tt class="py-lineno">269</tt>  <tt class="py-line">            <tt class="py-comment">#Default stretch type and additional args</tt> </tt>
+<a name="L270"></a><tt class="py-lineno">270</tt>  <tt class="py-line"><tt class="py-comment"></tt>            <tt class="py-name">stretch_type</tt><tt class="py-op">=</tt><tt class="py-string">'NONE'</tt> </tt>
+<a name="L271"></a><tt class="py-lineno">271</tt>  <tt class="py-line"> </tt>
+<a name="L272"></a><tt class="py-lineno">272</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt id="link-70" class="py-name"><a title="overviews" class="py-name" href="#" onclick="return doclink('link-70', 'overviews', 'link-64');">overviews</a></tt><tt class="py-op">.</tt><tt id="link-71" class="py-name"><a title="formats.__dataset__.Dataset.getoverview
 formats.esribil.Dataset.getoverview
 formats.esrigrid.Dataset.getoverview
 formats.quickbird.Dataset.getoverview
 overviews.getoverview" class="py-name" href="#" onclick="return doclink('link-71', 'getoverview', 'link-69');">getoverview</a></tt><tt class="py-op">(</tt><tt class="py-name">ds</tt><tt class="py-op">,</tt><tt class="py-name">outfile</tt><tt class="py-op">,</tt><tt class="py-name">width</tt><tt class="py-op">,</tt><tt class="py-name">format</tt><tt class="py-op">,</tt><tt class="py-name">bands</tt><tt class="py-op">,</tt><tt class="py-name">stretch_type</tt><tt class="py-op">)</tt> </tt>
-<a name="L272"></a><tt class="py-lineno">272</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> <tt class="py-keyword">return</tt> <tt id="link-72" class="py-name"><a title="formats.__default__" class="py-name" href="#" onclick="return doclink('link-72', '__default__', 'link-2');">__default__</a></tt><tt class="py-op">.</tt><tt id="link-73" class="py-name"><a title="formats.__dataset__.Dataset
+<a name="L273"></a><tt class="py-lineno">273</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> <tt class="py-keyword">return</tt> <tt id="link-72" class="py-name"><a title="formats.__default__" class="py-name" href="#" onclick="return doclink('link-72', '__default__', 'link-2');">__default__</a></tt><tt class="py-op">.</tt><tt id="link-73" class="py-name"><a title="formats.__dataset__.Dataset
 formats.__default__.Dataset
 formats.ali_hyperion.Dataset
 formats.alos.Dataset
@@ -518,7 +519,7 @@ formats.esribil.Dataset.getoverview
 formats.esrigrid.Dataset.getoverview
 formats.quickbird.Dataset.getoverview
 overviews.getoverview" class="py-name" href="#" onclick="return doclink('link-74', 'getoverview', 'link-69');">getoverview</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt><tt class="py-name">outfile</tt><tt class="py-op">,</tt><tt class="py-name">width</tt><tt class="py-op">,</tt><tt class="py-name">format</tt><tt class="py-op">)</tt><tt class="py-comment">#Do it the slow way...</tt> </tt>
-</div></div><a name="L273"></a><tt class="py-lineno">273</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+</div></div><a name="L274"></a><tt class="py-lineno">274</tt>  <tt class="py-line"> </tt><script type="text/javascript">
 <!--
 expandto(location.href);
 // -->
@@ -546,14 +547,14 @@ expandto(location.href);
       <th class="navbar" align="right" width="100%">
         <table border="0" cellpadding="0" cellspacing="0">
           <tr><th class="navbar" align="center"
-            >Metadata Crawler</th>
+            >Extract and Transform Metadata (ETA)</th>
           </tr></table></th>
   </tr>
 </table>
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Mon Dec 14 13:04:23 2009
+    Generated by Epydoc 3.0.1 on Thu Dec 17 11:07:07 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

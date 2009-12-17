@@ -1,20 +1,3 @@
-'''
-Provide GUI & file progress logging
-
-Example:
-
->>> import progresslogger
->>> if debug:level=progresslogger.DEBUG
->>> else:level=progresslogger.INFO
->>> pl = progresslogger.ProgressLogger('Metadata Crawler',logfile=log, logToConsole=True, logToFile=True, logToGUI=True, level=level)
->>> try:
->>>     do somthing
->>>     pl.info('That worked!')
->>> except:
->>>     pl.error('That didn't work!')
-
-'''
-
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -34,6 +17,23 @@ Example:
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+
+'''
+Provide GUI & file progress logging
+
+Example:
+
+>>> import progresslogger
+>>> if debug:level=progresslogger.DEBUG
+>>> else:level=progresslogger.INFO
+>>> pl = progresslogger.ProgressLogger('Metadata Crawler',logfile=log, logToConsole=True, logToFile=True, logToGUI=True, level=level)
+>>> try:
+>>>     do somthing
+>>>     pl.info('That worked!')
+>>> except:
+>>>     pl.error('That didn't work!')
+
+'''
 
 import logging,warnings,random,os,sys,socket,pickle,threading,Queue,time
 #from Tkinter import *

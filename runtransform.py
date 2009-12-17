@@ -1,21 +1,3 @@
-'''
-Script to run the Metadata Transforms
-=====================================
-Contains code to show GUI to gather input arguments when none are provided
-To run, call the eponymous batch file which sets the required environment variables
-
-Usage::
-    runtransform.bat -x xls -t xsl -d dir
-    
-@newfield sysarg: Argument, Arguments
-@sysarg: C{-x xls}: MS Excel spreadsheet to read from
-@sysarg: C{-t xsl}: XSL transform - may be one of the pre-defined XSL transforms or a path to a custom XSL file.
-@sysarg: C{-d dir}: Directory to write XML files to.
-
-@todo: Set up logging & debug properly. Enable selecting if MEF is created regardless of whether overviews exist
-@todo: Fix the splashscreen, it's conflicting with the GetArgs GUI and needs to be sorted out - low priority...
-'''
-
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -36,31 +18,52 @@ Usage::
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+'''
+Metadata Transforms
+===================
+Script to run the Metadata Transforms.
+
+Contains code to show GUI to gather input arguments when none are provided.
+To run, call the eponymous batch file which sets the required environment variables.
+
+Usage::
+    runtransform.bat -x xls -t xsl -d dir
+
+@newfield sysarg: Argument, Arguments
+@sysarg: C{-x xls}: MS Excel spreadsheet to read from
+@sysarg: C{-t xsl}: XSL transform - may be one of the pre-defined XSL transforms or a path to a custom XSL file.
+@sysarg: C{-d dir}: Directory to write XML files to.
+
+@note:B{Additional metadata elements}
+
+      The ANZLIC ISO19139 stylesheet can make use of additional metadata elements that may be 
+      manually added to the Excel spreadsheet and will be included in the output XML/MEF metadata.
+      See the L{transforms} module documentation for more information.
+ 
+@todo: Set up logging & debug properly. Enable selecting if MEF is created regardless of whether overviews exist
+@todo: Fix the splashscreen, it's conflicting with the GetArgs GUI and needs to be sorted out - low priority...
+
+'''
+
 #Imports
 import os,sys,glob
-
 #Set up the splash screen. Importing the FT.Xml module takes forever...
 #Commented out as it's conflicting with the GetArgs GUI and needs to be sorted out - low priority...
 #from splashscreen import SplashScreen,CallBack
 #startup=CallBack()
 #if len(sys.argv) == 1:SplashScreen(callback=startup.check)
-
 #from Tkinter import *
 import Tkinter
 import tkFileDialog
-
 from Ft.Xml import Domlette as Dom
 import utilities
 import transforms
 import progresslogger
-
 #Turn off the splashscreen
 #startup.value=True
-
 def main(xls,xsl,dir,mef=False,log=None,debug=False,gui=False):
     '''
     Run the Metadata Transform
-
     @type  xls: C{str}
     @param xls: Excel spreadsheet to read metadata from
     @type  xsl: C{str}
@@ -76,13 +79,11 @@ def main(xls,xsl,dir,mef=False,log=None,debug=False,gui=False):
     @type  gui: C{boolean}
     @param gui: Show the GUI progress dialog [Not yet implemented]
     ''' % '|'.join(['"%s"'%s for s in transforms.transforms.keys()])
-
     if debug:level=progresslogger.DEBUG
     else:level=progresslogger.INFO
     windowicon=os.environ['CURDIR']+'/lib/wm_icon.ico'
     try:pl = progresslogger.ProgressLogger('Metadata Transforms', logToConsole=True, logToFile=False, logToGUI=False, level=level, windowicon=windowicon)
     except:pl = progresslogger.ProgressLogger('Metadata Transforms', logToConsole=True, logToFile=False, logToGUI=False, level=level)
-
     for rec in utilities.ExcelReader(xls, list):
         try:
             overviews=[]
@@ -107,7 +108,6 @@ def main(xls,xsl,dir,mef=False,log=None,debug=False,gui=False):
 ##        except Exception,err:
 ##            pl.error('%s\n%s' % (rec['filename'], utilities.ExceptionInfo()))
 ##            pl.debug(utilities.ExceptionInfo(10))
-
 #========================================================================================================
 #Below is for the GUI if run without arguments
 #========================================================================================================
@@ -118,15 +118,12 @@ class Command:
         self.func = func
         self.args = args
         self.kwargs = kwargs
-
     def __call__(self, *args, **kwargs):
         apply(self.func, self.args, self.kwargs)
         
-
 class DropList(Tkinter.Widget):
     '''
     A Tkinter DropList menu
-
     Derived from http://effbot.org/tkinterbook/menu.htm
     '''
     def __init__(self, root, options, stringvar, cnf={},**kwargs):
@@ -142,17 +139,13 @@ class DropList(Tkinter.Widget):
             ltwidth=max([len(o) for o in options])+4
             fwidth=ltwidth+lbwidth
             self.width=fwidth
-
         stringvar.set(options[0]) # default value
-
         self.frame=Tkinter.Frame(root,relief="sunken", bd=2,background='white')#,width=fwidth)
         self._lt=Tkinter.Label(self.frame,textvariable=stringvar, bd=0,relief="sunken",activebackground='white',background='white',width=ltwidth)
         self._lb=Tkinter.Label(self.frame,text=arrow,relief="raised", bd=2)
         self._m=Tkinter.Menu(root, tearoff=0,background='white')
-
         for o in options:
             self._m.add_command(label=o, command=Command(stringvar.set,o))
-
         # attach popup to canvas
         self._lt.bind("<Button-1>", self._popup)
         self._lt.grid(row=0, column=0)
@@ -165,14 +158,11 @@ class DropList(Tkinter.Widget):
         self.frame.pack(*args, **kw)
     def grid(self, *args, **kw):
         self.frame.grid(*args, **kw)
-
 class GetArgs:
     '''Pop up a GUI dialog to gather arguments'''
     def __init__(self):
         '''Build and show the GUI dialog'''
-
         windowicon=os.environ['CURDIR']+'/lib/wm_icon.ico'
-
         #base 64 encoded gif images for the GUI buttons
         dir_img='''
             R0lGODlhEAAQAMZUABAQEB8QEB8YEC8gIC8vIEA4ME9IQF9IIFpTSWBXQHBfUFBoj3NlRoBnII9v
@@ -204,7 +194,6 @@ class GetArgs:
             ipBBg4MS9umTJYsrBAheSZwokGBBhwgeaNzIUSOhLKgydhz5EdWrB4oOelT5kdDJLwgUKRpEKOUX
             Gtpannzw5ZVNQje15czicmNPg1lwCtW5EeirQV+IEtI2iOjOmh9dQc2SimqWQa4efGzYcGZUr4NQ
             ddSWimwWr33UahRKly61qn0Iza1rl9qXKVIPIkyY8Mtft4gTTwkIADs='''
-
         xsl_img='''
             R0lGODdhEAAQAOMPAAAAAAAAgAAAmQAA/zNmmQCAgDNm/zOZAIaGhjOZ/zPM/8DAwKbK8DP///Hx
             8f///ywBAAAADwAQAAAEWBDJSeW76Or9Vn4f5zzOAp5kOo5AC2QOMxaFQcrP+zDCUzyNROAhkL14
@@ -214,7 +203,6 @@ class GetArgs:
         self.root.title('Metadata Transform')
         try:self.root.wm_iconbitmap(windowicon)
         except:pass
-
         # Calculate the geometry to centre the app
         scrnWt = self.root.winfo_screenwidth()
         scrnHt = self.root.winfo_screenheight()
@@ -223,26 +211,20 @@ class GetArgs:
         appXPos = (scrnWt / 2) - (appWt / 2)
         appYPos = (scrnHt / 2) - (appHt / 2)
         self.root.geometry('+%d+%d' % (appXPos, appYPos))
-
         last_dir = Tkinter.StringVar()
         last_dir.set('C:\\')
-
         xls_ico = Tkinter.PhotoImage(format='gif',data=xls_img)
         xsl_ico = Tkinter.PhotoImage(format='gif',data=xsl_img)
         dir_ico = Tkinter.PhotoImage(format='gif',data=dir_img)
-
         sxls = Tkinter.StringVar()
         sxsl = Tkinter.StringVar()
         sdir = Tkinter.StringVar()
         smef = Tkinter.IntVar()
-
         lxls=Tkinter.Label(self.root, text="Input spreadsheet:")
         lxsl=Tkinter.Label(self.root, text="XSL Stylesheet:")
         ldir=Tkinter.Label(self.root, text="Output directory:")
         lmef=Tkinter.Label(self.root, text="Create MEF:")
-
         self.transforms=transforms.transforms.keys()
-
         # exls=Tkinter.Entry(self.root, textvariable=sxls)
         # exsl=DropList(self.root,options,sxsl)
         # edir=Tkinter.Entry(self.root, textvariable=sdir)
@@ -250,47 +232,36 @@ class GetArgs:
         exls=Tkinter.Entry(self.root, textvariable=sxls, width=exsl.width)
         edir=Tkinter.Entry(self.root, textvariable=sdir, width=exsl.width)
         emef=Tkinter.Checkbutton(self.root, variable=smef, text="",onvalue=True, offvalue=False)
-
         bxls = Tkinter.Button(self.root,image=xls_ico, command=Command(self.cmdFile,sxls,[('Excel Spreadsheet','*.xls')],last_dir))
         bxsl = Tkinter.Label(self.root,image=xsl_ico)
         bdir = Tkinter.Button(self.root,image=dir_ico, command=Command(self.cmdDir, sdir,last_dir))
-
         lxls.grid(row=0, column=0, sticky=Tkinter.W)
         lxsl.grid(row=1, column=0, sticky=Tkinter.W)
         ldir.grid(row=2, column=0, sticky=Tkinter.W)
         #lmef.grid(row=3, column=0, sticky=Tkinter.W)
-
         exls.grid(row=0, column=1, sticky=Tkinter.W)
         exsl.grid(row=1, column=1, sticky=Tkinter.W)
         edir.grid(row=2, column=1, sticky=Tkinter.W)
-
         #emef.grid(row=3, column=1, sticky=Tkinter.W)
-
         bxls.grid(row=0, column=2, sticky=Tkinter.E)
         bxsl.grid(row=1, column=2, sticky=Tkinter.E)
         bdir.grid(row=2, column=2, sticky=Tkinter.E)
-
         bOK = Tkinter.Button(self.root,text="Ok", command=self.cmdOK)
         self.root.bind("<Return>", self.cmdOK)
         bOK.config(width=10)
         bCancel = Tkinter.Button(self.root,text="Cancel", command=self.cmdCancel)
         bOK.grid(row=4, column=1,sticky=Tkinter.E, padx=5,pady=5)
         bCancel.grid(row=4, column=2,sticky=Tkinter.E, pady=5)
-
         scrnWt = self.root.winfo_screenwidth()
         scrnHt = self.root.winfo_screenheight()
-
         imgWt = self.root.winfo_width()
         imgHt = self.root.winfo_height()
-
         imgXPos = (scrnWt / 2.0) - (imgWt / 2.0)
         imgYPos = (scrnHt / 2.0) - (imgHt / 2.0)
-
         #self.root.overrideredirect(1)
         self.root.geometry('+%d+%d' % (imgXPos, imgYPos))
         
         self.vars={'dir':sdir,'xls':sxls,'xsl':sxsl,'mef':smef}
-
        #self.root.update()
         self.root.mainloop()
         
@@ -303,16 +274,13 @@ class GetArgs:
         if ok:
             self.root.destroy()
             main(**args)
-
     def cmdCancel(self):
         self.root.destroy()
-
     def cmdDir(self,var,dir):
         ad = tkFileDialog.askdirectory(parent=self.root,initialdir=dir.get(),title='Please select a directory to output metadata to')
         if ad:
             var.set(ad)
             dir.set(ad)
-
     def cmdFile(self,var,filter,dir):
         fd = tkFileDialog.askopenfilename(parent=self.root,filetypes=filter,initialdir=dir.get(),title='Please select a file')
         if fd:
@@ -321,11 +289,9 @@ class GetArgs:
 #========================================================================================================
 #Above is for the GUI if run without arguments
 #========================================================================================================
-
 if __name__ == '__main__':
     #To ensure uri's work...
     if os.path.basename(sys.argv[0])!=sys.argv[0]:os.chdir(os.path.dirname(sys.argv[0]))
-
     import optparse
     description='Transform metadata to XML'
     parser = optparse.OptionParser(description=description)

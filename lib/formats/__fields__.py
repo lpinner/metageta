@@ -1,9 +1,3 @@
-'''
-Metadata Fields
-===============
-Dictionary of field names and data types
-'''
-
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,6 +17,12 @@ Dictionary of field names and data types
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+
+'''
+Metadata Fields
+===============
+Dictionary of field names and data types
+'''
 
 fields={'abstract'        :'no fieldtype required as this is not included in the shapefile...',
         'bands'           :('string',50),

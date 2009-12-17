@@ -1,13 +1,3 @@
-'''
-Metadata driver for ESRI Bil imagery
-
-B{Format specification}:
-    - U{http://webhelp.esri.com/arcgisdesktop/9.2/index.cfm?id=2527&pid=2519&topicname=BIL,_BIP,_and_BSQ_raster_files}
-
-@todo: Generic BIL/BIP/BSQ...?
-
-'''
-
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,6 +17,16 @@ B{Format specification}:
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+
+'''
+Metadata driver for ESRI Bil imagery
+
+B{Format specification}:
+    - U{http://webhelp.esri.com/arcgisdesktop/9.2/index.cfm?id=2527&pid=2519&topicname=BIL,_BIP,_and_BSQ_raster_files}
+
+@todo: Generic BIL/BIP/BSQ...?
+
+'''
 
 format_regex=[r'\.hdr$']
 '''Regular expression list of file formats'''

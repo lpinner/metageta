@@ -1,9 +1,3 @@
-'''
-Metadata driver for JPEG2000 imagery
-
-'''
-
-
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,6 +17,10 @@ Metadata driver for JPEG2000 imagery
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+
+'''
+Metadata driver for JPEG2000 imagery
+'''
 
 format_regex=[r'\.jp2$'] #Well duh...
 '''Regular expression list of file formats'''

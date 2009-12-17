@@ -31,7 +31,7 @@
       <th class="navbar" align="right" width="100%">
         <table border="0" cellpadding="0" cellspacing="0">
           <tr><th class="navbar" align="center"
-            >Metadata Crawler</th>
+            >Extract and Transform Metadata (ETA)</th>
           </tr></table></th>
   </tr>
 </table>
@@ -211,7 +211,7 @@
           <td><span class="summary-sig"><a href="overviews-module.html#_stretch_UNIQUE" class="summary-sig-name" onclick="show_private();">_stretch_UNIQUE</a>(<span class="summary-sig-arg">vrtcols</span>,
         <span class="summary-sig-arg">vrtrows</span>,
         <span class="summary-sig-arg">ds</span>,
-        <span class="summary-sig-arg">band</span>,
+        <span class="summary-sig-arg">bands</span>,
         <span class="summary-sig-arg">vals</span>)</span><br />
       Unique values stretch.</td>
           <td align="right" valign="top">
@@ -232,7 +232,7 @@
           <td><span class="summary-sig"><a href="overviews-module.html#_stretch_RANDOM" class="summary-sig-name" onclick="show_private();">_stretch_RANDOM</a>(<span class="summary-sig-arg">vrtcols</span>,
         <span class="summary-sig-arg">vrtrows</span>,
         <span class="summary-sig-arg">ds</span>,
-        <span class="summary-sig-arg">band</span>)</span><br />
+        <span class="summary-sig-arg">bands</span>)</span><br />
       Random values stretch.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="overviews-pysrc.html#_stretch_RANDOM">source&nbsp;code</a></span>
@@ -252,7 +252,7 @@
           <td><span class="summary-sig"><a href="overviews-module.html#_stretch_COLOURTABLE" class="summary-sig-name" onclick="show_private();">_stretch_COLOURTABLE</a>(<span class="summary-sig-arg">vrtcols</span>,
         <span class="summary-sig-arg">vrtrows</span>,
         <span class="summary-sig-arg">ds</span>,
-        <span class="summary-sig-arg">band</span>)</span><br />
+        <span class="summary-sig-arg">bands</span>)</span><br />
       Colour table stretch.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="overviews-pysrc.html#_stretch_COLOURTABLE">source&nbsp;code</a></span>
@@ -272,7 +272,7 @@
           <td><span class="summary-sig"><a href="overviews-module.html#_stretch_COLORTABLE" class="summary-sig-name" onclick="show_private();">_stretch_COLORTABLE</a>(<span class="summary-sig-arg">vrtcols</span>,
         <span class="summary-sig-arg">vrtrows</span>,
         <span class="summary-sig-arg">ds</span>,
-        <span class="summary-sig-arg">band</span>)</span><br />
+        <span class="summary-sig-arg">bands</span>)</span><br />
       Colour table stretch.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="overviews-pysrc.html#_stretch_COLOURTABLE">source&nbsp;code</a></span>
@@ -292,7 +292,7 @@
           <td><span class="summary-sig"><a href="overviews-module.html#_stretch_COLOURTABLELUT" class="summary-sig-name" onclick="show_private();">_stretch_COLOURTABLELUT</a>(<span class="summary-sig-arg">vrtcols</span>,
         <span class="summary-sig-arg">vrtrows</span>,
         <span class="summary-sig-arg">ds</span>,
-        <span class="summary-sig-arg">band</span>,
+        <span class="summary-sig-arg">bands</span>,
         <span class="summary-sig-arg">clr</span>)</span><br />
       Colour table file LUT stretch.</td>
           <td align="right" valign="top">
@@ -313,7 +313,7 @@
           <td><span class="summary-sig"><a href="overviews-module.html#_stretch_COLORTABLELUT" class="summary-sig-name" onclick="show_private();">_stretch_COLORTABLELUT</a>(<span class="summary-sig-arg">vrtcols</span>,
         <span class="summary-sig-arg">vrtrows</span>,
         <span class="summary-sig-arg">ds</span>,
-        <span class="summary-sig-arg">band</span>,
+        <span class="summary-sig-arg">bands</span>,
         <span class="summary-sig-arg">clr</span>)</span><br />
       Colour table file LUT stretch.</td>
           <td align="right" valign="top">
@@ -694,7 +694,7 @@
   <h3 class="epydoc"><span class="sig"><span class="sig-name">_stretch_UNIQUE</span>(<span class="sig-arg">vrtcols</span>,
         <span class="sig-arg">vrtrows</span>,
         <span class="sig-arg">ds</span>,
-        <span class="sig-arg">band</span>,
+        <span class="sig-arg">bands</span>,
         <span class="sig-arg">vals</span>)</span>
   </h3>
   </td><td align="right" valign="top"
@@ -710,7 +710,7 @@
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
         <li><strong class="pname"><code>ds</code></strong> (<code>gdal.Dataset</code>) - A gdal dataset object</li>
-        <li><strong class="pname"><code>band</code></strong> (<code>int</code>) - Band number to output. Band numbers are not zero indexed.</li>
+        <li><strong class="pname"><code>bands</code></strong> (<code>[int]</code>) - Band number to output. Band numbers are not zero indexed.</li>
         <li><strong class="pname"><code>vals</code></strong> (<code>list/tuple</code>) - List of cell values and R,G,B[,A] values e.g [(12, 0,0,0), (25, 
           255,255,255)]</li>
     </ul></dd>
@@ -729,7 +729,7 @@
   <h3 class="epydoc"><span class="sig"><span class="sig-name">_stretch_RANDOM</span>(<span class="sig-arg">vrtcols</span>,
         <span class="sig-arg">vrtrows</span>,
         <span class="sig-arg">ds</span>,
-        <span class="sig-arg">band</span>)</span>
+        <span class="sig-arg">bands</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="overviews-pysrc.html#_stretch_RANDOM">source&nbsp;code</a></span>&nbsp;
@@ -744,7 +744,7 @@
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
         <li><strong class="pname"><code>ds</code></strong> (<code>gdal.Dataset</code>) - A gdal dataset object</li>
-        <li><strong class="pname"><code>band</code></strong> (<code>int</code>) - Band number to output. Band numbers are not zero indexed.</li>
+        <li><strong class="pname"><code>bands</code></strong> (<code>[int]</code>) - Band number to output. Band numbers are not zero indexed.</li>
     </ul></dd>
     <dt>Returns: <code>xml</code></dt>
         <dd>VRT XML string</dd>
@@ -761,7 +761,7 @@
   <h3 class="epydoc"><span class="sig"><span class="sig-name">_stretch_COLOURTABLE</span>(<span class="sig-arg">vrtcols</span>,
         <span class="sig-arg">vrtrows</span>,
         <span class="sig-arg">ds</span>,
-        <span class="sig-arg">band</span>)</span>
+        <span class="sig-arg">bands</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="overviews-pysrc.html#_stretch_COLOURTABLE">source&nbsp;code</a></span>&nbsp;
@@ -779,7 +779,7 @@
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
         <li><strong class="pname"><code>ds</code></strong> (<code>gdal.Dataset</code>) - A gdal dataset object</li>
-        <li><strong class="pname"><code>band</code></strong> (<code>int</code>) - Band number to output. Band numbers are not zero indexed.</li>
+        <li><strong class="pname"><code>bands</code></strong> (<code>[int]</code>) - Band number to output. Band numbers are not zero indexed.</li>
     </ul></dd>
     <dt>Returns: <code>xml</code></dt>
         <dd>VRT XML string</dd>
@@ -796,7 +796,7 @@
   <h3 class="epydoc"><span class="sig"><span class="sig-name">_stretch_COLORTABLE</span>(<span class="sig-arg">vrtcols</span>,
         <span class="sig-arg">vrtrows</span>,
         <span class="sig-arg">ds</span>,
-        <span class="sig-arg">band</span>)</span>
+        <span class="sig-arg">bands</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="overviews-pysrc.html#_stretch_COLOURTABLE">source&nbsp;code</a></span>&nbsp;
@@ -814,7 +814,7 @@
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
         <li><strong class="pname"><code>ds</code></strong> (<code>gdal.Dataset</code>) - A gdal dataset object</li>
-        <li><strong class="pname"><code>band</code></strong> (<code>int</code>) - Band number to output. Band numbers are not zero indexed.</li>
+        <li><strong class="pname"><code>bands</code></strong> (<code>[int]</code>) - Band number to output. Band numbers are not zero indexed.</li>
     </ul></dd>
     <dt>Returns: <code>xml</code></dt>
         <dd>VRT XML string</dd>
@@ -831,7 +831,7 @@
   <h3 class="epydoc"><span class="sig"><span class="sig-name">_stretch_COLOURTABLELUT</span>(<span class="sig-arg">vrtcols</span>,
         <span class="sig-arg">vrtrows</span>,
         <span class="sig-arg">ds</span>,
-        <span class="sig-arg">band</span>,
+        <span class="sig-arg">bands</span>,
         <span class="sig-arg">clr</span>)</span>
   </h3>
   </td><td align="right" valign="top"
@@ -850,7 +850,7 @@
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
         <li><strong class="pname"><code>ds</code></strong> (<code>gdal.Dataset</code>) - A gdal dataset object</li>
-        <li><strong class="pname"><code>band</code></strong> (<code>int</code>) - Band number to output. Band numbers are not zero indexed.</li>
+        <li><strong class="pname"><code>bands</code></strong> (<code>[int]</code>) - Band number to output. Band numbers are not zero indexed.</li>
         <li><strong class="pname"><code>clr</code></strong> (<code>str</code>) - Path to colour lookup file. See file format in <a 
           href="overviews-module.html#ParseColourLUT" 
           class="link">ParseColourLUT</a></li>
@@ -870,7 +870,7 @@
   <h3 class="epydoc"><span class="sig"><span class="sig-name">_stretch_COLORTABLELUT</span>(<span class="sig-arg">vrtcols</span>,
         <span class="sig-arg">vrtrows</span>,
         <span class="sig-arg">ds</span>,
-        <span class="sig-arg">band</span>,
+        <span class="sig-arg">bands</span>,
         <span class="sig-arg">clr</span>)</span>
   </h3>
   </td><td align="right" valign="top"
@@ -889,7 +889,7 @@
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
         <li><strong class="pname"><code>ds</code></strong> (<code>gdal.Dataset</code>) - A gdal dataset object</li>
-        <li><strong class="pname"><code>band</code></strong> (<code>int</code>) - Band number to output. Band numbers are not zero indexed.</li>
+        <li><strong class="pname"><code>bands</code></strong> (<code>[int]</code>) - Band number to output. Band numbers are not zero indexed.</li>
         <li><strong class="pname"><code>clr</code></strong> (<code>str</code>) - Path to colour lookup file. See file format in <a 
           href="overviews-module.html#ParseColourLUT" 
           class="link">ParseColourLUT</a></li>
@@ -1149,14 +1149,14 @@
       <th class="navbar" align="right" width="100%">
         <table border="0" cellpadding="0" cellspacing="0">
           <tr><th class="navbar" align="center"
-            >Metadata Crawler</th>
+            >Extract and Transform Metadata (ETA)</th>
           </tr></table></th>
   </tr>
 </table>
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Mon Dec 14 13:04:21 2009
+    Generated by Epydoc 3.0.1 on Thu Dec 17 11:07:06 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

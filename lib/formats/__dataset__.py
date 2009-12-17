@@ -1,11 +1,3 @@
-'''
-Base Dataset class
-==================
-Defines the metadata fields and populates some basic info
-
-@todo: implement ESRI PGDB rasters (depends on GDAL)
-'''
-
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,6 +17,14 @@ Defines the metadata fields and populates some basic info
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+
+'''
+Base Dataset class
+==================
+Defines the metadata fields and populates some basic info
+
+@todo: implement ESRI PGDB rasters (depends on GDAL)
+'''
 
 import os,time,sys,glob,time,math
 import UserDict 

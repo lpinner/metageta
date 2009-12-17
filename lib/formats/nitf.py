@@ -1,18 +1,3 @@
-'''
-Metadata driver for NITF imagery
-
-B{Format specification}:
-    - U{http://www.gwg.nga.mil/ntb/baseline/documents.html}
-
-@todo:GDAL upscales non standard bit depths. e.g 11 bit data is treated as 16 bit.
-Currently the NITF driver reports the upscaled bit depth.
-The actual bit depth can be extracted using the  NITF_ABPP metadata item.
-Should this be reported instead of the upscaled bit depth...?
-
-@todo:support NITF with subdatasets
-
-'''
-
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -32,6 +17,20 @@ Should this be reported instead of the upscaled bit depth...?
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+
+'''
+Metadata driver for NITF imagery
+
+B{Format specification}:
+    - U{http://www.gwg.nga.mil/ntb/baseline/documents.html}
+
+@todo:GDAL upscales non standard bit depths. e.g 11 bit data is treated as 16 bit.
+Currently the NITF driver reports the upscaled bit depth.
+The actual bit depth can be extracted using the  NITF_ABPP metadata item.
+Should this be reported instead of the upscaled bit depth...?
+
+@todo:support NITF with subdatasets
+'''
 
 format_regex=[r'.*\.ntf$'] #NITF
 '''Regular expression list of file formats'''

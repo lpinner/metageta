@@ -1,7 +1,3 @@
-'''
-Generate overviews for imagery
-'''
-
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,6 +17,10 @@ Generate overviews for imagery
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+
+'''
+Generate overviews for imagery
+'''
 
 try:
     from osgeo import gdal
@@ -337,7 +337,8 @@ def _stretch_RANDOM(vrtcols,vrtrows,ds,bands):
     band=bands[0]
     from random import randint as r
     rb=ds.GetRasterBand(bands[0])
-    nodata=int(rb.GetNoDataValue())
+    nodata=rb.GetNoDataValue()
+    if nodata is not None:nodata=int(nodata)
     min,max=map(int,rb.ComputeRasterMinMax())
     vals=[(nodata,255,255,255,0)]
     for i in range(min,max+1):#build random RGBA tuple
@@ -362,6 +363,7 @@ def _stretch_COLOURTABLE(vrtcols,vrtrows,ds,bands):
     band=bands[0]
     rb=ds.GetRasterBand(band)
     nodata=rb.GetNoDataValue()
+    if nodata is not None:nodata=int(nodata)
     ct=rb.GetColorTable()
     min,max=map(int,rb.ComputeRasterMinMax())
     rat=rb.GetHistogram(min, max, abs(min)+abs(max)+1, 1, 0)

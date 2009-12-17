@@ -1,9 +1,3 @@
-''' Geometry and dataset helper functions
-
-    @todo: Does the module name I{really} describe its functions anymore?
-           It doesn't just do geometry now...
-'''
-
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -23,6 +17,13 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+
+''' Geometry and dataset helper functions
+
+    @todo: Does the module name I{really} describe its functions anymore?
+           It doesn't just do geometry now...
+'''
+
 import os,math,warnings,tempfile,re
 import utilities
 try:

@@ -1,3 +1,23 @@
+# Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+
 '''
 Image Metadata drivers
 ======================
@@ -110,26 +130,6 @@ B{Class hierarchy}::
        is the compressed version of abc.tif and should all be lumped together (as currently happens)?
 '''
 
-# Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
-
 from glob import glob as _glob
 import os.path as _path, re as _re, sys as _sys, imp as _imp
 import __fields__
@@ -163,9 +163,15 @@ import __default__
 format_regex.extend([r for r in __default__.format_regex if not r in format_regex])
 
 def Open(f):
-    '''
-    Open an image with the appropriate driver
-    @todo: perhaps log the entire error stack if a file couldn't be opened?
+    ''' Open an image with the appropriate driver.
+        
+        @type  f: C{str}
+        @param f: a filepath to the dataset to open.
+
+        @rtype:   C{formats.Dataset}
+        @return:  L{formats.Dataset<formats.__dataset__.Dataset>} object
+        
+        @todo: perhaps log the entire error stack if a file couldn't be opened?
     '''
     errors=[] #error stack
 

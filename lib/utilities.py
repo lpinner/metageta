@@ -1,6 +1,3 @@
-'''
-Utility helper functions
-'''
 
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
 #
@@ -21,6 +18,10 @@ Utility helper functions
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+
+'''
+Utility helper functions
+'''
 
 try:
     from xlutils import xlrd
@@ -74,8 +75,9 @@ def which(name, returnfirst=True, flags=os.F_OK | os.X_OK, path=None):
         @type flags: C{int}
         @param flags: Arguments to U{os.access<http://docs.python.org/library/os.html#os.access>}.
 
-        @rtype: C{list}
-        @param: A list of the full paths to files found, in the order in which they were found.
+        @rtype: C{str}/C{list}
+        @return: Full path to the first matching file found or a list of the full paths to all files found, 
+                 in the order in which they were found.
     '''
     result = []
     exts = filter(None, os.environ.get('PATHEXT', '').split(os.pathsep))

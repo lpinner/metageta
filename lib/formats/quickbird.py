@@ -1,10 +1,3 @@
-'''
-Metadata driver for Digital Globe Quickbird imagery
-
-B{Format specification}:
-    - U{http://www.digitalglobe.com/digitalglobe2/file.php/646/QuickBird_Imagery_Products-Product_Guide.pdf}
-'''
-
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,6 +17,13 @@ B{Format specification}:
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+
+'''
+Metadata driver for Digital Globe Quickbird imagery
+
+B{Format specification}:
+    - U{http://www.digitalglobe.com/digitalglobe2/file.php/646/QuickBird_Imagery_Products-Product_Guide.pdf}
+'''
 
 format_regex=[r'[0-9][0-9][A-Z]{3,3}.*\.imd$',
               r'[0-9][0-9][A-Z]{3,3}.*\.tif$',
@@ -240,12 +240,13 @@ class Dataset(__default__.Dataset):
         '''
         Generate overviews for Quickbird imagery
 
-        @type  outfile: string
+        @type  outfile: str
         @param outfile: a filepath to the output overview image. If supplied, format is determined from the file extension
-        @type  width:   integer
+        @type  width:   int
         @param width:   image width
-        @type  format:  string
+        @type  format:  str
         @param format:  format to generate overview image, one of ['JPG','PNG','GIF','BMP','TIF']. Not required if outfile is supplied.
+        @rtype:         str
         @return:        filepath (if outfile is supplied)/binary image data (if outfile is not supplied)
         '''
         import overviews

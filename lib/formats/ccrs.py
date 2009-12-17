@@ -1,10 +1,3 @@
-'''
-Metadata driver for ACRES Landsat CCRS/SPOT 1-4 imagery
-
-B{Format specification}:    
-    - U{http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10349}
-'''
-
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -24,6 +17,13 @@ B{Format specification}:
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+
+'''
+Metadata driver for ACRES Landsat CCRS/SPOT 1-4 imagery
+
+B{Format specification}:    
+    - U{http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10349}
+'''
 
 format_regex=[r'imag_[0-9]*\.dat$']#Landsat 5/SPOT 1-4 CCRS
 '''Regular expression list of file formats'''

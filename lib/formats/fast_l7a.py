@@ -1,13 +1,3 @@
-'''
-Metadata driver for ACRES Landsat FastL7A imagery
-
-B{Format specification}:
-    - U{http://www.ga.gov.au/image_cache/GA10348.pdf}
-
-B{General info}:
-    - U{http://www.ga.gov.au/remote-sensing/satellites-sensors/landsat}
-'''
-
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -27,6 +17,16 @@ B{General info}:
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+
+'''
+Metadata driver for ACRES Landsat FastL7A imagery
+
+B{Format specification}:
+    - U{http://www.ga.gov.au/image_cache/GA10348.pdf}
+
+B{General info}:
+    - U{http://www.ga.gov.au/remote-sensing/satellites-sensors/landsat}
+'''
 
 format_regex=[                                       #Landsat 7 FastL7A - Multispectral, Pan & Thermal
     r'header\.h(rf|pn|tm)$',                         #  - GA file names

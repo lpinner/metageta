@@ -1,23 +1,3 @@
-'''
-Script to run the Metadata Crawler
-
-Contains code to show GUI to gather input arguments when none are provided
-To run, call the eponymous batch file which sets the required environment variables
-
-Usage::
-    runcrawler.bat -d dir -x xls -s shp -l log {-o} {--nomd} {--gui} {--debug}
-
-@newfield sysarg: Argument, Arguments
-@sysarg: C{-d [dir]}: Directory to to recursively search for imagery
-@sysarg: C{-x [xls]}: MS Excel spreadsheet to wrtite metadata to
-@sysarg: C{-s [shp]}: ESRI Shapefile to write extents to
-@sysarg: C{-l [log]}: Log file to write messages to
-@sysarg: C{-o}      : Generate overview (quicklook/thumbnail) images")
-@sysarg: C{--nomd}  : Extract metadata (crawl), if False just get basic file info (walk)")
-@sysarg: C{--gui}   : Show the GUI progress dialog")
-@sysarg: C{--debug} : Turn debug output on
-'''
-
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -37,6 +17,26 @@ Usage::
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+
+'''
+Script to run the Metadata Crawler
+
+Contains code to show GUI to gather input arguments when none are provided
+To run, call the eponymous batch file which sets the required environment variables
+
+Usage::
+    runcrawler.bat -d dir -x xls -s shp -l log {-o} {--nomd} {--gui} {--debug}
+
+@newfield sysarg: Argument, Arguments
+@sysarg: C{-d [dir]}: Directory to to recursively search for imagery
+@sysarg: C{-x [xls]}: MS Excel spreadsheet to wrtite metadata to
+@sysarg: C{-s [shp]}: ESRI Shapefile to write extents to
+@sysarg: C{-l [log]}: Log file to write messages to
+@sysarg: C{-o}      : Generate overview (quicklook/thumbnail) images")
+@sysarg: C{--nomd}  : Extract metadata (crawl), if False just get basic file info (walk)")
+@sysarg: C{--gui}   : Show the GUI progress dialog")
+@sysarg: C{--debug} : Turn debug output on
+'''
 
 import sys, os, re,time
 import Tkinter 

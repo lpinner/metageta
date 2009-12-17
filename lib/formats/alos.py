@@ -1,16 +1,3 @@
-'''
-Metadata driver for ACRES ALOS AVNIR-2/PRISM/PALSAR imagery
-
-B{Supports}:
-    - ALOS AVNIR2/PRISM
-    - ALOS PALSAR (Level 1.5 only, Level 1.0 not (yet?) implemented)
-
-B{Format specifications}:
-    - PALSAR Level 1.0: U{http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10287}
-    - PALSAR Level 1.1/1.5: U{http://www.eorc.jaxa.jp/ALOS/doc/fdata/PALSAR_x_Format_EK.pdf}
-    - ALOS AVNIR2/PRISM: U{http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10285}
-'''
-
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -31,6 +18,18 @@ B{Format specifications}:
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+'''
+Metadata driver for ACRES ALOS AVNIR-2/PRISM/PALSAR imagery
+
+B{Supports}:
+    - ALOS AVNIR2/PRISM
+    - ALOS PALSAR (Level 1.5 only, Level 1.0 not (yet?) implemented)
+
+B{Format specifications}:
+    - PALSAR Level 1.0: U{http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10287}
+    - PALSAR Level 1.1/1.5: U{http://www.eorc.jaxa.jp/ALOS/doc/fdata/PALSAR_x_Format_EK.pdf}
+    - ALOS AVNIR2/PRISM: U{http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10285}
+'''
 format_regex=[
       r'LED-ALAV.*_U$',            #ALOS AVNIR-2 leader file
       r'LED-ALPSR.*UD$',           #ALOS PALSAR

@@ -1,15 +1,3 @@
-'''
-Metadata driver for ASTER imagery
-
-B{Format specifications}:
-    - U{http:#www.gdal.org/frmt_hdf4.html}
-    - U{http://asterweb.jpl.nasa.gov/documents/ASTER_L1_Product_Spec_Ver_1.3_July01.pdf}
-    - U{http://asterweb.jpl.nasa.gov/content/03_data/04_Documents/ASTER_L1_Product_Spec_Ver_1.3_July01.pdf} (inc description of GCTP projection parameters)
-    - U{http://lpdaac.usgs.gov/aster/ASTER_GeoRef_FINAL.pdf}
-    - U{http://www.science.aster.ersdac.or.jp/en/documnts/users_guide/index.html}
-    - U{http://www.science.aster.ersdac.or.jp/en/documnts/pdf/ASTER_Ref_V1.pdf}
-'''
-
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -29,6 +17,18 @@ B{Format specifications}:
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+
+'''
+Metadata driver for ASTER imagery
+
+B{Format specifications}:
+    - U{http:#www.gdal.org/frmt_hdf4.html}
+    - U{http://asterweb.jpl.nasa.gov/documents/ASTER_L1_Product_Spec_Ver_1.3_July01.pdf}
+    - U{http://asterweb.jpl.nasa.gov/content/03_data/04_Documents/ASTER_L1_Product_Spec_Ver_1.3_July01.pdf} (inc description of GCTP projection parameters)
+    - U{http://lpdaac.usgs.gov/aster/ASTER_GeoRef_FINAL.pdf}
+    - U{http://www.science.aster.ersdac.or.jp/en/documnts/users_guide/index.html}
+    - U{http://www.science.aster.ersdac.or.jp/en/documnts/pdf/ASTER_Ref_V1.pdf}
+'''
 
 format_regex=[r'.*\.hdf$'] #HDF inc. ASTER
 '''Regular expression list of file formats'''

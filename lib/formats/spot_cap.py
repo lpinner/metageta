@@ -23,6 +23,11 @@ Metadata driver for SPOT 1-4 imagery
 
 B{Format specification}:
     - U{http://www.spotimage.com/automne_modules_files/standard/public/p555_fileLINKEDFILE1_cap.pdf}
+
+@todo: Level 1A - is not geometrically corrected, so cell size isn't really appropriate, however we
+       calculate it from the geographic corner coords.
+       Perhaps it would be better to just assign default values depending on whether the imagery is
+       Multispectral, Pan or Merged Multi/Pan...?
 '''
 
 format_regex=[r'imag_[0-9]*\.dat$']#Landsat 5/SPOT 1-4 CCRS
@@ -117,8 +122,13 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
         bands=utilities.readbinary(meta,(record-1)*recordlength,1061,1316).replace(' ',',')
         self.metadata['level']=utilities.readbinary(meta,(record-1)*recordlength,1317,1332)
         self.metadata['resampling']=utilities.readbinary(meta,(record-1)*recordlength,1365,1380)
-        cellx=float(utilities.readbinary(meta,(record-1)*recordlength,1381,1396))
-        celly=float(utilities.readbinary(meta,(record-1)*recordlength,1397,1412))
+        if self.metadata['level']=='1A': #Not geometrically corrected. Cell size isn't really appropriate
+            gcps=geometry.ExtentToGCPs(ext,ncols,nrows)
+            gt=gdal.GCPsToGeoTransform(gcps)
+            cellx,celly=geometry.CellSize(gt)
+        else:
+            cellx=float(utilities.readbinary(meta,(record-1)*recordlength,1381,1396))
+            celly=float(utilities.readbinary(meta,(record-1)*recordlength,1397,1412))
 
         #################################################
         #Ancillary "Ephemeris / Attitude" record,

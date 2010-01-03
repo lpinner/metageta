@@ -20,6 +20,9 @@
 
 '''
 Generate overviews for imagery
+
+@note:This module is not generally used on its own, but may be if required. 
+      It's is usually used only by L{Dataset.getoverview()<formats.__dataset__.Dataset.getoverview>} methods.
 '''
 
 try:
@@ -174,7 +177,7 @@ def _stretch_PERCENT(vrtcols,vrtrows,ds,bands,low,high):
         srcband=ds.GetRasterBand(band)
         nbits=gdal.GetDataTypeSize(srcband.DataType)
         dfScaleSrcMin,dfScaleSrcMax=GetDataTypeRange(srcband.DataType)
-        dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = srcband.GetStatistics(0,0)
+        dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = srcband.GetStatistics(0,1)
         nbins=256
         if nbits == 8:binsize=1
         else:binsize=(dfBandMax-dfBandMin)/nbins

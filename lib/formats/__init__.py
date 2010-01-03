@@ -78,16 +78,19 @@ B{Class hierarchy}::
         |     #is irrelevant, as long as it doesn't create a self-intersecting
         |     #polygon.
         |
+        |----getoverview(outfile=None,width=800,format='JPG'))
+        |    #generate thumbnails and quicklooks
+        |
         |----__new__(file)
         |    #Initialise the class object and populate fileinfo
         |
         |----__getfilelist__()
-        |    #populate fileelist
+        |    #populate filelist
         |
         |----__default__.Dataset(__dataset__.Dataset)
         |   | #Default Dataset class
         |   |
-        |   |----__getmetadata__(file):                  
+        |   |----__getmetadata__(file)              
         |   |     #Populate appropriate fields in the metadata dictionary
         |   |     #Populate extent list
         |   |

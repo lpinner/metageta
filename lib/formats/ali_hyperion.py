@@ -216,7 +216,6 @@ class Dataset(__dataset__.Dataset):
             self._gdaldataset.GetRasterBand(3).SetNoDataValue(0.0)
             self._gdaldataset.GetRasterBand(4).SetRasterColorInterpretation(gdal.GCI_RedBand)
             self._gdaldataset.GetRasterBand(4).SetNoDataValue(0.0)
-            #self._stretch=['PERCENT',[1,99]]
             
             
             ncols=','.join(ncols)

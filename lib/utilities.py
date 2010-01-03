@@ -34,6 +34,9 @@ dateformat='%Y-%m-%d'  #ISO 8601
 timeformat='%H:%M:%S' #ISO 8601
 datetimeformat='%sT%s' % (dateformat,timeformat)
 
+#========================================================================================================
+#{Filesystem Utilities
+#========================================================================================================
 def runcmd(cmd, format='s'):
     ''' Run a command
         @type     cmd:  C{str}
@@ -94,22 +97,6 @@ def which(name, returnfirst=True, flags=os.F_OK | os.X_OK, path=None):
                 if returnfirst:return pext
                 else:result.append(pext)
     return result
-
-def ExceptionInfo(maxTBlevel=0):
-    '''Get info about the last exception'''
-    cla, exc, trbk = sys.exc_info()
-    excName = cla.__name__
-    if maxTBlevel > 0:
-        excArgs=[]
-        excTb = FormatTraceback(trbk, maxTBlevel)
-        #return '%s: %s\nTraceback: %s' % (excName, str(exc), excTb)
-        return '%s: %s\n%s' % (excName, str(exc), excTb)
-    else:
-        return '%s: %s' % (excName, str(exc))
-
-def FormatTraceback(trbk, maxTBlevel):
-    '''Format traceback'''
-    return 'Traceback (most recent call last): '+''.join(traceback.format_tb(trbk, maxTBlevel))
 
 def readbinary(data,offset, start, stop):
     ''' Read binary data
@@ -275,7 +262,81 @@ def checkExt(filepath,ext):
         return vars[0]+ext[0]
     else:
         return filepath
+class rglob:
+    '''A recursive/regex enhanced glob
+       adapted from os-path-walk-example-3.py - http://effbot.org/librarybook/os-path.htm 
+    '''
+    def __init__(self, directory, pattern="*", regex=False, regex_flags=0, recurse=True):
+        ''' @type    directory: C{str}
+            @param   directory: Path to xls file
+            @type    pattern: C{type}
+            @param   pattern: Regular expression/wildcard pattern to match files against
+            @type    regex: C{boolean}
+            @param   regex: Use regular expression matching (if False, use fnmatch)
+                            See U{http://docs.python.org/library/re.html}
+            @type    regex_flags: C{int}
+            @param   regex_flags: Flags to pass to the regular expression compiler.
+                                  See U{http://docs.python.org/library/re.html}
+            @type    recurse: C{boolean} 
+            @param   recurse: Recurse into the directory?
+        '''
+        self.stack = [directory]
+        self.pattern = pattern
+        self.regex = regex
+        self.recurse = recurse
+        self.regex_flags = regex_flags
+        self.files = []
+        self.index = 0
 
+    def __getitem__(self, index):
+        while 1:
+            try:
+                file = self.files[self.index]
+                self.index = self.index + 1
+            except IndexError:
+                # pop next directory from stack
+                
+                self.directory = self.stack.pop()
+                try:
+                    self.files = os.listdir(self.directory)
+                    self.index = 0
+                except:pass
+            else:
+                # got a filename
+                fullname = os.path.join(self.directory, file)
+                if os.path.isdir(fullname) and not os.path.islink(fullname) and self.recurse:
+                    self.stack.append(fullname)
+                if self.regex:
+                    import re
+                    if re.search(self.pattern,file,self.regex_flags):
+                        return fullname
+                else:
+                    import fnmatch
+                    if fnmatch.fnmatch(file, self.pattern):
+                        return fullname
+
+#========================================================================================================
+#{Exception Utilities
+#========================================================================================================
+def ExceptionInfo(maxTBlevel=0):
+    '''Get info about the last exception'''
+    cla, exc, trbk = sys.exc_info()
+    excName = cla.__name__
+    if maxTBlevel > 0:
+        excArgs=[]
+        excTb = FormatTraceback(trbk, maxTBlevel)
+        #return '%s: %s\nTraceback: %s' % (excName, str(exc), excTb)
+        return '%s: %s\n%s' % (excName, str(exc), excTb)
+    else:
+        return '%s: %s' % (excName, str(exc))
+
+def FormatTraceback(trbk, maxTBlevel):
+    '''Format traceback'''
+    return 'Traceback (most recent call last): '+''.join(traceback.format_tb(trbk, maxTBlevel))
+
+#========================================================================================================
+#{Excel Utilities
+#========================================================================================================
 class ExcelWriter:
     ''' A simple spreadsheet writer'''
 
@@ -359,56 +420,4 @@ class ExcelReader:
         else:
             return zip(headers,cells)
 
-class rglob:
-    '''A recursive/regex enhanced glob
-       adapted from os-path-walk-example-3.py - http://effbot.org/librarybook/os-path.htm 
-    '''
-    def __init__(self, directory, pattern="*", regex=False, regex_flags=0, recurse=True):
-        ''' @type    directory: C{str}
-            @param   directory: Path to xls file
-            @type    pattern: C{type}
-            @param   pattern: Regular expression/wildcard pattern to match files against
-            @type    regex: C{boolean}
-            @param   regex: Use regular expression matching (if False, use fnmatch)
-                            See U{http://docs.python.org/library/re.html}
-            @type    regex_flags: C{int}
-            @param   regex_flags: Flags to pass to the regular expression compiler.
-                                  See U{http://docs.python.org/library/re.html}
-            @type    recurse: C{boolean} 
-            @param   recurse: Recurse into the directory?
-        '''
-        self.stack = [directory]
-        self.pattern = pattern
-        self.regex = regex
-        self.recurse = recurse
-        self.regex_flags = regex_flags
-        self.files = []
-        self.index = 0
-
-    def __getitem__(self, index):
-        while 1:
-            try:
-                file = self.files[self.index]
-                self.index = self.index + 1
-            except IndexError:
-                # pop next directory from stack
-                
-                self.directory = self.stack.pop()
-                try:
-                    self.files = os.listdir(self.directory)
-                    self.index = 0
-                except:pass
-            else:
-                # got a filename
-                fullname = os.path.join(self.directory, file)
-                if os.path.isdir(fullname) and not os.path.islink(fullname) and self.recurse:
-                    self.stack.append(fullname)
-                if self.regex:
-                    import re
-                    if re.search(self.pattern,file,self.regex_flags):
-                        return fullname
-                else:
-                    import fnmatch
-                    if fnmatch.fnmatch(file, self.pattern):
-                        return fullname
-
+#}

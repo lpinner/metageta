@@ -59,6 +59,10 @@ class Dataset(object):
         self._extent=[]
         self._filelist=[]
         self._stretch=None
+        ''' self._stretch allows subclasses to control overview generation somewhat
+            self._stretch = (stretch_type,rgb_bands,stretch_args)
+            See L{overviews.getoverview} for appropriate values.
+        '''
         
         ##Populate some basic info
         self.__setfileinfo__(f)
@@ -74,9 +78,14 @@ class Dataset(object):
     def getoverview(self,outfile=None,width=800,format='JPG'): 
         '''
         Generate overviews for generic imagery
-
-        Override this class if you like, otherwise simply expose a GDALDataset object as self._gdaldataset_
-
+        
+        @requires:exposing a gdal.Dataset object as self._gdaldataset
+        
+        @note: There are a number of ways of controlling the generation of overview images:
+            - Overriding this class method and writing your own.
+            - Setting self._stretch to the appropriate (stretch_type,rgb_bands,stretch_args) values. See L{overviews.getoverview}.
+            - Customising self._gdaldataset using a VRT, for example: setting red, green and blue color interpretations for selected bands
+        
         @type  outfile: string
         @param outfile: a filepath to the output overview image. If supplied, format is determined from the file extension
         @type  width:   integer
@@ -113,21 +122,23 @@ class Dataset(object):
         #Check for pre-defined stretch
         if self._stretch:
             stretch_type,rgb_bands,stretch_args=self._stretch
-
-        #Check for pre-defined rgb bands
-        for i in range(1,nbands+1):
-            gci=ds.GetRasterBand(i).GetRasterColorInterpretation()
-            if   gci == gdal.GCI_RedBand:
-                rgb_bands[0]=i
-            elif gci == gdal.GCI_GreenBand:
-                rgb_bands[1]=i
-            elif gci == gdal.GCI_BlueBand:
-                rgb_bands[2]=i
-            if len(rgb_bands)==3:
-                rgb_bands=rgb_bands[0],rgb_bands[1],rgb_bands[2] #Make a list from the dict
+        else:
+            #Check for pre-defined rgb bands, assume they don't need stretching
+            for i in range(1,nbands+1):
+                gci=ds.GetRasterBand(i).GetRasterColorInterpretation()
+                if   gci == gdal.GCI_RedBand:
+                    rgb_bands[0]=i
+                elif gci == gdal.GCI_GreenBand:
+                    rgb_bands[1]=i
+                elif gci == gdal.GCI_BlueBand:
+                    rgb_bands[2]=i
+                if len(rgb_bands)==3:
+                    rgb_bands=rgb_bands[0],rgb_bands[1],rgb_bands[2] #Make a list from the dict
+                    stretch_type='NONE'
+                    stretch_args=[]
 
         #Set some defaults
-        if not stretch_type and not stretch_args:
+        if stretch_type is None or stretch_args is None:
             if nbands < 3:
                 #Default - assume greyscale 
                 stretch_type='PERCENT'

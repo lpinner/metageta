@@ -38,7 +38,7 @@ except ImportError:
     import ogr
 
 #========================================================================================================
-#Custom error class
+#{Custom error class
 #========================================================================================================
 class GDALError(Exception):
     ''' For raising GDAL related errors '''
@@ -71,7 +71,7 @@ class GDALError(Exception):
 
         return '%s\nError Message:%s'%(self.errtyp,self.errmsg)
 #========================================================================================================
-#Dataset Utilities
+#{Dataset Utilities
 #========================================================================================================
 def OpenDataset(filepath,mode=gdalconst.GA_ReadOnly):
     ''' Open & return a gdalDataset object
@@ -161,7 +161,7 @@ def ParseGDALinfo(filepath):
     return metadata,extent
 
 #========================================================================================================
-#Coordinate Utilities
+#{Coordinate Utilities
 #========================================================================================================
 def DMS2DD(dms,format):
     ''' Convert coordinate in degrees, minutes, seconds to decimal degrees.
@@ -215,7 +215,7 @@ def DMS2DD(dms,format):
     return dd
 
 #========================================================================================================
-#Geometry Utilities
+#{Geometry Utilities
 #========================================================================================================
 def Rotation(gt):   
     ''' Get rotation angle from a geotransform
@@ -256,6 +256,41 @@ def SceneCentre(gt,cols,rows):
     x=gt[0]+(px*gt[1])+(py*gt[2])
     y=gt[3]+(px*gt[4])+(py*gt[5])
     return x,y
+
+def ExtentToGCPs(ext,cols,rows):
+    ''' Form a gcp list from the 4 corners.
+
+        This function is meant to be used to convert an extent 
+        to gcp's for use in the gdal.GCPsToGeoTransform function.
+
+        @type ext:  C{tuple/list}
+        @param gt:  Extent, must be in order: [[ulx,uly],[urx,ury],[lrx,lry],[llx,lly]]
+        @rtype:    C{[gcp,...,gcp]}
+        @return:   List of GCP objects
+    '''
+    gcp_list=[]
+    parr=[0,cols]
+    larr=[rows,0]
+    id=0
+    if len(ext)==5: #Assume ext[0]==ext[4]
+        ext=ext[:-1]
+    if len(ext)!=4:
+        raise ValueError, 'Extent must be a tuple/list with 4 elements, each an XY pair'
+
+    for px in parr:
+        for py in larr:
+            cgcp=gdal.GCP()
+            cgcp.Id=str(id)
+            cgcp.GCPX=ext[id][0]
+            cgcp.GCPY=ext[id][1]
+            cgcp.GCPZ=0.0
+            cgcp.GCPPixel=px
+            cgcp.GCPLine=py
+            id+=1
+            gcp_list.append(cgcp)
+        larr.reverse()
+        
+    return gcp_list
 
 def GeoTransformToGCPs(gt,cols,rows):
     ''' Form a gcp list from a geotransform using the 4 corners.
@@ -364,7 +399,7 @@ def ReprojectGeom(geom,src_srs,tgt_srs):
     return geom
 
 #========================================================================================================
-#VRT Utilities
+#{VRT Utilities
 #========================================================================================================
 def CreateVRTCopy(ds):
     ''' Create a VRT copy of a gdal.Dataset object.
@@ -640,7 +675,7 @@ def CreateCustomVRT(vrtxml,vrtcols,vrtrows):
     
 
 #========================================================================================================
-#Shapefile Writer
+#{Shapefile Writer
 #========================================================================================================
 class ShapeWriter:
     '''A class for writing geometry and fields to ESRI shapefile format'''
@@ -750,3 +785,4 @@ class ShapeWriter:
 
         except Exception, err:
             self.__error__(err)
+#}

@@ -78,6 +78,7 @@ class Dataset(__dataset__.Dataset):
             self._gdaldataset= geometry.OpenDataset(f)
             if self._gdaldataset:
                 driver=self._gdaldataset.GetDriver().ShortName
+                if driver[0:3]=='HDF':raise NotImplementedError, 'HDF files are not yet implemented except by custom formats'
                 self.metadata['filetype'] = driver+'/'+self._gdaldataset.GetDriver().LongName
                 self.metadata['cols'] = self._gdaldataset.RasterXSize
                 self.metadata['rows'] = self._gdaldataset.RasterYSize

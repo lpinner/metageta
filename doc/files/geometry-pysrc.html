@@ -31,7 +31,7 @@
       <th class="navbar" align="right" width="100%">
         <table border="0" cellpadding="0" cellspacing="0">
           <tr><th class="navbar" align="center"
-            >Extract and Transform Metadata (ETA)</th>
+            >Extract and Transform Metadata (ETM)</th>
           </tr></table></th>
   </tr>
 </table>
@@ -97,7 +97,7 @@
 <a name="L38"></a><tt class="py-lineno"> 38</tt>  <tt class="py-line">    <tt class="py-keyword">import</tt> <tt class="py-name">ogr</tt> </tt>
 <a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line"> </tt>
 <a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line"><tt class="py-comment">#========================================================================================================</tt> </tt>
-<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#Custom error class</tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#{Custom error class</tt> </tt>
 <a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#========================================================================================================</tt> </tt>
 <a name="GDALError"></a><div id="GDALError-def"><a name="L43"></a><tt class="py-lineno"> 43</tt> <a class="py-toggle" href="#" id="GDALError-toggle" onclick="return toggle('GDALError');">-</a><tt class="py-line"><tt class="py-comment"></tt><tt class="py-keyword">class</tt> <a class="py-def-name" href="geometry.GDALError-class.html">GDALError</a><tt class="py-op">(</tt><tt class="py-base-class">Exception</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
 </div><div id="GDALError-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="GDALError-expanded"><a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line">    <tt class="py-docstring">''' For raising GDAL related errors '''</tt> </tt>
@@ -161,7 +161,7 @@ utilities.rglob.__init__" class="py-name" href="#" onclick="return doclink('link
 <a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line"> </tt>
 <a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-string">'%s\nError Message:%s'</tt><tt class="py-op">%</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">errtyp</tt><tt class="py-op">,</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">errmsg</tt><tt class="py-op">)</tt> </tt>
 </div></div><a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line"><tt class="py-comment">#========================================================================================================</tt> </tt>
-<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#Dataset Utilities</tt> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#{Dataset Utilities</tt> </tt>
 <a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#========================================================================================================</tt> </tt>
 <a name="OpenDataset"></a><div id="OpenDataset-def"><a name="L76"></a><tt class="py-lineno"> 76</tt> <a class="py-toggle" href="#" id="OpenDataset-toggle" onclick="return toggle('OpenDataset');">-</a><tt class="py-line"><tt class="py-comment"></tt><tt class="py-keyword">def</tt> <a class="py-def-name" href="geometry-module.html#OpenDataset">OpenDataset</a><tt class="py-op">(</tt><tt class="py-param">filepath</tt><tt class="py-op">,</tt><tt class="py-param">mode</tt><tt class="py-op">=</tt><tt class="py-name">gdalconst</tt><tt class="py-op">.</tt><tt class="py-name">GA_ReadOnly</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
 </div><div id="OpenDataset-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="OpenDataset-expanded"><a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line">    <tt class="py-docstring">''' Open &amp; return a gdalDataset object</tt> </tt>
@@ -251,7 +251,7 @@ utilities.rglob.__init__" class="py-name" href="#" onclick="return doclink('link
 <a name="L161"></a><tt class="py-lineno">161</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt id="link-38" class="py-name"><a title="formats.__dataset__.Dataset.metadata" class="py-name" href="#" onclick="return doclink('link-38', 'metadata', 'link-4');">metadata</a></tt><tt class="py-op">,</tt><tt id="link-39" class="py-name"><a title="formats.__dataset__.Dataset.extent" class="py-name" href="#" onclick="return doclink('link-39', 'extent', 'link-5');">extent</a></tt> </tt>
 </div><a name="L162"></a><tt class="py-lineno">162</tt>  <tt class="py-line"> </tt>
 <a name="L163"></a><tt class="py-lineno">163</tt>  <tt class="py-line"><tt class="py-comment">#========================================================================================================</tt> </tt>
-<a name="L164"></a><tt class="py-lineno">164</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#Coordinate Utilities</tt> </tt>
+<a name="L164"></a><tt class="py-lineno">164</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#{Coordinate Utilities</tt> </tt>
 <a name="L165"></a><tt class="py-lineno">165</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#========================================================================================================</tt> </tt>
 <a name="DMS2DD"></a><div id="DMS2DD-def"><a name="L166"></a><tt class="py-lineno">166</tt> <a class="py-toggle" href="#" id="DMS2DD-toggle" onclick="return toggle('DMS2DD');">-</a><tt class="py-line"><tt class="py-comment"></tt><tt class="py-keyword">def</tt> <a class="py-def-name" href="geometry-module.html#DMS2DD">DMS2DD</a><tt class="py-op">(</tt><tt class="py-param">dms</tt><tt class="py-op">,</tt><tt class="py-param">format</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
 </div><div id="DMS2DD-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="DMS2DD-expanded"><a name="L167"></a><tt class="py-lineno">167</tt>  <tt class="py-line">    <tt class="py-docstring">''' Convert coordinate in degrees, minutes, seconds to decimal degrees.</tt> </tt>
@@ -305,7 +305,7 @@ utilities.rglob.__init__" class="py-name" href="#" onclick="return doclink('link
 <a name="L215"></a><tt class="py-lineno">215</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">dd</tt> </tt>
 </div><a name="L216"></a><tt class="py-lineno">216</tt>  <tt class="py-line"> </tt>
 <a name="L217"></a><tt class="py-lineno">217</tt>  <tt class="py-line"><tt class="py-comment">#========================================================================================================</tt> </tt>
-<a name="L218"></a><tt class="py-lineno">218</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#Geometry Utilities</tt> </tt>
+<a name="L218"></a><tt class="py-lineno">218</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#{Geometry Utilities</tt> </tt>
 <a name="L219"></a><tt class="py-lineno">219</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#========================================================================================================</tt> </tt>
 <a name="Rotation"></a><div id="Rotation-def"><a name="L220"></a><tt class="py-lineno">220</tt> <a class="py-toggle" href="#" id="Rotation-toggle" onclick="return toggle('Rotation');">-</a><tt class="py-line"><tt class="py-comment"></tt><tt class="py-keyword">def</tt> <a class="py-def-name" href="geometry-module.html#Rotation">Rotation</a><tt class="py-op">(</tt><tt class="py-param">gt</tt><tt class="py-op">)</tt><tt class="py-op">:</tt>    </tt>
 </div><a name="L221"></a><tt class="py-lineno">221</tt>  <tt class="py-line">    <tt class="py-docstring">''' Get rotation angle from a geotransform</tt> </tt>
@@ -454,7 +454,7 @@ utilities.rglob.__init__" class="py-name" href="#" onclick="return doclink('link
 <a name="L364"></a><tt class="py-lineno">364</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">geom</tt> </tt>
 </div><a name="L365"></a><tt class="py-lineno">365</tt>  <tt class="py-line"> </tt>
 <a name="L366"></a><tt class="py-lineno">366</tt>  <tt class="py-line"><tt class="py-comment">#========================================================================================================</tt> </tt>
-<a name="L367"></a><tt class="py-lineno">367</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#VRT Utilities</tt> </tt>
+<a name="L367"></a><tt class="py-lineno">367</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#{VRT Utilities</tt> </tt>
 <a name="L368"></a><tt class="py-lineno">368</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#========================================================================================================</tt> </tt>
 <a name="CreateVRTCopy"></a><div id="CreateVRTCopy-def"><a name="L369"></a><tt class="py-lineno">369</tt> <a class="py-toggle" href="#" id="CreateVRTCopy-toggle" onclick="return toggle('CreateVRTCopy');">-</a><tt class="py-line"><tt class="py-comment"></tt><tt class="py-keyword">def</tt> <a class="py-def-name" href="geometry-module.html#CreateVRTCopy">CreateVRTCopy</a><tt class="py-op">(</tt><tt class="py-param">ds</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
 </div><div id="CreateVRTCopy-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="CreateVRTCopy-expanded"><a name="L370"></a><tt class="py-lineno">370</tt>  <tt class="py-line">    <tt class="py-docstring">''' Create a VRT copy of a gdal.Dataset object.</tt> </tt>
@@ -730,7 +730,7 @@ utilities.rglob.__init__" class="py-name" href="#" onclick="return doclink('link
 </div><a name="L640"></a><tt class="py-lineno">640</tt>  <tt class="py-line">     </tt>
 <a name="L641"></a><tt class="py-lineno">641</tt>  <tt class="py-line"> </tt>
 <a name="L642"></a><tt class="py-lineno">642</tt>  <tt class="py-line"><tt class="py-comment">#========================================================================================================</tt> </tt>
-<a name="L643"></a><tt class="py-lineno">643</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#Shapefile Writer</tt> </tt>
+<a name="L643"></a><tt class="py-lineno">643</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#{Shapefile Writer</tt> </tt>
 <a name="L644"></a><tt class="py-lineno">644</tt>  <tt class="py-line"><tt class="py-comment"></tt><tt class="py-comment">#========================================================================================================</tt> </tt>
 <a name="ShapeWriter"></a><div id="ShapeWriter-def"><a name="L645"></a><tt class="py-lineno">645</tt> <a class="py-toggle" href="#" id="ShapeWriter-toggle" onclick="return toggle('ShapeWriter');">-</a><tt class="py-line"><tt class="py-comment"></tt><tt class="py-keyword">class</tt> <a class="py-def-name" href="geometry.ShapeWriter-class.html">ShapeWriter</a><tt class="py-op">:</tt> </tt>
 </div><div id="ShapeWriter-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="ShapeWriter-expanded"><a name="L646"></a><tt class="py-lineno">646</tt>  <tt class="py-line">    <tt class="py-docstring">'''A class for writing geometry and fields to ESRI shapefile format'''</tt> </tt>
@@ -851,7 +851,8 @@ formats.fields" class="py-name" href="#" onclick="return doclink('link-67', 'fie
 <a name="L750"></a><tt class="py-lineno">750</tt>  <tt class="py-line"> </tt>
 <a name="L751"></a><tt class="py-lineno">751</tt>  <tt class="py-line">        <tt class="py-keyword">except</tt> <tt class="py-name">Exception</tt><tt class="py-op">,</tt> <tt class="py-name">err</tt><tt class="py-op">:</tt> </tt>
 <a name="L752"></a><tt class="py-lineno">752</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-68" class="py-name"><a title="geometry.ShapeWriter.__error__" class="py-name" href="#" onclick="return doclink('link-68', '__error__', 'link-52');">__error__</a></tt><tt class="py-op">(</tt><tt class="py-name">err</tt><tt class="py-op">)</tt> </tt>
-</div></div><a name="L753"></a><tt class="py-lineno">753</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+</div></div><a name="L753"></a><tt class="py-lineno">753</tt>  <tt class="py-line"><tt class="py-comment">#}</tt> </tt>
+<a name="L754"></a><tt class="py-lineno">754</tt>  <tt class="py-line"><tt class="py-comment"></tt> </tt><script type="text/javascript">
 <!--
 expandto(location.href);
 // -->
@@ -879,14 +880,14 @@ expandto(location.href);
       <th class="navbar" align="right" width="100%">
         <table border="0" cellpadding="0" cellspacing="0">
           <tr><th class="navbar" align="center"
-            >Extract and Transform Metadata (ETA)</th>
+            >Extract and Transform Metadata (ETM)</th>
           </tr></table></th>
   </tr>
 </table>
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Dec 17 11:07:07 2009
+    Generated by Epydoc 3.0.1 on Fri Dec 18 11:04:34 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

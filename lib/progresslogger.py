@@ -63,7 +63,8 @@ class ProgressLogger(logging.Logger):
                maxprogress=100,
                logfile=None,
                mode='w',
-               windowicon=None):
+               windowicon=None,
+               callback=lambda:None):
 
         self.logToGUI=logToGUI
 
@@ -90,7 +91,7 @@ class ProgressLogger(logging.Logger):
 
         if logToGUI:
             self.progress=0
-            ph = ProgressLoggerHandler(name=name, maxprogress=maxprogress,windowicon=windowicon)
+            ph = ProgressLoggerHandler(name=name, maxprogress=maxprogress,windowicon=windowicon,callback=callback)
 
             #To handle the PROGRESS & END events without them going to the console or file
             logging.PROGRESS = level - 1
@@ -119,11 +120,11 @@ class ProgressLogger(logging.Logger):
         for h in self.handlers:
             h.flush()
             h.close()
-
+    
 class ProgressLoggerHandler(logging.Handler):
     ''' Provide a Progress Bar Logging handler '''
 
-    def __init__(self, name='Progress Log', level=logging.INFO, maxprogress=100, windowicon=None):
+    def __init__(self, name='Progress Log', level=logging.INFO, maxprogress=100, windowicon=None, callback=lambda:None):
         '''
         Initializes the instance - set up the Tkinter GUI and log output.
         '''
@@ -138,23 +139,26 @@ class ProgressLoggerHandler(logging.Handler):
         ##Run as a separate process as even multithreading will block on long IO operations 
         ##as only a single thread will run at a time.
         self.host='localhost'
-        self.port= random.randint(1024, 10000)
+        self.inport= random.randint(1024, 10000)
+        self.outport= random.randint(1024, 10000)
         if sys.platform[0:3].lower()=='win':python = 'pythonw.exe'
         else: python = 'python'
         pythonPath=utilities.which(python)
         pythonScript=__file__
-        parameterList = [pythonPath, pythonScript, self.host,str(self.port),name,str(maxprogress)]
+        parameterList = [pythonPath, pythonScript, self.host,str(self.inport),str(self.outport),name,str(maxprogress)]
         if windowicon:parameterList.append(windowicon)
         for i,v in enumerate(parameterList): #Fix any spaces in parameters
             if ' ' in v:parameterList[i]='"%s"'%v
+        
         os.spawnv(os.P_NOWAIT, pythonPath, parameterList)
-
+        pc=ProgressLoggerChecker(self.host,self.outport,callback)
+        
     def sendmsgs(self):
         for msg in range(len(self.msgs)):
             try:
                 msg=self.msgs[0]
                 client = socket.socket (socket.AF_INET, socket.SOCK_STREAM )
-                client.connect((self.host,self.port))
+                client.connect((self.host,self.inport))
                 client.send(pickle.dumps(msg))
                 client.close()
                 del client
@@ -182,19 +186,50 @@ class ProgressLoggerHandler(logging.Handler):
         '''
         self.msgs.append('EXIT')
         self.sendmsgs()
-        
+
+class ProgressLoggerChecker(threading.Thread):
+    def __init__(self,host,port,callback):
+        self.gui=True
+        self.host = host
+        self.port = int(port)
+        self.callback = callback
+
+        threading.Thread.__init__ (self)
+        self.start()
+    
+    def run(self):
+        #Start listening on the given host:port
+        self.server=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server.bind((self.host,self.port))
+        self.server.listen(1)
+        while True:
+            channel, details = self.server.accept()
+            data=''
+            while True:
+                part=channel.recv(1024).strip()
+                if part:data+=part
+                else:break
+            msg=pickle.loads(data)
+            if msg=='EXIT':
+                break
+            channel.close()
+            time.sleep(1)
+        #Stop listening
+        self.server.close()
+        self.callback()
 
 class ProgressLoggerServer:
     ''' Provide a Progress Bar Logging Server '''
 
-    def __init__(self,host,port,name=None, maxprogress=100, windowicon=None):
+    def __init__(self,host,inport,outport,name=None, maxprogress=100, windowicon=None):
         self.server=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server.bind((host,int(port)))
+        self.server.bind((host,int(inport)))
         self.server.listen(1)
         self.serving=True
 
         self.host = host
-        self.port = int(port)
+        self.inport = int(inport)
+        self.outport = int(outport)
         self.name = name
         self.maxprogress = int(maxprogress)
         self.progress = 0
@@ -203,7 +238,7 @@ class ProgressLoggerServer:
         self.queue  = Queue.Queue()
         
         ##Create the GUI
-        self.gui=ProgressLoggerGUI(self.queue, self.host,self.port, name=name, maxprogress=maxprogress, windowicon=windowicon)
+        self.gui=ProgressLoggerGUI(self.queue, self.host,self.inport,self.outport, name=name, maxprogress=maxprogress, windowicon=windowicon)
         self.gui.start()
 
         self.startLogging()
@@ -231,13 +266,14 @@ class ProgressLoggerServer:
 class ProgressLoggerGUI(threading.Thread):
     ''' Provide a Progress Bar Logging GUI '''
 
-    def __init__(self, queue, host, port, name=None, maxprogress=100, windowicon=None):
+    def __init__(self, queue, host, inport, outport, name=None, maxprogress=100, windowicon=None):
         
         ##Cos we've overwritten the class __init__ method        
         threading.Thread.__init__(self)
         self.queue = queue
         self.host = host
-        self.port = port
+        self.inport = inport
+        self.outport = outport
         self.name = name
         self.maxprogress = maxprogress
         self.progress = 0
@@ -255,7 +291,7 @@ class ProgressLoggerGUI(threading.Thread):
         self.master.protocol("WM_DELETE_WINDOW", self.onOk)
         self.master.title(self.name)
         self.master.geometry("700x800")
-        
+
         ''' Pack text message '''
         Tkinter.Label(self.master, text='Progress', anchor=Tkinter.NW, justify=Tkinter.LEFT).pack(fill=Tkinter.X)
 
@@ -320,13 +356,14 @@ class ProgressLoggerGUI(threading.Thread):
         self.master.withdraw()
         self.master.destroy()
         try:
-            client = socket.socket (socket.AF_INET, socket.SOCK_STREAM )
-            client.connect((self.host,self.port))
-            client.send(pickle.dumps('EXIT'))
-            client.close()
-            del client
+            for port in (self.inport,self.outport):
+                client = socket.socket (socket.AF_INET, socket.SOCK_STREAM )
+                client.connect((self.host,port))
+                client.send(pickle.dumps('EXIT'))
+                client.close()
+                del client
         except:pass        
-
+    
 class ProgressBarView: 
     '''A progress bar widget
        
@@ -430,13 +467,14 @@ class ProgressBarView:
 
 if __name__ == '__main__':
     kwargs={}
-    if len(sys.argv) >= 3:
-        kwargs['host']=sys.argv[1]
-        kwargs['port']=sys.argv[2]
     if len(sys.argv) >= 4:
-        kwargs['name']=sys.argv[3]
+        kwargs['host']=sys.argv[1]
+        kwargs['inport']=sys.argv[2]
+        kwargs['outport']=sys.argv[3]
     if len(sys.argv) >= 5:
-        kwargs['maxprogress']=sys.argv[4]
+        kwargs['name']=sys.argv[4]
     if len(sys.argv) >= 6:
-        kwargs['windowicon']=sys.argv[5]
+        kwargs['maxprogress']=sys.argv[5]
+    if len(sys.argv) >= 7:
+        kwargs['windowicon']=sys.argv[6]
     pl = ProgressLoggerServer(**kwargs)

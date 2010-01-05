@@ -84,8 +84,8 @@ def main(dir,xls,shp,log, gui=False, debug=False, nomd=False, getovs=False):
     else:level=progresslogger.INFO
     
     windowicon=os.environ['CURDIR']+'/lib/wm_icon.ico'
-    try:pl = progresslogger.ProgressLogger('MetadataCrawler',logfile=log, logToConsole=True, logToFile=True, logToGUI=gui, level=level, windowicon=windowicon)
-    except:pl = progresslogger.ProgressLogger('MetadataCrawler',logfile=log, logToConsole=True, logToFile=True, logToGUI=gui, level=level)
+    try:pl = progresslogger.ProgressLogger('MetadataCrawler',logfile=log, logToConsole=True, logToFile=True, logToGUI=gui, level=level, windowicon=windowicon, callback=exit)
+    except:pl = progresslogger.ProgressLogger('MetadataCrawler',logfile=log, logToConsole=True, logToFile=True, logToGUI=gui, level=level, callback=exit)
 
     #pl.debug('%s %s %s %s %s %s' % (dir,xls,shp,log,gui,debug))
     pl.debug(' '.join(sys.argv))
@@ -171,6 +171,9 @@ def main(dir,xls,shp,log, gui=False, debug=False, nomd=False, getovs=False):
     del pl
     del ExcelWriter
     del ShapeWriter
+def exit(): 
+    '''Force exit after closure of the ProgressBar GUI'''
+    os._exit(0)
 
 #========================================================================================================
 #Code below is for the GUI if run without arguments

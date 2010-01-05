@@ -14,7 +14,7 @@ if /i "%gui%"=="0" (
     pause
 ) else (
     REM Not using the GUI until I sort out the disconnection bug
-    call python.exe runcrawler.py %*  --debug
-    pause
-    rem start "Crawler" /b pythonw.exe runcrawler.py --gui %*
+    REM call python.exe runcrawler.py %*  --debug
+    REM pause
+    start "Crawler" /b pythonw.exe runcrawler.py --gui %*
 )

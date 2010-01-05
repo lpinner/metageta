@@ -37,16 +37,14 @@ import Tkinter
 class SplashScreen(threading.Thread):
     def __init__(self, imagefile=None, imagedata=None, timeout=0.001, callback=lambda:True):
     
-        if not imagefile and not imagedata:#raise Exception,'Image file name or base 64 encoded image data required!'
-            #imagefile=__file__[:-3]+'.gif' - this don't work cos __file__ might .pyc or .pyo not .py
-            imagefile=os.path.splitext(__file__)[0]+'.gif'
+        if not imagefile and not imagedata:raise Exception,'Image file name or base 64 encoded image data required!'
         if not timeout   and not callback: raise Exception,'Timeout (secs) or boolean callback function required!'
 
         self._root              = Tkinter.Tk()
         self._splash            = None
 
         if imagefile:self._image = Tkinter.PhotoImage(file=imagefile)
-        else:        self._image = Tkinter.PhotoImage(data=imagedata)
+        elif imagedata:self._image = Tkinter.PhotoImage(file=imagedata)
         self._timeout  = timeout
         self._callback = callback
 

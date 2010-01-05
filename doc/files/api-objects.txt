@@ -48,6 +48,7 @@ geometry.GeomFromExtent	geometry-module.html#GeomFromExtent
 geometry.CreateBIPRawRasterVRT	geometry-module.html#CreateBIPRawRasterVRT
 geometry.OpenDataset	geometry-module.html#OpenDataset
 geometry.CreateSimpleVRT	geometry-module.html#CreateSimpleVRT
+geometry.ExtentToGCPs	geometry-module.html#ExtentToGCPs
 geometry.CreateRawRasterVRT	geometry-module.html#CreateRawRasterVRT
 geometry.ReprojectGeom	geometry-module.html#ReprojectGeom
 geometry.GeoTransformToGCPs	geometry-module.html#GeoTransformToGCPs
@@ -87,6 +88,7 @@ progresslogger.DEBUG	progresslogger-module.html#DEBUG
 progresslogger.FATAL	progresslogger-module.html#FATAL
 progresslogger.INFO	progresslogger-module.html#INFO
 runcrawler	runcrawler-module.html
+runcrawler.exit	runcrawler-module.html#exit
 runcrawler.main	runcrawler-module.html#main
 runtransform	runtransform-module.html
 runtransform.main	runtransform-module.html#main
@@ -453,6 +455,9 @@ progresslogger.ProgressLogger.updateProgress	progresslogger.ProgressLogger-class
 progresslogger.ProgressLogger.shutdown	progresslogger.ProgressLogger-class.html#shutdown
 progresslogger.ProgressLogger.__init__	progresslogger.ProgressLogger-class.html#__init__
 progresslogger.ProgressLogger.showwarning	progresslogger.ProgressLogger-class.html#showwarning
+progresslogger.ProgressLoggerChecker	progresslogger.ProgressLoggerChecker-class.html
+progresslogger.ProgressLoggerChecker.run	progresslogger.ProgressLoggerChecker-class.html#run
+progresslogger.ProgressLoggerChecker.__init__	progresslogger.ProgressLoggerChecker-class.html#__init__
 progresslogger.ProgressLoggerGUI	progresslogger.ProgressLoggerGUI-class.html
 progresslogger.ProgressLoggerGUI.onOk	progresslogger.ProgressLoggerGUI-class.html#onOk
 progresslogger.ProgressLoggerGUI.__init__	progresslogger.ProgressLoggerGUI-class.html#__init__

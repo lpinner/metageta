@@ -114,11 +114,12 @@ transforms.xslfiles	transforms-module.html#xslfiles
 transforms.CreateMEF	transforms-module.html#CreateMEF
 transforms.ListToXML	transforms-module.html#ListToXML
 utilities	utilities-module.html
-utilities._NixFileOwner	utilities-module.html#_NixFileOwner
+utilities.exists	utilities-module.html#exists
 utilities.runcmd	utilities-module.html#runcmd
 utilities.datetimeformat	utilities-module.html#datetimeformat
 utilities.timeformat	utilities-module.html#timeformat
 utilities.readbinary	utilities-module.html#readbinary
+utilities._NixFileOwner	utilities-module.html#_NixFileOwner
 utilities.which	utilities-module.html#which
 utilities._WinFileOwner	utilities-module.html#_WinFileOwner
 utilities.dateformat	utilities-module.html#dateformat

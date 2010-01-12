@@ -50,7 +50,8 @@ except ImportError:
     import gdalconst
     import osr
     import ogr
-    
+gdal.AllRegister()
+
 class Dataset(__default__.Dataset): 
     '''Subclass of __default__.Dataset class so we get a load of metadata populated automatically'''
     def __init__(self,f):
@@ -60,16 +61,6 @@ class Dataset(__default__.Dataset):
     def __getmetadata__(self,f=None):
         '''Read Metadata for a SPOT DIMAP image as GDAL doesn't quite get it all...'''
         if not f:f=self.fileinfo['filepath']
-        __default__.Dataset.__getmetadata__(self, f) #autopopulate basic metadata
-        #include every file in the current and upper level directory
-        gdalmd=self._gdaldataset.GetMetadata()
-        self.metadata['imgdate']=gdalmd['IMAGING_DATE']#ISO 8601 
-        self.metadata['satellite']='%s %s' % (gdalmd['MISSION'],gdalmd['MISSION_INDEX'])
-        self.metadata['sensor']='%s %s' % (gdalmd['INSTRUMENT'],gdalmd['INSTRUMENT_INDEX'])
-        self.metadata['sunelevation'] = float(gdalmd['SUN_ELEVATION'])
-        self.metadata['sunazimuth'] = float(gdalmd['SUN_AZIMUTH'])
-        self.metadata['level'] = gdalmd['PROCESSING_LEVEL']
-        self.metadata['viewangle'] = gdalmd['VIEWING_ANGLE']
         #dom=__xmldom.parse(f) #Takes tooo long to parse the whole file, so just read as far as we need...
         strxml=''
         for line in open(f, 'r'):
@@ -80,3 +71,38 @@ class Dataset(__default__.Dataset):
         self.metadata['sceneid'] = dom.documentElement.getElementsByTagName('DATASET_NAME')[0].childNodes[0].data
         bands=dom.documentElement.getElementsByTagName('BAND_DESCRIPTION')
         self.metadata['bands']=','.join([band.childNodes[0].data for band in bands])
+
+        try:__default__.Dataset.__getmetadata__(self, f) #autopopulate basic metadata
+        except geometry.GDALError,err: #Work around reading images with lowercase filenames when
+                                       #the DATA_FILE_PATH is uppercase
+                                       # - eg samba filesystems which get converted to lowercase
+            dfp=dom.documentElement.getElementsByTagName('DATA_FILE_PATH')[0]
+            fn=str(dfp.getAttribute('href'))
+            exists,img=utilities.exists(fn,True)
+            if exists and not os.path.exists(fn):
+                import tempfile
+                tmpfd,tmpfn=tempfile.mkstemp(suffix='.dim',prefix='metadata')
+                dfp.setAttribute('href',img)
+                tmpfo=os.fdopen(tmpfd,'w')
+                tmpfo.write(str(dom.toxml()))
+                tmpfo.flush()
+                tmpfo.close()
+                cwd=os.path.abspath(os.curdir)
+                tmp=os.path.split(tmpfn)
+                os.chdir(tmp[0]) #CD to the tmp dir so __default__.Dataset.__getmetadata__ doesn't
+                __default__.Dataset.__getmetadata__(self, tmp[1])
+                gdalmd=self._gdaldataset.GetMetadata()
+                self._gdaldataset=geometry.OpenDataset(img)
+                self._gdaldataset.SetMetadata(gdalmd)
+                os.unlink(tmpfn)
+                os.chdir(cwd)
+            else:raise
+        #include every file in the current and upper level directory
+        gdalmd=self._gdaldataset.GetMetadata()
+        self.metadata['imgdate']=gdalmd['IMAGING_DATE']#ISO 8601 
+        self.metadata['satellite']='%s %s' % (gdalmd['MISSION'],gdalmd['MISSION_INDEX'])
+        self.metadata['sensor']='%s %s' % (gdalmd['INSTRUMENT'],gdalmd['INSTRUMENT_INDEX'])
+        self.metadata['sunelevation'] = float(gdalmd['SUN_ELEVATION'])
+        self.metadata['sunazimuth'] = float(gdalmd['SUN_AZIMUTH'])
+        self.metadata['level'] = gdalmd['PROCESSING_LEVEL']
+        self.metadata['viewangle'] = gdalmd['VIEWING_ANGLE']

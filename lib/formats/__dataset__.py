@@ -44,6 +44,7 @@ except ImportError:
     import osr
     import ogr
 gdal.AllRegister()
+
 class Dataset(object):
     '''A base Dataset class'''
     def __new__(self,f):

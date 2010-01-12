@@ -50,7 +50,8 @@ except ImportError:
     import gdalconst
     import osr
     import ogr
-    
+gdal.AllRegister()
+
 class Dataset(__default__.Dataset): 
     '''Subclass of __default__.Dataset class so we get a load of metadata populated automatically'''
     def __init__(self,f):
@@ -69,18 +70,18 @@ class Dataset(__default__.Dataset):
         f=self.fileinfo['filepath']
         imddata=self.__getimddata__(f)
         
-        tif = os.path.splitext(f)[0]+'.tif'
-        img = os.path.splitext(f)[0]+'.img'
-        ntf = os.path.splitext(f)[0]+'.ntf'
-        til = os.path.splitext(f)[0]+'.til'
+        btif,tif = utilities.exists(os.path.splitext(f)[0]+'.tif',True)
+        bimg,img = utilities.exists(os.path.splitext(f)[0]+'.img',True)
+        bntf,ntf = utilities.exists(os.path.splitext(f)[0]+'.ntf',True)
+        btil,til = utilities.exists(os.path.splitext(f)[0]+'.til',True)
 
-        if   os.path.exists(tif):
+        if   btif:
             __default__.Dataset.__getmetadata__(self, tif)
-        elif os.path.exists(img):
+        elif bimg:
             __default__.Dataset.__getmetadata__(self, img)
-        elif os.path.exists(ntf):
+        elif bntf:
             __default__.Dataset.__getmetadata__(self, ntf)
-        elif os.path.exists(til):
+        elif btil:
             vrt=self.__gettilevrt__(til,imddata)
             __default__.Dataset.__getmetadata__(self, vrt)
             for tmp in self.filelist:
@@ -161,7 +162,8 @@ class Dataset(__default__.Dataset):
                 tileinfo[var[0]]=var[1]
             line=til.next()
         curdir=os.path.dirname(f)
-        ds=geometry.OpenDataset(os.path.join(curdir,datasets['filename'][0]))
+        bimg,img=utilities.exists(os.path.join(curdir,datasets['filename'][0]),True)
+        ds=geometry.OpenDataset(img)
         rb=ds.GetRasterBand(1)
         DataType=gdal.GetDataTypeName(rb.DataType)
         GeoTransform=','.join(map(str, ds.GetGeoTransform()))
@@ -183,8 +185,9 @@ class Dataset(__default__.Dataset):
                 tileSizeY=int(datasets['LLRowOffset'][tile])-int(datasets['ULRowOffset'][tile])+1
                 ULColOffset=datasets['ULColOffset'][tile]
                 ULRowOffset=datasets['ULRowOffset'][tile]
+                bimg,img=utilities.exists(os.path.join(curdir,datasets['filename'][tile]),True)
                 vrtXML.append('  <SimpleSource>')
-                vrtXML.append('   <SourceFilename  relativeToVRT="0">%s</SourceFilename>' % os.path.join(curdir,datasets['filename'][tile]))
+                vrtXML.append('   <SourceFilename  relativeToVRT="0">%s</SourceFilename>' % img)
                 vrtXML.append('   <SourceBand>%s</SourceBand>' % (b))
                 vrtXML.append('   <SourceProperties RasterXSize="%s" RasterYSize="%s" DataType="%s"/>'%(tileSizeX,tileSizeY,DataType))# BlockXSize="%s" BlockYSize="%s"/>'(tileSizeX,tileSizeY,DataType,BlockXSize,BlockYSize))
                 vrtXML.append('   <SrcRect xOff="0" yOff="0" xSize="%s" ySize="%s"/>' %(tileSizeX,tileSizeY))

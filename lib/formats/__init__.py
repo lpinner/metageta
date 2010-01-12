@@ -203,6 +203,8 @@ def Open(f):
         #if rx.search(f):
         ds=__default__.Dataset(f)
         return ds
+    except NotImplementedError:
+        pass #Used when a format driver can't open a file, but doesn't want to raise an error
     except Exception,err:
         if debug:
             errinfo=utilities.FormatTraceback(_sys.exc_info()[2],10)

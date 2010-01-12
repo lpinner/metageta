@@ -98,6 +98,30 @@ def which(name, returnfirst=True, flags=os.F_OK | os.X_OK, path=None):
                 else:result.append(pext)
     return result
 
+def exists(f,returnpath=False): 
+    ''' A case insensitive file existence checker 
+        
+        @type f: C{str}
+        @param f: The filepath to check.
+        @type returnpath: C{boolean}
+        @param returnpath: Return the case sensitive path.
+
+        @rtype: C{boolean}/C{(str,boolean)}
+        @return: True/False, optionally full path to the case sensitive path
+    '''
+    if os.name=='nt':#Windows is case insensitive anyways
+        if returnpath:return os.path.exists(f),f 
+        else:return os.path.exists(f)
+    import re
+    path,name=os.path.split(os.path.abspath(f))
+    files = os.listdir(path)
+    for f in files:
+        if re.search(f,name,re.I):
+            if returnpath:return True,os.path.join(path,f)
+            else:return True
+    if returnpath:return False,None
+    else:return False
+
 def readbinary(data,offset, start, stop):
     ''' Read binary data
         @type    data:   C{str}

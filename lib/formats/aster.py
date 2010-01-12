@@ -52,7 +52,8 @@ except ImportError:
     import gdalconst
     import osr
     import ogr
-    
+gdal.AllRegister()
+
 class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
     def __init__(self,f=None):
         if not f:f=self.fileinfo['filepath']

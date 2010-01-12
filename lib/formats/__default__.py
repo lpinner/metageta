@@ -55,7 +55,8 @@ except ImportError:
     import gdalconst
     import osr
     import ogr
-    
+gdal.AllRegister()
+
 class Dataset(__dataset__.Dataset):
     '''Default Dataset class.
     For generic imagery formats that gdal can read.'''

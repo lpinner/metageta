@@ -36,6 +36,9 @@ class Dataset(__default__.Dataset):
     '''Subclass of __default__.Dataset class so we get a load of metadata populated automatically'''
     def __getmetadata__(self,f=None):
         '''Read Metadata for a JP2 image'''
+        gdal=__default__.gdal
+        jp2mrsid=gdal.GetDriverByName('JP2MrSID')
+        if jp2mrsid:jp2mrsid.Deregister()
         if not f:f=self.fileinfo['filepath']
         ers=os.path.splitext(f)[0]+'.ers'
         if os.path.exists(ers):
@@ -47,3 +50,4 @@ class Dataset(__default__.Dataset):
             except:__default__.Dataset.__getmetadata__(self, f)
         else:
             __default__.Dataset.__getmetadata__(self, f) #autopopulate basic metadata
+        if jp2mrsid:jp2mrsid.Register()

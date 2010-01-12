@@ -287,7 +287,8 @@ class ProgressLoggerGUI(threading.Thread):
         '''
 
         self.master=Tkinter.Tk()
-        if self.windowicon:self.master.wm_iconbitmap(self.windowicon)
+        try:self.master.wm_iconbitmap(self.windowicon)
+        except:pass
         self.master.protocol("WM_DELETE_WINDOW", self.onOk)
         self.master.title(self.name)
         self.master.geometry("700x800")

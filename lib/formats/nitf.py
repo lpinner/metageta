@@ -53,7 +53,8 @@ except ImportError:
     import gdalconst
     import osr
     import ogr
-    
+gdal.AllRegister()
+
 class Dataset(__default__.Dataset): 
     '''Subclass of __default__.Dataset class so we get a load of metadata populated automatically'''
     def __init__(self,f):

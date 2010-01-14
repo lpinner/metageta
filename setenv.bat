@@ -5,13 +5,13 @@ POPD
 
 SET VERSION=2.0
 
-SET PYTHONHOME=%CURDIR%\..\Python25
-
+REM SET PYTHONHOME=%CURDIR%\..\Python25
 SET GDAL_ROOT=%CURDIR%\..\OSGeo4W
-SET GDAL_DATA=%CURDIR%\..\gdal_data
-SET GEOTIFF_CSV=%GDAL_DATA%
-SET GDAL_DRIVER_PATH=%GDAL_ROOT%\apps\gdal-16\bin\gdalplugins
+SET PYTHONHOME=%GDAL_ROOT%\apps\Python25
+SET GDAL_DATA=%GDAL_ROOT%\apps\gdal-16\share\gdal
+SET GEOTIFF_CSV=%GDAL_ROOT%\share\epsg_csv
 SET PROJ_LIB=%GDAL_ROOT%\share\proj
+SET GDAL_DRIVER_PATH=%GDAL_ROOT%\apps\gdal-16\bin\gdalplugins
 
 SET PYTHONPATH=%PYTHONHOME%\Lib\lib-tk
 SET PYTHONPATH=%PYTHONHOME%\Lib\site-packages\pywin32_system32;%PYTHONHOME%\Lib\site-packages\win32;%PYTHONHOME%\Lib\site-packages\win32\lib;%PYTHONHOME%\Lib\site-packages\pythonwin;%PYTHONPATH%

@@ -27,7 +27,7 @@ docparser.IMPORT_STAR_HANDLING='ignore'
 
 args=[]
 args.append('--debug')
-args.append('--name=Extract and Transform Metadata (ETM)')
+args.append('--name=MetaGETA (Metadata Gathering, Extraction and Transformation)')
 #args.append('--css=white')     # Black on white, with blue highlights (similar to javadoc).
 args.append('--css=blue')      # Black on steel blue.
 #args.append('--css=green')     # Black on green.

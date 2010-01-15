@@ -1,4 +1,5 @@
 @echo off
+PUSHD %~DP0
 call setenv.bat
 
 REM Check if the progress bar GUI will be used.

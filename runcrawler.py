@@ -19,13 +19,13 @@
 # THE SOFTWARE.
 
 '''
-Script to run the Metadata Crawler
+Script to run the MetaGeta Metadata Crawler
 
 Contains code to show GUI to gather input arguments when none are provided
-To run, call the eponymous batch file which sets the required environment variables
+To run, call the eponymous batch file/shell script which sets the required environment variables
 
 Usage::
-    runcrawler.bat -d dir -x xls -s shp -l log {-o} {--nomd} {--gui} {--debug}
+    runcrawler.bat/sh -d dir -x xls -s shp -l log {-o} {--nomd} {--gui} {--debug}
 
 @newfield sysarg: Argument, Arguments
 @sysarg: C{-d [dir]}: Directory to to recursively search for imagery

@@ -18,7 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-'''Generate documentation for crawler modules'''
+'''Generate documentation for MetaGeta modules'''
 
 import os,utilities,sys
 from epydoc.cli import cli
@@ -28,8 +28,8 @@ docparser.IMPORT_STAR_HANDLING='ignore'
 args=[]
 args.append('--debug')
 args.append('--name=MetaGETA (Metadata Gathering, Extraction and Transformation)')
-#args.append('--css=white')     # Black on white, with blue highlights (similar to javadoc).
-args.append('--css=blue')      # Black on steel blue.
+args.append('--css=white')     # Black on white, with blue highlights (similar to javadoc).
+#args.append('--css=blue')      # Black on steel blue.
 #args.append('--css=green')     # Black on green.
 #args.append('--css=black')     # White on black, with blue highlights.
 #args.append('--css=grayscale') # Grayscale black on white.

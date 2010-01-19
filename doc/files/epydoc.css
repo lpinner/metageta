@@ -16,10 +16,10 @@
  *     either class='epydoc' or class='toc' (CSS styles for both
  *     defined below).
  */
-body                        { background: #000070; color: #ffffff; }
+body                        { background: #ffffff; color: #000000; }
 p                           { margin-top: 0.5em; margin-bottom: 0.5em; }
-a:link                      { color: #ffffff; }
-a:visited                   { color: #d0d0ff; }
+a:link                      { color: #0000ff; }
+a:visited                   { color: #204080; }
 dt                          { font-weight: bold; }
 h1                          { font-size: +140%; font-style: italic;
                               font-weight: bold; }
@@ -48,14 +48,14 @@ h3.epydoc                   { font-size: +115%; font-weight: bold;
                               margin-top: 0.2em; }
 td h3.epydoc                { font-size: +115%; font-weight: bold;
                               margin-bottom: 0; }
-table.navbar                { background: #0000ff; color: #ffffff;
-                              border: 1px solid #70b0ff; }
-table.navbar table          { color: #ffffff; }
+table.navbar                { background: #a0c0ff; color: #000000;
+                              border: 2px groove #c0d0d0; }
+table.navbar table          { color: #000000; }
 th.navbar-select            { background: #70b0ff;
                               color: #000000; } 
 table.navbar a              { text-decoration: none; }  
-table.navbar a:link         { color: #ffffff; }
-table.navbar a:visited      { color: #ffffff; }
+table.navbar a:link         { color: #0000ff; }
+table.navbar a:visited      { color: #204080; }
 span.breadcrumbs            { font-size: 85%; font-weight: bold; }
 span.options                { font-size: 70%; }
 span.codelink               { font-size: 85%; }
@@ -70,15 +70,15 @@ td.footer                   { font-size: 85%; }
  *     groups using 'group header' rows.
  */
 td.table-header             { background: #70b0ff; color: #000000;
-                              border: 1px solid #000000; }
+                              border: 1px solid #608090; }
 td.table-header table       { color: #000000; }
-td.table-header table a:link      { color: #000000; }
-td.table-header table a:visited   { color: #000000; }
+td.table-header table a:link      { color: #0000ff; }
+td.table-header table a:visited   { color: #204080; }
 span.table-header           { font-size: 120%; font-weight: bold; }
 th.group-header             { background: #c0e0f8; color: #000000;
                               text-align: left; font-style: italic; 
                               font-size: 115%; 
-                              border: 1px solid #000000; }
+                              border: 1px solid #608090; }
 
 /* Summary Tables (functions, variables, etc)
  *   - Each object is described by a single row of the table with
@@ -89,10 +89,10 @@ th.group-header             { background: #c0e0f8; color: #000000;
  *     defined above, under 'Table Headers'
  */
 table.summary               { border-collapse: collapse;
-                              background: #ffffff; color: #000000;
-                              border: 1px solid #000000;
+                              background: #e8f0f8; color: #000000;
+                              border: 1px solid #608090;
                               margin-bottom: 0.5em; }
-td.summary                  { border: 1px solid #000000; }
+td.summary                  { border: 1px solid #608090; }
 code.summary-type           { font-size: 85%; }
 table.summary a:link        { color: #0000ff; }
 table.summary a:visited     { color: #204080; }
@@ -105,8 +105,8 @@ table.summary a:visited     { color: #204080; }
  *     is defined above, under 'Table Headers').
  */
 table.details               { border-collapse: collapse;
-                              background: #ffffff; color: #000000;
-                              border: 1px solid #000000;
+                              background: #e8f0f8; color: #000000;
+                              border: 1px solid #608090;
                               margin: .2em 0 0 0; }
 table.details table         { color: #000000; }
 table.details a:link        { color: #0000ff; }
@@ -129,15 +129,15 @@ div.fields p                { margin-bottom: 0.5em; }
  *     extracted from fields (namely, the bug index & todo index).
  */
 table.link-index            { border-collapse: collapse;
-                              background: #ffffff; color: #000000;
-                              border: 1px solid #000000; }
+                              background: #e8f0f8; color: #000000;
+                              border: 1px solid #608090; }
 td.link-index               { border-width: 0px; }
 table.link-index a:link     { color: #0000ff; }
 table.link-index a:visited  { color: #204080; }
 span.index-where            { font-size: 70%; }
 table.metadata-index        { border-collapse: collapse;
-                              background: #ffffff; color: #000000;
-                              border: 1px solid #000000; 
+                              background: #e8f0f8; color: #000000;
+                              border: 1px solid #608090; 
                               margin: .2em 0 0 0; }
 td.metadata-index           { border-width: 1px; border-style: solid; }
 table.metadata-index a:link { color: #0000ff; }
@@ -189,7 +189,7 @@ table.summary
  *     the re* CSS classes.
  */
 pre.variable                { padding: .5em; margin: 0;
-                              background: #c0e0f8; color: #000000;
+                              background: #dce4ec; color: #000000;
                               border: 1px solid #708890; }
 .variable-linewrap          { color: #604000; font-weight: bold; }
 .variable-ellipsis          { color: #604000; font-weight: bold; }
@@ -241,9 +241,9 @@ h2.toc                      { font-size: 100%; font-weight: bold;
  *     etc.)
  */
 pre.py-doctest              { padding: .5em; margin: 1em;
-                              background: #c0e0f8; color: #000000;
+                              background: #e8f0f8; color: #000000;
                               border: 1px solid #708890; }
-table pre.py-doctest        { background: #c0e0f8;
+table pre.py-doctest        { background: #dce4ec;
                               color: #000000; }
 pre.py-src                  { border: 2px solid #000000; 
                               background: #f0f0f0; color: #000000; }

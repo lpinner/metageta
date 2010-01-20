@@ -166,6 +166,7 @@ def main(dir,xls,shp,log, gui=False, debug=False, nomd=False, getovs=False):
         pl.info("No data found")
         pl.updateProgress(newMax=1) #Just so the progress meter hits 100%
     else:
+        pl.updateProgress(newMax=1) #Just so the progress meter hits 100%
         pl.info("Metadata extraction complete!")
 
     del pl

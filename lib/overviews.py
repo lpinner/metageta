@@ -336,16 +336,32 @@ def _stretch_RANDOM(vrtcols,vrtrows,ds,bands):
         @param bands:  Band number to output. Band numbers are not zero indexed.
         @rtype:        C{xml}
         @return:       VRT XML string
+
+        @change: 22/01/2010 lpinner fix for U{r2<http://code.google.com/p/metageta/issues/detail?id=2&can=1>}
     '''
-    band=bands[0]
     from random import randint as r
+
+    band=bands[0]
+    vals=[]
+
     rb=ds.GetRasterBand(bands[0])
-    nodata=rb.GetNoDataValue()
-    if nodata is not None:nodata=int(nodata)
     min,max=map(int,rb.ComputeRasterMinMax())
-    vals=[(nodata,255,255,255,0)]
+
+    nodata=rb.GetNoDataValue()
+    if nodata is not None:
+        nodata=int(nodata)
+        nodatavals=(nodata,255,255,255,0)
+        if min>nodata:vals.append(nodatavals)
+
     for i in range(min,max+1):#build random RGBA tuple
-        if i != nodata:vals.append((i,r(0,255),r(0,255),r(0,255),255))
+        if nodata is not None:
+            if i != nodata:vals.append((i,r(0,255),r(0,255),r(0,255),255))
+            else:vals.append(nodatavals)
+        else:vals.append((i,r(0,255),r(0,255),r(0,255),255))
+    
+    if nodata is not None and nodata > max:
+        vals.append(nodatavals)
+
     return _stretch_UNIQUE(vrtcols,vrtrows,ds,bands,vals)
 
 def _stretch_COLOURTABLE(vrtcols,vrtrows,ds,bands):

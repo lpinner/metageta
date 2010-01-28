@@ -1,4 +1,4 @@
 #!/bin/bash
 source setenv.sh
-python runtransform.py $@
+python runtransform.py $*
 

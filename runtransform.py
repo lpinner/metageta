@@ -162,42 +162,10 @@ class GetArgs:
     '''Pop up a GUI dialog to gather arguments'''
     def __init__(self):
         '''Build and show the GUI dialog'''
-        windowicon=os.environ['CURDIR']+'/lib/wm_icon.ico'
         #base 64 encoded gif images for the GUI buttons
-        dir_img='''
-            R0lGODlhEAAQAMZUABAQEB8QEB8YEC8gIC8vIEA4ME9IQF9IIFpTSWBXQHBfUFBoj3NlRoBnII9v
-            IIBwUGB3kH93YIZ5UZ94IJB/YIqAcLB/EI+IcICHn4+HgMCHEI6Oe4CPn4+PgMCQANCHEJ+PgICX
-            r9CQANCQEJ+XgJKanaCgkK+fgJykoaKjo7CgkKimk+CfIKKoo6uoleCgMLCnkNCnUKuwpLSvkrSv
-            mfCoMLWyn7+wkM+vcLS0pfCwML+4kPC3QNDAgM+/kPDAQP+/UODIgP/IUODQoP/QUPDQgP/QYP/P
-            cPDYgP/XYP/XcP/YgPDgkP/ggP/gkPDnoP/noPDwoPDwsP/woP//////////////////////////
-            ////////////////////////////////////////////////////////////////////////////
-            /////////////////////////////////////////////////////////////////////////yH5
-            BAEKAH8ALAAAAAAQABAAAAe1gH+Cg4SFhoQyHBghKIeEECV/ORwtEDYwmJg0hikLCzBDUlJTUCoz
-            hZ4LKlGjUFBKJiQkIB0XgypPpFBLSb2+toImT643N5gnJ7IgIBkXJExQQTBN1NVNSkoxFc9OMDtK
-            vkZEQjwvDC4gSNJNR0lGRkI/PDoNEn8gRTA+Su9CQPM1PhxY8SdDj2nw4umowWJEAwSCLqjAIaKi
-            Bw0WLExwcGBDRAoRHihIYKAAgQECAARwxFJQIAA7'''
-        xls_img='''
-            R0lGODlhEAAQAPcAAAAAAIAAAACAAICAAAAAgIAAgACAgICAgMDAwP8AAAD/AP//AAAA//8A/wD/
-            /////wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-            AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMwAAZgAAmQAAzAAA/wAzAAAzMwAzZgAzmQAzzAAz/wBm
-            AABmMwBmZgBmmQBmzABm/wCZAACZMwCZZgCZmQCZzACZ/wDMAADMMwDMZgDMmQDMzADM/wD/AAD/
-            MwD/ZgD/mQD/zAD//zMAADMAMzMAZjMAmTMAzDMA/zMzADMzMzMzZjMzmTMzzDMz/zNmADNmMzNm
-            ZjNmmTNmzDNm/zOZADOZMzOZZjOZmTOZzDOZ/zPMADPMMzPMZjPMmTPMzDPM/zP/ADP/MzP/ZjP/
-            mTP/zDP//2YAAGYAM2YAZmYAmWYAzGYA/2YzAGYzM2YzZmYzmWYzzGYz/2ZmAGZmM2ZmZmZmmWZm
-            zGZm/2aZAGaZM2aZZmaZmWaZzGaZ/2bMAGbMM2bMZmbMmWbMzGbM/2b/AGb/M2b/Zmb/mWb/zGb/
-            /5kAAJkAM5kAZpkAmZkAzJkA/5kzAJkzM5kzZpkzmZkzzJkz/5lmAJlmM5lmZplmmZlmzJlm/5mZ
-            AJmZM5mZZpmZmZmZzJmZ/5nMAJnMM5nMZpnMmZnMzJnM/5n/AJn/M5n/Zpn/mZn/zJn//8wAAMwA
-            M8wAZswAmcwAzMwA/8wzAMwzM8wzZswzmcwzzMwz/8xmAMxmM8xmZsxmmcxmzMxm/8yZAMyZM8yZ
-            ZsyZmcyZzMyZ/8zMAMzMM8zMZszMmczMzMzM/8z/AMz/M8z/Zsz/mcz/zMz///8AAP8AM/8AZv8A
-            mf8AzP8A//8zAP8zM/8zZv8zmf8zzP8z//9mAP9mM/9mZv9mmf9mzP9m//+ZAP+ZM/+ZZv+Zmf+Z
-            zP+Z///MAP/MM//MZv/Mmf/MzP/M////AP//M///Zv//mf//zP///ywAAAAAEAAQAAAIngBfuUKF
-            ipBBg4MS9umTJYsrBAheSZwokGBBhwgeaNzIUSOhLKgydhz5EdWrB4oOelT5kdDJLwgUKRpEKOUX
-            Gtpannzw5ZVNQje15czicmNPg1lwCtW5EeirQV+IEtI2iOjOmh9dQc2SimqWQa4efGzYcGZUr4NQ
-            ddSWimwWr33UahRKly61qn0Iza1rl9qXKVIPIkyY8Mtft4gTTwkIADs='''
-        xsl_img='''
-            R0lGODdhEAAQAOMPAAAAAAAAgAAAmQAA/zNmmQCAgDNm/zOZAIaGhjOZ/zPM/8DAwKbK8DP///Hx
-            8f///ywBAAAADwAQAAAEWBDJSeW76Or9Vn4f5zzOAp5kOo5AC2QOMxaFQcrP+zDCUzyNROAhkL14
-            pEJDcQiMijqkIXEYDIsOXWwU6N5Yn5VKpSWYz2fwRcwmldFo9bidhc3Hrrw+HwEAOw=='''
+        from icons import dir_img, xls_img, xsl_img
+
+        windowicon=os.environ['CURDIR']+'/lib/wm_icon.ico'
         
         self.root = Tkinter.Tk()
         self.root.title('Metadata Transform')
@@ -213,9 +181,9 @@ class GetArgs:
         self.root.geometry('+%d+%d' % (appXPos, appYPos))
         last_dir = Tkinter.StringVar()
         last_dir.set('C:\\')
-        xls_ico = Tkinter.PhotoImage(format='gif',data=xls_img)
-        xsl_ico = Tkinter.PhotoImage(format='gif',data=xsl_img)
-        dir_ico = Tkinter.PhotoImage(format='gif',data=dir_img)
+        xls_ico = Tkinter.PhotoImage(format=xls_img.format,data=xls_img.data)
+        xsl_ico = Tkinter.PhotoImage(format=xsl_img.format,data=xsl_img.data)
+        dir_ico = Tkinter.PhotoImage(format=dir_img.format,data=dir_img.data)
         sxls = Tkinter.StringVar()
         sxsl = Tkinter.StringVar()
         sdir = Tkinter.StringVar()

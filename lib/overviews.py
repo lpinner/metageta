@@ -179,12 +179,14 @@ def _stretch_PERCENT(vrtcols,vrtrows,ds,bands,low,high):
         dfScaleSrcMin,dfScaleSrcMax=GetDataTypeRange(srcband.DataType)
         dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = srcband.GetStatistics(0,1)
         nbins=256
-        if nbits == 8:binsize=1
-        else:binsize=(dfBandMax-dfBandMin)/nbins
+        #if nbits == 8:binsize=1
+        #else:binsize=(dfBandMax-dfBandMin)/nbins
+        binsize=(dfBandMax-dfBandMin)/nbins
         #else:binsize=int(math.ceil((dfBandMax-dfBandMin)/nbins))
         #Compute the histogram w/out the max.min values.
         #hs=srcband.GetHistogram(dfBandMin-0.5,dfBandMax+0.5, nbins,include_out_of_range=1)
-        hs=srcband.GetHistogram(dfBandMin+abs(dfBandMin)*0.0001,dfBandMax-abs(dfBandMax)*0.0001, nbins,include_out_of_range=0,approx_ok=0)
+        #hs=srcband.GetHistogram(dfBandMin+abs(dfBandMin)*0.0001,dfBandMax-abs(dfBandMax)*0.0001, nbins,include_out_of_range=0,approx_ok=0)
+        hs=srcband.GetHistogram(dfBandMin+abs(dfBandMin)*0.0001,dfBandMax-abs(dfBandMax)*0.0001, nbins,include_out_of_range=1,approx_ok=0)
         #Check that outliers haven't really skewed the histogram
         #this is a kludge to workaround datasets with multiple nodata values
         for j in range(0,10):

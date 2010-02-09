@@ -3,7 +3,7 @@
           "DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-  <title>progresslogger.ProgressLoggerChecker</title>
+  <title>formats.hdf.Dataset</title>
   <link rel="stylesheet" href="epydoc.css" type="text/css" />
   <script type="text/javascript" src="epydoc.js"></script>
 </head>
@@ -31,7 +31,7 @@
       <th class="navbar" align="right" width="100%">
         <table border="0" cellpadding="0" cellspacing="0">
           <tr><th class="navbar" align="center"
-            >MetaGETA (Metadata Gathering, Extraction and Transformation)</th>
+            >Metadata Crawler</th>
           </tr></table></th>
   </tr>
 </table>
@@ -39,8 +39,9 @@
   <tr valign="top">
     <td width="100%">
       <span class="breadcrumbs">
-        <a href="progresslogger-module.html">Module&nbsp;progresslogger</a> ::
-        Class&nbsp;ProgressLoggerChecker
+        <a href="formats-module.html">Package&nbsp;formats</a> ::
+        <a href="formats.hdf-module.html">Module&nbsp;hdf</a> ::
+        Class&nbsp;Dataset
       </span>
     </td>
     <td>
@@ -50,22 +51,20 @@
     onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
         <tr><td align="right"><span class="options"
             >[<a href="frames.html" target="_top">frames</a
-            >]&nbsp;|&nbsp;<a href="progresslogger.ProgressLoggerChecker-class.html"
+            >]&nbsp;|&nbsp;<a href="formats.hdf.Dataset-class.html"
             target="_top">no&nbsp;frames</a>]</span></td></tr>
       </table>
     </td>
   </tr>
 </table>
 <!-- ==================== CLASS DESCRIPTION ==================== -->
-<h1 class="epydoc">Class ProgressLoggerChecker</h1><p class="nomargin-top"><span class="codelink"><a href="progresslogger-pysrc.html#ProgressLoggerChecker">source&nbsp;code</a></span></p>
+<h1 class="epydoc">Class Dataset</h1><p class="nomargin-top"><span class="codelink"><a href="formats.hdf-pysrc.html#Dataset">source&nbsp;code</a></span></p>
 <pre class="base-tree">
-        object --+        
-                 |        
-threading._Verbose --+    
-                     |    
-      threading.Thread --+
-                         |
-                        <strong class="uidshort">ProgressLoggerChecker</strong>
+         object --+    
+                  |    
+<a href="formats.__dataset__.Dataset-class.html">__dataset__.Dataset</a> --+
+                      |
+                     <strong class="uidshort">Dataset</strong>
 </pre>
 
 <hr />
@@ -92,29 +91,12 @@ threading._Verbose --+
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="progresslogger.ProgressLoggerChecker-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">host</span>,
-        <span class="summary-sig-arg">port</span>,
-        <span class="summary-sig-arg">callback</span>)</span><br />
-      x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
+          <td><span class="summary-sig"><a href="formats.hdf.Dataset-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">f</span>)</span><br />
+      Read Metadata for recognised HDF images as GDAL doesn't (Currently 
+      only ASTER Format description: http:#www.gdal.org/frmt_hdf4.html</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="progresslogger-pysrc.html#ProgressLoggerChecker.__init__">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="progresslogger.ProgressLoggerChecker-class.html#run" class="summary-sig-name">run</a>(<span class="summary-sig-arg">self</span>)</span></td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="progresslogger-pysrc.html#ProgressLoggerChecker.run">source&nbsp;code</a></span>
+            <span class="codelink"><a href="formats.hdf-pysrc.html#Dataset.__init__">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -124,32 +106,68 @@ threading._Verbose --+
   </tr>
   <tr>
     <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code>threading.Thread</code></b>:
-      <code>__repr__</code>,
-      <code>getName</code>,
-      <code>isAlive</code>,
-      <code>isDaemon</code>,
-      <code>join</code>,
-      <code>setDaemon</code>,
-      <code>setName</code>,
-      <code>start</code>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="formats.__dataset__.Dataset-class.html">__dataset__.Dataset</a></code></b>:
+      <code><a href="formats.__dataset__.Dataset-class.html#__delattr__">__delattr__</a></code>,
+      <code><a href="formats.__dataset__.Dataset-class.html#__setattr__">__setattr__</a></code>
       </p>
-    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code>threading.Thread</code></b> (private):
-      <code>_set_daemon</code>
-      </p></div>
-    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code>threading._Verbose</code></b> (private):
-      <code>_note</code>
-      </p></div>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
-      <code>__delattr__</code>,
       <code>__getattribute__</code>,
       <code>__hash__</code>,
-      <code>__new__</code>,
       <code>__reduce__</code>,
       <code>__reduce_ex__</code>,
-      <code>__setattr__</code>,
+      <code>__repr__</code>,
       <code>__str__</code>
       </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== STATIC METHODS ==================== -->
+<a name="section-StaticMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Static Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-StaticMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="formats.__dataset__.Dataset-class.html">__dataset__.Dataset</a></code></b>:
+      <code><a href="formats.__dataset__.Dataset-class.html#__new__">__new__</a></code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Class Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-ClassVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="formats.__dataset__.Dataset-class.html">__dataset__.Dataset</a></code></b> (private):
+      <code><a href="formats.__dataset__.Dataset-class.html#_err" onclick="show_private();">_err</a></code>
+      </p></div>
     </td>
   </tr>
 </table>
@@ -204,44 +222,19 @@ threading._Verbose --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">host</span>,
-        <span class="sig-arg">port</span>,
-        <span class="sig-arg">callback</span>)</span>
+        <span class="sig-arg">f</span>)</span>
     <br /><em class="fname">(Constructor)</em>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="progresslogger-pysrc.html#ProgressLoggerChecker.__init__">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="formats.hdf-pysrc.html#Dataset.__init__">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>x.__init__(...) initializes x; see x.__class__.__doc__ for 
-  signature</p>
+  <p>Read Metadata for recognised HDF images as GDAL doesn't (Currently 
+  only ASTER Format description: http:#www.gdal.org/frmt_hdf4.html</p>
   <dl class="fields">
     <dt>Overrides:
         object.__init__
-        <dd><em class="note">(inherited documentation)</em></dd>
-    </dt>
-  </dl>
-</td></tr></table>
-</div>
-<a name="run"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">run</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="progresslogger-pysrc.html#ProgressLoggerChecker.run">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  
-  <dl class="fields">
-    <dt>Overrides:
-        threading.Thread.run
     </dt>
   </dl>
 </td></tr></table>
@@ -268,14 +261,14 @@ threading._Verbose --+
       <th class="navbar" align="right" width="100%">
         <table border="0" cellpadding="0" cellspacing="0">
           <tr><th class="navbar" align="center"
-            >MetaGETA (Metadata Gathering, Extraction and Transformation)</th>
+            >Metadata Crawler</th>
           </tr></table></th>
   </tr>
 </table>
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Jan 22 11:40:48 2010
+    Generated by Epydoc 3.0.1 on Fri May 08 09:42:12 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

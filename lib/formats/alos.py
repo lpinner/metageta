@@ -1,41 +1,25 @@
-# Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
-
 '''
 Metadata driver for ACRES ALOS AVNIR-2/PRISM/PALSAR imagery
+===========================================================
+Supports:
+ALOS AVNIR2/PRISM
+PALSAR (Level 1.5 only, Level 1.0 not (yet?) implemented)
 
-B{Supports}:
-    - ALOS AVNIR2/PRISM
-    - ALOS PALSAR (Level 1.5 only, Level 1.0 not (yet?) implemented)
+@see:Format specifications
+    
+    PALSAR Level 1.0: U{http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10287}
 
-B{Format specifications}:
-    - PALSAR Level 1.0: U{http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10287}
-    - PALSAR Level 1.1/1.5: U{http://www.eorc.jaxa.jp/ALOS/doc/fdata/PALSAR_x_Format_EK.pdf}
-    - ALOS AVNIR2/PRISM: U{http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10285}
+    PALSAR Level 1.1/1.5: U{http://www.eorc.jaxa.jp/ALOS/doc/fdata/PALSAR_x_Format_EK.pdf}
+
+    ALOS AVNIR2/PRISM: U{http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10285}
 '''
 format_regex=[
-      r'LED-ALAV.*_U$',            #ALOS AVNIR-2 leader file
-      r'LED-ALPSR.*UD$',           #ALOS PALSAR
-      r'LED-ALPSM.*\_U[BFN]$'      #ALOS PRISM
+      r'IMG-[0-9]*-ALAV.*_U$', #ALOS AVNIR-2
+      r'IMG-[HV][HV]-ALPSR.*UD$', #ALOS PALSAR
+      r'IMG-ALPSM.*\_U[BFN]$' #ALOS PRISM
       ]
 '''Regular expression list of file formats'''
+
 
 #import base dataset module
 import __dataset__
@@ -56,37 +40,27 @@ except ImportError:
     import gdalconst
     import osr
     import ogr
-gdal.AllRegister()
-
+    
 class Dataset(__dataset__.Dataset): 
     '''Subclass of base Dataset class'''
-
-    def __init__(self,f=None):
-        if not f:f=self.fileinfo['filepath']
-        self.filelist=[r for r in utilities.rglob(os.path.dirname(f))]
-        self._led=f
-        self._vol=glob.glob(os.path.dirname(f) + '/[Vv][Oo][Ll]*')[0] #volume file
-
-        img_regex=[
-              r'IMG-0[1-4]-ALAV.*_U$',     #ALOS AVNIR-2 img file
-              r'IMG-[HV][HV]-ALPSR.*UD$',  #ALOS PALSAR
-              r'IMG-ALPSM.*\_U[BFN]$'      #ALOS PRISM
-        ]
-        self._imgs=[i for i in utilities.rglob(os.path.dirname(f),'|'.join(img_regex),True,re.I, False)]
-        
-        self.fileinfo['filepath']=self._led #change filename to leader file
-        self.fileinfo['filename']=os.path.basename(self._led)
-    def __getmetadata__(self,f=None):
+    def __init__(self,f):
         '''Read Metadata for an ACRES ALOS AVNIR-2/PRISM/PALSAR format image as GDAL doesn't'''
-
-        #Local copies for brevity
-        vol=self._vol
-        led=self._led
-
-        if 'led-alpsr' in led.lower():driver='SAR_CEOS'
+        
+        #Below is a little kludge. We used to check the gdal driver short name to
+        #work out if the file was PALSAR or PRISM/AVNIR2 but gdal 1.6x now takes ~10min (and 1/2 Gb of RAM)
+        #to simply open ALOS files, try running GDALINFO on one of them...
+        #gdalDataset = geometry.OpenDataset(f)
+        #driver=gdalDataset.GetDriver().ShortName
+        #metadata=gdalDataset.GetMetadata()
+        regex=re.compile(r'IMG-[HV][HV]-ALPSR.*UD$', re.IGNORECASE) #PALSAR
+        if regex.search(f):driver='SAR_CEOS'
         else:driver='CEOS'
+        metadata={} #just cos the code below expects a gdal derived metadata dict.
 
-        extra_md={} #for holding any extra metadata which gets stuffed into self.metadata['metadata'] later on
+        filelist=[r for r in utilities.rglob(os.path.dirname(f))]
+        rex=re.compile(r'\\img-[0-9]*h*-*',re.I)
+        vol=rex.sub(r'\\vol-', f) #volume file
+        led=rex.sub(r'\\led-', f) #leader file
 
         self.metadata['satellite']='ALOS'
         
@@ -120,13 +94,13 @@ class Dataset(__dataset__.Dataset):
             #Product type specifier
             start,stop = 17,56
             prodspec = utilities.readbinary(meta,offset,start,stop)[8:] #Strip of the "'PRODUCT:" string
-            if prodspec[1:4] != '1.5':raise Exception, 'ALOS PALSAR Level %s not yet implemented' % level
-            if prodspec[0]=='H':self.metadata['mode']='Fine (high resolution) mode'
+            if   prodspec[0]=='H':self.metadata['mode']='Fine (high resolution) mode'
             elif prodspec[0]=='W':self.metadata['mode']='ScanSAR (wide observation) mode'
             elif prodspec[0]=='D':self.metadata['mode']='Direct Downlink mode'
             elif prodspec[0]=='P':self.metadata['mode']='Polarimetry mode'
             elif prodspec[0]=='C':self.metadata['mode']='Calibration mode'
-            level=prodspec[1:5]
+            self.metadata['level']=prodspec[1:4]
+            if prodspec[1:4] != '1.5':raise Exception, 'ALOS PALSAR Level %s not yet implemented' % self.metadata['level']
             orient=prodspec[4]
             if orient=='G':self.metadata['orientation']='Map oriented'
             else: self.metadata['orientation']='Path oriented'
@@ -155,7 +129,7 @@ class Dataset(__dataset__.Dataset):
             offset = 720
             #Scene ID
             start,stop = 21,52
-            sceneid = utilities.readbinary(meta,offset,start,stop)
+            self.metadata['sceneid'] = utilities.readbinary(meta,offset,start,stop)
             #Image date
             start,stop = 69,100
             imgdate=utilities.readbinary(meta,offset,start,stop)[0:8]#Strip off time
@@ -168,8 +142,7 @@ class Dataset(__dataset__.Dataset):
             #Radar wavelength
             start,stop = 501,516
             wavelen = utilities.readbinary(meta,offset,start,stop)
-            extra_md['wavelength']=wavelen
-            
+
             #Nominal offnadir angle
             start,stop = 1839,1854
             self.metadata['viewangle'] = utilities.readbinary(meta,offset,start,stop)
@@ -196,18 +169,12 @@ class Dataset(__dataset__.Dataset):
             #Proj CS
             start,stop = 413,444
             projdesc = utilities.readbinary(meta,offset,start,stop)
-            epsg=0#default
             if projdesc == 'UTM-PROJECTION':
                 nZone = int(utilities.readbinary(meta,offset,477,480))
                 dfFalseNorthing = float(utilities.readbinary(meta,offset,497,512))
-                if dfFalseNorthing > 0.0:
-                    bNorth=False
-                    epsg=32700+nZone
-                else:
-                    bNorth=True
-                    epsg=32600+nZone
-                src_srs.ImportFromEPSG(epsg)
-                #src_srs.SetUTM(nZone,bNorth) #generates WKT that osr.SpatialReference.AutoIdentifyEPSG() doesn't return an EPSG for
+                if dfFalseNorthing > 0.0:bNorth=False
+                else:bNorth=True
+                src_srs.SetUTM(nZone,bNorth)
             elif projdesc == 'UPS-PROJECTION':
                 dfCenterLon = float(utilities.readbinary(meta,offset,625,640))
                 dfCenterLat = float(utilities.readbinary(meta,offset,641,656))
@@ -223,8 +190,8 @@ class Dataset(__dataset__.Dataset):
                 dfStdP1 = float(utilities.readbinary(meta,offset,769,784))
                 dfStdP2 = float(utilities.readbinary(meta,offset,785,800))
                 src_srs.SetLCC(dfStdP1,dfStdP2,dfCenterLat,dfCenterLon,0,0)
-            srs=src_srs.ExportToWkt()
-            if not epsg:epsg = spatialreferences.IdentifyAusEPSG(srs)
+            srs=src_srs.ExportToWkt()   
+            epsg = spatialreferences.IdentifyAusEPSG(srs)
             units = spatialreferences.GetLinearUnitsName(srs)
 
             #UL-LR coords
@@ -235,10 +202,6 @@ class Dataset(__dataset__.Dataset):
 
             self.metadata['nbits'] = 16
             self.metadata['datatype']='UInt16'
-
-            #Generate a GDAL Dataset object
-            self._gdaldataset=geometry.OpenDataset(self._imgs[0])
-
         else:        #ALOS AVNIR2/PRISM
             ##Format - http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10285
             
@@ -261,7 +224,6 @@ class Dataset(__dataset__.Dataset):
             procinfo = utilities.readbinary(meta,(record-1)*recordlength,start,stop)
             level=procinfo[1:4]
             #if level != '1B2':raise Exception, 'Level %s PRISM is not supported' % level
-            self.metadata['level']==procinfo[1:4]
             opt=procinfo[4:6].strip().strip('_')
             if opt!='':level+='-'+opt
             if procinfo[6]=='U':prj='UTM'
@@ -309,13 +271,13 @@ class Dataset(__dataset__.Dataset):
             sensor,bands=utilities.readbinary(meta,(record-1)*recordlength,start,stop).split()
             if sensor=='PSM':
                 self.metadata['sensor']='PRISM'
-                if sceneid[5] == 'N':  extra_md['SENSOR DIRECTION']='Nadir 35km'
-                elif sceneid[5] == 'W':extra_md['SENSOR DIRECTION']='Nadir 70km'
-                elif sceneid[5] == 'F':extra_md['SENSOR DIRECTION']='Forward 35km'
-                elif sceneid[5] == 'B':extra_md['SENSOR DIRECTION']='Backward 35km'
+                if sceneid[5] == 'N':  metadata['SENSOR DIRECTION']= 'Nadir 35km'
+                elif sceneid[5] == 'W':metadata['SENSOR DIRECTION']= 'Nadir 70km'
+                elif sceneid[5] == 'F':metadata['SENSOR DIRECTION']= 'Forward 35km'
+                elif sceneid[5] == 'B':metadata['SENSOR DIRECTION']= 'Backward 35km'
             else:self.metadata['sensor']='AVNIR-2'
             self.metadata['filetype'] ='CEOS/ALOS %s CEOS Format' % self.metadata['sensor']
-            self.metadata['bands']=','.join([band for band in bands])
+            bands=','.join([band for band in bands])
 
             #Processing info
             start,stop = 467,478
@@ -421,19 +383,7 @@ class Dataset(__dataset__.Dataset):
 
             self.metadata['nbits'] = 8
             self.metadata['datatype'] = 'Byte'
-
-            #Generate a VRT GDAL Dataset object
-            self._imgs.sort()
-            img=self._imgs[0]
-            meta = open(img,'rb').read(1024)
-            start,stop = 187,192
-            record=1
-            recordlength=0
-            offset=utilities.readbinary(meta,(record-1)*recordlength,start,stop)
-            #don't use ALOS provided no. cols, as it doesn't include 'dummy' pixels
-            #vrt=geometry.CreateRawRasterVRT(self._imgs,self.metadata['cols'],self.metadata['rows'],self.metadata['datatype'],offset,byteorder='MSB')
-            vrt=geometry.CreateRawRasterVRT(self._imgs,offset,nrows,self.metadata['datatype'],offset,byteorder='MSB')
-            self._gdaldataset=geometry.OpenDataset(vrt)
+            
 
         #Reproject corners to lon,lat
         ##geom = geometry.GeomFromExtent(ext)
@@ -443,15 +393,16 @@ class Dataset(__dataset__.Dataset):
         ##points=geom.GetBoundary()
         ##ext=[[points.GetX(i),points.GetY(i)] for i in range(0,points.GetPointCount())]
 
-        self.metadata['filesize']=sum([os.path.getsize(tmp) for tmp in self.filelist])
+        self.metadata['filename']=os.path.basename(led)
+        self.metadata['filepath']=led
+        self.metadata['filesize']=sum([os.path.getsize(file) for file in filelist])
+        self.metadata['filelist']=','.join(utilities.fixSeparators(filelist))
         self.metadata['srs'] = src_srs.ExportToWkt()
         self.metadata['epsg'] = epsg
         self.metadata['units'] = units
         self.metadata['cols'] = ncols
         self.metadata['rows'] = nrows
         self.metadata['nbands'] = nbands
-        self.metadata['level'] = level
-        self.metadata['sceneid'] = sceneid
         if orbit=='A':self.metadata['orbit']='Ascending'
         else: self.metadata['orbit']='Descending'
         if abs(math.degrees(rot)) < 1.0:self.metadata['rotation'] = 0.0
@@ -462,8 +413,7 @@ class Dataset(__dataset__.Dataset):
         self.metadata['LL']='%s,%s' % tuple(ext[3])
         self.metadata['cellx'],self.metadata['celly']=xpix,ypix
         self.metadata['nodata'] = 0
-        self.metadata['metadata']='\n'.join(['%s: %s' %(m,extra_md[m]) for m in extra_md])
+        self.metadata['metadata']='\n'.join(['%s: %s' %(m,metadata[m]) for m in metadata])
         self.metadata['compressionratio']=0
         self.metadata['compressiontype']='None'
         self.extent=ext
-

@@ -1,26 +1,6 @@
-# Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
-
 '''
 Metadata driver for EO1 ALI (L1G & L1R) & Hyperion (L1R) images
-
+===============================================================
 @see:Format specifications
 
   HDF format:U{http://www.gdal.org/frmt_hdf4.html}
@@ -29,12 +9,10 @@ Metadata driver for EO1 ALI (L1G & L1R) & Hyperion (L1R) images
 
 @todo: extract stuff from FDGC metadata?
 '''
-
-
+#Regular expression list of file formats
 format_regex=[r'eo1.*\.[lm]1r$',     #EO1 ALI (L1R) & Hyperion
               r'eo1.*_hdf\.l1g$',    #EO1 ALI (L1G) HDF
               r'eo1.*_mtl\.tif$']    #EO1 ALI (L1G) TIFF
-'''Regular expression list of file formats'''
 
 #import base dataset module
 import __dataset__
@@ -54,35 +32,30 @@ except ImportError:
     import gdalconst
     import osr
     import ogr
-gdal.AllRegister()
-
+    
 class Dataset(__dataset__.Dataset):
     '''Subclass of base Dataset class'''
     def __init__(self,f):
-        self.filelist=glob.glob(os.path.dirname(f)+'/*') #Assume raw data - all files in current dir belong to this dataset.
-        #filelist=glob.glob(os.path.splitext(f)[0]+'.*')
-        #filelist.extend(glob.glob('%s\\%s_%s_*.hdf' % (os.path.dirname(f),os.path.basename(f)[10:14],os.path.basename(f)[14:17])))
-    def __getmetadata__(self):
         '''Read Metadata for recognised EO1 ALI (L1G & L1R) & Hyperion (L1R) images as GDAL doesn't'''
 
-        f=self.fileinfo['filepath']
         self.metadata['satellite']='E01'
-        self.metadata['nbits'] = 16
-        self.metadata['datatype']='Int16'
-        self.metadata['nodata']=0
-        if re.search(r'\.m[1-4]r$', f, re.I):
+        
+        if re.search(r'\.m[1-4]r$', f):
             self.metadata['level']='L1R'
             self.metadata['sensor']='ALI'
 
             gdalDataset = geometry.OpenDataset(f)
-            #if not gdalDataset: #Error now raised in geometry.OpenDataset
-            #    errmsg=gdal.GetLastErrorMsg()
-            #    raise IOError, 'Unable to open %s\n%s' % (f,errmsg.strip())
+            if not gdalDataset:
+                errmsg=gdal.GetLastErrorMsg()
+                raise IOError, 'Unable to open %s\n%s' % (f,errmsg.strip())
 
             self.metadata['filetype'] = '%s/%s (%s %s)' % (gdalDataset.GetDriver().ShortName,
                                                            gdalDataset.GetDriver().LongName,
                                                            self.metadata['sensor'],
                                                            self.metadata['level'])
+
+            filelist=glob.glob(os.path.splitext(f)[0]+'.*')
+            filelist.extend(glob.glob('%s\\%s_%s_*.hdf' % (os.path.dirname(f),os.path.basename(f)[10:14],os.path.basename(f)[14:17])))
 
             srs=osr.SpatialReference()
             srs.ImportFromEPSG(4326)
@@ -102,65 +75,18 @@ class Dataset(__dataset__.Dataset):
                 sd,sz = hdf_sd[3]
                 sd=geometry.OpenDataset(sd)
                 sd_md=sd.GetMetadata()
-                cols=str(int(sd_md['Number of cross track pixels'])*4-30)#Account for the four SCA strips and the overlap between SCA strips
-                rows=sd_md['Number of along track pixels']
-
-                #set up to create multispectral only self._gdaldatset for overview generation
-                if nbands==1:
-                    multi=3
-                    multibands=sd_md['Number of bands']
-                    multicols=cols
-                    multirows=rows
-                else:
-                    multi=0
-                    multibands=nbands
-                    multicols=ncols
-                    multirows=nrows
-                multibands=range(1,int(multibands)+1)
-
                 #Make a csv list of cols, bands
                 ncols=[ncols for i in range(0,nbands)]
                 nrows=[nrows for i in range(0,nbands)]
-                ncols.extend([cols for i in range(0,sd.RasterCount)]) 
-                nrows.extend([rows for i in range(0,sd.RasterCount)])
                 #nbands='%s,%s' % (nbands, sd_md['Number of bands'])
                 nbands=nbands+int(sd_md['Number of bands'])
+                cols=str(int(sd_md['Number of cross track pixels'])*4-30)#Account for the four SCA strips and the overlap between SCA strips
+                rows=sd_md['Number of along track pixels']
+                ncols.extend([cols for i in range(0,sd.RasterCount)]) 
+                nrows.extend([rows for i in range(0,sd.RasterCount)])
                 ncols=','.join(ncols)
                 nrows=','.join(nrows)
 
-            else:
-                #set up to create multispectral only _gdaldatset for overview generation
-                multi=0
-                multibands=range(1,nbands+1)
-                multicols=ncols
-                multirows=nrows
-
-            #create multispectral only _gdaldatset for overview generation
-            #Get all the data files and mosaic the strips
-            #strips=[s for s in utilities.rglob(os.path.dirname(f),r'\.m[1-4]r$',True,re.I,False)]
-            strips=glob.glob(os.path.join(os.path.dirname(f),'*.m[1-4]r'))
-            strips.sort();strips.reverse() #west->east = *.m4r-m1
-            scols=(int(multicols)+30)/4 # +30 handles the 10 pixel overlap
-            xoff=10
-            yoff=400
-            srows=int(multirows)-yoff
-            srcrects=[[0,yoff,scols,srows]]*4
-            dstrects=[]
-            srcrect=[0,yoff,scols,srows]
-            #dstrect=[None,0,scols,srows]
-            files=[]
-            sd,sz = hdf_sd[multi]
-            vrt_opts=[]
-            indatasetlist=[]
-            for i in range(0,4):
-                files.append(sd.replace(f,strips[i]))
-                dstrects.append([i*(scols-xoff),0,scols,srows])
-            self._gdaldataset=geometry.OpenDataset(geometry.CreateMosaicedVRT(files,multibands,srcrects,dstrects,multicols,srows,'Int16'))
-            self._gdaldataset.GetRasterBand(2).SetRasterColorInterpretation(gdal.GCI_BlueBand)
-            self._gdaldataset.GetRasterBand(3).SetRasterColorInterpretation(gdal.GCI_GreenBand)
-            self._gdaldataset.GetRasterBand(4).SetRasterColorInterpretation(gdal.GCI_RedBand)
-            
-            #Extract other metadata
             met=os.path.splitext(f)[0]+'.met'
             for line in open(met, 'r').readlines():
                 if line[0:16]=='Scene Request ID':
@@ -186,39 +112,18 @@ class Dataset(__dataset__.Dataset):
             self.metadata['level']='L1G'
             self.metadata['sensor']='ALI'
             self.metadata['sceneid']=self.metadata['filename'].split('_')[0]
-            self.metadata['filetype'] = 'GTiff/GeoTIFF'
+            self.metadata['filetype'] = 'GTiff/GeoTIFF (%s %s)' % (self.metadata['sensor'],self.metadata['level'])
 
+            filelist=glob.glob(os.path.dirname(f)+'/*')
             ncols=[]
             nrows=[]
             nbands=0
-            bands=glob.glob(os.path.dirname(f)+'/eo1*_b*.tif')
-            for band in bands:
+            for band in glob.glob(os.path.dirname(f)+'/eo1*_b*.tif'):
                 band=geometry.OpenDataset(band)
                 ncols.append(str(band.RasterXSize))
                 nrows.append(str(band.RasterYSize))
                 nbands+=1
                 #rb=sd.GetRasterBand(1)
-
-            #get all multi bands for use in overview generation
-            pancols = max(ncols)
-            panindex = ncols.index(pancols)
-            multibands=bands
-            multincols=ncols
-            multinrows=nrows
-            if pancols > min(ncols):#there is a pan band
-                multibands.pop(panindex)
-                multincols.pop(panindex)
-                multinrows.pop(panindex)
-            multibands.sort()
-            self._gdaldataset = geometry.OpenDataset(geometry.CreateSimpleVRT(multibands,multincols[0],multinrows[0],'Int16'))
-            self._gdaldataset.GetRasterBand(2).SetRasterColorInterpretation(gdal.GCI_BlueBand)
-            self._gdaldataset.GetRasterBand(2).SetNoDataValue(0.0)
-            self._gdaldataset.GetRasterBand(3).SetRasterColorInterpretation(gdal.GCI_GreenBand)
-            self._gdaldataset.GetRasterBand(3).SetNoDataValue(0.0)
-            self._gdaldataset.GetRasterBand(4).SetRasterColorInterpretation(gdal.GCI_RedBand)
-            self._gdaldataset.GetRasterBand(4).SetNoDataValue(0.0)
-            
-            
             ncols=','.join(ncols)
             nrows=','.join(nrows)
             met=f
@@ -281,16 +186,17 @@ class Dataset(__dataset__.Dataset):
             self.metadata['level']='L1G'
             self.metadata['sensor']='ALI'
             self.metadata['sceneid']=self.metadata['filename'].split('_')[0]
+            filelist=glob.glob(os.path.dirname(f)+'/*')
 
             gdalDataset = geometry.OpenDataset(f)
-            #if not gdalDataset: #Error now raised in geometry.OpenDataset
-            #    errmsg=gdal.GetLastErrorMsg()
-            #    raise IOError, 'Unable to open %s\n%s' % (f,errmsg.strip())
+            if not gdalDataset:
+                errmsg=gdal.GetLastErrorMsg()
+                raise IOError, 'Unable to open %s\n%s' % (f,errmsg.strip())
 
-            self.metadata['filetype'] = '%s/%s (%s %s)' % (gdalDataset.GetDriver().ShortName,
-                                                       gdalDataset.GetDriver().LongName,
-                                                       self.metadata['sensor'],
-                                                       self.metadata['level'])
+                self.metadata['filetype'] = '%s/%s (%s %s)' % (gdalDataset.GetDriver().ShortName,
+                                                           gdalDataset.GetDriver().LongName,
+                                                           self.metadata['sensor'],
+                                                           self.metadata['level'])
 
             hdf_sd=gdalDataset.GetSubDatasets()
             hdf_md=gdalDataset.GetMetadata()
@@ -300,33 +206,13 @@ class Dataset(__dataset__.Dataset):
             ncols=[]
             nrows=[]
             nbands=0
-            bands=[]
             for sd,sz in hdf_sd:
-                bands.append(sd)
-                ds=geometry.OpenDataset(sd)
-                ncols.append(str(ds.RasterXSize))
-                nrows.append(str(ds.RasterYSize))
+                sd=geometry.OpenDataset(sd)
+                ncols.append(str(sd.RasterXSize))
+                nrows.append(str(sd.RasterYSize))
                 nbands+=1
-
-            #get all multi bands for use in overview generation
-            pancols = max(ncols)
-            panindex = ncols.index(pancols)
-            multibands=bands
-            multincols=ncols
-            multinrows=nrows
-            if pancols > min(ncols):#there is a pan band
-                multibands.pop(panindex)
-                multincols.pop(panindex)
-                multinrows.pop(panindex)
-            multibands.sort()
-            self._gdaldataset = geometry.OpenDataset(geometry.CreateSimpleVRT(multibands,multincols[0],multinrows[0],'Int16'))
-            self._gdaldataset.GetRasterBand(2).SetRasterColorInterpretation(gdal.GCI_BlueBand)
-            self._gdaldataset.GetRasterBand(3).SetRasterColorInterpretation(gdal.GCI_GreenBand)
-            self._gdaldataset.GetRasterBand(4).SetRasterColorInterpretation(gdal.GCI_RedBand)
-
             ncols=','.join(ncols)
             nrows=','.join(nrows)
-
             met=f.lower().replace('_hdf.l1g','_mtl.l1g')
             md={}
             for line in open(met, 'r'):
@@ -377,11 +263,13 @@ class Dataset(__dataset__.Dataset):
         else:
             self.metadata['level']='L1R'
             self.metadata['sensor']='HYPERION'
+            filelist=glob.glob(os.path.splitext(f)[0]+'.*')
+            filelist.extend(glob.glob('%s\\%s_%s_*.hdf' % (os.path.dirname(f),os.path.basename(f)[10:14],os.path.basename(f)[14:17])))
 
             gdalDataset = geometry.OpenDataset(f)
-            #if not gdalDataset: #Error now raised in geometry.OpenDataset
-            #    errmsg=gdal.GetLastErrorMsg()
-            #    raise IOError, 'Unable to open %s\n%s' % (f,errmsg.strip())
+            if not gdalDataset:
+                errmsg=gdal.GetLastErrorMsg()
+                raise IOError, 'Unable to open %s\n%s' % (f,errmsg.strip())
 
             self.metadata['filetype'] = '%s/%s (%s %s)' % (gdalDataset.GetDriver().ShortName,
                                                            gdalDataset.GetDriver().LongName,
@@ -424,36 +312,12 @@ class Dataset(__dataset__.Dataset):
             geoext=[[ulx,uly],[urx,ury],[lrx,lry],[llx,lly],[ulx,uly]]
             prjext=geoext
 
-            #########################################################################################################
-            ##set self._gdaldataset for use in overview generation
-            ##we'll use bands 21, 30 & 43 for RGB (http://edcsns17.cr.usgs.gov/eo1/Hyperion_Spectral_Coverage.htm)
-            ##as they're near the center of the equivalent ALI bands
-
-            ##This generates verrrryyy looong overviews cos hyperion data is one long thin strip eg. 256*3000 etc... 
-            #self._gdaldataset = geometry.CreateVRTCopy(sd)
-            ##Instead we can clip out some of the centre rows
-            #vrtcols=ncols
-            #vrtrows=int(ncols*1.5)
-            #srcrect=[0, int(nrows/2-vrtrows/2),ncols,vrtrows]
-            #dstrect=[0, 0,ncols,vrtrows]
-            ##Or we can fill out the ncols with nodata
-            vrtcols=int(nrows/1.5)
-            vrtrows=nrows
-            srcrect=[0, 0,ncols,nrows]
-            dstrect=[int(nrows/2.5-ncols), 0,ncols,nrows]
-            vrt=geometry.CreateMosaicedVRT([sd.GetDescription()],[43,30,21],[srcrect],[dstrect],vrtcols,vrtrows,self.metadata['datatype'])
-            self._gdaldataset=geometry.OpenDataset(vrt)
-            self._gdaldataset.GetRasterBand(3).SetRasterColorInterpretation(gdal.GCI_BlueBand)
-            self._gdaldataset.GetRasterBand(2).SetRasterColorInterpretation(gdal.GCI_GreenBand)
-            self._gdaldataset.GetRasterBand(1).SetRasterColorInterpretation(gdal.GCI_RedBand)
-            self._gdaldataset.GetRasterBand(3).SetNoDataValue(0)
-            self._gdaldataset.GetRasterBand(2).SetNoDataValue(0)
-            self._gdaldataset.GetRasterBand(1).SetNoDataValue(0)
-            self._stretch=('STDDEV',(1,2,3),[2]) 
-            #########################################################################################################
         self.metadata['cols'] = ncols
         self.metadata['rows'] = nrows
         self.metadata['nbands'] = nbands
+        self.metadata['nbits'] = 16
+        self.metadata['datatype']='Int16'
+        self.metadata['nodata']=0
 
         #Geotransform
         ncols=map(int, str(ncols).split(','))
@@ -490,7 +354,8 @@ class Dataset(__dataset__.Dataset):
             self.metadata['rotation']=0.0
         else:self.metadata['orientation']='Path oriented'
 
-        self.metadata['filesize']=sum([os.path.getsize(tmp) for tmp in self.filelist])
+        self.metadata['filesize']=sum([os.path.getsize(file) for file in filelist])
+        self.metadata['filelist']=','.join(utilities.fixSeparators(filelist))
         self.metadata['compressionratio']=0
         self.metadata['compressiontype']='None'
         self.extent=geoext

@@ -1,5 +1,4 @@
 @echo off
-PUSHD %~DP0
 call setenv.bat
 
 REM Check if the progress bar GUI will be used.
@@ -11,11 +10,10 @@ for %%a in (%*) do (
 )
 if %nargs%==0 set gui=1
 if /i "%gui%"=="0" (
-    call python.exe runcrawler.py %* --debug
+    call python.exe runcrawler.py %*
     pause
 ) else (
-    REM Not using the GUI until I sort out the disconnection bug
-    REM call python.exe runcrawler.py %*  --debug
-    REM pause
-    start "Crawler" /b pythonw.exe runcrawler.py --gui %*
+    call python.exe runcrawler.py %*
+    pause
+rem    start "Crawler" /b pythonw.exe runcrawler.py %*
 )

@@ -31,7 +31,7 @@
       <th class="navbar" align="right" width="100%">
         <table border="0" cellpadding="0" cellspacing="0">
           <tr><th class="navbar" align="center"
-            >MetaGETA (Metadata Gathering, Extraction and Transformation)</th>
+            >Metadata Crawler</th>
           </tr></table></th>
   </tr>
 </table>
@@ -57,7 +57,7 @@
 </table>
 <!-- ==================== MODULE DESCRIPTION ==================== -->
 <h1 class="epydoc">Module spatialreferences</h1><p class="nomargin-top"><span class="codelink"><a href="spatialreferences-pysrc.html">source&nbsp;code</a></span></p>
-<p>Spatial reference helper functions</p>
+<h1 class="heading">Spatial reference helper functions</h1>
 
 <!-- ==================== FUNCTIONS ==================== -->
 <a name="section-Functions"></a>
@@ -78,12 +78,11 @@
 </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type"><code>int</code></span>
+      <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="spatialreferences-module.html#IdentifyAusEPSG" class="summary-sig-name">IdentifyAusEPSG</a>(<span class="summary-sig-arg">wkt</span>)</span><br />
-      Identify common EPSG codes used in Australia from OGC WKT</td>
+          <td><span class="summary-sig"><a name="IdentifyAusEPSG"></a><span class="summary-sig-name">IdentifyAusEPSG</span>(<span class="summary-sig-arg">wkt</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="spatialreferences-pysrc.html#IdentifyAusEPSG">source&nbsp;code</a></span>
             
@@ -95,12 +94,11 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type"><code>str</code></span>
+      <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="spatialreferences-module.html#GetLinearUnitsName" class="summary-sig-name">GetLinearUnitsName</a>(<span class="summary-sig-arg">wkt</span>)</span><br />
-      Identify linear units</td>
+          <td><span class="summary-sig"><a name="GetLinearUnitsName"></a><span class="summary-sig-name">GetLinearUnitsName</span>(<span class="summary-sig-arg">wkt</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="spatialreferences-pysrc.html#GetLinearUnitsName">source&nbsp;code</a></span>
             
@@ -148,8 +146,7 @@
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a name="AUS_GEOGCS"></a><span class="summary-name">AUS_GEOGCS</span> = <code title="(4202, 4203, 4283, 4326, 32622)"><code class="variable-group">(</code>4202<code class="variable-op">, </code>4203<code class="variable-op">, </code>4283<code class="variable-op">, </code>4326<code class="variable-op">, </code>32622<code class="variable-group">)</code></code><br />
-      Geographic EPSG codes
+        <a name="AUS_GEOGCS"></a><span class="summary-name">AUS_GEOGCS</span> = <code title="(4202, 4203, 4283, 4326, 32622)"><code class="variable-group">(</code>4202<code class="variable-op">, </code>4203<code class="variable-op">, </code>4283<code class="variable-op">, </code>4326<code class="variable-op">, </code>32622<code class="variable-group">)</code></code>
     </td>
   </tr>
 <tr>
@@ -164,112 +161,10 @@
  3112,
  3308,
  3577,
-..."><code class="variable-group">(</code>3032<code class="variable-op">, </code>3033<code class="variable-op">, </code>3107<code class="variable-op">, </code>3110<code class="variable-op">, </code>3111<code class="variable-op">, </code>3112<code class="variable-op">, </code>3308<code class="variable-op">, </code>3577<code class="variable-op">, </code><code class="variable-ellipsis">...</code></code><br />
-      Projected EPSG codes
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a href="spatialreferences-module.html#GCTP_PROJECTIONS" class="summary-name">GCTP_PROJECTIONS</a> = <code title="{'ALASKA': 23,
- 'ALBERS': 3,
- 'AZMEQD': 12,
- 'BCEA': 98,
- 'CEA': 97,
- 'EQRECT': 17,
- 'EQUIDC': 8,
- 'GEO': 0,
-..."><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">ALASKA</code><code class="variable-quote">'</code><code class="variable-op">: </code>23<code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">ALBERS</code><code class="variable-quote">'</code><code class="variable-op">: </code>3<code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">AZMEQD</code><code class="variable-quote">'</code><code class="variable-op">: </code>12<code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-ellipsis">...</code></code><br />
-      USGS projection codes ported from ogr_srs_usgs.cpp
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a href="spatialreferences-module.html#GCTP_ELLIPSOIDS" class="summary-name">GCTP_ELLIPSOIDS</a> = <code title="{'AIRY  ': 9,
- 'AUSTRALIAN_NATIONAL': 14,
- 'BESSEL': 2,
- 'CLARKE1866': 0,
- 'CLARKE1880': 1,
- 'EVEREST': 6,
- 'GRS1980': 8,
- 'GRS80': 8,
-..."><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">AIRY  </code><code class="variable-quote">'</code><code class="variable-op">: </code>9<code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">AUSTRALIAN_NATIONAL</code><code class="variable-quote">'</code><code class="variable-op">: </code>14<code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">BE</code><code class="variable-ellipsis">...</code></code><br />
-      USGS ellipsoid codes ported from ogr_srs_usgs.cpp
+..."><code class="variable-group">(</code>3032<code class="variable-op">, </code>3033<code class="variable-op">, </code>3107<code class="variable-op">, </code>3110<code class="variable-op">, </code>3111<code class="variable-op">, </code>3112<code class="variable-op">, </code>3308<code class="variable-op">, </code>3577<code class="variable-op">, </code><code class="variable-ellipsis">...</code></code>
     </td>
   </tr>
 </table>
-<!-- ==================== FUNCTION DETAILS ==================== -->
-<a name="section-FunctionDetails"></a>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr bgcolor="#70b0f0" class="table-header">
-  <td colspan="2" class="table-header">
-    <table border="0" cellpadding="0" cellspacing="0" width="100%">
-      <tr valign="top">
-        <td align="left"><span class="table-header">Function Details</span></td>
-        <td align="right" valign="top"
-         ><span class="options">[<a href="#section-FunctionDetails"
-         class="privatelink" onclick="toggle_private();"
-         >hide private</a>]</span></td>
-      </tr>
-    </table>
-  </td>
-</tr>
-</table>
-<a name="IdentifyAusEPSG"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">IdentifyAusEPSG</span>(<span class="sig-arg">wkt</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="spatialreferences-pysrc.html#IdentifyAusEPSG">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Identify common EPSG codes used in Australia from OGC WKT</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>wkt</code></strong> (<code>str</code>) - WKT SRS string</li>
-    </ul></dd>
-    <dt>Returns: <code>int</code></dt>
-        <dd>EPSG code</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="GetLinearUnitsName"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">GetLinearUnitsName</span>(<span class="sig-arg">wkt</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="spatialreferences-pysrc.html#GetLinearUnitsName">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Identify linear units</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>wkt</code></strong> (<code>str</code>) - WKT SRS string</li>
-    </ul></dd>
-    <dt>Returns: <code>str</code></dt>
-        <dd>Linear untit code (m,ft,dd, etc.)</dd>
-  </dl>
-</td></tr></table>
-</div>
-<br />
 <!-- ==================== VARIABLES DETAILS ==================== -->
 <a name="section-VariablesDetails"></a>
 <table class="details" border="1" cellpadding="3"
@@ -296,7 +191,15 @@
   <h3 class="epydoc">SRS_UNITS_CONV</h3>
   <p>Convert from GDAL-OSR to ISO 19115 metadata unit of measure.</p>
   <p>Mostly from ogr_srs_api.h (with some extras thrown in just in 
-  case...)</p>
+  case...):</p>
+<pre class="literalblock">
+ define SRS_UL_METER            &quot;Meter&quot;
+ define SRS_UL_FOOT             &quot;Foot (International)&quot; /* or just &quot;FOOT&quot;? */
+ define SRS_UL_US_FOOT          &quot;U.S. Foot&quot; /* or &quot;US survey foot&quot; */
+ define SRS_UL_NAUTICAL_MILE    &quot;Nautical Mile&quot;
+ define SRS_UA_DEGREE           &quot;degree&quot;
+ define SRS_UA_RADIAN           &quot;radian&quot;
+</pre>
   <dl class="fields">
   </dl>
   <dl class="fields">
@@ -322,7 +225,7 @@
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <h3 class="epydoc">AUS_PROJCS</h3>
-  <p>Projected EPSG codes</p>
+  
   <dl class="fields">
   </dl>
   <dl class="fields">
@@ -336,58 +239,6 @@
  3112<code class="variable-op">,</code>
  3308<code class="variable-op">,</code>
  3577<code class="variable-op">,</code>
-<code class="variable-ellipsis">...</code>
-</pre></td></tr></table>
-</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="GCTP_PROJECTIONS"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <h3 class="epydoc">GCTP_PROJECTIONS</h3>
-  <p>USGS projection codes ported from ogr_srs_usgs.cpp</p>
-  <dl class="fields">
-  </dl>
-  <dl class="fields">
-    <dt>Value:</dt>
-      <dd><table><tr><td><pre class="variable">
-<code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">ALASKA</code><code class="variable-quote">'</code><code class="variable-op">: </code>23<code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">ALBERS</code><code class="variable-quote">'</code><code class="variable-op">: </code>3<code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">AZMEQD</code><code class="variable-quote">'</code><code class="variable-op">: </code>12<code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">BCEA</code><code class="variable-quote">'</code><code class="variable-op">: </code>98<code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">CEA</code><code class="variable-quote">'</code><code class="variable-op">: </code>97<code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">EQRECT</code><code class="variable-quote">'</code><code class="variable-op">: </code>17<code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">EQUIDC</code><code class="variable-quote">'</code><code class="variable-op">: </code>8<code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">GEO</code><code class="variable-quote">'</code><code class="variable-op">: </code>0<code class="variable-op">,</code>
-<code class="variable-ellipsis">...</code>
-</pre></td></tr></table>
-</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="GCTP_ELLIPSOIDS"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <h3 class="epydoc">GCTP_ELLIPSOIDS</h3>
-  <p>USGS ellipsoid codes ported from ogr_srs_usgs.cpp</p>
-  <dl class="fields">
-  </dl>
-  <dl class="fields">
-    <dt>Value:</dt>
-      <dd><table><tr><td><pre class="variable">
-<code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">AIRY  </code><code class="variable-quote">'</code><code class="variable-op">: </code>9<code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">AUSTRALIAN_NATIONAL</code><code class="variable-quote">'</code><code class="variable-op">: </code>14<code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">BESSEL</code><code class="variable-quote">'</code><code class="variable-op">: </code>2<code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">CLARKE1866</code><code class="variable-quote">'</code><code class="variable-op">: </code>0<code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">CLARKE1880</code><code class="variable-quote">'</code><code class="variable-op">: </code>1<code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">EVEREST</code><code class="variable-quote">'</code><code class="variable-op">: </code>6<code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">GRS1980</code><code class="variable-quote">'</code><code class="variable-op">: </code>8<code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">GRS80</code><code class="variable-quote">'</code><code class="variable-op">: </code>8<code class="variable-op">,</code>
 <code class="variable-ellipsis">...</code>
 </pre></td></tr></table>
 </dd>
@@ -416,14 +267,14 @@
       <th class="navbar" align="right" width="100%">
         <table border="0" cellpadding="0" cellspacing="0">
           <tr><th class="navbar" align="center"
-            >MetaGETA (Metadata Gathering, Extraction and Transformation)</th>
+            >Metadata Crawler</th>
           </tr></table></th>
   </tr>
 </table>
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Jan 22 11:40:48 2010
+    Generated by Epydoc 3.0.1 on Wed Aug 12 09:47:08 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

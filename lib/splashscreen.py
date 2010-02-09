@@ -1,50 +1,26 @@
-# Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
-
 '''
-Splashscreen for startup
-========================
-Pop up a splashscreen on startup
-
 This is the beginnings of a splash screen cos the GUI's in runcrawler.py and runtransforms.py take sooo long to start up...
-No, they don't take long at all to load when run from C:\ drive. They take ages when the app is run from a network drive
+===========================================================================================================================
 
 Modified from Activestate Recipe 534124: Elegant Tkinter Splash Screen U{http://code.activestate.com/recipes/534124} 
 by Luke Pinner (ERIN) to support threading & callback functions.
 
 '''
-
 import threading,os
-#from Tkinter import *
-import Tkinter
+from Tkinter import *
 class SplashScreen(threading.Thread):
     def __init__(self, imagefile=None, imagedata=None, timeout=0.001, callback=lambda:True):
     
-        if not imagefile and not imagedata:raise Exception,'Image file name or base 64 encoded image data required!'
+        if not imagefile and not imagedata:#raise Exception,'Image file name or base 64 encoded image data required!'
+            #imagefile=__file__[:-3]+'.gif' - this don't work cos __file__ might .pyc or .pyo not .py
+            imagefile=os.path.splitext(__file__)[0]+'.gif'
         if not timeout   and not callback: raise Exception,'Timeout (secs) or boolean callback function required!'
 
-        self._root              = Tkinter.Tk()
+        self._root              = Tk()
         self._splash            = None
 
-        if imagefile:self._image = Tkinter.PhotoImage(file=imagefile)
-        elif imagedata:self._image = Tkinter.PhotoImage(file=imagedata)
+        if imagefile:self._image = PhotoImage(file=imagefile)
+        else:        self._image = PhotoImage(data=imagedata)
         self._timeout  = timeout
         self._callback = callback
 
@@ -66,7 +42,7 @@ class SplashScreen(threading.Thread):
 
         self._root.overrideredirect(1)
         self._root.geometry('+%d+%d' % (imgXPos, imgYPos))
-        Tkinter.Label(self._root, image=self._image, cursor='watch').pack()
+        Label(self._root, image=self._image, cursor='watch').pack()
 
         # Force Tk to draw the splash screen outside of mainloop()
         #self._splash.update()

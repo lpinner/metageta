@@ -31,7 +31,7 @@
       <th class="navbar" align="right" width="100%">
         <table border="0" cellpadding="0" cellspacing="0">
           <tr><th class="navbar" align="center"
-            >MetaGETA (Metadata Gathering, Extraction and Transformation)</th>
+            >Metadata Crawler</th>
           </tr></table></th>
   </tr>
 </table>
@@ -58,38 +58,27 @@
 </table>
 <!-- ==================== MODULE DESCRIPTION ==================== -->
 <h1 class="epydoc">Module alos</h1><p class="nomargin-top"><span class="codelink"><a href="formats.alos-pysrc.html">source&nbsp;code</a></span></p>
-<p>Metadata driver for ACRES ALOS AVNIR-2/PRISM/PALSAR imagery</p>
-  <p><b>Supports</b>:</p>
-  <ul>
-    <li>
-      ALOS AVNIR2/PRISM
-    </li>
-    <li>
-      ALOS PALSAR (Level 1.5 only, Level 1.0 not (yet?) implemented)
-    </li>
-  </ul>
-  <p><b>Format specifications</b>:</p>
-  <ul>
-    <li>
-      PALSAR Level 1.0: <a 
-      href="http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10287"
-      
-      target="_top">http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10287</a>
-    </li>
-    <li>
-      PALSAR Level 1.1/1.5: <a 
-      href="http://www.eorc.jaxa.jp/ALOS/doc/fdata/PALSAR_x_Format_EK.pdf" 
-      target="_top">http://www.eorc.jaxa.jp/ALOS/doc/fdata/PALSAR_x_Format_EK.pdf</a>
-    </li>
-    <li>
-      ALOS AVNIR2/PRISM: <a 
-      href="http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10285"
-      
-      target="_top">http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10285</a>
-    </li>
-  </ul>
+<h1 class="heading">Metadata driver for ACRES ALOS AVNIR-2/PRISM/PALSAR imagery</h1>
+    <p>Supports: ALOS AVNIR2/PRISM PALSAR (Level 1.5 only, Level 1.0 not 
+    (yet?) implemented)</p>
 
-<!-- ==================== CLASSES ==================== -->
+<hr />
+<div class="fields">      <p><strong>See Also:</strong>
+        Format specifications
+        <p>PALSAR Level 1.0: <a 
+        href="http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10287"
+        
+        target="_top">http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10287</a></p>
+        <p>PALSAR Level 1.1/1.5: <a 
+        href="http://www.eorc.jaxa.jp/ALOS/doc/fdata/PALSAR_x_Format_EK.pdf"
+        
+        target="_top">http://www.eorc.jaxa.jp/ALOS/doc/fdata/PALSAR_x_Format_EK.pdf</a></p>
+        <p>ALOS AVNIR2/PRISM: <a 
+        href="http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10285"
+        
+        target="_top">http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10285</a></p>
+      </p>
+</div><!-- ==================== CLASSES ==================== -->
 <a name="section-Classes"></a>
 <table class="summary" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
@@ -136,7 +125,9 @@
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="formats.alos-module.html#format_regex" class="summary-name">format_regex</a> = <code title="['LED-ALAV.*_U$', 'LED-ALPSR.*UD$', 'LED-ALPSM.*\\_U[BFN]$']"><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">LED-ALAV.*_U$</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">LED-ALPSR.*UD$</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">LED-ALPSM.</code><code class="variable-ellipsis">...</code></code><br />
+        <a href="formats.alos-module.html#format_regex" class="summary-name">format_regex</a> = <code title="['IMG-[0-9]*-ALAV.*_U$',
+ 'IMG-[HV][HV]-ALPSR.*UD$',
+ 'IMG-ALPSM.*\\_U[BFN]$']"><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">IMG-[0-9]*-ALAV.*_U$</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">IMG-[HV][HV]-ALPSR.*U</code><code class="variable-ellipsis">...</code></code><br />
       Regular expression list of file formats
     </td>
   </tr>
@@ -171,7 +162,9 @@
   <dl class="fields">
     <dt>Value:</dt>
       <dd><table><tr><td><pre class="variable">
-<code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">LED-ALAV.*_U$</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">LED-ALPSR.*UD$</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">LED-ALPSM.*\\_U[BFN]$</code><code class="variable-quote">'</code><code class="variable-group">]</code>
+<code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">IMG-[0-9]*-ALAV.*_U$</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">IMG-[HV][HV]-ALPSR.*UD$</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">IMG-ALPSM.*\\_U[BFN]$</code><code class="variable-quote">'</code><code class="variable-group">]</code>
 </pre></td></tr></table>
 </dd>
   </dl>
@@ -199,14 +192,14 @@
       <th class="navbar" align="right" width="100%">
         <table border="0" cellpadding="0" cellspacing="0">
           <tr><th class="navbar" align="center"
-            >MetaGETA (Metadata Gathering, Extraction and Transformation)</th>
+            >Metadata Crawler</th>
           </tr></table></th>
   </tr>
 </table>
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Jan 22 11:40:47 2010
+    Generated by Epydoc 3.0.1 on Wed Aug 12 09:47:08 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

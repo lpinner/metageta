@@ -1,32 +1,13 @@
-# Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
-
 '''
 Metadata driver for ACRES Landsat CCRS/SPOT 1-4 imagery
-
-B{Format specification}:    
-    - U{http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10349}
+=======================================================
+@see:Format specification
+    
+    U{http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10349}
 '''
 
+#Regular expression list of file formats
 format_regex=[r'imag_[0-9]*\.dat$']#Landsat 5/SPOT 1-4 CCRS
-'''Regular expression list of file formats'''
 
 #import base dataset module
 import __dataset__
@@ -46,38 +27,16 @@ except ImportError:
     import gdalconst
     import osr
     import ogr
-gdal.AllRegister()
-
+    
 class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
-    def __init__(self,f=None):
-        '''Open the dataset'''
-        if not f:f=self.fileinfo['filepath']
-        self.filelist=[r for r in utilities.rglob(os.path.dirname(f))] #everything in this dir and below.
+    def __init__(self,f):
+        '''Read georeferencing information for a ACRES Landsat CCRS/SPOT 1-4 format image as GDAL doesn't
+        Format description: http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10349'''
+        gdalDataset = geometry.OpenDataset(f)
 
-        led=glob.glob(os.path.dirname(f) + '/[Ll][Ee][Aa][Dd]*')[0] #volume file
-
-        meta = open(led,'rb').read()
-
-        '''
-        metadata has 4 records, each is 4320 (LS) or 6120 (SPOT) bytes long:
-        File descriptor record;
-        Scene header record;
-        Map projection (scene-related) ancillary record;
-        Radiometric transformation ancillary record.
-        '''
-
-        #Record 2 - Scene header record
-        record=2
-        recordlength=4320 #LS 5
-        satellite=utilities.readbinary(meta,(record-1)*recordlength,309,324)
-        if not satellite[0:7] == 'LANDSAT':
-            raise NotImplementedError #This error gets ignored in __init__.Open()
-    def __getmetadata__(self,f=None):
-        '''Populate the metadata'''
-        if not f:f=self.fileinfo['filepath']
-        self._gdaldataset = geometry.OpenDataset(f)
-
-        led=glob.glob(os.path.dirname(f) + '/[Ll][Ee][Aa][Dd]*')[0] #volume file
+        p=re.compile(r'\\imag_*', re.I)
+        led=p.sub(r'\\lead_',f)
+        filelist=[r for r in utilities.rglob(os.path.dirname(f))]
 
         meta = open(led,'rb').read()
 
@@ -93,7 +52,12 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
         record=2
         recordlength=4320 #LS 5
         satellite=utilities.readbinary(meta,(record-1)*recordlength,309,324)
-            
+        if not satellite == 'LANDSAT-5':
+            recordlength=6120 #SPOT recordlength=6120
+            satellite=utilities.readbinary(meta,(record-1)*recordlength,309,324)
+            if not satellite[0:4] == 'SPOT':
+                raise IOError, 'Unable to process '+f+'\nUnknown CEOS file'
+
         #Scene ID, path/row & image date/time
         start,stop=37,52
         sceneid=utilities.readbinary(meta,(record-1)*recordlength,start,stop)
@@ -120,13 +84,12 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
         actbands=utilities.readbinary(meta,(record-1)*recordlength,start,stop)
         for i in range(0,7): #Loop thru the 7 LS 5 bands
             if actbands[i]=='1':bands.append(str(i+1))
-            self._gdaldataset.GetRasterBand(i+1).SetNoDataValue(0)
         
         #Record 3 - Map projection (scene-related) ancillary record
         record=3
 
         #Bands, rows & columns and rotation
-        nbands = int(self._gdaldataset.RasterCount)
+        nbands = int(gdalDataset.RasterCount)
         start,stop=333,348
         ncols=float(utilities.readbinary(meta,(record-1)*recordlength,start,stop))
         start,stop=349,364
@@ -200,7 +163,8 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
         else:
             self.metadata['sensor']='HRV'
             self.metadata['filetype'] ='CEOS/SPOT CCRS Format'
-        self.metadata['filesize']=sum([os.path.getsize(file) for file in self.filelist])
+        self.metadata['filesize']=sum([os.path.getsize(file) for file in filelist])
+        self.metadata['filelist']=','.join(utilities.fixSeparators(filelist))
         self.metadata['srs'] = srs
         self.metadata['epsg'] = epsg
         self.metadata['units'] = units
@@ -216,7 +180,7 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
         self.metadata['UR']='%s,%s' % tuple(ext[1])
         self.metadata['LR']='%s,%s' % tuple(ext[2])
         self.metadata['LL']='%s,%s' % tuple(ext[3])
-        metadata=self._gdaldataset.GetMetadata()
+        metadata=gdalDataset.GetMetadata()
         self.metadata['metadata']='\n'.join(['%s: %s' %(m,hdf_self.metadata[m]) for m in metadata])
         self.metadata['compressionratio']=0
         self.metadata['compressiontype']='None'

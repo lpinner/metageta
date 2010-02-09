@@ -1,5 +1,4 @@
 @echo off
-PUSHD %~DP0
 call setenv.bat
 
 call python.exe runtransform.py %*

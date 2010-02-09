@@ -1,38 +1,14 @@
-# Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
-
 '''
 Metadata driver for Digital Globe Quickbird imagery
-
-B{Format specification}:
-    - U{http://www.digitalglobe.com/digitalglobe2/file.php/646/QuickBird_Imagery_Products-Product_Guide.pdf}
+===================================================
+@see:Format specification
+    U{http://www.digitalglobe.com/digitalglobe2/file.php/646/QuickBird_Imagery_Products-Product_Guide.pdf}
 '''
-
-format_regex=[r'[0-9][0-9][A-Z]{3,3}.*\.imd$',
-              r'[0-9][0-9][A-Z]{3,3}.*\.tif$',
-              r'[0-9][0-9][A-Z]{3,3}.*\.img$',
-              r'[0-9][0-9][A-Z]{3,3}.*\.ntf$']#Digital Globe Quickbird
+format_regex=[r'[0-9][0-9][A-Z]{3,3}.*\.imd$']#Digital Globe Quickbird
 '''Regular expression list of file formats'''
 
 #import base dataset modules
-import __dataset__
+#import __dataset__
 import __default__
 
 # import other modules (use "_"  prefix to import privately)
@@ -50,38 +26,30 @@ except ImportError:
     import gdalconst
     import osr
     import ogr
-gdal.AllRegister()
-
+    
 class Dataset(__default__.Dataset): 
     '''Subclass of __default__.Dataset class so we get a load of metadata populated automatically'''
     def __init__(self,f):
         self.filelist=glob.glob(os.path.dirname(f)+'/*')
-        if os.path.splitext(f)[1].lower() !='imd':
-            imd=glob.glob(os.path.splitext(f)[0]+'.[Ii][Mm][Dd]')
-            if imd:
-                self.__setfileinfo__(imd[0])
-            else:raise Exception, 'No matching IMD file'
 
     def __getmetadata__(self):
         '''Read Metadata for an Digital Globe Quickbird format image as GDAL doesn't quite get it all...
 
+        @todo: does not handle QB tile files (*til). Must check if GDAL can read them...?
         @todo: Fix QB GDA94 Geographic CS "Unknown datum" problem
         '''
         f=self.fileinfo['filepath']
         imddata=self.__getimddata__(f)
         
-        btif,tif = utilities.exists(os.path.splitext(f)[0]+'.tif',True)
-        bimg,img = utilities.exists(os.path.splitext(f)[0]+'.img',True)
-        bntf,ntf = utilities.exists(os.path.splitext(f)[0]+'.ntf',True)
-        btil,til = utilities.exists(os.path.splitext(f)[0]+'.til',True)
+        tif = os.path.splitext(f)[0]+'.tif'
+        img = os.path.splitext(f)[0]+'.img'
+        til = os.path.splitext(f)[0]+'.til'
 
-        if   btif:
+        if   os.path.exists(tif):
             __default__.Dataset.__getmetadata__(self, tif)
-        elif bimg:
+        elif os.path.exists(img):
             __default__.Dataset.__getmetadata__(self, img)
-        elif bntf:
-            __default__.Dataset.__getmetadata__(self, ntf)
-        elif btil:
+        elif os.path.exists(til):
             vrt=self.__gettilevrt__(til,imddata)
             __default__.Dataset.__getmetadata__(self, vrt)
             for tmp in self.filelist:
@@ -91,10 +59,7 @@ class Dataset(__default__.Dataset):
                 elif tmp[-3:].lower()=='img':
                     self.metadata['filetype']='HFA/Erdas Imagine Images (.img)'
                     break
-                elif tmp[-3:].lower()=='ntf':
-                    self.metadata['filetype']='NITF/National Imagery Transmission Format (.ntf)'
-                    break
-        else:raise IOError, 'Matching Quickbird imagery TIFF/IMG/NTF not found:\n'
+        else:raise IOError, 'Matching Quickbird imagery TIFF/IMG not found:\n'
 
         self.metadata['metadata']=open(f).read()
 
@@ -162,8 +127,7 @@ class Dataset(__default__.Dataset):
                 tileinfo[var[0]]=var[1]
             line=til.next()
         curdir=os.path.dirname(f)
-        bimg,img=utilities.exists(os.path.join(curdir,datasets['filename'][0]),True)
-        ds=geometry.OpenDataset(img)
+        ds=geometry.OpenDataset(os.path.join(curdir,datasets['filename'][0]))
         rb=ds.GetRasterBand(1)
         DataType=gdal.GetDataTypeName(rb.DataType)
         GeoTransform=','.join(map(str, ds.GetGeoTransform()))
@@ -185,9 +149,8 @@ class Dataset(__default__.Dataset):
                 tileSizeY=int(datasets['LLRowOffset'][tile])-int(datasets['ULRowOffset'][tile])+1
                 ULColOffset=datasets['ULColOffset'][tile]
                 ULRowOffset=datasets['ULRowOffset'][tile]
-                bimg,img=utilities.exists(os.path.join(curdir,datasets['filename'][tile]),True)
                 vrtXML.append('  <SimpleSource>')
-                vrtXML.append('   <SourceFilename  relativeToVRT="0">%s</SourceFilename>' % img)
+                vrtXML.append('   <SourceFilename  relativeToVRT="0">%s</SourceFilename>' % os.path.join(curdir,datasets['filename'][tile]))
                 vrtXML.append('   <SourceBand>%s</SourceBand>' % (b))
                 vrtXML.append('   <SourceProperties RasterXSize="%s" RasterYSize="%s" DataType="%s"/>'%(tileSizeX,tileSizeY,DataType))# BlockXSize="%s" BlockYSize="%s"/>'(tileSizeX,tileSizeY,DataType,BlockXSize,BlockYSize))
                 vrtXML.append('   <SrcRect xOff="0" yOff="0" xSize="%s" ySize="%s"/>' %(tileSizeX,tileSizeY))
@@ -243,13 +206,12 @@ class Dataset(__default__.Dataset):
         '''
         Generate overviews for Quickbird imagery
 
-        @type  outfile: str
+        @type  outfile: string
         @param outfile: a filepath to the output overview image. If supplied, format is determined from the file extension
-        @type  width:   int
+        @type  width:   integer
         @param width:   image width
-        @type  format:  str
+        @type  format:  string
         @param format:  format to generate overview image, one of ['JPG','PNG','GIF','BMP','TIF']. Not required if outfile is supplied.
-        @rtype:         str
         @return:        filepath (if outfile is supplied)/binary image data (if outfile is not supplied)
         '''
         import overviews
@@ -259,15 +221,11 @@ class Dataset(__default__.Dataset):
         browse=os.path.splitext(f)[0]+'-browse.jpg'
         if os.path.exists(browse):
 
-            try:ds=geometry.OpenDataset(browse)
-            except:return __default__.Dataset.getoverview(self,outfile,width,format) #Try it the slow way...
-            #if not ds:return __default__.Dataset.getoverview(self,outfile,width,format) #geometry.OpenDataset raises an error now
+            ds=geometry.OpenDataset(browse)
+            if not ds:return __default__.Dataset.getoverview(self,outfile,width,format) #Try it the slow way...
 
             nodata=0
-            if ds.RasterCount == 1:
-                bands=[1]
-            else:
-                bands=[1,2,3]
+            bands=[1,2,3]
 
             #Default stretch type and additional args
             stretch_type='NONE'

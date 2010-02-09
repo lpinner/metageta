@@ -1,29 +1,7 @@
-# Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
-
 '''
 Base Dataset class
 ==================
 Defines the metadata fields and populates some basic info
-
-@todo: implement ESRI PGDB rasters (depends on GDAL)
 '''
 
 import os,time,sys,glob,time,math
@@ -43,30 +21,27 @@ except ImportError:
     import gdalconst
     import osr
     import ogr
-gdal.AllRegister()
-
 class Dataset(object):
     '''A base Dataset class'''
     def __new__(self,f):
         ##Initialise the class object
         self=object.__new__(self)
         
-        #Little kludge to avoid ESRI PGDB rasters for now
-        d=os.path.abspath(os.path.dirname(f))
-        if d[-4:].lower() == '.gdb': raise Exception, 'Unable to open rasters stored in an ESRI PGDB %s'%f
-        
         self._gdaldataset=None
         self._metadata={}
         self._extent=[]
         self._filelist=[]
         self._stretch=None
-        ''' self._stretch allows subclasses to control overview generation somewhat
-            self._stretch = (stretch_type,rgb_bands,stretch_args)
-            See L{overviews.getoverview} for appropriate values.
-        '''
         
         ##Populate some basic info
-        self.__setfileinfo__(f)
+        self.fileinfo=utilities.FileInfo(f)
+        #self.guid=str(uuid.uuid4())
+        #Make the guid reproducible based on filename
+        self.guid=str(uuid.uuid3(uuid.NAMESPACE_DNS,f))
+        self.fileinfo['filename']=os.path.basename(f)
+        self.fileinfo['filepath']=f
+        self.fileinfo['guid']=self.guid
+        self.fileinfo['metadatadate']=time.strftime(utilities.dateformat+utilities.timeformat,time.localtime())
 
         ##Initialise the fields
         self.fields=idict(__fields__.fields)#We don't want any fields added/deleted
@@ -76,17 +51,15 @@ class Dataset(object):
     # ==================== #
     # Public Class Methods
     # ==================== #
+    #def getoverview(self,*args,**kwargs):
+    #    '''In case subclasses don't override...'''
+    #    pass
     def getoverview(self,outfile=None,width=800,format='JPG'): 
         '''
         Generate overviews for generic imagery
-        
-        @requires:exposing a gdal.Dataset object as self._gdaldataset
-        
-        @note: There are a number of ways of controlling the generation of overview images:
-            - Overriding this class method and writing your own.
-            - Setting self._stretch to the appropriate (stretch_type,rgb_bands,stretch_args) values. See L{overviews.getoverview}.
-            - Customising self._gdaldataset using a VRT, for example: setting red, green and blue color interpretations for selected bands
-        
+
+        Override this class if you like, otherwise simply expose a GDALDataset object as self._gdaldataset_
+
         @type  outfile: string
         @param outfile: a filepath to the output overview image. If supplied, format is determined from the file extension
         @type  width:   integer
@@ -109,57 +82,39 @@ class Dataset(object):
         ##cols=md['cols']
         ##rows=md['rows']
         ##nbits=md['nbits']
-        rb=ds.GetRasterBand(1)
         nbands=ds.RasterCount
         cols=ds.RasterXSize
         rows=ds.RasterYSize
-        nbits=gdal.GetDataTypeSize(rb.DataType)
-        datatype=gdal.GetDataTypeName(rb.DataType)
-        nodata=rb.GetNoDataValue()
+        nbits=gdal.GetDataTypeSize(ds.GetRasterBand(1).DataType)
+
         stretch_type=None
         stretch_args=None
         rgb_bands = {}
 
         #Check for pre-defined stretch
         if self._stretch:
-            stretch_type,rgb_bands,stretch_args=self._stretch
-        else:
-            #Check for pre-defined rgb bands, assume they don't need stretching
-            for i in range(1,nbands+1):
-                gci=ds.GetRasterBand(i).GetRasterColorInterpretation()
-                if   gci == gdal.GCI_RedBand:
-                    rgb_bands[0]=i
-                elif gci == gdal.GCI_GreenBand:
-                    rgb_bands[1]=i
-                elif gci == gdal.GCI_BlueBand:
-                    rgb_bands[2]=i
-                if len(rgb_bands)==3:
-                    rgb_bands=rgb_bands[0],rgb_bands[1],rgb_bands[2] #Make a list from the dict
-                    stretch_type='NONE'
-                    stretch_args=[]
+            stretch_type,stretch_args=self._stretch
+
+        #Check for pre-defined rgb bands
+        for i in range(1,nbands+1):
+            gci=ds.GetRasterBand(i).GetRasterColorInterpretation()
+            if   gci == gdal.GCI_RedBand:
+                rgb_bands[0]=i
+            elif gci == gdal.GCI_GreenBand:
+                rgb_bands[1]=i
+            elif gci == gdal.GCI_BlueBand:
+                rgb_bands[2]=i
+            if len(rgb_bands)==3:
+                rgb_bands=rgb_bands[0],rgb_bands[1],rgb_bands[2]
+                break
 
         #Set some defaults
-        if stretch_type is None or stretch_args is None:
+        if not stretch_type and not stretch_args:
             if nbands < 3:
-                #Default - assume greyscale 
+                #Assume greyscale
                 stretch_type='PERCENT'
                 stretch_args=[2,98]
                 rgb_bands=[1]
-                #But check if there's an attribute table or color table
-                #and change the stretch type to colour table
-                if datatype in ['Byte', 'Int16', 'UInt16']:
-                    ct=rb.GetColorTable()
-                    at=rb.GetDefaultRAT()
-                    if ct and ct.GetCount() > 0:
-                        stretch_type='COLOURTABLE'
-                        stretch_args=[]
-                    elif at and at.GetRowCount() > 0:
-                        #if at.GetRowCount() <=256:
-                        #    stretch_type='RANDOM'
-                        #    stretch_args=[]
-                        stretch_type='RANDOM'
-                        stretch_args=[]
-                        
             elif nbands == 3:
                 #Assume RGB
                 if nbits > 8:
@@ -175,25 +130,15 @@ class Dataset(object):
                 #stretch_type='STDDEV'
                 #stretch_args=[2]
                 if len(rgb_bands) < 3:rgb_bands=[3,2,1]
-        if not rgb_bands:rgb_bands=[1]
+
         return overviews.getoverview(ds,outfile,width,format,rgb_bands,stretch_type,*stretch_args)
 
     # ===================== #
     # Private Class Methods
     # ===================== #
-    def __setfileinfo__(self,f):
-        self.fileinfo=utilities.FileInfo(f)
-        #self.guid=str(uuid.uuid4())
-        #Make the guid reproducible based on filename
-        self.guid=str(uuid.uuid3(uuid.NAMESPACE_DNS,f))
-        self.fileinfo['filename']=os.path.basename(f)
-        self.fileinfo['filepath']=f
-        self.fileinfo['guid']=self.guid
-        #self.fileinfo['metadatadate']=time.strftime(utilities.datetimeformat,time.localtime()) #Geonetwork is baulking at the yyy-mm-ddThh:mm:ss format
-        self.fileinfo['metadatadate']=time.strftime(utilities.dateformat,time.localtime())  #Just use yyy-mm-dd
     def __getfilelist__(self,*args,**kwargs):
-        '''Get all files that have the same name (sans .ext), or are related according to gdalinfo.
-            Special cases may be handled separately in their respective format drivers.'''
+        '''Get all files that have the same name (sans .ext), or are related according to gdalinfo
+            special cases may be handled separately in their respective format drivers'''
         f=self.fileinfo['filepath']
         files=[]
         try:
@@ -205,8 +150,7 @@ class Dataset(object):
         except:pass # Need to handle errors when dealing with an VRT XML string better...
 
         if self._gdaldataset:
-            #try:files.extend(self._gdaldataset.GetFileList()) #GetFileList can return files that don't exist... - e.g. the aux.xml in a read-only directory
-            try:files.extend([os.path.abspath(f) for f in self._gdaldataset.GetFileList() if os.path.exists(f)])
+            try:files.extend(self._gdaldataset.GetFileList())
             except:pass
 
         self._filelist=list(set(utilities.fixSeparators(files))) #list(set([])) filters out duplicates
@@ -239,12 +183,6 @@ class Dataset(object):
                     else:self._metadata[field]=''
                 self._metadata=idict(self._metadata) #We don't want any fields added/deleted
                 self.__getmetadata__()
-                #Pretty print the SRS
-                srs=osr.SpatialReference(self._metadata['srs'])
-                self._metadata['srs']=srs.ExportToPrettyWkt()
-                if self._metadata['compressionratio'] > 10000: #Possibly a dodgy JP2 that will grash GDAL and therefore python...
-                    raise IOError, 'Unable to extract metadata from %s\nFile may be corrupt' % self.fileinfo['filepath']
-
             return self._metadata
 
         def fset(self, *args, **kwargs):
@@ -288,8 +226,8 @@ class Dataset(object):
         return locals()
 
 class idict(UserDict.IterableUserDict):
-    '''An immutable dictionary.
-       Modified from http://code.activestate.com/recipes/498072/
+    '''The idict class. An immutable dictionary.
+       modified from http://code.activestate.com/recipes/498072/
        to inherit UserDict.IterableUserDict
     '''
     def __setitem__(self, key, val):

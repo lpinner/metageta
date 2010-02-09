@@ -55,38 +55,15 @@
       <gmd:characterSet>
         <gmd:MD_CharacterSetCode codeList="http://asdd.ga.gov.au/asdd/profileinfo/gmxCodelists.xml#MD_CharacterSetCode" codeListValue="utf8">utf8</gmd:MD_CharacterSetCode>
       </gmd:characterSet>
-      <xsl:if test="normalize-space(parentIdentifier)">
-        <gmd:parentIdentifier>
-          <gco:CharacterString><xsl:value-of select="parentIdentifier"/></gco:CharacterString>
-        </gmd:parentIdentifier>
-      </xsl:if>
-      <xsl:choose>
-          <xsl:when test="normalize-space(hierarchyLevel)">
-        <gmd:CI_RoleCode>
-          <xsl:attribute name="codeList">http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode</xsl:attribute>
-          <xsl:attribute name="codeListValue"><xsl:value-of select="$contact"/></xsl:attribute>
-          <xsl:value-of select="$contact"/>
-        </gmd:CI_RoleCode>
-            <gmd:hierarchyLevel>
-              <gmd:MD_ScopeCode>
-                <xsl:attribute name="codeList">http://asdd.ga.gov.au/asdd/profileinfo/GAScopeCodeList.xml#MD_ScopeCode</xsl:attribute>
-                <xsl:attribute name="codeListValue"><xsl:value-of select="$hierarchyLevel"/></xsl:attribute>
-                <xsl:value-of select="$hierarchyLevel"/>
-              </gmd:MD_ScopeCode>
-            </gmd:hierarchyLevel>
-            <gmd:hierarchyLevelName>
-              <gco:CharacterString><xsl:value-of select="$hierarchyLevel"/></gco:CharacterString>
-            </gmd:hierarchyLevelName>
-          </xsl:when>
-          <xsl:otherwise>
-            <gmd:hierarchyLevel>
-              <gmd:MD_ScopeCode codeList="http://asdd.ga.gov.au/asdd/profileinfo/GAScopeCodeList.xml#MD_ScopeCode" codeListValue="dataset">dataset</gmd:MD_ScopeCode>
-            </gmd:hierarchyLevel>
-            <gmd:hierarchyLevelName>
-              <gco:CharacterString>dataset</gco:CharacterString>
-            </gmd:hierarchyLevelName>
-          </xsl:otherwise>
-      </xsl:choose>
+      <!--gmd:parentIdentifier gco:nilReason="missing">
+          <gco:CharacterString/>
+      </gmd:parentIdentifier-->
+      <gmd:hierarchyLevel>
+        <gmd:MD_ScopeCode codeList="http://asdd.ga.gov.au/asdd/profileinfo/GAScopeCodeList.xml#MD_ScopeCode" codeListValue="dataset">dataset</gmd:MD_ScopeCode>
+      </gmd:hierarchyLevel>
+      <gmd:hierarchyLevelName>
+        <gco:CharacterString>dataset</gco:CharacterString>
+      </gmd:hierarchyLevelName>
       <gmd:contact>
         <xsl:call-template name="default_contact">
           <xsl:with-param name="contact" select="'publisher'"/>
@@ -114,23 +91,23 @@
       <xsl:call-template name="distributionInfo"/>
       <xsl:call-template name="dataQualityInfo">
         <xsl:with-param name="DQ_Type">lineage</xsl:with-param>
-        <xsl:with-param name="DQ_Value" select="lineage"/>
+        <xsl:with-param name="DQ_Value" select="''"/>
       </xsl:call-template>
       <xsl:call-template name="dataQualityInfo">
         <xsl:with-param name="DQ_Type">CompletenessOmission</xsl:with-param>
-        <xsl:with-param name="DQ_Value" select="CompletenessOmission"/>
+        <xsl:with-param name="DQ_Value">COMPLETENESS</xsl:with-param>
       </xsl:call-template>
       <xsl:call-template name="dataQualityInfo">
         <xsl:with-param name="DQ_Type">AbsoluteExternalPositionalAccuracy</xsl:with-param>
-        <xsl:with-param name="DQ_Value" select="AbsoluteExternalPositionalAccuracy"/>
+        <xsl:with-param name="DQ_Value">POSITIONAL ACCURACY</xsl:with-param>
       </xsl:call-template>
       <xsl:call-template name="dataQualityInfo">
         <xsl:with-param name="DQ_Type">ConceptualConsistency</xsl:with-param>
-        <xsl:with-param name="DQ_Value" select="ConceptualConsistency"/>
+        <xsl:with-param name="DQ_Value">LOGICAL CONSISTENCY</xsl:with-param>
       </xsl:call-template>
       <xsl:call-template name="dataQualityInfo">
         <xsl:with-param name="DQ_Type">NonQuantitativeAttributeAccuracy</xsl:with-param>
-        <xsl:with-param name="DQ_Value" select="NonQuantitativeAttributeAccuracy"/>
+        <xsl:with-param name="DQ_Value">ATTRIBUTE ACCURACY</xsl:with-param>
       </xsl:call-template>
       <xsl:call-template name="metadataConstraints"/>
     </gmd:MD_Metadata>
@@ -142,13 +119,9 @@
   <xsl:template name="contact">
     <gmd:pointOfContact>
       <xsl:choose>
-        <xsl:when test="normalize-space(custodian)">
-          <xsl:variable name="other_contacts"> <!-- Test for any other contacts-->
-            <!-- http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode -->
-            <xsl:element name="custodian"><xsl:value-of select="custodian"/></xsl:element>
-          </xsl:variable>
+        <xsl:when test="custodian">
           <xsl:call-template name="other_contact">
-            <xsl:with-param name="contactinfo" select="exsl:node-set($other_contacts)/*"/>
+            <xsl:with-param name="contact" select="custodian"/>
           </xsl:call-template>
         </xsl:when>
         <xsl:otherwise>
@@ -157,18 +130,18 @@
       </xsl:choose>
     </gmd:pointOfContact><!--/gmd:pointOfContact-->
     <xsl:variable name="other_contacts"> <!-- Test for any other contacts-->
-      <!-- http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode -->
-      <xsl:element name="creator"><xsl:value-of select="creator"/></xsl:element>
-      <xsl:element name="owner"><xsl:value-of select="owner"/></xsl:element>
-      <xsl:element name="user"><xsl:value-of select="user"/></xsl:element>
-      <xsl:element name="resourceProvider"><xsl:value-of select="resourceProvider"/></xsl:element>
-      <xsl:element name="distributor"><xsl:value-of select="distributor"/></xsl:element>
-      <xsl:element name="originator"><xsl:value-of select="originator"/></xsl:element>
-      <xsl:element name="publisher"><xsl:value-of select="publisher"/></xsl:element>
-      <xsl:element name="pointOfContact"><xsl:value-of select="pointOfContact"/></xsl:element>
-      <xsl:element name="principalInvestigator"><xsl:value-of select="principalInvestigator"/></xsl:element>
-      <xsl:element name="processor"><xsl:value-of select="processor"/></xsl:element>
-      <xsl:element name="author"><xsl:value-of select="author"/></xsl:element>
+        <!-- http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_RoleCode -->
+        <xsl:element name="creator"><xsl:value-of select="creator"/></xsl:element>
+        <xsl:element name="owner"><xsl:value-of select="owner"/></xsl:element>
+        <xsl:element name="user"><xsl:value-of select="user"/></xsl:element>
+        <xsl:element name="resourceProvider"><xsl:value-of select="resourceProvider"/></xsl:element>
+        <xsl:element name="distributor"><xsl:value-of select="distributor"/></xsl:element>
+        <xsl:element name="originator"><xsl:value-of select="originator"/></xsl:element>
+        <xsl:element name="publisher"><xsl:value-of select="publisher"/></xsl:element>
+        <xsl:element name="pointOfContact"><xsl:value-of select="pointOfContact"/></xsl:element>
+        <xsl:element name="principalInvestigator"><xsl:value-of select="principalInvestigator"/></xsl:element>
+        <xsl:element name="processor"><xsl:value-of select="processor"/></xsl:element>
+        <xsl:element name="author"><xsl:value-of select="author"/></xsl:element>
     </xsl:variable>
     <xsl:for-each select="exsl:node-set($other_contacts)/*">
       <xsl:if test="normalize-space(.)">
@@ -374,12 +347,10 @@
                 <gco:CharacterString>
                   <xsl:choose>
                   <xsl:when test="not(normalize-space(epsg))">
-                    <!--xsl:value-of select="srs"/-->
-                    <xsl:value-of select="str:replaceNewLine(srs)"/>
+                    <xsl:value-of select="srs"/>
                   </xsl:when>
                   <xsl:when test="normalize-space(epsg) = '0'">
-                    <!--xsl:value-of select="srs"/-->
-                    <xsl:value-of select="str:replaceNewLine(srs)"/>
+                    <xsl:value-of select="srs"/>
                   </xsl:when>
                   <xsl:otherwise>
                     <xsl:value-of select="round(epsg)"/>
@@ -454,8 +425,7 @@
             <gco:CharacterString>
               <xsl:choose>
                 <xsl:when test="abstract">
-                  <!--xsl:value-of select="normalize-space(abstract)"/-->
-                  <xsl:value-of select="str:replaceNewLine(abstract)"/>
+                  <xsl:value-of select="normalize-space(abstract)"/>
                 </xsl:when>
                 <xsl:otherwise>
                   <xsl:value-of select="'PLEASE ENTER AN ABSTRACT!'"/>
@@ -605,11 +575,6 @@
               <gmd:keyword>
                 <gco:CharacterString>PHOTOGRAPHY-AND-IMAGERY-Satellite</gco:CharacterString>
               </gmd:keyword>
-              <xsl:for-each select="*[starts-with(name(),'ANZLICKeyword')]">
-                <gmd:keyword>
-                  <gco:CharacterString><xsl:value-of select="."/></gco:CharacterString>
-                </gmd:keyword>
-              </xsl:for-each>
               <gmd:type>
                 <gmd:MD_KeywordTypeCode codeList="http://asdd.ga.gov.au/asdd/profileinfo/gmxCodelists.xml#MD_KeywordTypeCode" codeListValue="theme">theme</gmd:MD_KeywordTypeCode>
               </gmd:type>
@@ -749,46 +714,28 @@
               </gmd:classification>
             </gmd:MD_SecurityConstraints>
           </gmd:resourceConstraints>
-          <!-- Scale or Resolution -->
-          <xsl:choose>
-            <xsl:when test="normalize-space(scale)">
-              <gmd:spatialResolution>
-                <gmd:MD_Resolution>
-                  <gmd:equivalentScale>
-                    <gmd:MD_RepresentativeFraction>
-                      <gmd:denominator>
-                        <gco:Integer><xsl:value-of select="floor(scale)"/></gco:Integer>
-                      </gmd:denominator>
-                    </gmd:MD_RepresentativeFraction>
-                  </gmd:equivalentScale>
-                </gmd:MD_Resolution>
-              </gmd:spatialResolution>
-            </xsl:when>
-            <xsl:otherwise>
-              <gmd:spatialResolution>
-                <gmd:MD_Resolution>
-                  <gmd:distance>
-                    <gco:Distance>
-                      <xsl:attribute name="uom"><xsl:value-of select="units"/></xsl:attribute>
-                      <xsl:value-of select="str:split(cellx,',')[1]"/>
-                      <!--xsl:value-of select="cellx"/--> <!--cellx can have multiple values (e.g. ASTER & ALI) so just pick the first 1-->
-                    </gco:Distance>
-                  </gmd:distance>
-                </gmd:MD_Resolution>
-              </gmd:spatialResolution>
-              <gmd:spatialResolution>
-                <gmd:MD_Resolution>
-                  <gmd:distance>
-                    <gco:Distance>
-                      <xsl:attribute name="uom"><xsl:value-of select="units"/></xsl:attribute>
-                      <xsl:value-of select="str:split(celly,',')[1]"/>
-                      <!--xsl:value-of select="celly"/--> <!--cellx can have multiple values (e.g. ASTER & ALI) so just pick the first 1-->
-                    </gco:Distance>
-                  </gmd:distance>
-                </gmd:MD_Resolution>
-              </gmd:spatialResolution>
-            </xsl:otherwise>
-          </xsl:choose>
+          <gmd:spatialResolution>
+            <gmd:MD_Resolution>
+              <gmd:distance>
+                <gco:Distance>
+                  <xsl:attribute name="uom"><xsl:value-of select="units"/></xsl:attribute>
+                  <xsl:value-of select="str:split(cellx,',')[1]"/>
+                  <!--xsl:value-of select="cellx"/--> <!--cellx can have multiple values (e.g. ASTER & ALI) so just pick the first 1-->
+                </gco:Distance>
+              </gmd:distance>
+            </gmd:MD_Resolution>
+          </gmd:spatialResolution>
+          <gmd:spatialResolution>
+            <gmd:MD_Resolution>
+              <gmd:distance>
+                <gco:Distance>
+                  <xsl:attribute name="uom"><xsl:value-of select="units"/></xsl:attribute>
+                  <xsl:value-of select="str:split(celly,',')[1]"/>
+                  <!--xsl:value-of select="celly"/--> <!--cellx can have multiple values (e.g. ASTER & ALI) so just pick the first 1-->
+                </gco:Distance>
+              </gmd:distance>
+            </gmd:MD_Resolution>
+          </gmd:spatialResolution>
           <gmd:language>
             <gco:CharacterString>eng</gco:CharacterString>
           </gmd:language>
@@ -948,7 +895,7 @@
          </gmd:extent>
           <gmd:supplementalInformation>
             <gco:CharacterString>
-              <xsl:for-each select="*[not(self::quicklook)][not(self::thumbnail)][not(self::abstract)]">
+              <xsl:for-each select="*[not(self::quicklook)][not(self::thumbnail)]">
                   <xsl:value-of select="local-name(.)"/>: <xsl:value-of select="."/>
                   <!--xsl:if test="position() != last()">  |  </xsl:if-->
                   <xsl:if test="position() != last()"><xsl:text>&#xA;</xsl:text></xsl:if><!--insert line break-->
@@ -1121,43 +1068,41 @@
             <gmd:MD_DigitalTransferOptions>
                 <!--xsl:for-each select="OnlineResource"-->
                 <xsl:for-each select="*[starts-with(name(),'OnlineResource')]">
-                  <xsl:if test="normalize-space(.)">
                     <xsl:variable name="resource" select="str:toNode(.)"/>
                     <gmd:onLine>
-                      <gmd:CI_OnlineResource>
-                        <gmd:linkage>
-                          <gmd:URL><xsl:value-of select="$resource/URL"/></gmd:URL>
-                        </gmd:linkage>
-                        <gmd:protocol>
-                          <gco:CharacterString><xsl:value-of select="$resource/protocol"/></gco:CharacterString>
-                        </gmd:protocol>
-                        <xsl:choose>
-                          <xsl:when test="normalize-space($resource/name)">
-                            <gmd:name>
-                              <gco:CharacterString><xsl:value-of select="$resource/name"/></gco:CharacterString>
-                            </gmd:name>
-                          </xsl:when>
-                          <xsl:otherwise>
-                            <gmd:name gco:nilReason="missing"><gco:CharacterString/></gmd:name>
-                          </xsl:otherwise>
-                        </xsl:choose>
-                        <xsl:choose>
-                          <xsl:when test="normalize-space($resource/description)">
-                            <gmd:description><gco:CharacterString><xsl:value-of select="$resource/description"/></gco:CharacterString></gmd:description>
-                          </xsl:when>
-                          <xsl:otherwise><gmd:description gco:nilReason="missing"><gco:CharacterString/></gmd:description></xsl:otherwise>
-                        </xsl:choose>
-                        <xsl:if test="normalize-space($resource/function)">
-                          <gmd:function>
-                            <gmd:CI_OnLineFunctionCode>
-                              <xsl:attribute name="codeList">http://www.isotc211.org/2005/resources/codeList.xml#CI_OnLineFunctionCode</xsl:attribute>
-                              <xsl:attribute name="codeListValue"><xsl:value-of select="normalize-space($resource/function)"/></xsl:attribute>
-                            </gmd:CI_OnLineFunctionCode>
-                          </gmd:function>
-                        </xsl:if>
-                      </gmd:CI_OnlineResource>
+                        <gmd:CI_OnlineResource>
+                            <gmd:linkage>
+                                <gmd:URL><xsl:value-of select="$resource/URL"/></gmd:URL>
+                            </gmd:linkage>
+                            <gmd:protocol>
+                                <gco:CharacterString><xsl:value-of select="$resource/protocol"/></gco:CharacterString>
+                            </gmd:protocol>
+                            <xsl:choose>
+                              <xsl:when test="normalize-space($resource/name)">
+                                  <gmd:name>
+                                      <gco:CharacterString><xsl:value-of select="$resource/name"/></gco:CharacterString>
+                                  </gmd:name>
+                              </xsl:when>
+                              <xsl:otherwise>
+                                <gmd:name gco:nilReason="missing"><gco:CharacterString/></gmd:name>
+                              </xsl:otherwise>
+                            </xsl:choose>
+                            <xsl:choose>
+                              <xsl:when test="normalize-space($resource/description)">
+                                  <gmd:description><gco:CharacterString><xsl:value-of select="$resource/description"/></gco:CharacterString></gmd:description>
+                              </xsl:when>
+                              <xsl:otherwise><gmd:description gco:nilReason="missing"><gco:CharacterString/></gmd:description></xsl:otherwise>
+                            </xsl:choose>
+                            <xsl:if test="normalize-space($resource/function)">
+                              <gmd:function>
+                                <gmd:CI_OnLineFunctionCode>
+                                  <xsl:attribute name="codeList">http://www.isotc211.org/2005/resources/codeList.xml#CI_OnLineFunctionCode</xsl:attribute>
+                                  <xsl:attribute name="codeListValue"><xsl:value-of select="normalize-space($resource/function)"/></xsl:attribute>
+                                </gmd:CI_OnLineFunctionCode>
+                              </gmd:function>
+                            </xsl:if>
+                        </gmd:CI_OnlineResource>
                     </gmd:onLine>                            
-                  </xsl:if>
                 </xsl:for-each>
                 <!--gmd:offLine>
                   <gmd:MD_Medium>
@@ -1234,8 +1179,7 @@
                   <gmd:DQ_ConformanceResult>
                     <gmd:specification>
                       <gmd:CI_Citation>
-                        <!--gmd:title><gco:CharacterString><xsl:value-of select="$DQ_Value"/></gco:CharacterString></gmd:title-->
-                        <gmd:title><gco:CharacterString><xsl:value-of select="$DQ_Type"/></gco:CharacterString></gmd:title>
+                        <gmd:title><gco:CharacterString><xsl:value-of select="$DQ_Value"/></gco:CharacterString></gmd:title>
                         <!--xsl:call-template name="UnknownDate"/-->
                         <gmd:date>
                           <gmd:CI_Date>
@@ -1247,24 +1191,15 @@
                         </gmd:date>
                       </gmd:CI_Citation>
                     </gmd:specification>
-                    <xsl:choose>
-                      <xsl:when test="normalize-space($DQ_Value)">
-                        <gmd:explanation>
-                          <gco:CharacterString><xsl:value-of select="$DQ_Value"/></gco:CharacterString>
-                        </gmd:explanation>
-                      </xsl:when>
-                      <xsl:otherwise>
-                        <gmd:explanation>
-                          <gco:CharacterString>Please enter <xsl:value-of select="$DQ_Type"/> text</gco:CharacterString>
-                        </gmd:explanation>
-                      </xsl:otherwise>
-                    </xsl:choose>
-                    <gmd:pass>
-                      <gco:Boolean>1</gco:Boolean>
-                    </gmd:pass>
-                    <!--gmd:pass gco:nilReason="missing"> <- This fails validation
-                      <gco:Boolean/> 
-                    </gmd:pass-->
+                    <gmd:explanation>
+                      <gco:CharacterString>Please enter <xsl:value-of select="$DQ_Value"/> text</gco:CharacterString>
+                    </gmd:explanation>
+                      <gmd:pass>
+                        <gco:Boolean>1</gco:Boolean>
+                      </gmd:pass>
+                      <!--gmd:pass gco:nilReason="missing"> <- This fails validation
+                        <gco:Boolean/> 
+                      </gmd:pass-->
                   </gmd:DQ_ConformanceResult>
                 </gmd:result>
               </xsl:element><!--xsl:element name="gmd:DQ_{$DQ_Type}"-->
@@ -1343,16 +1278,6 @@
             </result>
         </xsl:variable>
         <func:result select="exsl:node-set($retData)/*" />
-    </func:function>
-    <func:function name="str:replaceNewLine">
-        <xsl:param name="strData" />
-        <xsl:variable name="arrData" select="str:split(string($strData), '&#10;')"/>
-        <xsl:variable name="retData">
-            <xsl:for-each select="$arrData">
-                <xsl:value-of select="."/><xsl:if test="position() != last()"><xsl:text>&#xA;</xsl:text></xsl:if><!--insert line break-->
-            </xsl:for-each>
-        </xsl:variable>
-        <func:result select="$retData" />
     </func:function>
 
   

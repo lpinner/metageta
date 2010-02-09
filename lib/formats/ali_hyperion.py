@@ -1,26 +1,6 @@
-# Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
-
 '''
 Metadata driver for EO1 ALI (L1G & L1R) & Hyperion (L1R) images
-
+===============================================================
 @see:Format specifications
 
   HDF format:U{http://www.gdal.org/frmt_hdf4.html}
@@ -29,12 +9,10 @@ Metadata driver for EO1 ALI (L1G & L1R) & Hyperion (L1R) images
 
 @todo: extract stuff from FDGC metadata?
 '''
-
-
+#Regular expression list of file formats
 format_regex=[r'eo1.*\.[lm]1r$',     #EO1 ALI (L1R) & Hyperion
               r'eo1.*_hdf\.l1g$',    #EO1 ALI (L1G) HDF
               r'eo1.*_mtl\.tif$']    #EO1 ALI (L1G) TIFF
-'''Regular expression list of file formats'''
 
 #import base dataset module
 import __dataset__
@@ -54,8 +32,7 @@ except ImportError:
     import gdalconst
     import osr
     import ogr
-gdal.AllRegister()
-
+    
 class Dataset(__dataset__.Dataset):
     '''Subclass of base Dataset class'''
     def __init__(self,f):
@@ -75,9 +52,9 @@ class Dataset(__dataset__.Dataset):
             self.metadata['sensor']='ALI'
 
             gdalDataset = geometry.OpenDataset(f)
-            #if not gdalDataset: #Error now raised in geometry.OpenDataset
-            #    errmsg=gdal.GetLastErrorMsg()
-            #    raise IOError, 'Unable to open %s\n%s' % (f,errmsg.strip())
+            if not gdalDataset:
+                errmsg=gdal.GetLastErrorMsg()
+                raise IOError, 'Unable to open %s\n%s' % (f,errmsg.strip())
 
             self.metadata['filetype'] = '%s/%s (%s %s)' % (gdalDataset.GetDriver().ShortName,
                                                            gdalDataset.GetDriver().LongName,
@@ -217,6 +194,7 @@ class Dataset(__dataset__.Dataset):
             self._gdaldataset.GetRasterBand(3).SetNoDataValue(0.0)
             self._gdaldataset.GetRasterBand(4).SetRasterColorInterpretation(gdal.GCI_RedBand)
             self._gdaldataset.GetRasterBand(4).SetNoDataValue(0.0)
+            #self._stretch=['PERCENT',[1,99]]
             
             
             ncols=','.join(ncols)
@@ -283,9 +261,9 @@ class Dataset(__dataset__.Dataset):
             self.metadata['sceneid']=self.metadata['filename'].split('_')[0]
 
             gdalDataset = geometry.OpenDataset(f)
-            #if not gdalDataset: #Error now raised in geometry.OpenDataset
-            #    errmsg=gdal.GetLastErrorMsg()
-            #    raise IOError, 'Unable to open %s\n%s' % (f,errmsg.strip())
+            if not gdalDataset:
+                errmsg=gdal.GetLastErrorMsg()
+                raise IOError, 'Unable to open %s\n%s' % (f,errmsg.strip())
 
             self.metadata['filetype'] = '%s/%s (%s %s)' % (gdalDataset.GetDriver().ShortName,
                                                        gdalDataset.GetDriver().LongName,
@@ -379,9 +357,9 @@ class Dataset(__dataset__.Dataset):
             self.metadata['sensor']='HYPERION'
 
             gdalDataset = geometry.OpenDataset(f)
-            #if not gdalDataset: #Error now raised in geometry.OpenDataset
-            #    errmsg=gdal.GetLastErrorMsg()
-            #    raise IOError, 'Unable to open %s\n%s' % (f,errmsg.strip())
+            if not gdalDataset:
+                errmsg=gdal.GetLastErrorMsg()
+                raise IOError, 'Unable to open %s\n%s' % (f,errmsg.strip())
 
             self.metadata['filetype'] = '%s/%s (%s %s)' % (gdalDataset.GetDriver().ShortName,
                                                            gdalDataset.GetDriver().LongName,
@@ -449,7 +427,6 @@ class Dataset(__dataset__.Dataset):
             self._gdaldataset.GetRasterBand(3).SetNoDataValue(0)
             self._gdaldataset.GetRasterBand(2).SetNoDataValue(0)
             self._gdaldataset.GetRasterBand(1).SetNoDataValue(0)
-            self._stretch=('STDDEV',(1,2,3),[2]) 
             #########################################################################################################
         self.metadata['cols'] = ncols
         self.metadata['rows'] = nrows

@@ -31,7 +31,7 @@
       <th class="navbar" align="right" width="100%">
         <table border="0" cellpadding="0" cellspacing="0">
           <tr><th class="navbar" align="center"
-            >MetaGETA (Metadata Gathering, Extraction and Transformation)</th>
+            >Metadata Crawler</th>
           </tr></table></th>
   </tr>
 </table>
@@ -57,179 +57,9 @@
 </table>
 <!-- ==================== PACKAGE DESCRIPTION ==================== -->
 <h1 class="epydoc">Package transforms</h1><p class="nomargin-top"><span class="codelink"><a href="transforms-pysrc.html">source&nbsp;code</a></span></p>
-<h1 class="heading">XSL transforms</h1>
-    <p>Utility functions to assist XSL transforms</p>
-    <h2 class="heading">Adding another stylesheet</h2>
-      <ul>
-        <li>
-          Create a new/add an existing .xsl file that transforms crawler 
-          output (schema described below) to your XML schema.
-        </li>
-        <li>
-          Create an xml file that describes your XML schema (see below)
-        </li>
-        <li>
-          Save the xsl &amp; xml file to the lib/transforms directory, it 
-          will be automatically available
-        </li>
-      </ul>
-      <p>Note: You may also pass the filepath to an external XSL stylesheet
-      to the <a href="transforms-module.html#Transform" 
-      class="link">Transform</a> function.</p>
-    <h2 class="heading">Metadata schema</h2>
-      <p>The following schema defines a simple XML format which holds 
-      extracted metadata (see <a href="transforms-module.html#DictToXML" 
-      class="link">DictToXML</a> and <a 
-      href="transforms-module.html#ListToXML" class="link">ListToXML</a>) 
-      to be transformed by an XSL stylesheet to various XML metadata 
-      schemas:</p>
-<pre class="literalblock">
-   &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
-   &lt;xs:schema xmlns:xs=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;
-     &lt;xs:element name=&quot;crawlresult&quot;&gt;
-       &lt;xs:complexType&gt;
-         &lt;xs:sequence&gt;
-           &lt;xs:element ref=&quot;{FIELD}&quot; /&gt;
-         &lt;/xs:sequence&gt;
-       &lt;/xs:complexType&gt;
-     &lt;/xs:element&gt;
-     &lt;xs:element name=&quot;{FIELD}&quot;&gt;
-       &lt;xs:complexType mixed=&quot;true&quot; /&gt;
-     &lt;/xs:element&gt;
-   &lt;/xs:schema&gt;
-</pre>
-      <p>Where: {FIELD} are the fields defined in <a 
-      href="formats-module.html#fields" class="link">formats.fields</a>, 
-      plus any additional metadata elements you pass in. For example, you 
-      can pass additional metadata elements in by adding them to the 
-      spreadsheet which is passed to <a href="runtransform-module.html" 
-      class="link">runtransform.py</a>. Additional metadata elements for 
-      existing XSL stylesheets will be documented below.</p>
-    <h2 class="heading">Stylesheet description schema</h2>
-      <p>The following schema defines an XML file that describes an XSL 
-      stylesheet to be used by this module to transform from the simple XML
-      format defined above to various XML metadata schemas, e.g. the ANZLIC
-      Metadata Profile:</p>
-<pre class="literalblock">
-   &lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;
-   &lt;xs:schema xmlns:xs=&quot;http://www.w3.org/2001/XMLSchema&quot;&gt;
-     &lt;xs:element name=&quot;stylesheet&quot;&gt;
-       &lt;xs:complexType&gt;
-         &lt;xs:attribute name=&quot;name&quot; type=&quot;xs:string&quot; use=&quot;required&quot; /&gt;
-         &lt;xs:attribute name=&quot;file&quot; type=&quot;xs:string&quot; use=&quot;required&quot; /&gt;
-         &lt;xs:attribute name=&quot;description&quot; type=&quot;xs:string&quot; use=&quot;required&quot; /&gt;
-       &lt;/xs:complexType&gt;
-     &lt;/xs:element&gt;
-   &lt;/xs:schema&gt;
-</pre>
-    <h2 class="heading">Additional metadata elements</h2>
-      <ul>
-        <li>
-          anzlic_iso19139.xsl
-          <ul>
-            <li>
-              Attributes below are not populated automatically, but may be 
-              manually added to the spreadsheet and will be included in the
-              output XML/MEF metadata
-            </li>
-            <li>
-              NOTE - Some items require specific syntax, see the examples!
-            </li>
-            <li>
-              NOTE - item names are cAse SensitiVe
-              <p>Attributes:</p>
-<pre class="literalblock">
- |Attribute                         |Note                         |Example                                  
- |----------------------------------|-----------------------------|------------------------
- |AbsoluteExternalPositionalAccuracy|                             |Some text                  
- |----------------------------------|-----------------------------|------------------------
- |abstract                          |                             |This is the abstract for 
- |                                  |                             |some dataset             
- |----------------------------------|-----------------------------|------------------------
- |lineage                           |                             |                           
- |----------------------------------|-----------------------------|------------------------
- |title                             |                             |ALOS pansharpened imagery 
- |                                  |                             |for Coongie Lakes (2.5m)                           
- |----------------------------------|-----------------------------|------------------------
- |accessConstraints                 |                             |Data for INTERNAL use only!
- |----------------------------------|-----------------------------|------------------------
- |useConstraints                    |                             |The following acknowlegement 
- |                                  |                             |must be incuded with any map 
- |                                  |                             |that contains these data: 
- |                                  |                             |blah blah blah
- |----------------------------------|-----------------------------|------------------------
- |ANZLICKeyword                     |More than one ANZLICKeyword  |WATER-Wetlands
- |                                  |column is permitted.         |
- |                                  |Spreadsheet note: Don't put  |
- |                                  |multiple keywords in the same|
- |                                  |column, add another with     |
- |                                  |ANZLICKeyword as column      |
- |                                  |header.                      |
- |----------------------------------|-----------------------------|------------------------
- |CompletenessOmission              |                             |                           
- |----------------------------------|-----------------------------|------------------------
- |ConceptualConsistency             |                             |                           
- |----------------------------------|-----------------------------|------------------------
- |NonQuantitativeAttributeAccuracy  |                             |                           
- |----------------------------------|-----------------------------|------------------------
- |custodian                         |Format is:                   |organisationName|DEWHA
- |                                  |organisationName|text\n      |positionName|Some Position
- |                                  |positionName|text\n          |voice|0262123456
- |                                  |voice|0262123456\n           |facsimile|0262123457
- |                                  |facsimile|text\n             |deliveryPoint|GPO Box 123
- |                                  |deliveryPoint|text\n         |city|Canberra
- |                                  |city|text\n                  |administrativeArea|ACT
- |                                  |administrativeArea|text\n    |postalCode|2600
- |                                  |postalCode|text\n            |country|Australia
- |                                  |country|text\n               |electronicMailAddress|example@address.gov.au
- |                                  |electronicMailAddress|text   |
- |                                  |Spreadsheet note: \n can be  |
- |                                  |entered in a cell by holding |
- |                                  |the [Alt] key and pressing   |
- |                                  [Enter]                       |
- |----------------------------------|-----------------------------|------------------------
- |distributor                       |As per custodian             |                           
- |----------------------------------|-----------------------------|------------------------
- |originator                        |As per custodian             |                           
- |----------------------------------|-----------------------------|------------------------
- |publisher                         |As per custodian             |                           
- |----------------------------------|-----------------------------|------------------------
- |resourceProvider                  |As per custodian             |                           
- |----------------------------------|-----------------------------|------------------------
- |OnlineResource                    |More than one                |URL|http://pandora:81/ecwp/ecw_wms.dll?nautical_charts?Request=GetCapabilities
- |                                  |OnlineResource column is     |protocol|OGC:WMS-1.1.1-http-get-map
- |                                  |permitted. Spreadsheet note: |name|L00676
- |                                  |Don't put multiple resources |description|Image Web Server Web Map Service
- |                                  |in the same column, add      |function|download
- |                                  |with OnlineResource as  the  |
- |                                  |column header. Format is:    |
- |                                  |URL|text\n                   |
- |                                  |protocol|text\n              |
- |                                  |name|text\n                  |
- |                                  |description|text\n           |
- |                                  |function|text                |
- |----------------------------------|-----------------------------|------------------------
- |scale                             |representative fraction      |25000 (represents 1:25,000)
- |                                  |denominator                  |
- |                                  |(MUST be an integer)         |                            
- |----------------------------------|-----------------------------|------------------------
-</pre>
-              <p>Note: see this <a 
-              href="http://n2.nabble.com/Re-metadata-Official-way-of-representing-OGC-services-in-ISO-19139-metadata-protocol-element-SEC-UNC-td3463929.html"
-              target="_top">thread</a> regarding OnlineResource URL 
-              protocol syntax</p>
-            </li>
-          </ul>
-        </li>
-      </ul>
+<h1 class="heading">Utility functions to assist XSL transforms</h1>
 
-<hr />
-<div class="fields">      <p><strong>To Do:</strong>
-        Should XSL files be described by a .py instead of a .xml file? That way
-    they could be imported automatically and additional metadata elements 
-    could be documented there instead of above here...
-      </p>
-</div><!-- ==================== FUNCTIONS ==================== -->
+<!-- ==================== FUNCTIONS ==================== -->
 <a name="section-Functions"></a>
 <table class="summary" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
@@ -363,7 +193,9 @@
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
         <a href="transforms-module.html#transforms" class="summary-name">transforms</a> = <code title="{'ANZLIC Profile': 'ANZLIC Metadata Profile (AS/NZS ISO 19115:2005 Geo\
-graphic information - Metadata)'}"><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">ANZLIC Profile</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">ANZLIC Metadata Profile (AS/N</code><code class="variable-ellipsis">...</code></code><br />
+graphic information - Metadata)',
+ 'DEWHA ISO': 'DEWHA ISO Format for DIG',
+ 'ESRI': 'ESRI Format'}"><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">ANZLIC Profile</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">ANZLIC Metadata Profile (AS/N</code><code class="variable-ellipsis">...</code></code><br />
       Pre-defined XSL transforms
     </td>
   </tr>
@@ -371,7 +203,9 @@ graphic information - Metadata)'}"><code class="variable-group">{</code><code cl
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a name="xslfiles"></a><span class="summary-name">xslfiles</span> = <code title="{'ANZLIC Profile': 'anzlic_iso19139.xsl'}"><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">ANZLIC Profile</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">anzlic_iso19139.xsl</code><code class="variable-quote">'</code><code class="variable-group">}</code></code><br />
+        <a href="transforms-module.html#xslfiles" class="summary-name">xslfiles</a> = <code title="{'ANZLIC Profile': 'anzlic_iso19139.xsl',
+ 'DEWHA ISO': 'dewha_iso.xsl',
+ 'ESRI': 'esri.xsl'}"><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">ANZLIC Profile</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">anzlic_iso19139.xsl</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">DEWHA IS</code><code class="variable-ellipsis">...</code></code><br />
       Pre-defined XSL files
     </td>
   </tr>
@@ -379,30 +213,28 @@ graphic information - Metadata)'}"><code class="variable-group">{</code><code cl
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="transforms-module.html#_desc" class="summary-name" onclick="show_private();">_desc</a> = <code title="'ANZLIC Metadata Profile (AS/NZS ISO 19115:2005 Geographic information\
- - Metadata)'"><code class="variable-quote">'</code><code class="variable-string">ANZLIC Metadata Profile (AS/NZS ISO 19115:2005 Geogra</code><code class="variable-ellipsis">...</code></code>
+        <a name="_desc"></a><span class="summary-name">_desc</span> = <code title="'ESRI Format'"><code class="variable-quote">'</code><code class="variable-string">ESRI Format</code><code class="variable-quote">'</code></code>
     </td>
   </tr>
 <tr class="private">
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="transforms-module.html#_f" class="summary-name" onclick="show_private();">_f</a> = <code title="'C:\\metageta_development\\metageta\\lib\\transforms\\anzlic_iso19139.\
-xml'"><code class="variable-quote">'</code><code class="variable-string">C:\\metageta_development\\metageta\\lib\\transforms\\anz</code><code class="variable-ellipsis">...</code></code>
+        <a name="_f"></a><span class="summary-name">_f</span> = <code title="'C:\\crawler_overviews\\lib\\transforms\\ESRI.xml'"><code class="variable-quote">'</code><code class="variable-string">C:\\crawler_overviews\\lib\\transforms\\ESRI.xml</code><code class="variable-quote">'</code></code>
     </td>
   </tr>
 <tr class="private">
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a name="_file"></a><span class="summary-name">_file</span> = <code title="'anzlic_iso19139.xsl'"><code class="variable-quote">'</code><code class="variable-string">anzlic_iso19139.xsl</code><code class="variable-quote">'</code></code>
+        <a name="_file"></a><span class="summary-name">_file</span> = <code title="'esri.xsl'"><code class="variable-quote">'</code><code class="variable-string">esri.xsl</code><code class="variable-quote">'</code></code>
     </td>
   </tr>
 <tr class="private">
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a name="_name"></a><span class="summary-name">_name</span> = <code title="'ANZLIC Profile'"><code class="variable-quote">'</code><code class="variable-string">ANZLIC Profile</code><code class="variable-quote">'</code></code>
+        <a name="_name"></a><span class="summary-name">_name</span> = <code title="'ESRI'"><code class="variable-quote">'</code><code class="variable-string">ESRI</code><code class="variable-quote">'</code></code>
     </td>
   </tr>
 </table>
@@ -482,10 +314,8 @@ xml'"><code class="variable-quote">'</code><code class="variable-string">C:\\met
     </ul></dd>
   </dl>
 <div class="fields">      <p><strong>See Also:</strong>
-        <p><a href="http://www.fao.org/geonetwork/docs/ch17s02.html" 
-        target="_top">http://www.fao.org/geonetwork/docs/ch17s02.html</a></p>
-        <p><a href="http://trac.osgeo.org/geonetwork/wiki/MEF" 
-        target="_top">http://trac.osgeo.org/geonetwork/wiki/MEF</a></p>
+        <p>http://www.fao.org/geonetwork/docs/ch17s02.html</p>
+        <p>http://trac.osgeo.org/geonetwork/wiki/MEF</p>
       </p>
       <p><strong>To Do:</strong>
         Assumes metadata is ISO19139, need to make generic somehow...
@@ -524,45 +354,29 @@ xml'"><code class="variable-quote">'</code><code class="variable-string">C:\\met
     <dt>Value:</dt>
       <dd><table><tr><td><pre class="variable">
 <code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">ANZLIC Profile</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">ANZLIC Metadata Profile (AS/NZS ISO 19115:2005 Geo</code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
-<code class="variable-string">graphic information - Metadata)</code><code class="variable-quote">'</code><code class="variable-group">}</code>
+<code class="variable-string">graphic information - Metadata)</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">DEWHA ISO</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">DEWHA ISO Format for DIG</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">ESRI</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">ESRI Format</code><code class="variable-quote">'</code><code class="variable-group">}</code>
 </pre></td></tr></table>
 </dd>
   </dl>
 </td></tr></table>
 </div>
-<a name="_desc"></a>
-<div class="private">
+<a name="xslfiles"></a>
+<div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
-  <h3 class="epydoc">_desc</h3>
-  
+  <h3 class="epydoc">xslfiles</h3>
+  <p>Pre-defined XSL files</p>
   <dl class="fields">
   </dl>
   <dl class="fields">
     <dt>Value:</dt>
       <dd><table><tr><td><pre class="variable">
-<code class="variable-quote">'</code><code class="variable-string">ANZLIC Metadata Profile (AS/NZS ISO 19115:2005 Geographic information</code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
-<code class="variable-string"> - Metadata)</code><code class="variable-quote">'</code>
-</pre></td></tr></table>
-</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="_f"></a>
-<div class="private">
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <h3 class="epydoc">_f</h3>
-  
-  <dl class="fields">
-  </dl>
-  <dl class="fields">
-    <dt>Value:</dt>
-      <dd><table><tr><td><pre class="variable">
-<code class="variable-quote">'</code><code class="variable-string">C:\\metageta_development\\metageta\\lib\\transforms\\anzlic_iso19139.</code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
-<code class="variable-string">xml</code><code class="variable-quote">'</code>
+<code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">ANZLIC Profile</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">anzlic_iso19139.xsl</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">DEWHA ISO</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">dewha_iso.xsl</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">ESRI</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">esri.xsl</code><code class="variable-quote">'</code><code class="variable-group">}</code>
 </pre></td></tr></table>
 </dd>
   </dl>
@@ -590,14 +404,14 @@ xml'"><code class="variable-quote">'</code><code class="variable-string">C:\\met
       <th class="navbar" align="right" width="100%">
         <table border="0" cellpadding="0" cellspacing="0">
           <tr><th class="navbar" align="center"
-            >MetaGETA (Metadata Gathering, Extraction and Transformation)</th>
+            >Metadata Crawler</th>
           </tr></table></th>
   </tr>
 </table>
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Jan 22 11:40:48 2010
+    Generated by Epydoc 3.0.1 on Wed Oct 07 14:35:45 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

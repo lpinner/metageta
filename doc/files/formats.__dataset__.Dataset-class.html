@@ -31,7 +31,7 @@
       <th class="navbar" align="right" width="100%">
         <table border="0" cellpadding="0" cellspacing="0">
           <tr><th class="navbar" align="center"
-            >MetaGETA (Metadata Gathering, Extraction and Transformation)</th>
+            >Metadata Crawler</th>
           </tr></table></th>
   </tr>
 </table>
@@ -68,7 +68,7 @@ object --+
 <dl><dt>Known Subclasses:</dt>
 <dd>
       <ul class="subclass-list">
-<li><a href="formats.ali_hyperion.Dataset-class.html">ali_hyperion.Dataset</a></li><li>, <a href="formats.alos.Dataset-class.html">alos.Dataset</a></li><li>, <a href="formats.aster.Dataset-class.html">aster.Dataset</a></li><li>, <a href="formats.ccrs.Dataset-class.html">ccrs.Dataset</a></li><li>, <a href="formats.__default__.Dataset-class.html">__default__.Dataset</a></li><li>, <a href="formats.fast_l7a.Dataset-class.html">fast_l7a.Dataset</a></li><li>, <a href="formats.spot_cap.Dataset-class.html">spot_cap.Dataset</a></li>  </ul>
+<li><a href="formats.ali_hyperion.Dataset-class.html">ali_hyperion.Dataset</a></li><li>, <a href="formats.alos.Dataset-class.html">alos.Dataset</a></li><li>, <a href="formats.aster.Dataset-class.html">aster.Dataset</a></li><li>, <a href="formats.ccrs.Dataset-class.html">ccrs.Dataset</a></li><li>, <a href="formats.__default__.Dataset-class.html">__default__.Dataset</a></li><li>, <a href="formats.fast_l7a.Dataset-class.html">fast_l7a.Dataset</a></li>  </ul>
 </dd></dl>
 
 <hr />
@@ -117,28 +117,12 @@ object --+
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="__setfileinfo__"></a><span class="summary-sig-name">__setfileinfo__</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">f</span>)</span></td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="formats.__dataset__-pysrc.html#Dataset.__setfileinfo__">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="formats.__dataset__.Dataset-class.html#__getfilelist__" class="summary-sig-name">__getfilelist__</a>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a name="__getfilelist__"></a><span class="summary-sig-name">__getfilelist__</span>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">*args</span>,
         <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Get all files that have the same name (sans .ext), or are related 
-      according to gdalinfo.</td>
+      according to gdalinfo special cases may be handled separately in 
+      their respective format drivers</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="formats.__dataset__-pysrc.html#Dataset.__getfilelist__">source&nbsp;code</a></span>
             
@@ -253,35 +237,6 @@ object --+
     </td>
   </tr>
 </table>
-<!-- ==================== INSTANCE VARIABLES ==================== -->
-<a name="section-InstanceVariables"></a>
-<table class="summary" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr bgcolor="#70b0f0" class="table-header">
-  <td colspan="2" class="table-header">
-    <table border="0" cellpadding="0" cellspacing="0" width="100%">
-      <tr valign="top">
-        <td align="left"><span class="table-header">Instance Variables</span></td>
-        <td align="right" valign="top"
-         ><span class="options">[<a href="#section-InstanceVariables"
-         class="privatelink" onclick="toggle_private();"
-         >hide private</a>]</span></td>
-      </tr>
-    </table>
-  </td>
-</tr>
-<tr class="private">
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a name="_stretch"></a><span class="summary-name">_stretch</span><br />
-      self._stretch allows subclasses to control overview generation 
-      somewhat self._stretch = (stretch_type,rgb_bands,stretch_args) See <a
-      href="overviews-module.html#getoverview" 
-      class="link">overviews.getoverview</a> for appropriate values.
-    </td>
-  </tr>
-</table>
 <!-- ==================== PROPERTIES ==================== -->
 <a name="section-Properties"></a>
 <table class="summary" border="1" cellpadding="3"
@@ -390,6 +345,8 @@ object --+
   </tr></table>
   
   <p>Generate overviews for generic imagery</p>
+  <p>Override this class if you like, otherwise simply expose a GDALDataset
+  object as self._gdaldataset_</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
@@ -409,51 +366,6 @@ object --+
               <b>binary image data</b> (if outfile is not supplied)
             </li>
           </ul></dd>
-  </dl>
-<div class="fields">      <p><strong>Requires:</strong>
-        exposing a gdal.Dataset object as self._gdaldataset
-      </p>
-      <p><strong>Note:</strong>
-        There are a number of ways of controlling the generation of 
-        overview images:
-        <ul>
-          <li>
-            Overriding this class method and writing your own.
-          </li>
-          <li>
-            Setting self._stretch to the appropriate 
-            (stretch_type,rgb_bands,stretch_args) values. See <a 
-            href="overviews-module.html#getoverview" 
-            class="link">overviews.getoverview</a>.
-          </li>
-          <li>
-            Customising self._gdaldataset using a VRT, for example: setting
-            red, green and blue color interpretations for selected bands
-          </li>
-        </ul>
-      </p>
-</div></td></tr></table>
-</div>
-<a name="__getfilelist__"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">__getfilelist__</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">*args</span>,
-        <span class="sig-arg">**kwargs</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="formats.__dataset__-pysrc.html#Dataset.__getfilelist__">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Get all files that have the same name (sans .ext), or are related 
-  according to gdalinfo. Special cases may be handled separately in their 
-  respective format drivers.</p>
-  <dl class="fields">
   </dl>
 </td></tr></table>
 </div>
@@ -593,14 +505,14 @@ object --+
       <th class="navbar" align="right" width="100%">
         <table border="0" cellpadding="0" cellspacing="0">
           <tr><th class="navbar" align="center"
-            >MetaGETA (Metadata Gathering, Extraction and Transformation)</th>
+            >Metadata Crawler</th>
           </tr></table></th>
   </tr>
 </table>
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Jan 22 11:40:48 2010
+    Generated by Epydoc 3.0.1 on Wed Oct 07 14:35:45 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

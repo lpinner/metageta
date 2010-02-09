@@ -1,32 +1,9 @@
-# Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
-
 '''
-Default Dataset class
-=====================
 Metadata driver for generic imagery formats including GDAL Virtual Rasters (VRT files and xml strings)
+=======================================================================================================
 '''
 
 format_regex=[
-    r'\.nc$',
-    r'\.vrt$',
     r'\.ers$',
     r'\.img$',
     r'\.ecw$',
@@ -34,7 +11,6 @@ format_regex=[
     r'\.jp2$',
     r'\.tif$'
 ]
-'''Regular expression list of file formats'''
 
 import sys, os, re, glob, time, math, string
 import utilities
@@ -55,8 +31,7 @@ except ImportError:
     import gdalconst
     import osr
     import ogr
-gdal.AllRegister()
-
+    
 class Dataset(__dataset__.Dataset):
     '''Default Dataset class.
     For generic imagery formats that gdal can read.'''
@@ -73,13 +48,12 @@ class Dataset(__dataset__.Dataset):
         if not f:f=self.fileinfo['filepath']
         try:
             cwd=os.path.abspath(os.curdir)
-            if os.path.exists(f) and os.path.dirname(f):
+            if os.path.exists(f):
                 p=os.path.split(f)[0]
                 os.chdir(p)
             self._gdaldataset= geometry.OpenDataset(f)
             if self._gdaldataset:
                 driver=self._gdaldataset.GetDriver().ShortName
-                if driver[0:3]=='HDF':raise NotImplementedError, 'HDF files are not yet implemented except by custom formats'
                 self.metadata['filetype'] = driver+'/'+self._gdaldataset.GetDriver().LongName
                 self.metadata['cols'] = self._gdaldataset.RasterXSize
                 self.metadata['rows'] = self._gdaldataset.RasterYSize
@@ -144,8 +118,7 @@ class Dataset(__dataset__.Dataset):
                             self.metadata['compressiontype']="ECW"
                         else:
                             mdis=self._gdaldataset.GetMetadata('IMAGE_STRUCTURE')
-                            #self.metadata['compressiontype']=mdis['IMAGE_STRUCTURE']
-                            self.metadata['compressiontype']=mdis['COMPRESSION']
+                            self.metadata['compressiontype']=mdis['IMAGE_STRUCTURE']
                     except: self.metadata['compressiontype']='Unknown'
                 else: self.metadata['compressiontype']='None'
                 self.extent=ext

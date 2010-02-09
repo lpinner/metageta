@@ -1,25 +1,6 @@
-# Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
-
 '''
 Provide GUI & file progress logging
+===================================
 
 Example:
 
@@ -34,12 +15,9 @@ Example:
 >>>     pl.error('That didn't work!')
 
 '''
-
-import logging,warnings,random,os,sys,socket,pickle,threading,Queue,time
-#from Tkinter import *
-import Tkinter
+import logging,warnings,random,os,sys,socket,pickle,win32api,threading,Queue,time
+from Tkinter import *
 import ScrolledText
-import utilities
 
 #Define some constants
 DEBUG=logging.DEBUG
@@ -63,8 +41,7 @@ class ProgressLogger(logging.Logger):
                maxprogress=100,
                logfile=None,
                mode='w',
-               windowicon=None,
-               callback=lambda:None):
+               windowicon=None):
 
         self.logToGUI=logToGUI
 
@@ -91,7 +68,7 @@ class ProgressLogger(logging.Logger):
 
         if logToGUI:
             self.progress=0
-            ph = ProgressLoggerHandler(name=name, maxprogress=maxprogress,windowicon=windowicon,callback=callback)
+            ph = ProgressLoggerHandler(name=name, maxprogress=maxprogress,windowicon=windowicon)
 
             #To handle the PROGRESS & END events without them going to the console or file
             logging.PROGRESS = level - 1
@@ -104,7 +81,7 @@ class ProgressLogger(logging.Logger):
         warnings.simplefilter('always')
         warnings.showwarning = self.showwarning
 
-    def showwarning(self, msg, cat, fname, lno, file=None, line=None):
+    def showwarning(self, msg, cat, fname, lno, file=None):
         self.warn(msg)
 
     def updateProgress(self,newMax=None):
@@ -120,11 +97,11 @@ class ProgressLogger(logging.Logger):
         for h in self.handlers:
             h.flush()
             h.close()
-    
+
 class ProgressLoggerHandler(logging.Handler):
     ''' Provide a Progress Bar Logging handler '''
 
-    def __init__(self, name='Progress Log', level=logging.INFO, maxprogress=100, windowicon=None, callback=lambda:None):
+    def __init__(self, name='Progress Log', level=logging.INFO, maxprogress=100, windowicon=None):
         '''
         Initializes the instance - set up the Tkinter GUI and log output.
         '''
@@ -139,26 +116,25 @@ class ProgressLoggerHandler(logging.Handler):
         ##Run as a separate process as even multithreading will block on long IO operations 
         ##as only a single thread will run at a time.
         self.host='localhost'
-        self.inport= random.randint(1024, 10000)
-        self.outport= random.randint(1024, 10000)
-        if sys.platform[0:3].lower()=='win':python = 'pythonw.exe'
-        else: python = 'python'
-        pythonPath=utilities.which(python)
+        self.port= random.randint(1024, 10000)
+        import win32api
+        try:
+            pythonPath = r'%s\pythonw.exe' % os.environ['PYTHONHOME'] #set in setenv.bat
+        except:
+            pythonPath = r'%s\bin\pythonw.exe' % os.environ['GDAL_ROOT'] #set in setenv.bat
         pythonScript=__file__
-        parameterList = [pythonPath, pythonScript, self.host,str(self.inport),str(self.outport),name,str(maxprogress)]
+        parameterList = [pythonPath, pythonScript, self.host,str(self.port),name,str(maxprogress)]
         if windowicon:parameterList.append(windowicon)
         for i,v in enumerate(parameterList): #Fix any spaces in parameters
             if ' ' in v:parameterList[i]='"%s"'%v
-        
         os.spawnv(os.P_NOWAIT, pythonPath, parameterList)
-        pc=ProgressLoggerChecker(self.host,self.outport,callback)
-        
+
     def sendmsgs(self):
         for msg in range(len(self.msgs)):
             try:
                 msg=self.msgs[0]
                 client = socket.socket (socket.AF_INET, socket.SOCK_STREAM )
-                client.connect((self.host,self.inport))
+                client.connect((self.host,self.port))
                 client.send(pickle.dumps(msg))
                 client.close()
                 del client
@@ -186,50 +162,19 @@ class ProgressLoggerHandler(logging.Handler):
         '''
         self.msgs.append('EXIT')
         self.sendmsgs()
-
-class ProgressLoggerChecker(threading.Thread):
-    def __init__(self,host,port,callback):
-        self.gui=True
-        self.host = host
-        self.port = int(port)
-        self.callback = callback
-
-        threading.Thread.__init__ (self)
-        self.start()
-    
-    def run(self):
-        #Start listening on the given host:port
-        self.server=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server.bind((self.host,self.port))
-        self.server.listen(1)
-        while True:
-            channel, details = self.server.accept()
-            data=''
-            while True:
-                part=channel.recv(1024).strip()
-                if part:data+=part
-                else:break
-            msg=pickle.loads(data)
-            if msg=='EXIT':
-                break
-            channel.close()
-            time.sleep(1)
-        #Stop listening
-        self.server.close()
-        self.callback()
+        
 
 class ProgressLoggerServer:
-    ''' Provide a Progress Bar Logging Server '''
+    ''' Provide a Progress Bar Logging GUI '''
 
-    def __init__(self,host,inport,outport,name=None, maxprogress=100, windowicon=None):
+    def __init__(self,host,port,name=None, maxprogress=100, windowicon=None):
         self.server=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server.bind((host,int(inport)))
+        self.server.bind((host,int(port)))
         self.server.listen(1)
         self.serving=True
 
         self.host = host
-        self.inport = int(inport)
-        self.outport = int(outport)
+        self.port = int(port)
         self.name = name
         self.maxprogress = int(maxprogress)
         self.progress = 0
@@ -238,7 +183,7 @@ class ProgressLoggerServer:
         self.queue  = Queue.Queue()
         
         ##Create the GUI
-        self.gui=ProgressLoggerGUI(self.queue, self.host,self.inport,self.outport, name=name, maxprogress=maxprogress, windowicon=windowicon)
+        self.gui=ProgressLoggerGUI(self.queue, self.host,self.port, name=name, maxprogress=maxprogress, windowicon=windowicon)
         self.gui.start()
 
         self.startLogging()
@@ -266,14 +211,13 @@ class ProgressLoggerServer:
 class ProgressLoggerGUI(threading.Thread):
     ''' Provide a Progress Bar Logging GUI '''
 
-    def __init__(self, queue, host, inport, outport, name=None, maxprogress=100, windowicon=None):
+    def __init__(self, queue, host, port, name=None, maxprogress=100, windowicon=None):
         
         ##Cos we've overwritten the class __init__ method        
         threading.Thread.__init__(self)
         self.queue = queue
         self.host = host
-        self.inport = inport
-        self.outport = outport
+        self.port = port
         self.name = name
         self.maxprogress = maxprogress
         self.progress = 0
@@ -286,27 +230,26 @@ class ProgressLoggerGUI(threading.Thread):
         Initializes the instance - set up the Tkinter progress bar and log output.
         '''
 
-        self.master=Tkinter.Tk()
-        try:self.master.wm_iconbitmap(self.windowicon)
-        except:pass
+        self.master=Tk()
+        if self.windowicon:self.master.wm_iconbitmap(self.windowicon)
         self.master.protocol("WM_DELETE_WINDOW", self.onOk)
         self.master.title(self.name)
         self.master.geometry("700x800")
-
+        
         ''' Pack text message '''
-        Tkinter.Label(self.master, text='Progress', anchor=Tkinter.NW, justify=Tkinter.LEFT).pack(fill=Tkinter.X)
+        Label(self.master, text='Progress', anchor=NW, justify=LEFT).pack(fill=X)
 
         ''' Pack progress bar '''
         self.progress_bar = ProgressBarView(self.master, max=self.maxprogress)
-        self.progress_bar.pack(fill=Tkinter.X)
+        self.progress_bar.pack(fill=X)
 
         ''' Pack log window '''
-        self.logwnd = ScrolledText.ScrolledText(self.master, width=60, height=12, state=Tkinter.DISABLED)
-        self.logwnd.pack(fill=Tkinter.BOTH, expand=1)
+        self.logwnd = ScrolledText.ScrolledText(self.master, width=60, height=12, state=DISABLED)
+        self.logwnd.pack(fill=BOTH, expand=1)
 
         ''' Pack OK button '''
-        self.ok = Tkinter.Button(self.master, text="OK", width=10, command=self.onOk, state=Tkinter.DISABLED)
-        self.ok.pack(side=Tkinter.RIGHT, padx=5, pady=5)
+        self.ok = Button(self.master, text="OK", width=10, command=self.onOk, state=DISABLED)
+        self.ok.pack(side=RIGHT, padx=5, pady=5)
 
         self.checkQueue()
         self.master.mainloop()
@@ -331,7 +274,7 @@ class ProgressLoggerGUI(threading.Thread):
         eventName = msg[0]
         eventMsg  = msg[1]
         if msg == 'EXIT':
-            self.ok.configure(state=Tkinter.ACTIVE)
+            self.ok.configure(state=ACTIVE)
             self.master.bind("<Return>", self.onOk)
             self.keepchecking=False
         elif eventName == 'PROGRESS':
@@ -339,7 +282,7 @@ class ProgressLoggerGUI(threading.Thread):
             self.progress+=1
             self.progress_bar.updateProgress(self.progress, newMax=max)
             if self.progress>=max:
-                self.ok.configure(state=Tkinter.ACTIVE)
+                self.ok.configure(state=ACTIVE)
                 self.master.bind("<Return>", self.onOk)
         else:
             self.onLogMessage(eventMsg)
@@ -347,135 +290,134 @@ class ProgressLoggerGUI(threading.Thread):
     def onLogMessage(self, msg):
         ''' Display log message '''
         w = self.logwnd
-        w.configure(state=Tkinter.NORMAL)
-        w.insert(Tkinter.END, msg)
-        w.insert(Tkinter.END, "\n")
-        w.see(Tkinter.END)
-        w.configure(state=Tkinter.DISABLED)
+        w.configure(state=NORMAL)
+        w.insert(END, msg)
+        w.insert(END, "\n")
+        w.see(END)
+        w.configure(state=DISABLED)
         
     def onOk(self, event=None):
         self.master.withdraw()
         self.master.destroy()
         try:
-            for port in (self.inport,self.outport):
-                client = socket.socket (socket.AF_INET, socket.SOCK_STREAM )
-                client.connect((self.host,port))
-                client.send(pickle.dumps('EXIT'))
-                client.close()
-                del client
+            client = socket.socket (socket.AF_INET, socket.SOCK_STREAM )
+            client.connect((self.host,self.port))
+            client.send(pickle.dumps('EXIT'))
+            client.close()
+            del client
         except:pass        
-    
+
 class ProgressBarView: 
-    '''A progress bar widget
-       
-       Modified from U{http://www.faqts.com/knowledge_base/view.phtml/aid/2718/fid/264} and U{http://www.sarfrosh.com/URDU/teachings/HP/BIN/BlockTracker.py}
-    '''
-    def __init__(self, master=None, orientation='horizontal',
-          min=0, max=100, width=100, height=None,
-          doLabel=1, appearance=None,
-          fillColor=None, background=None,
-          labelColor=None, labelFont=None,
-          labelText='', labelFormat="%d%%",
-          value=0.1, bd=2):
-        # preserve various values
-        self.master=master
-        self.orientation=orientation
-        self.min=min
-        self.max=max
-        self.doLabel=doLabel
-        self.labelText=labelText
-        self.labelFormat=labelFormat
-        self.value=value
-        if (fillColor == None) or (background == None) or (labelColor == None):
-            # We have no system color names under linux. So use a workaround.
-            #btn = Tkinter.Button(font=labelFont)
-            btn = Tkinter.Button(master, text='0', font=labelFont)
-            if fillColor == None:
-                fillColor  = btn['foreground']
-            if background == None:
-                background = btn['disabledforeground']
-            if labelColor == None:
-                labelColor = btn['background']
-        if height == None:
-            l = Tkinter.Label(font=labelFont)
-            height = l.winfo_reqheight()
-        self.width      = width
-        self.height     = height
-        self.fillColor  = fillColor
-        self.labelFont  = labelFont
-        self.labelColor = labelColor
-        self.background = background
-        #
-        # Create components
-        #
-        self.frame=Tkinter.Frame(master, relief=appearance, bd=bd, width=width, height=height)
-        self.canvas=Tkinter.Canvas(self.frame, bd=0,
-            highlightthickness=0, background=background, width=width, height=height)
-        self.scale=self.canvas.create_rectangle(0, 0, width, height,
-            fill=fillColor)
-        self.label=self.canvas.create_text(width / 2, height / 2,
-            text=labelText, anchor=Tkinter.CENTER, fill=labelColor, font=self.labelFont)
-        self.canvas.pack(fill=Tkinter.BOTH)
-        self.update()
-        self.canvas.bind('<Configure>', self.onResize) # monitor size changes
+  def __init__(self, master=None, orientation='horizontal',
+      min=0, max=100, width=100, height=None,
+      doLabel=1, appearance=None,
+      fillColor=None, background=None,
+      labelColor=None, labelFont=None,
+      labelText='', labelFormat="%d%%",
+      value=0.1, bd=2):
+    # preserve various values
+    self.master=master
+    self.orientation=orientation
+    self.min=min
+    self.max=max
+    self.doLabel=doLabel
+    self.labelText=labelText
+    self.labelFormat=labelFormat
+    self.value=value
+    if (fillColor == None) or (background == None) or (labelColor == None):
+      # We have no system color names under linux. So use a workaround.
+      #btn = Button(font=labelFont)
+      btn = Button(master, text='0', font=labelFont)
+      if fillColor == None:
+        fillColor  = btn['foreground']
+      if background == None:
+        background = btn['disabledforeground']
+      if labelColor == None:
+        labelColor = btn['background']
+    if height == None:
+      l = Label(font=labelFont)
+      height = l.winfo_reqheight()
+    self.width      = width
+    self.height     = height
+    self.fillColor  = fillColor
+    self.labelFont  = labelFont
+    self.labelColor = labelColor
+    self.background = background
+    #
+    # Create components
+    #
+    self.frame=Frame(master, relief=appearance, bd=bd, width=width, height=height)
+    self.canvas=Canvas(self.frame, bd=0,
+        highlightthickness=0, background=background, width=width, height=height)
+    self.scale=self.canvas.create_rectangle(0, 0, width, height,
+        fill=fillColor)
+    self.label=self.canvas.create_text(width / 2, height / 2,
+        text=labelText, anchor=CENTER, fill=labelColor, font=self.labelFont)
+    self.canvas.pack(fill=BOTH)
+    self.update()
+    self.canvas.bind('<Configure>', self.onResize) # monitor size changes
 
-    def onResize(self, event):
-        if (self.width == event.width) and (self.height == event.height):
-            return
-        # Set new sizes
-        self.width  = event.width
-        self.height = event.height
-        # Move label
-        self.canvas.coords(self.label, event.width/2, event.height/2)
-        # Display bar in new sizes
-        self.update()
+  def onResize(self, event):
+    if (self.width == event.width) and (self.height == event.height):
+      return
+    # Set new sizes
+    self.width  = event.width
+    self.height = event.height
+    # Move label
+    self.canvas.coords(self.label, event.width/2, event.height/2)
+    # Display bar in new sizes
+    self.update()
 
-    def updateProgress(self, newValue, newMax=None):
-        if newMax:self.max = newMax
-        self.value = newValue
-        self.update()
+  def updateProgress(self, newValue, newMax=None):
+    if newMax:
+      self.max = newMax
+    self.value = newValue
+    self.update()
 
-    def pack(self, *args, **kw):
-        self.frame.pack(*args, **kw)
+  def pack(self, *args, **kw):
+    self.frame.pack(*args, **kw)
 
-    def update(self):
-        # Trim the values to be between min and max
-        value=float(self.value)
-        max=float(self.max)
-        min=float(self.min)
-        if value > max:
-            value = max
-        if value < min:
-            value = min
-        # Adjust the rectangle
-        if self.orientation == "horizontal":
-            self.canvas.coords(self.scale, 0, 0, value / max * self.width, self.height)
+  def update(self):
+    # Trim the values to be between min and max
+    value=float(self.value)
+    max=float(self.max)
+    min=float(self.min)
+    if value > max:
+      value = max
+    if value < min:
+      value = min
+    # Adjust the rectangle
+    if self.orientation == "horizontal":
+      self.canvas.coords(self.scale, 0, 0,
+          value / max * self.width, self.height)
+    else:
+      self.canvas.coords(self.scale, 0,
+          self.height - (value / max*self.height),
+          self.width, self.height)
+    # And update the label
+    if self.doLabel:
+      if value:
+        if value >= 0:
+          pvalue = int((value / max) * 100.0)
         else:
-          self.canvas.coords(self.scale, 0, self.height - (value / max*self.height), self.width, self.height)
-        # And update the label
-        if self.doLabel:
-            if value:
-                if value >= 0:
-                    pvalue = int((value / max) * 100.0)
-                else:
-                    pvalue = 0
-                self.canvas.itemconfig(self.label, text=self.labelFormat % pvalue)
-            else:
-                self.canvas.itemconfig(self.label, text='')
-        else:
-            self.canvas.itemconfig(self.label, text=self.labelFormat % self.labelText)
-        self.canvas.update_idletasks()
+          pvalue = 0
+        self.canvas.itemconfig(self.label, text=self.labelFormat % pvalue)
+      else:
+        self.canvas.itemconfig(self.label, text='')
+    else:
+      self.canvas.itemconfig(self.label, text=self.labelFormat %
+          self.labelText)
+    self.canvas.update_idletasks()
 
 if __name__ == '__main__':
     kwargs={}
-    if len(sys.argv) >= 4:
+    if len(sys.argv) >= 3:
         kwargs['host']=sys.argv[1]
-        kwargs['inport']=sys.argv[2]
-        kwargs['outport']=sys.argv[3]
+        kwargs['port']=sys.argv[2]
+    if len(sys.argv) >= 4:
+        kwargs['name']=sys.argv[3]
     if len(sys.argv) >= 5:
-        kwargs['name']=sys.argv[4]
+        kwargs['maxprogress']=sys.argv[4]
     if len(sys.argv) >= 6:
-        kwargs['maxprogress']=sys.argv[5]
-    if len(sys.argv) >= 7:
-        kwargs['windowicon']=sys.argv[6]
+        kwargs['windowicon']=sys.argv[5]
     pl = ProgressLoggerServer(**kwargs)

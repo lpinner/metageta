@@ -1,37 +1,23 @@
-# Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
-
 '''
 Metadata driver for ASTER imagery
+=================================
 
-B{Format specifications}:
-    - U{http:#www.gdal.org/frmt_hdf4.html}
-    - U{http://asterweb.jpl.nasa.gov/documents/ASTER_L1_Product_Spec_Ver_1.3_July01.pdf}
-    - U{http://asterweb.jpl.nasa.gov/content/03_data/04_Documents/ASTER_L1_Product_Spec_Ver_1.3_July01.pdf} (inc description of GCTP projection parameters)
-    - U{http://lpdaac.usgs.gov/aster/ASTER_GeoRef_FINAL.pdf}
-    - U{http://www.science.aster.ersdac.or.jp/en/documnts/users_guide/index.html}
-    - U{http://www.science.aster.ersdac.or.jp/en/documnts/pdf/ASTER_Ref_V1.pdf}
+@see:Format specifications
+
+    U{http:#www.gdal.org/frmt_hdf4.html}
+    
+    U{http://asterweb.jpl.nasa.gov/documents/ASTER_L1_Product_Spec_Ver_1.3_July01.pdf}
+    
+    U{http://asterweb.jpl.nasa.gov/content/03_data/04_Documents/ASTER_L1_Product_Spec_Ver_1.3_July01.pdf} (inc description of GCTP projection parameters)
+    
+    U{http://lpdaac.usgs.gov/aster/ASTER_GeoRef_FINAL.pdf}
+    
+    U{http://www.science.aster.ersdac.or.jp/en/documnts/users_guide/index.html}
+    
+    U{http://www.science.aster.ersdac.or.jp/en/documnts/pdf/ASTER_Ref_V1.pdf}
 '''
-
+#Regular expression list of file formats
 format_regex=[r'.*\.hdf$'] #HDF inc. ASTER
-'''Regular expression list of file formats'''
 
 #import base dataset module
 import __dataset__
@@ -52,16 +38,15 @@ except ImportError:
     import gdalconst
     import osr
     import ogr
-gdal.AllRegister()
-
+    
 class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
     def __init__(self,f=None):
         if not f:f=self.fileinfo['filepath']
         self.filelist=glob.glob(os.path.splitext(f)[0]+'.*')
         self._gdaldataset = geometry.OpenDataset(f) 
-        #if not self._gdaldataset: #Handled in geometry.OpenDataset
-        #    errmsg=gdal.GetLastErrorMsg()
-        #    raise IOError, 'Unable to open %s\n%s' % (f,errmsg.strip())
+        if not self._gdaldataset:
+            errmsg=gdal.GetLastErrorMsg()
+            raise IOError, 'Unable to open %s\n%s' % (f,errmsg.strip())
         
         self._hdf_md=self._gdaldataset.GetMetadata()
         if not self._hdf_md.get('INSTRUMENTSHORTNAME')=='ASTER':
@@ -170,8 +155,7 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
         self.metadata['filetype'] = self._gdaldataset.GetDriver().ShortName+'/'+self._gdaldataset.GetDriver().LongName + ' (ASTER)'
         self.metadata['sceneid'] = hdf_md['ASTERSCENEID']
         self.metadata['level'] = hdf_md['PROCESSINGLEVELID']
-        if '-' in hdf_md['CALENDARDATE']:self.metadata['imgdate'] = hdf_md['CALENDARDATE']
-        else:self.metadata['imgdate'] = time.strftime('%Y-%m-%d',time.strptime(hdf_md['CALENDARDATE'],'%Y%m%d')) #ISO 8601 
+        self.metadata['imgdate'] = time.strftime('%Y-%m-%d',time.strptime(hdf_md['CALENDARDATE'],'%Y%m%d')) #ISO 8601 
         #self.metadata['imgdate'] = hdf_md['CALENDARDATE'] 
         self.metadata['cloudcover'] = float(hdf_md['SCENECLOUDCOVERAGE'])
         if hdf_md['FLYINGDIRECTION']=='DE':self.metadata['orbit'] = 'Descending'

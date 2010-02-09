@@ -1,34 +1,17 @@
-# Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
-
 '''
 Metadata driver for ACRES ALOS AVNIR-2/PRISM/PALSAR imagery
+===========================================================
+Supports:
+ALOS AVNIR2/PRISM
+PALSAR (Level 1.5 only, Level 1.0 not (yet?) implemented)
 
-B{Supports}:
-    - ALOS AVNIR2/PRISM
-    - ALOS PALSAR (Level 1.5 only, Level 1.0 not (yet?) implemented)
+@see:Format specifications
+    
+    PALSAR Level 1.0: U{http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10287}
 
-B{Format specifications}:
-    - PALSAR Level 1.0: U{http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10287}
-    - PALSAR Level 1.1/1.5: U{http://www.eorc.jaxa.jp/ALOS/doc/fdata/PALSAR_x_Format_EK.pdf}
-    - ALOS AVNIR2/PRISM: U{http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10285}
+    PALSAR Level 1.1/1.5: U{http://www.eorc.jaxa.jp/ALOS/doc/fdata/PALSAR_x_Format_EK.pdf}
+
+    ALOS AVNIR2/PRISM: U{http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10285}
 '''
 format_regex=[
       r'LED-ALAV.*_U$',            #ALOS AVNIR-2 leader file
@@ -56,8 +39,7 @@ except ImportError:
     import gdalconst
     import osr
     import ogr
-gdal.AllRegister()
-
+    
 class Dataset(__dataset__.Dataset): 
     '''Subclass of base Dataset class'''
 
@@ -431,8 +413,8 @@ class Dataset(__dataset__.Dataset):
             recordlength=0
             offset=utilities.readbinary(meta,(record-1)*recordlength,start,stop)
             #don't use ALOS provided no. cols, as it doesn't include 'dummy' pixels
-            #vrt=geometry.CreateRawRasterVRT(self._imgs,self.metadata['cols'],self.metadata['rows'],self.metadata['datatype'],offset,byteorder='MSB')
-            vrt=geometry.CreateRawRasterVRT(self._imgs,offset,nrows,self.metadata['datatype'],offset,byteorder='MSB')
+            #vrt=geometry.CreateRawRasterVRT(self._imgs,self.metadata['cols'],self.metadata['rows'],self.metadata['datatype'],self.metadata['nbits'],offset,byteorder='MSB')
+            vrt=geometry.CreateRawRasterVRT(self._imgs,offset,nrows,self.metadata['datatype'],self.metadata['nbits'],offset,byteorder='MSB')
             self._gdaldataset=geometry.OpenDataset(vrt)
 
         #Reproject corners to lon,lat

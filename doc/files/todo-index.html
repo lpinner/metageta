@@ -31,7 +31,7 @@
       <th class="navbar" align="right" width="100%">
         <table border="0" cellpadding="0" cellspacing="0">
           <tr><th class="navbar" align="center"
-            >MetaGETA (Metadata Gathering, Extraction and Transformation)</th>
+            >Metadata Crawler</th>
           </tr></table></th>
   </tr>
 </table>
@@ -54,30 +54,9 @@
 <center><b>[
  <a href="identifier-index.html">Identifiers</a>
 | <a href="todo-index.html">To Do</a>
-| <a href="change-index.html">Changes</a>
 ]</b></center><br />
 <h1 class="epydoc"><a name="todo">To Do List</a></h1>
 <br />
-<div>
-<table width="100%" class="metadata-index" bgcolor="#e0e0e0"><tr><td class="metadata-index"><b>To Do in <a href="crawler-module.html">crawler</a></b>    <ul class="nomargin">
-      <li><ul>
-      <li>
-        Make this faster!!! It's verrry slow on large filesystems...
-      </li>
-      <li>
-        Explore removing regular expression and searching using fnmatch 
-        instead
-      </li>
-      <li>
-        Can this be rewritten to yield files as they're found instead of 
-        building a complete list of files first? Probably. However, the 
-        multiple loops are there to ensure certain types of files are dealt
-        with first, but perhaps that logic needs to be handled by the 
-        formats library
-      </li>
-    </ul></li>
-    </ul>
-</table></div>
 <div>
 <table width="100%" class="metadata-index" bgcolor="#e0e0e0"><tr><td class="metadata-index"><b>To Do in <a href="formats-module.html">formats</a></b>    <ul class="nomargin">
       <li>Need to pass back info about import errors - warnings.warn perhaps?</li>
@@ -96,11 +75,6 @@
       <li>perhaps log the entire error stack if a file couldn't be opened?</li>
     </ul>
 </table></div>
-<div class="private">
-<table width="100%" class="metadata-index" bgcolor="#e0e0e0"><tr><td class="metadata-index"><b>To Do in <a href="formats.__dataset__-module.html">formats.__dataset__</a></b>    <ul class="nomargin">
-      <li>implement ESRI PGDB rasters (depends on GDAL)</li>
-    </ul>
-</table></div>
 <div>
 <table width="100%" class="metadata-index" bgcolor="#e0e0e0"><tr><td class="metadata-index"><b>To Do in <a href="formats.ali_hyperion-module.html">formats.ali_hyperion</a></b>    <ul class="nomargin">
       <li>extract stuff from FDGC metadata?</li>
@@ -112,25 +86,10 @@
     </ul>
 </table></div>
 <div>
-<table width="100%" class="metadata-index" bgcolor="#e0e0e0"><tr><td class="metadata-index"><b>To Do in <a href="formats.nitf-module.html">formats.nitf</a></b>    <ul class="nomargin">
-      <li>GDAL upscales non standard bit depths. e.g 11 bit data is treated as 16
-    bit. Currently the NITF driver reports the upscaled bit depth. The 
-    actual bit depth can be extracted using the  NITF_ABPP metadata item. 
-    Should this be reported instead of the upscaled bit depth...?</li>
-      <li>support NITF with subdatasets</li>
-    </ul>
-</table></div>
-<div>
 <table width="100%" class="metadata-index" bgcolor="#e0e0e0"><tr><td class="metadata-index"><b>To Do in <a href="formats.quickbird.Dataset-class.html#__getmetadata__">formats.quickbird.Dataset.__getmetadata__</a></b>    <ul class="nomargin">
+      <li>does not handle QB tile files (*til). Must check if GDAL can read 
+    them...?</li>
       <li>Fix QB GDA94 Geographic CS &quot;Unknown datum&quot; problem</li>
-    </ul>
-</table></div>
-<div>
-<table width="100%" class="metadata-index" bgcolor="#e0e0e0"><tr><td class="metadata-index"><b>To Do in <a href="formats.spot_cap-module.html">formats.spot_cap</a></b>    <ul class="nomargin">
-      <li>Level 1A - is not geometrically corrected, so cell size isn't really 
-    appropriate, however we calculate it from the geographic corner coords.
-    Perhaps it would be better to just assign default values depending on 
-    whether the imagery is Multispectral, Pan or Merged Multi/Pan...?</li>
     </ul>
 </table></div>
 <div>
@@ -140,24 +99,9 @@
     </ul>
 </table></div>
 <div>
-<table width="100%" class="metadata-index" bgcolor="#e0e0e0"><tr><td class="metadata-index"><b>To Do in <a href="geometry-module.html">geometry</a></b>    <ul class="nomargin">
-      <li>Does the module name <i>really</i> describe its functions anymore? It 
-    doesn't just do geometry now...</li>
-    </ul>
-</table></div>
-<div>
 <table width="100%" class="metadata-index" bgcolor="#e0e0e0"><tr><td class="metadata-index"><b>To Do in <a href="runtransform-module.html">runtransform</a></b>    <ul class="nomargin">
       <li>Set up logging &amp; debug properly. Enable selecting if MEF is created
     regardless of whether overviews exist</li>
-      <li>Fix the splashscreen, it's conflicting with the GetArgs GUI and needs 
-    to be sorted out - low priority...</li>
-    </ul>
-</table></div>
-<div>
-<table width="100%" class="metadata-index" bgcolor="#e0e0e0"><tr><td class="metadata-index"><b>To Do in <a href="transforms-module.html">transforms</a></b>    <ul class="nomargin">
-      <li>Should XSL files be described by a .py instead of a .xml file? That way
-    they could be imported automatically and additional metadata elements 
-    could be documented there instead of above here...</li>
     </ul>
 </table></div>
 <div>
@@ -186,14 +130,14 @@
       <th class="navbar" align="right" width="100%">
         <table border="0" cellpadding="0" cellspacing="0">
           <tr><th class="navbar" align="center"
-            >MetaGETA (Metadata Gathering, Extraction and Transformation)</th>
+            >Metadata Crawler</th>
           </tr></table></th>
   </tr>
 </table>
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Jan 22 11:40:47 2010
+    Generated by Epydoc 3.0.1 on Wed Oct 07 14:35:45 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

@@ -39,7 +39,7 @@ format_regex=[r'.*\.ntf$'] #NITF
 import __default__
 
 # import other modules
-import sys, os, glob
+import sys, os, glob,time
 import utilities
 import geometry
 
@@ -66,7 +66,7 @@ class Dataset(__default__.Dataset):
         __default__.Dataset.__getmetadata__(self, f) #autopopulate basic metadata
         gdalmd=self._gdaldataset.GetMetadata()
         self.metadata['title']=gdalmd.get('NITF_FTITLE','')
-        self.metadata['imgdate']=gdalmd.get('NITF_STDIDC_ACQUISITION_DATE','')[0:8]
+        if 'NITF_STDIDC_ACQUISITION_DATE' in gdalmd:self.metadata['imgdate']=time.strftime('%Y-%m-%d',time.strptime(gdalmd.get('NITF_STDIDC_ACQUISITION_DATE','')[0:8],'%Y%m%d')) #ISO 8601 
         if 'NITF_USE00A_SUN_EL' in gdalmd:self.metadata['sunelevation']=float(gdalmd['NITF_USE00A_SUN_EL'])
         if 'NITF_USE00A_SUN_AZ' in gdalmd:self.metadata['sunazimuth']=float(gdalmd['NITF_USE00A_SUN_AZ'])
         self.metadata['satellite']=gdalmd.get('NITF_STDIDC_MISSION','')

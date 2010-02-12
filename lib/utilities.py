@@ -167,6 +167,8 @@ def ByteOrder():
         raise Exception,'Unknown byte order'
 
 def _WinFileOwner(filepath):
+    import pywintypes
+    import pythoncom
     import win32com.client
     import win32net
     import win32netcon

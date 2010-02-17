@@ -1,2 +1,2 @@
-@call %~DP0\setenv.bat
+@call "%~DP0\setenv.bat"
 @cmd.exe

@@ -1,7 +1,7 @@
 @echo off
-call "%~DP0\setenv.bat"
+call "%~DP0setenv.bat"
 
-call python.exe runtransform.py %*
+call python.exe "%~DP0runtransform.py" %*
 pause
 
 REM TODO... plug in the GUI progress logger...

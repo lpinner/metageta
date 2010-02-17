@@ -1,5 +1,5 @@
 @echo off
-call "%~DP0\setenv.bat"
+call "%~DP0setenv.bat"
 
-call python.exe docgen.py
+call python.exe "%~DP0docgen.py"
 pause

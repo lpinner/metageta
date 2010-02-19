@@ -1,4 +1,5 @@
 @echo off
+setlocal
 call "%~DP0setenv.bat"
 
 call python.exe "%~DP0runtransform.py" %*
@@ -18,3 +19,4 @@ REM pause
 REM ) ELSE (
 REM start "Crawler" /B pythonw.exe runtransform.py %*
 REM )
+endlocal

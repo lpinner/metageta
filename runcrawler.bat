@@ -1,4 +1,5 @@
 @echo off
+setlocal
 call "%~DP0setenv.bat"
 
 REM Check if the progress bar GUI will be used.
@@ -18,3 +19,4 @@ if /i "%gui%"=="0" (
     REM pause
     start "Crawler" /b pythonw.exe "%~DP0runcrawler.py" --gui %*
 )
+endlocal

@@ -374,6 +374,8 @@ class ExcelWriter:
             @type    fields: C{list}
             @param   fields: List of column/field headers
         '''
+        if os.path.exists(xls):os.remove(xls)
+
         fields.sort()
         self._file=xls
         self._fields=fields
@@ -386,9 +388,7 @@ class ExcelWriter:
         self._heading = xlwt.XFStyle()
         self._heading.font = font        
 
-        if os.path.exists(xls):os.remove(xls)
         self._wb = xlwt.Workbook(encoding='latin-1')
-        #self._wb.encoding='latin-1'
         self.__addsheet__()
 
     def __addsheet__(self):
@@ -418,9 +418,11 @@ class ExcelWriter:
         self._wb.save(self._file)
         
     def __del__(self):
-        self._wb.save(self._file)
-        #del self._ws
-        #del self._wb
+        try:
+            self._wb.save(self._file)
+            del self._ws
+            del self._wb
+        except:pass
     
 
 class ExcelReader:

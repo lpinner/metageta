@@ -691,8 +691,9 @@ class ShapeWriter:
             @type overwrite:  C{boolean}
             @param overwrite: Overwrite or append to shapefile
         '''
+        gdal.ErrorReset()
+        ogr.UseExceptions()
         try:
-            gdal.ErrorReset()
             self._srs=osr.SpatialReference()
             self.fields=[]
             if srs_wkt:self._srs.ImportFromWkt(srs_wkt)

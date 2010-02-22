@@ -140,15 +140,32 @@ def _stretch_NONE(vrtcols,vrtrows,ds,bands):
         @return:      VRT XML string
     '''
     vrt=[]
+    rb=ds.GetRasterBand(1)
+    if rb.DataType == gdal.GDT_Byte:
+        rescale=False
+    else:
+        rescale=True
+        dfScaleSrcMin,dfScaleSrcMax=GetDataTypeRange(rb.DataType)
+        dfRatio,dfOffset = GetScaleRatioOffset(dfScaleSrcMin,dfScaleSrcMax,0,255)
     for bandnum, band in enumerate(bands):
         srcband=ds.GetRasterBand(band)
         vrt.append('  <VRTRasterBand dataType="Byte" band="%s">' % str(bandnum+1))
-        vrt.append('    <SimpleSource>')
-        vrt.append('      <SourceFilename relativeToVRT="0">%s</SourceFilename>' % ds.GetDescription())
-        vrt.append('      <SourceBand>%s</SourceBand>' % band)
-        vrt.append('      <SrcRect xOff="0" yOff="0" xSize="%s" ySize="%s"/>' % (ds.RasterXSize,ds.RasterYSize))
-        vrt.append('      <DstRect xOff="0" yOff="0" xSize="%s" ySize="%s"/>' % (vrtcols,vrtrows))
-        vrt.append('    </SimpleSource>')
+        if rescale:
+            vrt.append('    <ComplexSource>')
+            vrt.append('      <SourceFilename relativeToVRT="0">%s</SourceFilename>' % ds.GetDescription())
+            vrt.append('      <SourceBand>%s</SourceBand>' % band)
+            vrt.append('      <SrcRect xOff="0" yOff="0" xSize="%s" ySize="%s"/>' % (ds.RasterXSize,ds.RasterYSize))
+            vrt.append('      <DstRect xOff="0" yOff="0" xSize="%s" ySize="%s"/>' % (vrtcols,vrtrows))
+            vrt.append('      <ScaleOffset>%s</ScaleOffset>' % dfOffset)
+            vrt.append('      <ScaleRatio>%s</ScaleRatio>' % dfRatio)
+            vrt.append('    </ComplexSource>')
+        else:
+            vrt.append('    <SimpleSource>')
+            vrt.append('      <SourceFilename relativeToVRT="0">%s</SourceFilename>' % ds.GetDescription())
+            vrt.append('      <SourceBand>%s</SourceBand>' % band)
+            vrt.append('      <SrcRect xOff="0" yOff="0" xSize="%s" ySize="%s"/>' % (ds.RasterXSize,ds.RasterYSize))
+            vrt.append('      <DstRect xOff="0" yOff="0" xSize="%s" ySize="%s"/>' % (vrtcols,vrtrows))
+            vrt.append('    </SimpleSource>')
         vrt.append('  </VRTRasterBand>')
     return '\n'.join(vrt)
 
@@ -455,6 +472,25 @@ _stretch_COLORTABLELUT=_stretch_COLOURTABLELUT #Synonym for the norteamericanos
 #========================================================================================================
 #Helper functions
 #========================================================================================================
+def GetScaleRatioOffset(dfScaleSrcMin,dfScaleSrcMax,dfScaleDstMin,dfScaleDstMax):
+    ''' Calculate data scale and offset
+
+        @type dfScaleSrcMin:   C{float}
+        @param dfScaleSrcMin:  input minimum value
+        @type dfScaleSrcMax:   C{float}
+        @param dfScaleSrcMax:  input maximum value
+        @type dfScaleDstMin:   C{float}
+        @param dfScaleDstMin:  output minimum value
+        @type dfScaleDstMax:   C{float}
+        @param dfScaleDstMax:  output maximum value
+        @rtype:           C{[float,float]}
+        @return:          Scale and offset values
+    '''
+    dfScaleSrcMin,dfScaleSrcMax,dfScaleDstMin,dfScaleDstMax=map(float, [dfScaleSrcMin,dfScaleSrcMax,dfScaleDstMin,dfScaleDstMax])
+    dfScale = (float(dfScaleDstMax) - dfScaleDstMin) / (dfScaleSrcMax - dfScaleSrcMin)
+    dfOffset = -1 * dfScaleSrcMin * dfScale + dfScaleDstMin
+    return dfScale,dfOffset
+
 def GetDataTypeRange(datatype):
     ''' Calculate data type range
 
@@ -470,7 +506,7 @@ def GetDataTypeRange(datatype):
         dfScaleSrcMax=2**(nbits)-1
     else:
         dfScaleSrcMin=-2**(nbits-1) #Signed
-        dfScaleSrcMax= 2**(nbits-1)
+        dfScaleSrcMax= 2**(nbits-1)-1
     return (dfScaleSrcMin,dfScaleSrcMax)
 def HistPercentileValue(inhist, percent, binsize, lowerlimit):
     ''' Returns the score at a given percentile relative to the distribution given by inhist.

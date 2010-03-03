@@ -701,7 +701,7 @@ class ShapeWriter:
             self._shape=self.__openshapefile__(shapefile,fields,overwrite)
         except Exception, err:
             self.__error__(err)
-
+        ogr.DontUseExceptions()
     def __del__(self):
         '''Shutdown and release the lock on the shapefile'''
         gdal.ErrorReset()

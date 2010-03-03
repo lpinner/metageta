@@ -73,20 +73,27 @@ def getoverview(ds,outfile,width,format,bands,stretch_type,*stretch_args):
 
     cols=ds.RasterXSize
     rows=ds.RasterYSize
+    vrtcols=width
+    vrtrows=int(math.ceil(width*float(rows)/cols))
+
+    vrtdrv=gdal.GetDriverByName('VRT')
+    tempvrts={} #dict with keys=file descriptor and values=[filename,GDALDataset]
 
     #Below is a bit of a kludge to handle creating a VRT that is based on an in-memory vrt file
-    bTempVRT=False
     drv=ds.GetDriver().ShortName
     desc=ds.GetDescription()
     if drv == 'VRT':
         if not desc or desc[0] == '<':# input path is an in-memory vrt file
-            vrtdrv=gdal.GetDriverByName('VRT')
             vrtfd,vrtfn=tempfile.mkstemp('.vrt')
             ds=vrtdrv.CreateCopy(vrtfn,ds)
-            bTempVRT=True
+            tempvrts[vrtfd]=[vrtfn,ds]
         
-    vrtcols=width
-    vrtrows=int(math.ceil(width*float(rows)/cols))
+    #if stretch_type != 'NONE':
+    #    tmpxml=stretch('NONE',vrtcols,vrtrows,ds,bands)
+    #    vrtfd,vrtfn=tempfile.mkstemp('.vrt')
+    #    ds=vrtdrv.CreateCopy(vrtfn,geometry.OpenDataset(tmpxml))
+    #    tempvrts[vrtfd]=[vrtfn,ds]
+
     vrtxml=stretch(stretch_type,vrtcols,vrtrows,ds,bands,*stretch_args)
     vrtds=geometry.OpenDataset(vrtxml)
     if outfile:
@@ -99,9 +106,11 @@ def getoverview(ds,outfile,width,format,bands,stretch_type,*stretch_args):
         
         outfile=os.fdopen(fd).read()
         os.unlink(fn)
-    if bTempVRT:
-        ds=None;del ds
-        os.close(vrtfd);os.unlink(vrtfn)
+    for vrt in tempvrts:
+        tempvrts[vrt][1]=None
+        os.close(vrt)
+        del tempvrts[vrt][1]
+        os.unlink(tempvrts[vrt][0])
     return outfile
 #========================================================================================================
 #Stretch algorithms
@@ -194,16 +203,12 @@ def _stretch_PERCENT(vrtcols,vrtrows,ds,bands,low,high):
         srcband=ds.GetRasterBand(band)
         nbits=gdal.GetDataTypeSize(srcband.DataType)
         dfScaleSrcMin,dfScaleSrcMax=GetDataTypeRange(srcband.DataType)
-        dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = srcband.GetStatistics(0,1)
+        #dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = srcband.GetStatistics(0,1)
+        dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = srcband.GetStatistics(1,1)
         nbins=256
-        #if nbits == 8:binsize=1
-        #else:binsize=(dfBandMax-dfBandMin)/nbins
-        binsize=(dfBandMax-dfBandMin)/nbins
-        #else:binsize=int(math.ceil((dfBandMax-dfBandMin)/nbins))
-        #Compute the histogram w/out the max.min values.
-        #hs=srcband.GetHistogram(dfBandMin-0.5,dfBandMax+0.5, nbins,include_out_of_range=1)
-        #hs=srcband.GetHistogram(dfBandMin+abs(dfBandMin)*0.0001,dfBandMax-abs(dfBandMax)*0.0001, nbins,include_out_of_range=0,approx_ok=0)
-        hs=srcband.GetHistogram(dfBandMin+abs(dfBandMin)*0.0001,dfBandMax-abs(dfBandMax)*0.0001, nbins,include_out_of_range=1,approx_ok=0)
+        binsize=int(math.ceil((dfBandMax-dfBandMin)/nbins))
+        #hs=srcband.GetHistogram(dfBandMin+abs(dfBandMin)*0.0001,dfBandMax-abs(dfBandMax)*0.0001, nbins,include_out_of_range=1,approx_ok=0)
+        hs=srcband.GetHistogram(dfBandMin+abs(dfBandMin)*0.0001,dfBandMax-abs(dfBandMax)*0.0001, nbins,include_out_of_range=1,approx_ok=1)
         #Check that outliers haven't really skewed the histogram
         #this is a kludge to workaround datasets with multiple nodata values
         for j in range(0,10):
@@ -216,7 +221,8 @@ def _stretch_PERCENT(vrtcols,vrtrows,ds,bands,low,high):
                         if i<startbin:startbin=i
                 dfBandMin=dfBandMin+startbin*binsize
                 dfBandMax=dfBandMin+lastbin*binsize+binsize
-                hs=srcband.GetHistogram(dfBandMin-abs(dfBandMin)*0.0001,dfBandMax+abs(dfBandMax)*0.0001, nbins,include_out_of_range=0,approx_ok=0)
+                #hs=srcband.GetHistogram(dfBandMin-abs(dfBandMin)*0.0001,dfBandMax+abs(dfBandMax)*0.0001,include_out_of_range=1,approx_ok=0)
+                hs=srcband.GetHistogram(dfBandMin-abs(dfBandMin)*0.0001,dfBandMax+abs(dfBandMax)*0.0001,include_out_of_range=1,approx_ok=1)
                 if nbits == 8:binsize=1
                 else:binsize=(dfBandMax-dfBandMin)/nbins
             else:break
@@ -259,6 +265,7 @@ def _stretch_MINMAX(vrtcols,vrtrows,ds,bands):
     for bandnum, band in enumerate(bands):
         srcband=ds.GetRasterBand(band)
         dfScaleSrcMin,dfScaleSrcMax=GetDataTypeRange(srcband.DataType)
+        #dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = srcband.GetStatistics(0,1)
         dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = srcband.GetStatistics(1,1)
         dfScaleDstMin,dfScaleDstMax=0.0,255.0 #Always going to be Byte for output jpegs
         dfScale = (dfScaleDstMax - dfScaleDstMin) / (dfScaleSrcMax - dfScaleSrcMin)
@@ -295,6 +302,7 @@ def _stretch_STDDEV(vrtcols,vrtrows,ds,bands,std):
     for bandnum, band in enumerate(bands):
         srcband=ds.GetRasterBand(band)
         dfScaleSrcMin,dfScaleSrcMax=GetDataTypeRange(srcband.DataType)
+        #dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = srcband.GetStatistics(0,1)
         dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = srcband.GetStatistics(1,1)
         dfScaleDstMin,dfScaleDstMax=0.0,255.0 #Always going to be Byte for output jpegs
         dfScaleSrcMin=max([dfScaleSrcMin, math.floor(dfBandMean-std*dfBandStdDev)])
@@ -404,7 +412,8 @@ def _stretch_COLOURTABLE(vrtcols,vrtrows,ds,bands):
     if nodata is not None:nodata=int(nodata)
     ct=rb.GetColorTable()
     min,max=map(int,rb.ComputeRasterMinMax())
-    rat=rb.GetHistogram(min, max, abs(min)+abs(max)+1, 1, 0)
+    #rat=rb.GetHistogram(min, max, abs(min)+abs(max)+1,include_out_of_range=1,approx_ok=0)
+    rat=rb.GetHistogram(min, max, abs(min)+abs(max)+1,include_out_of_range=1,approx_ok=1)
     vals=[]
     i=0
     ct_count=ct.GetCount()

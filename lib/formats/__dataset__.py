@@ -242,7 +242,7 @@ class Dataset(object):
                 #Pretty print the SRS
                 srs=osr.SpatialReference(self._metadata['srs'])
                 self._metadata['srs']=srs.ExportToPrettyWkt()
-                if self._metadata['compressionratio'] > 10000: #Possibly a dodgy JP2 that will grash GDAL and therefore python...
+                if self._metadata['compressionratio'] > 10000 and self._metadata['filetype'] != 'VRT/Virtual Raster': #Possibly a dodgy JP2 that will grash GDAL and therefore python...
                     raise IOError, 'Unable to extract metadata from %s\nFile may be corrupt' % self.fileinfo['filepath']
 
             return self._metadata

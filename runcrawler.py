@@ -90,16 +90,15 @@ def main(dir,xls,shp,log, gui=False, debug=False, nomd=False, getovs=False):
     #pl.debug('%s %s %s %s %s %s' % (dir,xls,shp,log,gui,debug))
     pl.debug(' '.join(sys.argv))
 
-    if os.path.exists(xls):
-        try:
-            os.remove(xls)
-        except:
-            pl.error('Unable to delete %s' % xls)
-            del pl
-            sys.exit(1)
-
-    ExcelWriter=utilities.ExcelWriter(xls,format_fields.keys())
-    ShapeWriter=geometry.ShapeWriter(shp,format_fields,overwrite=True)
+    try:
+        ExcelWriter=utilities.ExcelWriter(xls,format_fields.keys())
+        ShapeWriter=geometry.ShapeWriter(shp,format_fields,overwrite=True)
+    except Exception,err:
+        pl.error('%s' % utilities.ExceptionInfo())
+        pl.debug(utilities.ExceptionInfo(10))
+        del pl
+        time.sleep(0.5)# So the progresslogger picks up the error message before this python process exits.
+        sys.exit(1)
 
     pl.info('Searching for files...')
     now=time.time()
@@ -304,12 +303,12 @@ class GetArgs:
             var.set(ad)
             dir.set(ad)
 
-    def cmdFile(self,var,filter,dir):
+    def cmdFile(self,var,filter,dir,delete=False):
         fd = tkFileDialog.asksaveasfilename(parent=self.root,filetypes=filter,initialdir=dir.get(),title='Please select a file')
         if fd:
             var.set(fd)
             dir.set(os.path.split(fd)[0])
-            if os.path.exists(fd):
+            if os.path.exists(fd) and delete:
                 try:os.remove(fd)
                 except:
                     tkMessageBox.showerror(parent=self.root, title='Error', message='Unable to delete %s' % fd)

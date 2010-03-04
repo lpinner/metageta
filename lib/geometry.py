@@ -691,8 +691,9 @@ class ShapeWriter:
             @type overwrite:  C{boolean}
             @param overwrite: Overwrite or append to shapefile
         '''
+        gdal.ErrorReset()
+        ogr.UseExceptions()
         try:
-            gdal.ErrorReset()
             self._srs=osr.SpatialReference()
             self.fields=[]
             if srs_wkt:self._srs.ImportFromWkt(srs_wkt)
@@ -700,7 +701,7 @@ class ShapeWriter:
             self._shape=self.__openshapefile__(shapefile,fields,overwrite)
         except Exception, err:
             self.__error__(err)
-
+        ogr.DontUseExceptions()
     def __del__(self):
         '''Shutdown and release the lock on the shapefile'''
         gdal.ErrorReset()

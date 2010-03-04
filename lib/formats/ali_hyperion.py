@@ -156,9 +156,10 @@ class Dataset(__dataset__.Dataset):
                 files.append(sd.replace(f,strips[i]))
                 dstrects.append([i*(scols-xoff),0,scols,srows])
             self._gdaldataset=geometry.OpenDataset(geometry.CreateMosaicedVRT(files,multibands,srcrects,dstrects,multicols,srows,'Int16'))
-            self._gdaldataset.GetRasterBand(2).SetRasterColorInterpretation(gdal.GCI_BlueBand)
-            self._gdaldataset.GetRasterBand(3).SetRasterColorInterpretation(gdal.GCI_GreenBand)
-            self._gdaldataset.GetRasterBand(4).SetRasterColorInterpretation(gdal.GCI_RedBand)
+            self._gdaldataset.GetRasterBand(2).SetNoDataValue(0)
+            self._gdaldataset.GetRasterBand(3).SetNoDataValue(0)
+            self._gdaldataset.GetRasterBand(4).SetNoDataValue(0)
+            self._stretch=('STDDEV',(4,3,2),[2]) 
             
             #Extract other metadata
             met=os.path.splitext(f)[0]+'.met'
@@ -191,7 +192,7 @@ class Dataset(__dataset__.Dataset):
             ncols=[]
             nrows=[]
             nbands=0
-            bands=glob.glob(os.path.dirname(f)+'/eo1*_b*.tif')
+            bands=glob.glob(os.path.join(os.path.dirname(f),'eo1*_b*.tif'))
             for band in bands:
                 band=geometry.OpenDataset(band)
                 ncols.append(str(band.RasterXSize))
@@ -211,12 +212,10 @@ class Dataset(__dataset__.Dataset):
                 multinrows.pop(panindex)
             multibands.sort()
             self._gdaldataset = geometry.OpenDataset(geometry.CreateSimpleVRT(multibands,multincols[0],multinrows[0],'Int16'))
-            self._gdaldataset.GetRasterBand(2).SetRasterColorInterpretation(gdal.GCI_BlueBand)
-            self._gdaldataset.GetRasterBand(2).SetNoDataValue(0.0)
-            self._gdaldataset.GetRasterBand(3).SetRasterColorInterpretation(gdal.GCI_GreenBand)
-            self._gdaldataset.GetRasterBand(3).SetNoDataValue(0.0)
-            self._gdaldataset.GetRasterBand(4).SetRasterColorInterpretation(gdal.GCI_RedBand)
-            self._gdaldataset.GetRasterBand(4).SetNoDataValue(0.0)
+            self._gdaldataset.GetRasterBand(2).SetNoDataValue(0) 
+            self._gdaldataset.GetRasterBand(3).SetNoDataValue(0)
+            self._gdaldataset.GetRasterBand(4).SetNoDataValue(0)
+            self._stretch=('STDDEV',(4,3,2),[2]) 
             
             
             ncols=','.join(ncols)
@@ -320,9 +319,10 @@ class Dataset(__dataset__.Dataset):
                 multinrows.pop(panindex)
             multibands.sort()
             self._gdaldataset = geometry.OpenDataset(geometry.CreateSimpleVRT(multibands,multincols[0],multinrows[0],'Int16'))
-            self._gdaldataset.GetRasterBand(2).SetRasterColorInterpretation(gdal.GCI_BlueBand)
-            self._gdaldataset.GetRasterBand(3).SetRasterColorInterpretation(gdal.GCI_GreenBand)
-            self._gdaldataset.GetRasterBand(4).SetRasterColorInterpretation(gdal.GCI_RedBand)
+            self._gdaldataset.GetRasterBand(2).SetNoDataValue(0)
+            self._gdaldataset.GetRasterBand(3).SetNoDataValue(0)
+            self._gdaldataset.GetRasterBand(4).SetNoDataValue(0)
+            self._stretch=('STDDEV',(4,3,2),[2]) 
 
             ncols=','.join(ncols)
             nrows=','.join(nrows)
@@ -443,9 +443,6 @@ class Dataset(__dataset__.Dataset):
             dstrect=[int(nrows/2.5-ncols), 0,ncols,nrows]
             vrt=geometry.CreateMosaicedVRT([sd.GetDescription()],[43,30,21],[srcrect],[dstrect],vrtcols,vrtrows,self.metadata['datatype'])
             self._gdaldataset=geometry.OpenDataset(vrt)
-            self._gdaldataset.GetRasterBand(3).SetRasterColorInterpretation(gdal.GCI_BlueBand)
-            self._gdaldataset.GetRasterBand(2).SetRasterColorInterpretation(gdal.GCI_GreenBand)
-            self._gdaldataset.GetRasterBand(1).SetRasterColorInterpretation(gdal.GCI_RedBand)
             self._gdaldataset.GetRasterBand(3).SetNoDataValue(0)
             self._gdaldataset.GetRasterBand(2).SetNoDataValue(0)
             self._gdaldataset.GetRasterBand(1).SetNoDataValue(0)

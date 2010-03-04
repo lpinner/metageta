@@ -75,6 +75,7 @@ overviews._stretch_NONE	overviews-module.html#_stretch_NONE
 overviews._stretch_PERCENT	overviews-module.html#_stretch_PERCENT
 overviews._stretch_COLOURTABLE	overviews-module.html#_stretch_COLOURTABLE
 overviews.ExpandedColourLUT	overviews-module.html#ExpandedColourLUT
+overviews.GetScaleRatioOffset	overviews-module.html#GetScaleRatioOffset
 overviews._stretch_RANDOM	overviews-module.html#_stretch_RANDOM
 overviews._stretch_MINMAX	overviews-module.html#_stretch_MINMAX
 overviews.ParseColourLUT	overviews-module.html#ParseColourLUT

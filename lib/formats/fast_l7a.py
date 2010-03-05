@@ -124,7 +124,7 @@ class Dataset(__dataset__.Dataset):
         md['celly']=md['cellx']
         md['nbits']=8         #int(utilities.readascii(hdr,(rec-1)*rl,984,985)) always 8 bit
         md['datatype']='Byte' 
-        md['nodata']=0 
+        md['nodata']='0' 
         bands_present=utilities.readascii(hdr,(rec-1)*rl,1056,1087)
 
         bandindices=[[1131,1159],[1170,1198],[1211,1239],[1250,1278],[1291,1319],[1330,1358]]
@@ -256,10 +256,15 @@ class Dataset(__dataset__.Dataset):
             self._gdaldataset = geometry.OpenDataset(f)
             metadata=self._gdaldataset.GetMetadata()
             md['metadata']='\n'.join(['%s: %s' %(m,metadata[m]) for m in metadata])
-        except:#build a VRT dataset - if we want to use this fgor anything other than overview generation, should probably fill out the geotransform, srs, metadata etc...
+            #Fix for Issue 17
+            for i in range(1,self._gdaldataset.RasterCount+1):
+                self._gdaldataset.GetRasterBand(i).SetNoDataValue(float(md['nodata']))
+            
+        except:#build a VRT dataset - if we want to use this for anything other than overview generation, should probably fill out the geotransform, srs, metadata etc...
             bands=bandfiles.values()
             bands.sort()
-            vrtxml=geometry.CreateRawRasterVRT(bands,md['cols'],md['rows'], md['datatype'])
+            #vrtxml=geometry.CreateRawRasterVRT(bands,md['cols'],md['rows'], md['datatype']) #Fix for Issue 17
+            vrtxml=geometry.CreateRawRasterVRT(bands,md['cols'],md['rows'], md['datatype'],nodata=md['nodata'])
             self._gdaldataset = geometry.OpenDataset(vrtxml)
             md['metadata']=hdr
 

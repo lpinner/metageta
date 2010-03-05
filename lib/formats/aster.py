@@ -59,10 +59,6 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
         if not f:f=self.fileinfo['filepath']
         self.filelist=glob.glob(os.path.splitext(f)[0]+'.*')
         self._gdaldataset = geometry.OpenDataset(f) 
-        #if not self._gdaldataset: #Handled in geometry.OpenDataset
-        #    errmsg=gdal.GetLastErrorMsg()
-        #    raise IOError, 'Unable to open %s\n%s' % (f,errmsg.strip())
-        
         self._hdf_md=self._gdaldataset.GetMetadata()
         if not self._hdf_md.get('INSTRUMENTSHORTNAME')=='ASTER':
             raise NotImplementedError #This error gets ignored in __init__.Open()
@@ -241,4 +237,5 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
         vrtbands=[sd for sd,sn in hdf_sd[0:4]]#The 4 VNIR bands
         vrt=geometry.CreateSimpleVRT(vrtbands,vrtrows,vrtcols,datatypes.split(',')[0])
         self._gdaldataset=geometry.OpenDataset(vrt)    
-            
+        for i in range(1,5):
+            self._gdaldataset.GetRasterBand(i).SetNoDataValue(0)

@@ -115,7 +115,6 @@ class Dataset(object):
         rows=ds.RasterYSize
         nbits=gdal.GetDataTypeSize(rb.DataType)
         datatype=gdal.GetDataTypeName(rb.DataType)
-        nodata=rb.GetNoDataValue()
         stretch_type=None
         stretch_args=None
         rgb_bands = {}
@@ -142,8 +141,10 @@ class Dataset(object):
         if stretch_type is None or stretch_args is None:
             if nbands < 3:
                 #Default - assume greyscale 
-                stretch_type='PERCENT'
-                stretch_args=[2,98]
+                #stretch_type='PERCENT'
+                #stretch_args=[2,98]
+                stretch_type='STDDEV'
+                stretch_args=[2]
                 rgb_bands=[1]
                 #But check if there's an attribute table or color table
                 #and change the stretch type to colour table
@@ -154,9 +155,6 @@ class Dataset(object):
                         stretch_type='COLOURTABLE'
                         stretch_args=[]
                     elif at and at.GetRowCount() > 0:
-                        #if at.GetRowCount() <=256:
-                        #    stretch_type='RANDOM'
-                        #    stretch_args=[]
                         stretch_type='RANDOM'
                         stretch_args=[]
                         

@@ -69,6 +69,8 @@ class Dataset(__dataset__.Dataset):
         @type  f: string
         @param f: a filepath to the dataset or a VRT XML string
         @return:  None
+
+        @todo: We force a NoData value. This is not ideal, but it makes for better overview images. 
         '''
         if not f:f=self.fileinfo['filepath']
         try:
@@ -127,10 +129,15 @@ class Dataset(__dataset__.Dataset):
                 self.metadata['datatype']=gdal.GetDataTypeName(rb.DataType)
                 self.metadata['nbits']=gdal.GetDataTypeSize(rb.DataType)
                 nodata=rb.GetNoDataValue()
-                if nodata:self.metadata['nodata']=nodata
-                else:
-                    if self.metadata['datatype'][0:4] in ['Byte','UInt']: self.metadata['nodata']=0 #Unsigned, assume 0
-                    else:self.metadata['nodata']=-2**(self.metadata['nbits']-1)                     #Signed, assume min value in data range
+                if nodata is not None:self.metadata['nodata']=str(nodata)
+                else: 
+                    if self.metadata['datatype'][0:4] in ['Byte','UInt']: nodata=0 #Unsigned, assume 0
+                    else:nodata=-2**(self.metadata['nbits']-1)                     #Signed, assume min value in data range
+                    self.metadata['nodata']=str(nodata)
+                    #Fix for Issue 17
+                    for i in range(1,self._gdaldataset.RasterCount+1):
+                        self._gdaldataset.GetRasterBand(i).SetNoDataValue(nodata)
+
                 metadata=self._gdaldataset.GetMetadata()
                 self.metadata['metadata']='\n'.join(['%s: %s' %(m,metadata[m]) for m in metadata])
                 self.metadata['filesize']=sum([os.path.getsize(tmp) for tmp in self.filelist])

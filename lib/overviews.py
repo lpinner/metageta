@@ -203,29 +203,36 @@ def _stretch_PERCENT(vrtcols,vrtrows,ds,bands,low,high):
         srcband=ds.GetRasterBand(band)
         nbits=gdal.GetDataTypeSize(srcband.DataType)
         dfScaleSrcMin,dfScaleSrcMax=GetDataTypeRange(srcband.DataType)
-        #dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = srcband.GetStatistics(0,1)
-        dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = srcband.GetStatistics(1,1)
-        nbins=256
-        binsize=int(math.ceil((dfBandMax-dfBandMin)/nbins))
+        #dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = GetStatistics(srcband,0,1)
+        dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = GetStatistics(srcband,1,1)
+        dfBandRange=dfBandMax-dfBandMin
+        if nbits == 8 or dfBandRange<=255:
+            nbins=int(math.ceil(dfBandRange))
+            binsize=1
+        else:
+            nbins=256
+            binsize=int(math.ceil((dfBandRange)/nbins))
+        
         #hs=srcband.GetHistogram(dfBandMin+abs(dfBandMin)*0.0001,dfBandMax-abs(dfBandMax)*0.0001, nbins,include_out_of_range=1,approx_ok=0)
-        hs=srcband.GetHistogram(dfBandMin+abs(dfBandMin)*0.0001,dfBandMax-abs(dfBandMax)*0.0001, nbins,include_out_of_range=1,approx_ok=1)
+        #hs=srcband.GetHistogram(dfBandMin+abs(dfBandMin)*0.0001,dfBandMax-abs(dfBandMax)*0.0001, nbins,include_out_of_range=1,approx_ok=1)
+        hs=srcband.GetHistogram(dfBandMin+abs(dfBandMin)*0.0001,dfBandMax-abs(dfBandMax)*0.0001, nbins,include_out_of_range=0,approx_ok=1)
         #Check that outliers haven't really skewed the histogram
         #this is a kludge to workaround datasets with multiple nodata values
-        for j in range(0,10):
-            if len([v for v in hs if v > 0]) < nbins/4: #if only 25% of the bins have values...
-                startbin=256
-                lastbin=0
-                for i,bin in enumerate(hs):
-                    if bin > 0:
-                        lastbin=i
-                        if i<startbin:startbin=i
-                dfBandMin=dfBandMin+startbin*binsize
-                dfBandMax=dfBandMin+lastbin*binsize+binsize
-                #hs=srcband.GetHistogram(dfBandMin-abs(dfBandMin)*0.0001,dfBandMax+abs(dfBandMax)*0.0001,include_out_of_range=1,approx_ok=0)
-                hs=srcband.GetHistogram(dfBandMin-abs(dfBandMin)*0.0001,dfBandMax+abs(dfBandMax)*0.0001,include_out_of_range=1,approx_ok=1)
-                if nbits == 8:binsize=1
-                else:binsize=(dfBandMax-dfBandMin)/nbins
-            else:break
+##        for j in range(0,10):
+##            if len([v for v in hs if v > 0]) < nbins/4: #if only 25% of the bins have values...
+##                startbin=256
+##                lastbin=0
+##                for i,bin in enumerate(hs):
+##                    if bin > 0:
+##                        lastbin=i
+##                        if i<startbin:startbin=i
+##                dfBandMin=dfBandMin+startbin*binsize
+##                dfBandMax=dfBandMin+lastbin*binsize+binsize
+##                #hs=srcband.GetHistogram(dfBandMin-abs(dfBandMin)*0.0001,dfBandMax+abs(dfBandMax)*0.0001,include_out_of_range=1,approx_ok=0)
+##                hs=srcband.GetHistogram(dfBandMin-abs(dfBandMin)*0.0001,dfBandMax+abs(dfBandMax)*0.0001,include_out_of_range=1,approx_ok=1)
+##                if nbits == 8:binsize=1
+##                else:binsize=(dfBandRange)/nbins
+##            else:break
         try:
             dfScaleSrcMin=max([dfScaleSrcMin, HistPercentileValue(hs, low, binsize,dfBandMin)])
             dfScaleSrcMax=min([dfScaleSrcMax, HistPercentileValue(hs, high, binsize,dfBandMin)])
@@ -265,8 +272,8 @@ def _stretch_MINMAX(vrtcols,vrtrows,ds,bands):
     for bandnum, band in enumerate(bands):
         srcband=ds.GetRasterBand(band)
         dfScaleSrcMin,dfScaleSrcMax=GetDataTypeRange(srcband.DataType)
-        #dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = srcband.GetStatistics(0,1)
-        dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = srcband.GetStatistics(1,1)
+        #dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = GetStatistics(srcband,0,1)
+        dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = GetStatistics(srcband,1,1)
         dfScaleDstMin,dfScaleDstMax=0.0,255.0 #Always going to be Byte for output jpegs
         dfScale = (dfScaleDstMax - dfScaleDstMin) / (dfScaleSrcMax - dfScaleSrcMin)
         dfOffset = -1 * dfScaleSrcMin * dfScale + dfScaleDstMin
@@ -302,8 +309,8 @@ def _stretch_STDDEV(vrtcols,vrtrows,ds,bands,std):
     for bandnum, band in enumerate(bands):
         srcband=ds.GetRasterBand(band)
         dfScaleSrcMin,dfScaleSrcMax=GetDataTypeRange(srcband.DataType)
-        #dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = srcband.GetStatistics(0,1)
-        dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = srcband.GetStatistics(1,1)
+        #dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = GetStatistics(srcband,0,1)
+        dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = GetStatistics(srcband,1,1)
         dfScaleDstMin,dfScaleDstMax=0.0,255.0 #Always going to be Byte for output jpegs
         dfScaleSrcMin=max([dfScaleSrcMin, math.floor(dfBandMean-std*dfBandStdDev)])
         dfScaleSrcMax=min([dfScaleSrcMax, math.ceil(dfBandMean+std*dfBandStdDev)])
@@ -481,6 +488,15 @@ _stretch_COLORTABLELUT=_stretch_COLOURTABLELUT #Synonym for the norteamericanos
 #========================================================================================================
 #Helper functions
 #========================================================================================================
+def GetStatistics(band,*args,**kwargs):
+    gdal.UseExceptions()
+    try:
+        stats=band.GetStatistics(*args,**kwargs)
+    except:
+        gdal.DontUseExceptions()
+        raise geometry.GDALError
+    gdal.DontUseExceptions()
+    return stats
 def GetScaleRatioOffset(dfScaleSrcMin,dfScaleSrcMax,dfScaleDstMin,dfScaleDstMax):
     ''' Calculate data scale and offset
 

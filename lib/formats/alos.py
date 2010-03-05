@@ -89,7 +89,8 @@ class Dataset(__dataset__.Dataset):
         extra_md={} #for holding any extra metadata which gets stuffed into self.metadata['metadata'] later on
 
         self.metadata['satellite']='ALOS'
-        
+        nodata = 0
+
         if driver=='SAR_CEOS':  #PALSAR - assumes Level 1.5, Level 1.0 not implemented
             #Format Description
             #Level 1.0     - http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10287
@@ -443,6 +444,10 @@ class Dataset(__dataset__.Dataset):
         ##points=geom.GetBoundary()
         ##ext=[[points.GetX(i),points.GetY(i)] for i in range(0,points.GetPointCount())]
 
+        #Fix for Issue 17
+        for i in range(1,self._gdaldataset.RasterCount+1):
+            self._gdaldataset.GetRasterBand(i).SetNoDataValue(nodata)
+
         self.metadata['filesize']=sum([os.path.getsize(tmp) for tmp in self.filelist])
         self.metadata['srs'] = src_srs.ExportToWkt()
         self.metadata['epsg'] = epsg
@@ -461,7 +466,7 @@ class Dataset(__dataset__.Dataset):
         self.metadata['LR']='%s,%s' % tuple(ext[2])
         self.metadata['LL']='%s,%s' % tuple(ext[3])
         self.metadata['cellx'],self.metadata['celly']=xpix,ypix
-        self.metadata['nodata'] = 0
+        self.metadata['nodata'] = nodata
         self.metadata['metadata']='\n'.join(['%s: %s' %(m,extra_md[m]) for m in extra_md])
         self.metadata['compressionratio']=0
         self.metadata['compressiontype']='None'

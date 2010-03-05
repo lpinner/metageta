@@ -493,7 +493,7 @@ def CreateSimpleVRT(bands,cols,rows,datatype,relativeToVRT=0):
     except:
         return None
 
-def CreateRawRasterVRT(bands,cols,rows,datatype,headeroffset=0,byteorder=None,relativeToVRT=0):
+def CreateRawRasterVRT(bands,cols,rows,datatype,headeroffset=0,byteorder=None,relativeToVRT=0,nodata=None):
     ''' Create RawRaster VRT from one or more _single_ band files
 
         For further info on VRT's, see the U{GDAL VRT Tutorial<http://www.gdal.org/gdal_vrttut.html>}
@@ -524,6 +524,7 @@ def CreateRawRasterVRT(bands,cols,rows,datatype,headeroffset=0,byteorder=None,re
             vrt.append('    <ImageOffset>%s</ImageOffset>' % (headeroffset))
             vrt.append('    <PixelOffset>%s</PixelOffset>' % (nbits/8))
             vrt.append('    <LineOffset>%s</LineOffset>' % (nbits/8 * cols))
+            if nodata is not None:vrt.append('    <NoDataValue>%s</NoDataValue>' % (nodata)) #Fix for Issue 17
             if byteorder:vrt.append('    <ByteOrder>%s</ByteOrder>' % (byteorder))
             vrt.append('  </VRTRasterBand>')
         return CreateCustomVRT('\n'.join(vrt),cols,rows)
@@ -531,7 +532,7 @@ def CreateRawRasterVRT(bands,cols,rows,datatype,headeroffset=0,byteorder=None,re
         return None
     return '\n'.join(vrt)
 
-def CreateBSQRawRasterVRT(filename,nbands,cols,rows,datatype,nodata=0,headeroffset=0,byteorder=None,relativeToVRT=0):
+def CreateBSQRawRasterVRT(filename,nbands,cols,rows,datatype,nodata=None,headeroffset=0,byteorder=None,relativeToVRT=0):
     ''' Create RawRaster VRT from a BSQ
 
         BSQ = Band-Sequential or Band-Interleaved    
@@ -564,7 +565,8 @@ def CreateBSQRawRasterVRT(filename,nbands,cols,rows,datatype,nodata=0,headeroffs
         for i in range(nbands):
             vrt.append('  <VRTRasterBand dataType="%s" band="%s" subClass="VRTRawRasterBand">' % (datatype, i+1))
             vrt.append('    <SourceFilename relativeToVRT="%s">%s</SourceFilename>' % (relativeToVRT,filename))
-            vrt.append('    <NoDataValue>%s</NoDataValue>' % nodata)
+            if nodata is not None:
+                vrt.append('    <NoDataValue>%s</NoDataValue>' % (nodata))
             vrt.append('    <ImageOffset>%s</ImageOffset>' % (headeroffset+nbits/8*i*cols*rows))
             vrt.append('    <PixelOffset>%s</PixelOffset>' % (nbits/8))
             vrt.append('    <LineOffset>%s</LineOffset>' % (nbits/8 * cols))
@@ -575,7 +577,7 @@ def CreateBSQRawRasterVRT(filename,nbands,cols,rows,datatype,nodata=0,headeroffs
         return None
     return '\n'.join(vrt)
 
-def CreateBILRawRasterVRT(filename,nbands,cols,rows,datatype,nbits,nodata=0,headeroffset=0,byteorder=None,relativeToVRT=0):
+def CreateBILRawRasterVRT(filename,nbands,cols,rows,datatype,nbits,nodata=None,headeroffset=0,byteorder=None,relativeToVRT=0):
     '''Create RawRaster VRT from a BIL
 
         BIL = Band-Interleaved-by-Line or Row-Interleaved
@@ -608,7 +610,8 @@ def CreateBILRawRasterVRT(filename,nbands,cols,rows,datatype,nbits,nodata=0,head
         for i in range(nbands):
             vrt.append('  <VRTRasterBand dataType="%s" band="%s" subClass="VRTRawRasterBand">' % (datatype, i+1))
             vrt.append('    <SourceFilename relativeToVRT="%s">%s</SourceFilename>' % (relativeToVRT,filename))
-            vrt.append('    <NoDataValue>%s</NoDataValue>' % nodata)
+            if nodata is not None:
+                vrt.append('    <NoDataValue>%s</NoDataValue>' % (nodata)) #Fix for Issue 17
             vrt.append('    <ImageOffset>%s</ImageOffset>' % (headeroffset+nbits/8*i*cols))
             vrt.append('    <PixelOffset>%s</PixelOffset>' % (nbits/8))
             vrt.append('    <LineOffset>%s</LineOffset>' % (nbits/8 * cols))
@@ -619,7 +622,7 @@ def CreateBILRawRasterVRT(filename,nbands,cols,rows,datatype,nbits,nodata=0,head
         return None
     return '\n'.join(vrt)
 
-def CreateBIPRawRasterVRT(filename,nbands,cols,rows,datatype,nbits,nodata=0,headeroffset=0,byteorder=None,relativeToVRT=0):
+def CreateBIPRawRasterVRT(filename,nbands,cols,rows,datatype,nbits,nodata=None,headeroffset=0,byteorder=None,relativeToVRT=0):
     '''Create RawRaster VRT from BIP
 
         BIP = Band-Interleaved-by-Pixel or Pixel-Interleaved
@@ -652,7 +655,8 @@ def CreateBIPRawRasterVRT(filename,nbands,cols,rows,datatype,nbits,nodata=0,head
         for i in range(nbands):
             vrt.append('  <VRTRasterBand dataType="%s" band="%s" subClass="VRTRawRasterBand">' % (datatype, i+1))
             vrt.append('    <SourceFilename relativeToVRT="%s">%s</SourceFilename>' % (relativeToVRT,filename))
-            vrt.append('    <NoDataValue>%s</NoDataValue>' % nodata)
+            if nodata is not None:
+                vrt.append('    <NoDataValue>%s</NoDataValue>' % (nodata)) #Fix for Issue 17
             vrt.append('    <ImageOffset>%s</ImageOffset>' % (headeroffset+nbits/8*i))
             vrt.append('    <PixelOffset>%s</PixelOffset>' % (nbits/8))
             vrt.append('    <LineOffset>%s</LineOffset>' % (nbits/8 * cols))

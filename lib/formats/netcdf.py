@@ -85,3 +85,23 @@ class Dataset(__default__.Dataset):
         self.metadata['title'] = ncmd.get('NC_GLOBAL#title',sdmd.get('NC_GLOBAL#title',sd_desc))
         self.metadata['useConstraints'] = ncmd.get('NC_GLOBAL#acknowledgment',sdmd.get('NC_GLOBAL#acknowledgment',''))
         pass
+
+    def getoverview(self,outfile=None,width=800,format='JPG'):
+        '''Override the default method'''
+
+        ##Fix for Issue 18 - loop thru the bands and find the first one with valid stats
+        ##Some NetCDF subdataset bands GetStatistics == [0.0, 0.0, -1.#IND, -1.#IND]
+        ##GDAL error is "Failed to compute statistics, no valid pixels found in
+        ##sampling".
+        ##Calling GetHistogram on such bands causes gdal to segfault.
+
+        for b in range(1,self.metadata['nbands']+1):
+            band=self._gdaldataset.GetRasterBand(b)
+            dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = band.GetStatistics(1,1)
+            if dfBandMean==dfBandMean: #NB: -1.#IND != -1.#IND
+                break
+            b=0
+        if b==0:raise geometry.GDALError,'Unable to generate overview.'
+        self._stretch=['PERCENT',[b], [2,98]]
+        return __default__.Dataset.getoverview(self,outfile,width,format)
+    

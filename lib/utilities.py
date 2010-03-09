@@ -408,7 +408,7 @@ class ExcelWriter:
             @param   data: Dict containing column headers (dict.keys()) and values (dict.values())
         '''
         dirty=False
-        if self._rows > 65535:
+        if self._rows > 65534:
             self.__addsheet__()
         for field in data:
             if self._cols.has_key(field):
@@ -416,7 +416,7 @@ class ExcelWriter:
                 dirty=True
         if dirty:self._rows+=1
         self._wb.save(self._file)
-        
+
     def __del__(self):
         try:
             self._wb.save(self._file)

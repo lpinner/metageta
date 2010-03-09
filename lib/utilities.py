@@ -24,10 +24,13 @@ Utility helper functions
 '''
 
 try:
+    import xlrd, xlwt
+    import xlutils.copy as xlcp
+except:
     from xlutils import xlrd
     from xlutils import xlwt
-except:
-  import xlrd, xlwt
+    from xlutils import copy as xlcp
+
 import sys, os.path, os, re, struct, glob, shutil,traceback,time
 
 dateformat='%Y-%m-%d'  #ISO 8601
@@ -366,7 +369,7 @@ def FormatTraceback(trbk, maxTBlevel):
 class ExcelWriter:
     ''' A simple spreadsheet writer'''
 
-    def __init__(self,xls,fields):
+    def __init__(self,xls,fields=[],update=False):
         ''' A simple spreadsheet writer.
         
             @type    xls: C{str}
@@ -374,7 +377,6 @@ class ExcelWriter:
             @type    fields: C{list}
             @param   fields: List of column/field headers
         '''
-        if os.path.exists(xls):os.remove(xls)
 
         fields.sort()
         self._file=xls
@@ -388,12 +390,27 @@ class ExcelWriter:
         self._heading = xlwt.XFStyle()
         self._heading.font = font        
 
-        self._wb = xlwt.Workbook(encoding='latin-1')
-        self.__addsheet__()
+        if update and os.path.exists(xls):
+            rb=xlrd.open_workbook(xls)
+            self._sheets=rb.nsheets
+            self._wb = xlcp.copy(rb)
+            #ws=rb.get_sheet(0) #xlrd bug? "AttributeError: 'Book' object has no attribute 'mem'"
+            ws=rb.sheets()[0]
+            self._fields=map(str, ws.row_values(0))
+            self._cols=dict(zip(self._fields,range(len(self._fields))))
+            for i in range(0,self._sheets):
+                ws=self._wb.get_sheet(i)
+                ws._cell_overwrite_ok = True
+            self._rows=len(ws.rows)-1
+            del rb,ws
+        else:
+            if os.path.exists(xls):os.remove(xls)
+            self._wb = xlwt.Workbook(encoding='latin-1')
+            self.__addsheet__()
 
     def __addsheet__(self):
         self._sheets+=1
-        self._ws = self._wb.add_sheet('Sheet %s'%self._sheets)
+        self._ws = self._wb.add_sheet('Sheet %s'%self._sheets,cell_overwrite_ok=True)
         #self._ws.keep_leading_zeros()
 
         for i,field in enumerate(self._fields):
@@ -411,12 +428,30 @@ class ExcelWriter:
         if self._rows > 65534:
             self.__addsheet__()
         for field in data:
-            if self._cols.has_key(field):
+            if field in self._fields:
                 self._ws.write(self._rows+1, self._cols[field], data[field])
                 dirty=True
         if dirty:self._rows+=1
         self._wb.save(self._file)
 
+    def UpdateRecord(self,data,row):
+        ''' Update an existing record
+        
+            @type    data: C{dict}
+            @param   data: Dict containing column headers (dict.keys()) and values (dict.values())
+            @type    row:  C{int}
+            @param   row:  Row number of existing record
+        '''
+        dirty=False
+        s=row/65535
+        r=row-s*65535
+        ws=self._wb.get_sheet(s)
+        for field in data:
+            if self._cols.has_key(field):
+                ws.write(r+1, self._cols[field], data[field])
+                dirty=True
+        if dirty:self._wb.save(self._file)
+        
     def __del__(self):
         try:
             self._wb.save(self._file)

@@ -699,7 +699,8 @@ class ShapeWriter:
         ogr.UseExceptions()
         try:
             self._srs=osr.SpatialReference()
-            self.fields=[]
+            #self.fields=[]
+            self.fields={}
             if srs_wkt:self._srs.ImportFromWkt(srs_wkt)
             else:self._srs.ImportFromEPSG(4283) #default=GDA94 Geographic
             self._shape=self.__openshapefile__(shapefile,fields,overwrite)
@@ -739,7 +740,8 @@ class ShapeWriter:
             
             feat = ogr.Feature(lyr.GetLayerDefn())
             for a in attributes:
-                if a in self.fields:feat.SetField(a, attributes[a])
+                #if a in self.fields:feat.SetField(a, attributes[a])
+                if a in self.fields:feat.SetField(self.fields[a], attributes[a])
             feat.SetGeometryDirectly(geom)
             lyr.CreateFeature(feat)
 
@@ -762,6 +764,7 @@ class ShapeWriter:
             shp = driver.CreateDataSource(shapefile)
             lyr=os.path.splitext(os.path.split(shapefile)[1])[0]
             lyr = shp.CreateLayer(lyr,geom_type=ogr.wkbPolygon,srs=self._srs)
+            i=-1
             for f in fields:
                 #Get field types
                 if type(fields[f]) in [list,tuple]:
@@ -773,19 +776,16 @@ class ShapeWriter:
                 if ftype.upper()=='STRING':
                     fld = ogr.FieldDefn(f, ogr.OFTString)
                     fld.SetWidth(fwidth)
-                    lyr.CreateField(fld)
-                    self.fields.append(f)
                 elif ftype.upper()=='INT':
                     fld = ogr.FieldDefn(f, ogr.OFTInteger)
-                    lyr.CreateField(fld)
-                    self.fields.append(f)
                 elif ftype.upper()=='FLOAT':
                     fld = ogr.FieldDefn(f, ogr.OFTReal)
-                    lyr.CreateField(fld)
-                    self.fields.append(f)
-                else:pass
+                else:continue
                     #raise AttributeError, 'Invalid field definition'
-
+                i+=1
+                lyr.CreateField(fld)
+                if len(f)>10:self.fields[f]=lyr.GetLayerDefn().GetFieldDefn(i).GetName()
+                else:self.fields[f]=f
             return shp
 
         except Exception, err:

@@ -54,6 +54,8 @@ class Crawler:
         #Build a dict of matching files and regexes then sort according to the priority of the regex formats 
         fileformats={}
         for f in utilities.rglob(dir,'|'.join(format_regex), True, re.IGNORECASE):
+            #Use latin-1 encoding to fix Issue 20
+            f=f.encode('latin-1')
             for r in format_regex:
                 if re.search(r,f,re.IGNORECASE):
                     if fileformats.has_key(r):fileformats[r].append(f)

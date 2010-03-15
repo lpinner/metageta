@@ -189,6 +189,7 @@ class Dataset(object):
         self.fileinfo['guid']=self.guid
         #self.fileinfo['metadatadate']=time.strftime(utilities.datetimeformat,time.localtime()) #Geonetwork is baulking at the yyy-mm-ddThh:mm:ss format
         self.fileinfo['metadatadate']=time.strftime(utilities.dateformat,time.localtime())  #Just use yyy-mm-dd
+
     def __getfilelist__(self,*args,**kwargs):
         '''Get all files that have the same name (sans .ext), or are related according to gdalinfo.
             Special cases may be handled separately in their respective format drivers.'''

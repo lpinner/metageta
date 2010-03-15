@@ -25,12 +25,10 @@ Utility helper functions
 
 try:
     import xlrd, xlwt
-    import xlutils.copy as xlcp
 except:
     from xlutils import xlrd
     from xlutils import xlwt
-    from xlutils import copy as xlcp
-
+from xlutils import copy as xlcp
 import sys, os.path, os, re, struct, glob, shutil,traceback,time
 
 dateformat='%Y-%m-%d'  #ISO 8601
@@ -447,7 +445,7 @@ class ExcelWriter:
         r=row-s*65535
         ws=self._wb.get_sheet(s)
         for field in data:
-            if self._cols.has_key(field):
+            if field in self._fields:
                 ws.write(r+1, self._cols[field], data[field])
                 dirty=True
         if dirty:self._wb.save(self._file)

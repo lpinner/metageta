@@ -1,3 +1,4 @@
+# -*- coding: latin-1 -*-
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -30,7 +31,7 @@ B{Format specifications}:
     - U{http://www.science.aster.ersdac.or.jp/en/documnts/pdf/ASTER_Ref_V1.pdf}
 '''
 
-format_regex=[r'.*\.hdf$'] #HDF inc. ASTER
+format_regex=[r'ast_l1[ab].*\.hdf$',r'pg-PR1[AB]0000-\d{10}_\d{3}_\d{3}$'] #HDF inc. ASTER
 '''Regular expression list of file formats'''
 
 #import base dataset module
@@ -68,9 +69,11 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
         if not f:f=self.fileinfo['filepath']
 
         hdf_sd=self._gdaldataset.GetSubDatasets()
+        hdf_sd= [sd for sd,sz in hdf_sd if 'ImageData' in sd]
         hdf_md=self._hdf_md
 
-        sd,sz = hdf_sd[0]
+        #sd,sz = hdf_sd[0]
+        sd = hdf_sd[0]
         sd=geometry.OpenDataset(sd)
 
         nbands=len(hdf_sd)
@@ -122,35 +125,38 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
         else:geogcs.ImportFromEPSG(4326)                                              #Assume 'WGS84'
         tgt_srs.CopyGeogCSFrom(geogcs)
         
-        projparams=map(float, hdf_md['PROJECTIONPARAMETERS1'].split(','))
-        if hdf_md['MPMETHOD1'] == 'UTM':#Universal Transverse Mercator
-            if uly < 0:bNorth=False #GDAL doesn't set the North/South properly
-            else:bNorth=True
-            nZone = int(hdf_md['UTMZONECODE1'])
-            tgt_srs.SetUTM(nZone,bNorth)
-            units='m'
-        #Other projections not yet implemented...
-        #elif hdf_md['MPMETHOD1'] == 'PS':#Polar Stereographic
-        #    #dfCenterLon = ? GTCP projection params don't list cenlon/lat for PS
-        #    dfCenterLat = ?
-        #    dfScale = ?
-        #    tgt_srs.SetPS(dfCenterLat,dfCenterLon,dfScale,0.0,0.0) 	
-        #elif hdf_md['MPMETHOD1'] == 'LAMCC':#Lambert Conformal Conic
-        #    dfCenterLon = ?
-        #    dfCenterLat = ?
-        #    dfStdP1 = ?
-        #    dfStdP2 = ?
-        #    tgt_srs.SetLCC(dfStdP1,dfStdP2,dfCenterLat,dfCenterLon,0,0)
-        #elif hdf_md['MPMETHOD1'] == 'SOM':#Space Oblique Mercator
-        #    dfCenterLon = ?
-        #    dfCenterLat = ?
-        #    srs.SetMercator(dfCenterLat,dfCenterLon,0,0,0)
-        #elif hdf_md['MPMETHOD1'] == 'EQRECT':#Equi-Rectangular
-        #    dfCenterLon = ?
-        #    dfCenterLat = ?
-        #    tgt_srs.SetMercator(dfCenterLat,dfCenterLon,0,0,0)
-        else: #Assume Geog
+        if hdf_md['PROCESSINGLEVELID'].upper()=='1A':
             units='deg'
+        else:
+            #projparams=map(float, hdf_md['PROJECTIONPARAMETERS1'].split(','))
+            if hdf_md['MPMETHOD1'] == 'UTM':#Universal Transverse Mercator
+                if uly < 0:bNorth=False #GDAL doesn't set the North/South properly
+                else:bNorth=True
+                nZone = int(hdf_md['UTMZONECODE1'])
+                tgt_srs.SetUTM(nZone,bNorth)
+                units='m'
+            #Other projections not (yet?) implemented...
+            #elif hdf_md['MPMETHOD1'] == 'PS':#Polar Stereographic
+            #    #dfCenterLon = ? GTCP projection params don't list cenlon/lat for PS
+            #    dfCenterLat = ?
+            #    dfScale = ?
+            #    tgt_srs.SetPS(dfCenterLat,dfCenterLon,dfScale,0.0,0.0) 	
+            #elif hdf_md['MPMETHOD1'] == 'LAMCC':#Lambert Conformal Conic
+            #    dfCenterLon = ?
+            #    dfCenterLat = ?
+            #    dfStdP1 = ?
+            #    dfStdP2 = ?
+            #    tgt_srs.SetLCC(dfStdP1,dfStdP2,dfCenterLat,dfCenterLon,0,0)
+            #elif hdf_md['MPMETHOD1'] == 'SOM':#Space Oblique Mercator
+            #    dfCenterLon = ?
+            #    dfCenterLat = ?
+            #    srs.SetMercator(dfCenterLat,dfCenterLon,0,0,0)
+            #elif hdf_md['MPMETHOD1'] == 'EQRECT':#Equi-Rectangular
+            #    dfCenterLon = ?
+            #    dfCenterLat = ?
+            #    tgt_srs.SetMercator(dfCenterLat,dfCenterLon,0,0,0)
+            else: #Assume Geog
+                units='deg'
 
         srs=tgt_srs.ExportToWkt()
 
@@ -172,7 +178,7 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
         self.metadata['cloudcover'] = float(hdf_md['SCENECLOUDCOVERAGE'])
         if hdf_md['FLYINGDIRECTION']=='DE':self.metadata['orbit'] = 'Descending'
         else:self.metadata['orbit'] = 'Ascending'
-        self.metadata['rotation']=float(hdf_md['MAPORIENTATIONANGLE'])
+        self.metadata['rotation']=float(hdf_md.get('MAPORIENTATIONANGLE',hdf_md.get('SCENEORIENTATIONANGLE')))
         if abs(self.metadata['rotation']) < 1.0: self.metadata['orientation']='Map oriented'
         else: self.metadata['orientation']='Path oriented'
         self.metadata['sunazimuth'],self.metadata['sunelevation']=map(float,hdf_md['SOLARDIRECTION'].split(','))
@@ -184,7 +190,7 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
         self.metadata['nbits'] = nbits
         self.metadata['nodata']=','.join(['0' for i in range(0,nbands)])
         self.metadata['bands'] = bands
-        self.metadata['resampling'] = hdf_md['RESMETHOD1'] #Assume same for all...
+        self.metadata['resampling'] = hdf_md.get('RESMETHOD1') #Assume same for all...
         self.metadata['srs']= srs
         self.metadata['epsg']= spatialreferences.IdentifyAusEPSG(srs)
         self.metadata['units']= units
@@ -234,7 +240,8 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
         #Build gdaldataset object for overviews
         vrtcols=ncols[0]
         vrtrows=nrows[0]
-        vrtbands=[sd for sd,sn in hdf_sd[0:4]]#The 4 VNIR bands
+        #vrtbands=[sd for sd,sn in hdf_sd[0:4]]#The 4 VNIR bands
+        vrtbands=hdf_sd[0:4]#The 4 VNIR bands
         vrt=geometry.CreateSimpleVRT(vrtbands,vrtrows,vrtcols,datatypes.split(',')[0])
         self._gdaldataset=geometry.OpenDataset(vrt)    
         for i in range(1,5):

@@ -1,3 +1,4 @@
+# -*- coding: latin-1 -*-
 '''
 Metadata driver for ESRI GRIDs
 

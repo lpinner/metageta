@@ -1,3 +1,4 @@
+# -*- coding: latin-1 -*-
 # Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -68,7 +69,9 @@ def getoverview(ds,outfile,width,format,bands,stretch_type,*stretch_args):
              'TIF':'GTiff' #Tagged Image File Format/GeoTIFF (.tif)
             }
 
-    if outfile:format=os.path.splitext(outfile)[1].replace('.','')      #overrides "format" arg if supplied
+    if outfile:
+        outfile=outfile.encode('latin-1')
+        format=os.path.splitext(outfile)[1].replace('.','')      #overrides "format" arg if supplied
     ovdriver=gdal.GetDriverByName(formats.get(format.upper(), 'JPEG'))  #Get format code, default to 'JPEG' if supplied format doesn't match the predefined ones...
 
     cols=ds.RasterXSize

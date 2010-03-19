@@ -71,9 +71,9 @@ def main(dir,xls,shp,log, gui=False, debug=False, nomd=False, getovs=False):
         @param getovs: Generate overview (quicklook/thumbnail) images
         @return:  C{None}
     """
-    xls = utilities.checkExt(xls, ['.xls'])
-    shp = utilities.checkExt(shp, ['.shp'])
-    log = utilities.checkExt(shp, ['.log', '.txt'])
+    xls = utilities.checkExt(xls, ['.xls']).encode('latin-1')
+    shp = utilities.checkExt(shp, ['.shp']).encode('latin-1')
+    log = utilities.checkExt(shp, ['.log', '.txt']).encode('latin-1')
 
     format_regex  = formats.format_regex
     format_fields = formats.fields

@@ -135,10 +135,10 @@ class Dataset(__dataset__.Dataset):
             if band:
                 dat_u=os.path.join(d,band.upper())
                 dat_l=os.path.join(d,band.lower())
-                if dat_u in self.filelist:
+                if dat_u in self.filelist or dat_u in utilities.uncpath(self.filelist):
                     dat=dat_u
                     bandfiles[dat]=dat
-                elif dat_l in self.filelist:
+                elif dat_l in self.filelist or dat_l in utilities.uncpath(self.filelist):
                     dat=dat_l
                     bandfiles[dat]=dat
                 else:#Assume ACRES format (band*.dat) instead Fast format (l7*.fst)...
@@ -150,9 +150,12 @@ class Dataset(__dataset__.Dataset):
 
                     bnd_u=os.path.join(d,'BAND%s.DAT' %bandid.upper())
                     bnd_l=os.path.join(d,'band%s.dat' %bandid.lower())
-                    if bnd_u in self.filelist:bnd=bnd_u
+                    if   bnd_u in self.filelist:bnd=bnd_u
+                    elif bnd_u in utilities.uncpath(self.filelist):bnd=utilities.uncpath(bnd_u)
                     elif bnd_l in self.filelist:bnd=bnd_l
-                    else:raise IOError, err
+                    elif bnd_l in utilities.uncpath(self.filelist):bnd=utilities.uncpath(bnd_l)
+                    else:
+                        raise IOError, err
                     
                     bandfiles[dat]=bnd
             else:break

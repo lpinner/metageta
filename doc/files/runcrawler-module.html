@@ -63,76 +63,40 @@
   the required environment variables</p>
   <p>Usage:</p>
 <pre class="literalblock">
-   runcrawler.bat/sh -d dir -x xls -s shp -l log {-o} {--nomd} {--gui} {--debug}
+   runcrawler.bat/sh -d dir -x xls -s shp -l log {-o} {--nogui} {--debug}
 </pre>
 
 <hr />
 <div class="fields">      <strong>Arguments:</strong>
       <ul class="nomargin-top">
         <li>
-        <code>-d [dir]</code>: Directory to to recursively search for 
-        imagery
+        <code>-d [dir]</code>        : Directory to to recursively search 
+        for imagery
         </li>
         <li>
-        <code>-x [xls]</code>: MS Excel spreadsheet to wrtite metadata to
+        <code>-x [xls]</code>        : MS Excel spreadsheet to write 
+        metadata to
         </li>
         <li>
-        <code>-s [shp]</code>: ESRI Shapefile to write extents to
+        <code>-u, --update</code>    : Update previous crawl results.
         </li>
         <li>
-        <code>-l [log]</code>: Log file to write messages to
+        <code>-o, --overviews</code> : Generate overview 
+        (quicklook/thumbnail) images&quot;)
         </li>
         <li>
-        <code>-o</code>      : Generate overview (quicklook/thumbnail) 
-        images&quot;)
+        <code>--nogui</code>         : Don't show the GUI progress 
+        dialog&quot;)
         </li>
         <li>
-        <code>--nomd</code>  : Extract metadata (crawl), if False just get 
-        basic file info (walk)&quot;)
-        </li>
-        <li>
-        <code>--gui</code>   : Show the GUI progress dialog&quot;)
-        </li>
-        <li>
-        <code>--debug</code> : Turn debug output on
+        <code>--debug</code>         : Turn debug output on
         </li>
       </ul>
-</div><!-- ==================== CLASSES ==================== -->
-<a name="section-Classes"></a>
-<table class="summary" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr bgcolor="#70b0f0" class="table-header">
-  <td colspan="2" class="table-header">
-    <table border="0" cellpadding="0" cellspacing="0" width="100%">
-      <tr valign="top">
-        <td align="left"><span class="table-header">Classes</span></td>
-        <td align="right" valign="top"
-         ><span class="options">[<a href="#section-Classes"
-         class="privatelink" onclick="toggle_private();"
-         >hide private</a>]</span></td>
-      </tr>
-    </table>
-  </td>
-</tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a href="runcrawler.Command-class.html" class="summary-name">Command</a><br />
-      A class we can use to avoid using the tricky &quot;Lambda&quot; 
-        expression.
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a href="runcrawler.GetArgs-class.html" class="summary-name">GetArgs</a><br />
-      Pop up a GUI dialog to gather arguments
-    </td>
-  </tr>
-</table>
-<!-- ==================== FUNCTIONS ==================== -->
+      <p><strong>Note:</strong>
+        See <a href="http://code.google.com/p/metageta/issues/detail?id=22"
+        target="_top">Issue 22</a>
+      </p>
+</div><!-- ==================== FUNCTIONS ==================== -->
 <a name="section-Functions"></a>
 <table class="summary" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
@@ -157,12 +121,10 @@
         <tr>
           <td><span class="summary-sig"><a href="runcrawler-module.html#main" class="summary-sig-name">main</a>(<span class="summary-sig-arg">dir</span>,
         <span class="summary-sig-arg">xls</span>,
-        <span class="summary-sig-arg">shp</span>,
-        <span class="summary-sig-arg">log</span>,
-        <span class="summary-sig-arg">gui</span>=<span class="summary-sig-default">False</span>,
-        <span class="summary-sig-arg">debug</span>=<span class="summary-sig-default">False</span>,
-        <span class="summary-sig-arg">nomd</span>=<span class="summary-sig-default">False</span>,
-        <span class="summary-sig-arg">getovs</span>=<span class="summary-sig-default">False</span>)</span><br />
+        <span class="summary-sig-arg">update</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">getovs</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">nogui</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">debug</span>=<span class="summary-sig-default">False</span>)</span><br />
       Run the Metadata Crawler</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="runcrawler-pysrc.html#main">source&nbsp;code</a></span>
@@ -243,12 +205,10 @@
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">main</span>(<span class="sig-arg">dir</span>,
         <span class="sig-arg">xls</span>,
-        <span class="sig-arg">shp</span>,
-        <span class="sig-arg">log</span>,
-        <span class="sig-arg">gui</span>=<span class="sig-default">False</span>,
-        <span class="sig-arg">debug</span>=<span class="sig-default">False</span>,
-        <span class="sig-arg">nomd</span>=<span class="sig-default">False</span>,
-        <span class="sig-arg">getovs</span>=<span class="sig-default">False</span>)</span>
+        <span class="sig-arg">update</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">getovs</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">nogui</span>=<span class="sig-default">True</span>,
+        <span class="sig-arg">debug</span>=<span class="sig-default">False</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="runcrawler-pysrc.html#main">source&nbsp;code</a></span>&nbsp;
@@ -261,13 +221,9 @@
     <dd><ul class="nomargin-top">
         <li><strong class="pname"><code>dir</code></strong> (<code>str</code>) - The directory to start the metadata crawl.</li>
         <li><strong class="pname"><code>xls</code></strong> (<code>str</code>) - Excel spreadsheet to write metadata to</li>
-        <li><strong class="pname"><code>shp</code></strong> (<code>str</code>) - Shapefile to write extents to</li>
-        <li><strong class="pname"><code>log</code></strong> (<code>str</code>) - Log file</li>
-        <li><strong class="pname"><code>gui</code></strong> (<code>boolean</code>) - Show the GUI progress dialog</li>
-        <li><strong class="pname"><code>debug</code></strong> (<code>boolean</code>) - Turn debug output on</li>
-        <li><strong class="pname"><code>nomd</code></strong> (<code>boolean</code>) - Extract metadata (crawl), if False just get basic file info 
-          (walk)</li>
         <li><strong class="pname"><code>getovs</code></strong> (<code>boolean</code>) - Generate overview (quicklook/thumbnail) images</li>
+        <li><strong class="pname"><code>nogui</code></strong> (<code>boolean</code>) - Don't show the GUI progress dialog</li>
+        <li><strong class="pname"><code>debug</code></strong> (<code>boolean</code>) - Turn debug output on</li>
     </ul></dd>
     <dt>Returns:</dt>
         <dd><code>None</code></dd>
@@ -303,7 +259,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Tue Mar 16 16:00:26 2010
+    Generated by Epydoc 3.0.1 on Mon Mar 29 14:17:38 2010
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

@@ -38,6 +38,7 @@ except ImportError:
     import osr
     import ogr
 
+debug=False
 #========================================================================================================
 #{Custom error class
 #========================================================================================================
@@ -399,6 +400,115 @@ def ReprojectGeom(geom,src_srs,tgt_srs):
     gdal.ErrorReset()
     return geom
 
+def InvGeoTransform(gt_in):
+    '''
+     ************************************************************************
+     *                        InvGeoTransform(gt_in)                         
+     ************************************************************************
+
+     **
+     * Invert Geotransform.
+     *
+     * This function will invert a standard 3x2 set of GeoTransform coefficients.
+     *
+     * @param  gt_in  Input geotransform (six doubles - unaltered).
+     * @return gt_out Output geotransform (six doubles - updated) on success,
+     *                None if the equation is uninvertable. 
+    '''
+    #    ******************************************************************************
+    #    * This code ported from GDALInvGeoTransform() in gdaltransformer.cpp
+    #    * as it isn't exposed in the python SWIG bindings until GDAL 1.7
+    #    * copyright & permission notices included below as per conditions.
+    #
+    #    ******************************************************************************
+    #    * $Id: gdaltransformer.cpp 15024 2008-07-24 19:25:06Z rouault $
+    #    *
+    #    * Project:  Mapinfo Image Warper
+    #    * Purpose:  Implementation of one or more GDALTrasformerFunc types, including
+    #    *           the GenImgProj (general image reprojector) transformer.
+    #    * Author:   Frank Warmerdam, warmerdam@pobox.com
+    #    *
+    #    ******************************************************************************
+    #    * Copyright (c) 2002, i3 - information integration and imaging 
+    #    *                          Fort Collin, CO
+    #    *
+    #    * Permission is hereby granted, free of charge, to any person obtaining a
+    #    * copy of this software and associated documentation files (the "Software"),
+    #    * to deal in the Software without restriction, including without limitation
+    #    * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    #    * and/or sell copies of the Software, and to permit persons to whom the
+    #    * Software is furnished to do so, subject to the following conditions:
+    #    *
+    #    * The above copyright notice and this permission notice shall be included
+    #    * in all copies or substantial portions of the Software.
+    #    *
+    #    * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+    #    * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    #    * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    #    * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    #    * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    #    * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    #    * DEALINGS IN THE SOFTWARE.
+    #    ****************************************************************************
+        
+    # we assume a 3rd row that is [1 0 0]
+
+    # Compute determinate
+    det = gt_in[1] * gt_in[5] - gt_in[2] * gt_in[4]
+
+    if( abs(det) < 0.000000000000001 ):
+        return
+
+    inv_det = 1.0 / det
+
+    # compute adjoint, and divide by determinate
+    gt_out = [0,0,0,0,0,0]
+    gt_out[1] =  gt_in[5] * inv_det
+    gt_out[4] = -gt_in[4] * inv_det
+
+    gt_out[2] = -gt_in[2] * inv_det
+    gt_out[5] =  gt_in[1] * inv_det
+
+    gt_out[0] = ( gt_in[2] * gt_in[3] - gt_in[0] * gt_in[5]) * inv_det
+    gt_out[3] = (-gt_in[1] * gt_in[3] + gt_in[0] * gt_in[4]) * inv_det
+
+    return gt_out
+
+def ApplyGeoTransform(inx,iny,gt):
+    ''' Apply a geotransform
+        @param  inx       Input x coordinate (double)
+        @param  iny       Input y coordinate (double)
+        @param  gt        Input geotransform (six doubles)
+        @return outx,outy Output coordinates (two doubles)
+    '''
+    outx = gt[0] + inx*gt[1] + iny*gt[2]
+    outy = gt[3] + inx*gt[4] + iny*gt[5]
+    return (outx,outy)
+
+def MapToPixel(mx,my,gt):
+    ''' Convert map to pixel coordinates
+        @param  mx    Input map x coordinate (double)
+        @param  my    Input map y coordinate (double)
+        @param  gt    Input geotransform (six doubles)
+        @return px,py Output coordinates (two ints)
+    '''
+    if gt[2]+gt[4]==0: #Simple calc, no inversion required
+        px = (mx - gt[0]) / gt[1]
+        py = (my - gt[3]) / gt[5]
+    else:
+        px,py=ApplyGeoTransform(mx,my,InvGeoTransform(gt))
+    return int(px+0.5),int(py+0.5)
+
+def PixelToMap(px,py,gt):
+    ''' Convert pixel to map coordinates
+        @param  px    Input pixel x coordinate (double)
+        @param  py    Input pixel y coordinate (double)
+        @param  gt    Input geotransform (six doubles)
+        @return mx,my Output coordinates (two doubles)
+    '''
+    mx,my=ApplyGeoTransform(px,py,gt)
+    return mx,my
+
 #========================================================================================================
 #{VRT Utilities
 #========================================================================================================
@@ -684,8 +794,8 @@ def CreateCustomVRT(vrtxml,vrtcols,vrtrows):
 #========================================================================================================
 class ShapeWriter:
     '''A class for writing geometry and fields to ESRI shapefile format'''
-    def __init__(self,shapefile,fields,srs_wkt=None,overwrite=True):
-        '''Open the shapefile for writing or appending.
+    def __init__(self,shapefile,fields={},srs_wkt=None,update=False):
+        ''' Open the shapefile for writing or appending.
 
             @type shapefile:  C{gdal.Dataset}
             @param shapefile: Dataset object
@@ -693,32 +803,99 @@ class ShapeWriter:
             @param fields:    L{Fields dict<formats.fields>}
             @type srs_wkt:    C{str}
             @param srs_wkt:   Spatial reference system WKT
-            @type overwrite:  C{boolean}
-            @param overwrite: Overwrite or append to shapefile
+            @type update:     C{boolean}
+            @param update:    Update or overwrite existing shapefile
+
+            @note: Field names can only be <= 10 characters long. Longer names will be silently truncated. This may result in non-unique column names, which will definitely cause problems later.
+                   Field names can not contain spaces or special characters, except underscores.
+                   Starting with version 1.7, the OGR Shapefile driver tries to generate unique field names. Successive duplicate field names, including those created by truncation to 10 characters, will be truncated to 8 characters and appended with a serial number from 1 to 99.
+
+            @see: U{http://www.gdal.org/ogr/drv_shapefile.html}
         '''
         gdal.ErrorReset()
         ogr.UseExceptions()
+        self._driver = ogr.GetDriverByName('ESRI Shapefile')
+        self._srs=osr.SpatialReference()
+        self.fields={} #Dict to map full names to truncated names if name >10 chars
         try:
-            self._srs=osr.SpatialReference()
-            #self.fields=[]
-            self.fields={}
-            if srs_wkt:self._srs.ImportFromWkt(srs_wkt)
-            else:self._srs.ImportFromEPSG(4283) #default=GDA94 Geographic
-            self._shape=self.__openshapefile__(shapefile,fields,overwrite)
+            if update:
+                self._shape=self.__openshapefile__(shapefile,fields)
+            else:
+                self._shape=self.__createshapefile__(shapefile,fields,srs_wkt)
         except Exception, err:
             self.__error__(err)
         ogr.DontUseExceptions()
+        
     def __del__(self):
         '''Shutdown and release the lock on the shapefile'''
-        gdal.ErrorReset()
-        self._shape.Release()
+        try:
+            gdal.ErrorReset()
+            self._shape.Release()
+        except:pass
 
     def __error__(self, err):
         gdalerr=gdal.GetLastErrorMsg();gdal.ErrorReset()
+        self.__del__()
         errmsg = str(err)
         if gdalerr:errmsg += '\n%s' % gdalerr
         raise err.__class__, errmsg
         
+    def __createshapefile__(self,shapefile,fields,srs_wkt=None):
+        '''Open the shapefile for writing'''
+        if srs_wkt:self._srs.ImportFromWkt(srs_wkt)
+        else:self._srs.ImportFromEPSG(4283) #default=GDA94 Geographic
+
+        if os.path.exists(shapefile):self._driver.DeleteDataSource(shapefile)
+        shp = self._driver.CreateDataSource(shapefile)
+        lyr=os.path.splitext(os.path.split(shapefile)[1])[0]
+        lyr = shp.CreateLayer(lyr,geom_type=ogr.wkbPolygon,srs=self._srs)
+        i=0
+        fieldnames=sorted(fields.keys())
+        for f in fieldnames:
+            if fields[f]:
+                #Get field types
+                if type(fields[f]) in [list,tuple]:
+                    ftype=fields[f][0]
+                    fwidth=fields[f][1]
+                else:
+                    ftype=fields[f]
+                    fwidth=0
+                if ftype.upper()=='STRING':
+                    fld = ogr.FieldDefn(f, ogr.OFTString)
+                    fld.SetWidth(fwidth)
+                elif ftype.upper()=='INT':
+                    fld = ogr.FieldDefn(f, ogr.OFTInteger)
+                elif ftype.upper()=='FLOAT':
+                    fld = ogr.FieldDefn(f, ogr.OFTReal)
+                else:continue
+                    #raise AttributeError, 'Invalid field definition'
+                lyr.CreateField(fld)
+                if len(f)>10:self.fields[f]=lyr.GetLayerDefn().GetFieldDefn(i).GetName()
+                else:self.fields[f]=f
+                i+=1
+
+        return shp
+
+    def __openshapefile__(self,shapefile,fields):
+        '''Open the shapefile for updating/appending'''
+        fieldnames=sorted(fields.keys())
+        shp=self._driver.Open(shapefile,update=1)
+        lyr=shp.GetLayer(0)
+        lyrdef=lyr.GetLayerDefn()
+        self._srs=lyr.GetSpatialRef()
+        #Loop thru input fields and match to shp fields
+        i=0
+        for f in fieldnames:
+            if fields[f]: #does it have a field type?
+                if len(f)>10:self.fields[f]=lyrdef.GetFieldDefn(i).GetName()
+                else:self.fields[f]=f
+                i+=1
+        if i==0:#No fieldnames...
+            for i in range(lyrdef.GetFieldCount()):
+                f=lyrdef.GetFieldDefn(i).GetName()
+                self.fields[f]=f
+        return shp
+
     def WriteRecord(self,extent,attributes):
         '''Write record
 
@@ -745,50 +922,59 @@ class ShapeWriter:
                 if a in self.fields:feat.SetField(self.fields[a], attributes[a])
             feat.SetGeometryDirectly(geom)
             lyr.CreateFeature(feat)
+            lyr.SyncToDisk()
 
         except Exception, err:
             self.__error__(err)
 
-    def __openshapefile__(self, shapefile,fields,overwrite):
-        '''Open the shapefile for writing or appending'''
+    def UpdateRecord(self,extent,attributes,where_clause):
+        '''Update record/s
+
+            @type where_clause:  C{str}
+            @param where_clause: Shapefile supported SQL where clause
+            @type attributes:    C{dict}
+            @param attributes:   Must match field names passed to __init__()
+        '''        
         try:
-            driver = ogr.GetDriverByName('ESRI Shapefile')
-            if os.path.exists(shapefile):
-                if overwrite:
-                    driver.DeleteDataSource(shapefile)
-                else:
-                    shp=driver.Open(shapefile,update=1)
-                    lyr=shp.GetLayer(0)
-                    self._srs=lyr.GetSpatialRef()
-                    return shp
-
-            shp = driver.CreateDataSource(shapefile)
-            lyr=os.path.splitext(os.path.split(shapefile)[1])[0]
-            lyr = shp.CreateLayer(lyr,geom_type=ogr.wkbPolygon,srs=self._srs)
-            i=-1
-            for f in fields:
-                #Get field types
-                if type(fields[f]) in [list,tuple]:
-                    ftype=fields[f][0]
-                    fwidth=fields[f][1]
-                else:
-                    ftype=fields[f]
-                    fwidth=0
-                if ftype.upper()=='STRING':
-                    fld = ogr.FieldDefn(f, ogr.OFTString)
-                    fld.SetWidth(fwidth)
-                elif ftype.upper()=='INT':
-                    fld = ogr.FieldDefn(f, ogr.OFTInteger)
-                elif ftype.upper()=='FLOAT':
-                    fld = ogr.FieldDefn(f, ogr.OFTReal)
-                else:continue
-                    #raise AttributeError, 'Invalid field definition'
-                i+=1
-                lyr.CreateField(fld)
-                if len(f)>10:self.fields[f]=lyr.GetLayerDefn().GetFieldDefn(i).GetName()
-                else:self.fields[f]=f
-            return shp
-
+            geom=GeomFromExtent(extent,self._srs)
+            if self._srs.IsGeographic(): #basic coordinate bounds test. Can't do for projected though
+                srs=osr.SpatialReference()
+                srs.ImportFromEPSG(4283)#4326)
+                valid = GeomFromExtent([-180,-90,180,90], srs=srs)
+                if not valid.Contains(geom): 
+                    #raise ValueError, 'Invalid extent coordinates'
+                    warnings.warn('Invalid extent coordinates')
+            lyr=self._shape.GetLayer()
+            lyr.SetAttributeFilter(where_clause)
+            feat=lyr.GetNextFeature()
+            feat.SetGeometryDirectly(geom)
+            while feat:
+                for a in attributes:
+                    if a in self.fields:feat.SetField(self.fields[a], attributes[a])
+                lyr.SetFeature(feat)
+                feat=lyr.GetNextFeature()
+            lyr.SyncToDisk()
         except Exception, err:
             self.__error__(err)
+
+    def DeleteRecord(self,where_clause):
+        '''Delete record/s
+
+            @type where_clause:  C{str}
+            @param where_clause: Shapefile supported SQL where clause
+        '''        
+        try:
+            lyr=self._shape.GetLayer()
+            lyr.SetAttributeFilter(where_clause)
+            feat=lyr.GetNextFeature()
+            while feat:
+                fid=feat.GetFID()
+                lyr.DeleteFeature(fid)
+                feat=lyr.GetNextFeature()
+
+            lyr.SyncToDisk()
+        except Exception, err:
+            self.__error__(err)
+
+
 #}

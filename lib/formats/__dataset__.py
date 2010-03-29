@@ -124,7 +124,7 @@ class Dataset(object):
         if self._stretch:
             stretch_type,rgb_bands,stretch_args=self._stretch
         else:
-            #Check for pre-defined rgb bands, assume they don't need stretching
+            #Check for pre-defined rgb bands, if 8 bit - assume they don't need stretching
             for i in range(1,nbands+1):
                 gci=ds.GetRasterBand(i).GetRasterColorInterpretation()
                 if   gci == gdal.GCI_RedBand:
@@ -135,8 +135,13 @@ class Dataset(object):
                     rgb_bands[2]=i
                 if len(rgb_bands)==3:
                     rgb_bands=rgb_bands[0],rgb_bands[1],rgb_bands[2] #Make a list from the dict
-                    stretch_type='NONE'
-                    stretch_args=[]
+                    if nbits == 8:
+                        stretch_type='NONE'
+                        stretch_args=[]
+                    else:
+                        stretch_type='STDDEV'
+                        stretch_args=[2]
+                    break
 
         #Set some defaults
         if stretch_type is None or stretch_args is None:
@@ -182,13 +187,9 @@ class Dataset(object):
     # ===================== #
     def __setfileinfo__(self,f):
         self.fileinfo=utilities.FileInfo(f)
-        #self.guid=str(uuid.uuid4())
-        #Make the guid reproducible based on filename
-        self.guid=str(uuid.uuid3(uuid.NAMESPACE_DNS,f))
         self.fileinfo['filename']=os.path.basename(f)
         self.fileinfo['filepath']=f
-        self.fileinfo['guid']=self.guid
-        #self.fileinfo['metadatadate']=time.strftime(utilities.datetimeformat,time.localtime()) #Geonetwork is baulking at the yyy-mm-ddThh:mm:ss format
+        self.guid=self.fileinfo['guid']
         self.fileinfo['metadatadate']=time.strftime(utilities.dateformat,time.localtime())  #Just use yyy-mm-dd
 
     def __getfilelist__(self,*args,**kwargs):
@@ -209,7 +210,7 @@ class Dataset(object):
             try:files.extend([os.path.abspath(f) for f in self._gdaldataset.GetFileList() if os.path.exists(f)])
             except:pass
 
-        self._filelist=list(set(utilities.fixSeparators(files))) #list(set([])) filters out duplicates
+        self._filelist=list(set(utilities.normpath(files))) #list(set([])) filters out duplicates
         
     def __getmetadata__(self,*args,**kwargs):
         '''In case subclasses don't override...'''

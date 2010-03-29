@@ -178,7 +178,7 @@ def Open(f):
         @todo: perhaps log the entire error stack if a file couldn't be opened?
     '''
     errors=[] #error stack
-    f=f.encode('latin-1') #Issue 20
+    f=utilities.encode(f) #Issue 20
 
     #Try custom formats
     for lib in __formats__:

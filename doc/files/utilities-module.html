@@ -128,6 +128,26 @@
 </tr>
 <tr bgcolor="#e8f0f8" >
   <th colspan="2" class="group-header"
+    >&nbsp;&nbsp;&nbsp;&nbsp;String Utilities</th></tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type"><code>str</code></span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="utilities-module.html#encode" class="summary-sig-name">encode</a>(<span class="summary-sig-arg">u</span>)</span><br />
+      Encode a unicode string</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="utilities-pysrc.html#encode">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr bgcolor="#e8f0f8" >
+  <th colspan="2" class="group-header"
     >&nbsp;&nbsp;&nbsp;&nbsp;Filesystem Utilities</th></tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
@@ -297,10 +317,27 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="utilities-module.html#convertUNC" class="summary-sig-name">convertUNC</a>(<span class="summary-sig-arg">filepath</span>)</span><br />
+          <td><span class="summary-sig"><a href="utilities-module.html#uuid" class="summary-sig-name">uuid</a>(<span class="summary-sig-arg">filepath</span>)</span><br />
+      Generate a uuid reproducible based on filename</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="utilities-pysrc.html#uuid">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type"><code>str</code></span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="utilities-module.html#uncpath" class="summary-sig-name">uncpath</a>(<span class="summary-sig-arg">filepath</span>)</span><br />
       Convert file path to UNC.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="utilities-pysrc.html#convertUNC">source&nbsp;code</a></span>
+            <span class="codelink"><a href="utilities-pysrc.html#uncpath">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -314,10 +351,44 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="utilities-module.html#fixSeparators" class="summary-sig-name">fixSeparators</a>(<span class="summary-sig-arg">filepath</span>)</span><br />
-      Fix up any mixed forward/backward slahes in file path/s.</td>
+          <td><span class="summary-sig"><a href="utilities-module.html#normcase" class="summary-sig-name">normcase</a>(<span class="summary-sig-arg">filepath</span>)</span><br />
+      Normalize case of pathname.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="utilities-pysrc.html#fixSeparators">source&nbsp;code</a></span>
+            <span class="codelink"><a href="utilities-pysrc.html#normcase">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type"><code>str/list</code></span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="utilities-module.html#normpath" class="summary-sig-name">normpath</a>(<span class="summary-sig-arg">filepath</span>)</span><br />
+      Normalize path, eliminating double slashes, etc.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="utilities-pysrc.html#normpath">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type"><code>str/list</code></span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="utilities-module.html#realpath" class="summary-sig-name">realpath</a>(<span class="summary-sig-arg">filepath</span>)</span><br />
+      Return the absolute version of a path.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="utilities-pysrc.html#realpath">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -425,6 +496,13 @@
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
+        <a name="encoding"></a><span class="summary-name">encoding</span> = <code title="'latin-1'"><code class="variable-quote">'</code><code class="variable-string">latin-1</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
         <a name="__package__"></a><span class="summary-name">__package__</span> = <code title="None">None</code>
     </td>
   </tr>
@@ -447,6 +525,31 @@
   </td>
 </tr>
 </table>
+<a name="encode"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">encode</span>(<span class="sig-arg">u</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="utilities-pysrc.html#encode">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Encode a unicode string</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>cmd</code></strong> (<code>unicode</code>) - Unicode string</li>
+    </ul></dd>
+    <dt>Returns: <code>str</code></dt>
+        <dd>Encoded string</dd>
+  </dl>
+</td></tr></table>
+</div>
 <a name="runcmd"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -656,17 +759,42 @@
   </dl>
 </td></tr></table>
 </div>
-<a name="convertUNC"></a>
+<a name="uuid"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">convertUNC</span>(<span class="sig-arg">filepath</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">uuid</span>(<span class="sig-arg">filepath</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="utilities-pysrc.html#convertUNC">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="utilities-pysrc.html#uuid">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Generate a uuid reproducible based on filename</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>filepath</code></strong> (<code>str</code>) - Path to file</li>
+    </ul></dd>
+    <dt>Returns: <code>str</code></dt>
+        <dd>uuid</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="uncpath"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">uncpath</span>(<span class="sig-arg">filepath</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="utilities-pysrc.html#uncpath">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
@@ -681,21 +809,72 @@
   </dl>
 </td></tr></table>
 </div>
-<a name="fixSeparators"></a>
+<a name="normcase"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">fixSeparators</span>(<span class="sig-arg">filepath</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">normcase</span>(<span class="sig-arg">filepath</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="utilities-pysrc.html#fixSeparators">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="utilities-pysrc.html#normcase">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>Fix up any mixed forward/backward slahes in file path/s.</p>
+  <p>Normalize case of pathname. Makes all characters lowercase and all 
+  slashes into backslashes.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>filepath</code></strong> (<code>str/list</code>) - Path to file/s</li>
+    </ul></dd>
+    <dt>Returns: <code>str/list</code></dt>
+        <dd>Path to file/s</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="normpath"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">normpath</span>(<span class="sig-arg">filepath</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="utilities-pysrc.html#normpath">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Normalize path, eliminating double slashes, etc.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>filepath</code></strong> (<code>str/list</code>) - Path to file/s</li>
+    </ul></dd>
+    <dt>Returns: <code>str/list</code></dt>
+        <dd>Path to file/s</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="realpath"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">realpath</span>(<span class="sig-arg">filepath</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="utilities-pysrc.html#realpath">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return the absolute version of a path.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
@@ -763,7 +942,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Tue Mar 16 16:00:27 2010
+    Generated by Epydoc 3.0.1 on Mon Mar 29 14:17:38 2010
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

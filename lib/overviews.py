@@ -36,7 +36,7 @@ except ImportError:
     import gdalconst
     import osr
     import ogr
-import geometry
+import geometry,utilities
 import sys, os.path, os, csv, re, struct, math, glob, string, time,shutil, tempfile
 
 def getoverview(ds,outfile,width,format,bands,stretch_type,*stretch_args):
@@ -61,18 +61,18 @@ def getoverview(ds,outfile,width,format,bands,stretch_type,*stretch_args):
     @rtype:         C{str}
     @return:        filepath (if outfile is supplied)/binary image data (if outfile is not supplied)
     '''
-    #mapping table for file extension -> GDAL format code
-    formats={'JPG':'JPEG', #JPEG JFIF (.jpg)
-             'PNG':'PNG',  #Portable Network Graphics (.png)
-             'GIF':'GIF',  #Graphics Interchange Format (.gif)
-             'BMP':'BMP',  #Microsoft Windows Device Independent Bitmap (.bmp)
-             'TIF':'GTiff' #Tagged Image File Format/GeoTIFF (.tif)
-            }
 
+    #mapping table for file extension -> GDAL format code
+    imageformats={'JPG':'JPEG', #JPEG JFIF (.jpg)
+                  'PNG':'PNG',  #Portable Network Graphics (.png)
+                  'GIF':'GIF',  #Graphics Interchange Format (.gif)
+                  'BMP':'BMP',  #Microsoft Windows Device Independent Bitmap (.bmp)
+                  'TIF':'GTiff' #Tagged Image File Format/GeoTIFF (.tif)
+                 }
     if outfile:
-        outfile=outfile.encode('latin-1')
-        format=os.path.splitext(outfile)[1].replace('.','')      #overrides "format" arg if supplied
-    ovdriver=gdal.GetDriverByName(formats.get(format.upper(), 'JPEG'))  #Get format code, default to 'JPEG' if supplied format doesn't match the predefined ones...
+        outfile=utilities.encode(outfile)
+        format=os.path.splitext(outfile)[1].replace('.','')                  #overrides "format" arg if supplied
+    ovdriver=gdal.GetDriverByName(imageformats.get(format.upper(), 'JPEG'))  #Get format code, default to 'JPEG' if supplied format doesn't match the predefined ones...
 
     cols=ds.RasterXSize
     rows=ds.RasterYSize
@@ -644,7 +644,6 @@ def ParseColourLUT(filepath):
     lut.close() 
     return clr
 ParseColorLUT=ParseColourLUT #Synonym for the norteamericanos
-
 def ExpandedColourLUT(filepath,nvals):
     ''' Open and parse a colour lookup table, expanding missing values as required.
     
@@ -684,4 +683,18 @@ def ExpandedColourLUT(filepath,nvals):
         tbl.append(clr)
     return tbl
 ExpandedColorLUT=ExpandedColourLUT #Synonym for the norteamericanos
+def resize(infile,outfile,width):
+    ''' Resize an image
 
+        @type filepath:   C{str}
+        @param filepath:  Path to colour lookup file
+        @type nvals:      C{int}
+        @param nvals:     Number of values
+        @rtype:           C{list}
+        @return:          List of cell and R,G,B,A values e.g ((12,0,0,0,255), (25,255,255,255,0))
+    '''
+    ds=gdal.Open(infile)
+    bands=range(1,ds.RasterCount+1)
+    outfile =  getoverview(ds,outfile,width,None,bands,'NONE')
+    del ds
+    return outfile

@@ -22,58 +22,69 @@
 '''
 Metadata Fields
 ===============
-Dictionary of field names and data types
+Dictionary of field names and data types.
+If a field is not to be included in the output shapefile, set type as None.
+Currently supported field types are:
+    string (tuple of type name and size)
+    int
+    float
+@note: Field names > 10 characters will be truncated.
+       Field names can not contain spaces or special characters, except underscores.
+@see: U{http://www.gdal.org/ogr/drv_shapefile.html}
+@todo: We should probably have separate LLX and LLY etc... fields with 'float' type... This would also need to be changed in the transform XSL
 '''
 
-fields={'abstract'        :'no fieldtype required as this is not included in the shapefile...',
+fields={'abstract'        :None,
         'bands'           :('string',50),
         'cellx'           :'float',
         'celly'           :'float',
-        'units'           :('string',25),
-        'cloudcover'      :('string',50),
+        'units'           :None,
+        'cloudcover'      :None,
         'cols'            :'int',
-        'compressionratio':'int',
-        'compressiontype' :('string',50),
+        'compressionratio':None,
+        'compressiontype' :None,
         'datatype'        :('string',50),
         'datecreated'     :('string',25),
         'datemodified'    :('string',25),
-        'demcorrection'   :('string',50),
-        'epsg'            :('string',4),
-        'filelist'        :('string',255),
+        'demcorrection'   :None,
+        'epsg'            :None,
+        'filelist'        :None,
         'filename'        :('string',50),
         'filepath'        :('string',255),
         'filesize'        :'int',
         'filetype'        :('string',50),
         'guid'            :('string',36),
         'imgdate'         :('string',25),
-        'lineage'         :'no fieldtype required as this is not included in the shapefile...',
-        'level'           :('string',50),
-        'LL'              :('string',25),#should probably be separate LLX and LLY etc... fields with 'float' type...
-        'LR'              :('string',25),
-        'metadata'        :'no fieldtype required as this is not included in the shapefile...',
-        'metadatadate'    :('string',25),
-        'mode'            :('string',50),
+        'lineage'         :None,
+        'level'           :None,
+        'LL'              :None,
+        'LR'              :None,
+        'metadata'        :None,
+        'metadatadate'    :None,
+        'mode'            :None,
         'nbands'          :'int',
         'nbits'           :'int',
         'nodata'          :'float',
-        'orbit'           :('string',50),
-        'orientation'     :('string',50),
+        'orbit'           :None,
+        'orientation'     :None,
         'ownerid'         :('string',50),
         'ownername'       :('string',50),
-        'quicklook'       :('string',50),
-        'resampling'      :('string',50),
-        'rotation'        :'float',
+        'quicklook'       :None,
+        'resampling'      :None,
+        'rotation'        :None,
         'rows'            :'int',
         'satellite'       :('string',50),
         'sceneid'         :('string',50),
         'sensor'          :('string',50),
-        'srs'             :'no fieldtype required as this is not included in the shapefile...',
-        'sunazimuth'      :'float',
-        'sunelevation'    :'float',
+        'srs'             :None,
+        'sunazimuth'      :None,
+        'sunelevation'    :None,
         'thumbnail'       :('string',50),
-        'title'           :'no fieldtype required as this is not included in the shapefile...',
-        'UL'              :('string',25),
-        'UR'              :('string',25), 
-        'useConstraints'  :'no fieldtype required as this is not included in the shapefile...',
-        'viewangle'       :'float'
+        'title'           :None,
+        'UL'              :None,
+        'UR'              :None, 
+        'useConstraints'  :None,
+        'viewangle'       :None,
+        'UPDATED'         :None,
+        'DELETED'         :None
 }

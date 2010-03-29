@@ -313,6 +313,91 @@
       
     </td>
   </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="geometry-module.html#InvGeoTransform" class="summary-sig-name">InvGeoTransform</a>(<span class="summary-sig-arg">gt_in</span>)</span><br />
+      ************************************************************************
+      *                        InvGeoTransform(gt_in) 
+      ************************************************************************</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="geometry-pysrc.html#InvGeoTransform">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="ApplyGeoTransform"></a><span class="summary-sig-name">ApplyGeoTransform</span>(<span class="summary-sig-arg">inx</span>,
+        <span class="summary-sig-arg">iny</span>,
+        <span class="summary-sig-arg">gt</span>)</span><br />
+      Apply a geotransform @param  inx       Input x coordinate (double) 
+      @param  iny       Input y coordinate (double) @param  gt        Input
+      geotransform (six doubles) @return outx,outy Output coordinates (two 
+      doubles)</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="geometry-pysrc.html#ApplyGeoTransform">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="MapToPixel"></a><span class="summary-sig-name">MapToPixel</span>(<span class="summary-sig-arg">mx</span>,
+        <span class="summary-sig-arg">my</span>,
+        <span class="summary-sig-arg">gt</span>)</span><br />
+      Convert map to pixel coordinates @param  mx    Input map x coordinate
+      (double) @param  my    Input map y coordinate (double) @param  gt    
+      Input geotransform (six doubles) @return px,py Output coordinates 
+      (two ints)</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="geometry-pysrc.html#MapToPixel">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="PixelToMap"></a><span class="summary-sig-name">PixelToMap</span>(<span class="summary-sig-arg">px</span>,
+        <span class="summary-sig-arg">py</span>,
+        <span class="summary-sig-arg">gt</span>)</span><br />
+      Convert pixel to map coordinates @param  px    Input pixel x 
+      coordinate (double) @param  py    Input pixel y coordinate (double) 
+      @param  gt    Input geotransform (six doubles) @return mx,my Output 
+      coordinates (two doubles)</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="geometry-pysrc.html#PixelToMap">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
 <tr bgcolor="#e8f0f8" >
   <th colspan="2" class="group-header"
     >&nbsp;&nbsp;&nbsp;&nbsp;VRT Utilities</th></tr>
@@ -516,6 +601,13 @@
     </table>
   </td>
 </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="debug"></a><span class="summary-name">debug</span> = <code title="False">False</code>
+    </td>
+  </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
@@ -854,6 +946,32 @@
   </dl>
 </td></tr></table>
 </div>
+<a name="InvGeoTransform"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">InvGeoTransform</span>(<span class="sig-arg">gt_in</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="geometry-pysrc.html#InvGeoTransform">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>************************************************************************
+  *                        InvGeoTransform(gt_in) 
+  ************************************************************************</p>
+  <p>** * Invert Geotransform. * * This function will invert a standard 3x2
+  set of GeoTransform coefficients. * * @param  gt_in  Input geotransform 
+  (six doubles - unaltered). * @return gt_out Output geotransform (six 
+  doubles - updated) on success, *                None if the equation is 
+  uninvertable.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
 <a name="CreateVRTCopy"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -1173,7 +1291,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Tue Mar 16 16:00:26 2010
+    Generated by Epydoc 3.0.1 on Mon Mar 29 14:17:38 2010
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

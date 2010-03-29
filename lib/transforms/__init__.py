@@ -219,7 +219,7 @@ def DictToXML(dic,root):
         if type(dat) is unicode:
             dat=dat.encode('ascii','xmlcharrefreplace')
         elif type(dat) is str:
-            dat=dat.decode('latin-1').encode('ascii','xmlcharrefreplace')
+            dat=dat.decode(utilities.encoding).encode('ascii','xmlcharrefreplace')
         else:dat=str(dat)
         child=doc.createElementNS(None, col)
         text=doc.createTextNode(dat)
@@ -241,7 +241,7 @@ def ListToXML(lst,root):
         if type(dat) is unicode:
             dat=dat.encode('ascii','xmlcharrefreplace')
         elif type(dat) is str:
-            dat=dat.decode('latin-1').encode('ascii','xmlcharrefreplace')
+            dat=dat.decode(utilities.encoding).encode('ascii','xmlcharrefreplace')
         else:dat=str(dat)
         child=doc.createElementNS(None, col)
         text=doc.createTextNode(dat)

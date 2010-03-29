@@ -24,18 +24,40 @@
 Utility helper functions
 '''
 
+#========================================================================================================
+# Globals
+#========================================================================================================
+dateformat='%Y-%m-%d'  #ISO 8601
+timeformat='%H:%M:%S' #ISO 8601
+datetimeformat='%sT%s' % (dateformat,timeformat)
+
+encoding='latin-1'
+
+#========================================================================================================
+# Imports
+#========================================================================================================
 try:
     import xlrd, xlwt
 except:
     from xlutils import xlrd
     from xlutils import xlwt
 from xlutils import copy as xlcp
-import sys, os.path, os, re, struct, glob, shutil,traceback,time
+import sys, os.path, os, re, struct, glob, shutil,traceback,time #,uuid
+import uuid as _uuid
 
-dateformat='%Y-%m-%d'  #ISO 8601
-timeformat='%H:%M:%S' #ISO 8601
-datetimeformat='%sT%s' % (dateformat,timeformat)
-
+#========================================================================================================
+#{String Utilities
+#========================================================================================================
+def encode(u):
+    ''' Encode a unicode string
+        @type     cmd:  C{unicode}
+        @param    cmd:  Unicode string
+        @rtype:   C{str}
+        @return:  Encoded string
+    '''
+    if type(u) is unicode:return u.encode(encoding)
+    else:return u
+    
 #========================================================================================================
 #{Filesystem Utilities
 #========================================================================================================
@@ -231,6 +253,7 @@ def FileInfo(filepath):
         fileinfo['datemodified']=time.strftime(datetimeformat, time.localtime(filestat.st_mtime))
         fileinfo['datecreated']=time.strftime(datetimeformat, time.localtime(filestat.st_ctime))
         fileinfo['dateaccessed']=time.strftime(datetimeformat, time.localtime(filestat.st_atime))
+        fileinfo['guid']=uuid(filepath)
         if sys.platform[0:3].lower()=='win':
             ownerid,ownername=_WinFileOwner(filepath)
         else:
@@ -241,7 +264,18 @@ def FileInfo(filepath):
     finally:return fileinfo
 
 
-def convertUNC(filepath):
+def uuid(filepath):
+    ''' Generate a uuid reproducible based on filename
+
+        @type    filepath: C{str}
+        @param   filepath: Path to file
+        @rtype:  C{str}
+        @return: uuid
+    '''
+    filepath=uncpath(realpath(normcase(filepath)))
+    return str(_uuid.uuid3(_uuid.NAMESPACE_DNS,filepath))
+
+def uncpath(filepath):
     ''' Convert file path to UNC.
 
         @type    filepath: C{str}
@@ -251,7 +285,7 @@ def convertUNC(filepath):
     '''
     if sys.platform[0:3].lower()=='win':
         import win32wnet
-        if type(filepath) is list or type(filepath) is tuple: #is it a list of filepaths
+        if type(filepath) in [list,tuple]:
             uncpath=[]
             for path in filepath:
                 try:    uncpath.append(win32wnet.WNetGetUniversalName(path))
@@ -262,8 +296,21 @@ def convertUNC(filepath):
     else:uncpath=filepath
     return uncpath
 
-def fixSeparators(filepath):
-    ''' Fix up any mixed forward/backward slahes in file path/s.
+def normcase(filepath):
+    ''' Normalize case of pathname. Makes all characters lowercase and all slashes into backslashes.
+
+        @type    filepath: C{str/list}
+        @param   filepath: Path to file/s
+        @rtype:  C{str/list}
+        @return: Path to file/s
+    '''
+    if type(filepath) in [list,tuple]:
+        return [os.path.normcase(i) for i in filepath]
+    else:
+        return os.path.normcase(filepath)
+
+def normpath(filepath):
+    ''' Normalize path, eliminating double slashes, etc.
 
         @type    filepath: C{str/list}
         @param   filepath: Path to file/s
@@ -274,6 +321,19 @@ def fixSeparators(filepath):
         return [os.path.normpath(i) for i in filepath]
     else:
         return os.path.normpath(filepath)
+
+def realpath(filepath):
+    ''' Return the absolute version of a path.
+
+        @type    filepath: C{str/list}
+        @param   filepath: Path to file/s
+        @rtype:  C{str/list}
+        @return: Path to file/s
+    '''
+    if type(filepath) in [list,tuple]:
+        return [os.path.realpath(i) for i in filepath]
+    else:
+        return os.path.realpath(filepath)
 
 def checkExt(filepath,ext):
     ''' Check a file has an allowed extension or apply a default extension if it has none.
@@ -399,12 +459,13 @@ class ExcelWriter:
             self._cols=dict(zip(self._fields,range(len(self._fields))))
             for i in range(0,self._sheets):
                 ws=self._wb.get_sheet(i)
+                if i==0:self._ws=ws
                 ws._cell_overwrite_ok = True
             self._rows=len(ws.rows)-1
             del rb,ws
         else:
             if os.path.exists(xls):os.remove(xls)
-            self._wb = xlwt.Workbook(encoding='latin-1')
+            self._wb = xlwt.Workbook(encoding=encoding)
             self.__addsheet__()
 
     def __addsheet__(self):
@@ -475,11 +536,12 @@ class ExcelReader:
         i=index/65535
         j=index-i*65535
         ws=self.wb.sheets()[i]
-        headers=[c.value for c in ws.row(0)]
-        cells=[c.value for c in ws.row(j+1)]
+        headers=[encode(c.value) for c in ws.row(0)]
+        cells=[encode(c.value) for c in ws.row(j+1)]
         if self.returntype is dict:
             return dict(zip(headers,cells))
         else:
             return zip(headers,cells)
 
 #}
+ 

@@ -56,7 +56,7 @@ class Crawler:
         fileformats={}
         for f in utilities.rglob(dir,'|'.join(format_regex), True, re.IGNORECASE):
             #Use latin-1 encoding to fix Issue 20
-            f=f.encode('latin-1')
+            f=utilities.encode(f)
             for r in format_regex:
                 if re.search(r,f,re.IGNORECASE):
                     if fileformats.has_key(r):fileformats[r].append(f)
@@ -68,7 +68,7 @@ class Crawler:
 
         #Class vars
         self.errors=[] #A list of files that couldn't be opened. Contains a tuple with file name, error info, debug info
-        self.files=utilities.fixSeparators(files)
+        self.files=utilities.normpath(files)
         self.file=''
         self.filecount=len(self.files)
 

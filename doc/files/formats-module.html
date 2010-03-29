@@ -242,7 +242,9 @@
     <li> <strong class="uidlink"><a href="formats.__dataset__-module.html">formats.__dataset__</a></strong>: <em class="summary">Defines the metadata fields and populates some basic info</em>    </li>
     <li> <strong class="uidlink"><a href="formats.__default__-module.html">formats.__default__</a></strong>: <em class="summary">Metadata driver for generic imagery formats including GDAL Virtual 
         Rasters (VRT files and xml strings)</em>    </li>
-    <li> <strong class="uidlink"><a href="formats.__fields__-module.html">formats.__fields__</a></strong>: <em class="summary">Dictionary of field names and data types</em>    </li>
+    <li> <strong class="uidlink"><a href="formats.__fields__-module.html">formats.__fields__</a></strong>: <em class="summary">Metadata Fields
+===============
+Dictionary of field names and data types.</em>    </li>
     <li> <strong class="uidlink"><a href="formats.ali_hyperion-module.html">formats.ali_hyperion</a></strong>: <em class="summary">Metadata driver for EO1 ALI (L1G &amp; L1R) &amp; Hyperion (L1R) 
         images</em>    </li>
     <li> <strong class="uidlink"><a href="formats.alos-module.html">formats.alos</a></strong>: <em class="summary">Metadata driver for ACRES ALOS AVNIR-2/PRISM/PALSAR imagery</em>    </li>
@@ -320,13 +322,13 @@
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
         <a href="formats-module.html#__formats__" class="summary-name">__formats__</a> = <code title="{'ali_hyperion': &lt;module 'formats.ali_hyperion' from 'C:\metageta_deve\
-lopment\metageta\lib\formats\ali_hyperion.pyc'&gt;,
+lopment\metageta-walkdev\lib\formats\ali_hyperion.pyc'&gt;,
  'alos': &lt;module 'formats.alos' from 'C:\metageta_development\metageta\
-\lib\formats\alos.pyc'&gt;,
+-walkdev\lib\formats\alos.pyc'&gt;,
  'aster': &lt;module 'formats.aster' from 'C:\metageta_development\metage\
-ta\lib\formats\aster.pyc'&gt;,
+ta-walkdev\lib\formats\aster.pyc'&gt;,
  'ccrs': &lt;module 'formats.ccrs' from 'C:\metageta_development\metageta\
-\lib\formats\ccrs.pyc'&gt;,
+-walkdev\lib\formats\ccrs.pyc'&gt;,
 ..."><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">ali_hyperion</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;module 'formats.ali_hyperion' <code class="variable-ellipsis">...</code></code>
     </td>
   </tr>
@@ -350,15 +352,15 @@ ta\lib\formats\aster.pyc'&gt;,
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="formats-module.html#fields" class="summary-name">fields</a> = <code title="{'LL': ('string', 25),
- 'LR': ('string', 25),
- 'UL': ('string', 25),
- 'UR': ('string', 25),
- 'abstract': 'no fieldtype required as this is not included in the sha\
-pefile...',
+        <a href="formats-module.html#fields" class="summary-name">fields</a> = <code title="{'DELETED': None,
+ 'LL': None,
+ 'LR': None,
+ 'UL': None,
+ 'UPDATED': None,
+ 'UR': None,
+ 'abstract': None,
  'bands': ('string', 50),
- 'cellx': 'float',
-..."><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">LL</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">string</code><code class="variable-quote">'</code><code class="variable-op">, </code>25<code class="variable-group">)</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">LR</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">string</code><code class="variable-quote">'</code><code class="variable-op">, </code>25<code class="variable-group">)</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">UL</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-ellipsis">...</code></code><br />
+..."><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">DELETED</code><code class="variable-quote">'</code><code class="variable-op">: </code>None<code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">LL</code><code class="variable-quote">'</code><code class="variable-op">: </code>None<code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">LR</code><code class="variable-quote">'</code><code class="variable-op">: </code>None<code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">UL</code><code class="variable-quote">'</code><code class="variable-op">: </code>None<code class="variable-op">,</code><code class="variable-ellipsis">...</code></code><br />
       List of metadata fields that can be populated
     </td>
   </tr>
@@ -470,13 +472,13 @@ pefile...',
     <dt>Value:</dt>
       <dd><table><tr><td><pre class="variable">
 <code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">ali_hyperion</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;module 'formats.ali_hyperion' from 'C:\metageta_deve<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
-lopment\metageta\lib\formats\ali_hyperion.pyc'&gt;<code class="variable-op">,</code>
+lopment\metageta-walkdev\lib\formats\ali_hyperion.pyc'&gt;<code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">alos</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;module 'formats.alos' from 'C:\metageta_development\metageta<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
-\lib\formats\alos.pyc'&gt;<code class="variable-op">,</code>
+-walkdev\lib\formats\alos.pyc'&gt;<code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">aster</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;module 'formats.aster' from 'C:\metageta_development\metage<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
-ta\lib\formats\aster.pyc'&gt;<code class="variable-op">,</code>
+ta-walkdev\lib\formats\aster.pyc'&gt;<code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">ccrs</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;module 'formats.ccrs' from 'C:\metageta_development\metageta<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
-\lib\formats\ccrs.pyc'&gt;<code class="variable-op">,</code>
+-walkdev\lib\formats\ccrs.pyc'&gt;<code class="variable-op">,</code>
 <code class="variable-ellipsis">...</code>
 </pre></td></tr></table>
 </dd>
@@ -521,14 +523,14 @@ ta\lib\formats\aster.pyc'&gt;<code class="variable-op">,</code>
   <dl class="fields">
     <dt>Value:</dt>
       <dd><table><tr><td><pre class="variable">
-<code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">LL</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">string</code><code class="variable-quote">'</code><code class="variable-op">, </code>25<code class="variable-group">)</code><code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">LR</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">string</code><code class="variable-quote">'</code><code class="variable-op">, </code>25<code class="variable-group">)</code><code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">UL</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">string</code><code class="variable-quote">'</code><code class="variable-op">, </code>25<code class="variable-group">)</code><code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">UR</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">string</code><code class="variable-quote">'</code><code class="variable-op">, </code>25<code class="variable-group">)</code><code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">abstract</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">no fieldtype required as this is not included in the sha</code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
-<code class="variable-string">pefile...</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+<code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">DELETED</code><code class="variable-quote">'</code><code class="variable-op">: </code>None<code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">LL</code><code class="variable-quote">'</code><code class="variable-op">: </code>None<code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">LR</code><code class="variable-quote">'</code><code class="variable-op">: </code>None<code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">UL</code><code class="variable-quote">'</code><code class="variable-op">: </code>None<code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">UPDATED</code><code class="variable-quote">'</code><code class="variable-op">: </code>None<code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">UR</code><code class="variable-quote">'</code><code class="variable-op">: </code>None<code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">abstract</code><code class="variable-quote">'</code><code class="variable-op">: </code>None<code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">bands</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">string</code><code class="variable-quote">'</code><code class="variable-op">, </code>50<code class="variable-group">)</code><code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">cellx</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">float</code><code class="variable-quote">'</code><code class="variable-op">,</code>
 <code class="variable-ellipsis">...</code>
 </pre></td></tr></table>
 </dd>
@@ -564,7 +566,7 @@ ta\lib\formats\aster.pyc'&gt;<code class="variable-op">,</code>
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Tue Mar 16 16:00:26 2010
+    Generated by Epydoc 3.0.1 on Mon Mar 29 14:17:38 2010
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

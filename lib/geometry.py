@@ -880,6 +880,7 @@ class ShapeWriter:
         '''Open the shapefile for updating/appending'''
         fieldnames=sorted(fields.keys())
         shp=self._driver.Open(shapefile,update=1)
+        if not shp:raise GDALError, 'Unable to open %s'%filepath
         lyr=shp.GetLayer(0)
         lyrdef=lyr.GetLayerDefn()
         self._srs=lyr.GetSpatialRef()

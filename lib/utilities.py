@@ -272,7 +272,7 @@ def uuid(filepath):
         @rtype:  C{str}
         @return: uuid
     '''
-    filepath=uncpath(realpath(normcase(filepath)))
+    filepath=normcase(uncpath(realpath(filepath)))
     return str(_uuid.uuid3(_uuid.NAMESPACE_DNS,filepath))
 
 def uncpath(filepath):
@@ -454,19 +454,32 @@ class ExcelWriter:
             self._sheets=rb.nsheets
             self._wb = xlcp.copy(rb)
             #ws=rb.get_sheet(0) #xlrd bug? "AttributeError: 'Book' object has no attribute 'mem'"
-            ws=rb.sheets()[0]
-            self._fields=map(str, ws.row_values(0))
-            self._cols=dict(zip(self._fields,range(len(self._fields))))
+
+            #Ensure we can update cells
             for i in range(0,self._sheets):
                 ws=self._wb.get_sheet(i)
-                if i==0:self._ws=ws
                 ws._cell_overwrite_ok = True
             self._rows=len(ws.rows)-1
+
+            #Check if all fields exist, add them if not
+            ws=rb.sheets()[0]
+            fields=map(encode, ws.row_values(0))
+            extrafields=[f for f in self._fields if f not in fields]
+            col=len(fields)
+            for field in extrafields:
+                fields.append(field) #add field to end of existing field list
+                for i in range(self._sheets):
+                    self._wb.get_sheet(i).write(0,col,field)
+                col+=1
+            self._fields=fields
+
             del rb,ws
         else:
             if os.path.exists(xls):os.remove(xls)
             self._wb = xlwt.Workbook(encoding=encoding)
             self.__addsheet__()
+
+        self._cols=dict(zip(self._fields,range(len(self._fields))))
 
     def __addsheet__(self):
         self._sheets+=1
@@ -474,7 +487,6 @@ class ExcelWriter:
         #self._ws.keep_leading_zeros()
 
         for i,field in enumerate(self._fields):
-            self._cols[field]=i
             self._ws.write(0, i, field, self._heading) #[row,col] = 0 based row, col ref
         self._rows = 0
         

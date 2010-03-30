@@ -88,12 +88,19 @@ def main(dir,xls, update=False, getovs=False, nogui=True, debug=False):
     #Build a dict of existing records
     if update:
         records={}
-        import uuid
+        if os.path.exists(shp):
+            ShapeWriter=False
+        else:
+            pl.info('%s does not exist, it will be recreated...'%shp)
+            ShapeWriter=geometry.ShapeWriter(shp,format_fields,update=False)
         for row,rec in enumerate(utilities.ExcelReader(xls)):
-            #records[str(rec['guid'])]=rec
+            if ShapeWriter:
+                ext=[rec['UL'].split(','),rec['UR'].split(','),rec['LR'].split(','),rec['LL'].split(',')]
+                ShapeWriter.WriteRecord(ext,rec)
             #Kludge to ensure backwards compatibility with previously generated guids
+            #records[str(rec['guid'])]=rec
             records[utilities.uuid(str(rec['filepath']))]=(row,rec)
-
+        del ShapeWriter
     try:
         ExcelWriter=utilities.ExcelWriter(xls,format_fields.keys(),update=update)
         ShapeWriter=geometry.ShapeWriter(shp,format_fields,update=update)

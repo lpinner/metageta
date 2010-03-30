@@ -248,7 +248,11 @@ def FileInfo(filepath):
         'dateaccessed':''
     }
     try:
+        filepath=normcase(realpath(filepath))
         filestat = os.stat(filepath)
+
+        fileinfo['filename']=os.path.basename(filepath)
+        fileinfo['filepath']=filepath
         fileinfo['size']=filestat.st_size
         fileinfo['datemodified']=time.strftime(datetimeformat, time.localtime(filestat.st_mtime))
         fileinfo['datecreated']=time.strftime(datetimeformat, time.localtime(filestat.st_ctime))
@@ -288,8 +292,8 @@ def uncpath(filepath):
         if type(filepath) in [list,tuple]:
             uncpath=[]
             for path in filepath:
-                try:    uncpath.append(win32wnet.WNetGetUniversalName(path))
-                except: uncpath.append(path) #Local path
+                try:    uncpath.append(normcase(win32wnet.WNetGetUniversalName(path)))
+                except: uncpath.append(normcase(path)) #Local path
         else:
             try:    uncpath=win32wnet.WNetGetUniversalName(filepath)
             except: uncpath=filepath #Local path
@@ -458,6 +462,7 @@ class ExcelWriter:
             #Ensure we can update cells
             for i in range(0,self._sheets):
                 ws=self._wb.get_sheet(i)
+                if i==0:self._ws=ws
                 ws._cell_overwrite_ok = True
             self._rows=len(ws.rows)-1
 
@@ -500,7 +505,7 @@ class ExcelWriter:
         if self._rows > 65534:
             self.__addsheet__()
         for field in data:
-            if field in self._fields:
+            if field in self._fields and data[field] not in ['',None,False]:#0 is valid
                 self._ws.write(self._rows+1, self._cols[field], data[field])
                 dirty=True
         if dirty:self._rows+=1
@@ -519,7 +524,7 @@ class ExcelWriter:
         r=row-s*65535
         ws=self._wb.get_sheet(s)
         for field in data:
-            if field in self._fields:
+            if field in self._fields and data[field] not in ['',None,False]:#0 is valid
                 ws.write(r+1, self._cols[field], data[field])
                 dirty=True
         if dirty:self._wb.save(self._file)

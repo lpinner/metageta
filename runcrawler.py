@@ -123,15 +123,15 @@ def main(dir,xls, update=False, getovs=False, nogui=True, debug=False):
             fi=ds.fileinfo
             fi['filepath']=utilities.uncpath(fi['filepath'])
             fi['filelist']=','.join(utilities.uncpath(ds.filelist))
-            qlk=os.path.join(os.path.dirname(xls),'%s.%s.qlk.jpg'%(fi['filename'],fi['guid']))
-            thm=os.path.join(os.path.dirname(xls),'%s.%s.thm.jpg'%(fi['filename'],fi['guid']))
+            qlk=utilities.uncpath(os.path.join(os.path.dirname(xls),'%s.%s.qlk.jpg'%(fi['filename'],fi['guid'])))
+            thm=utilities.uncpath(os.path.join(os.path.dirname(xls),'%s.%s.thm.jpg'%(fi['filename'],fi['guid'])))
 
-            if update and ds.guid in records:# and False:
+            if update and ds.guid in records:
                 row,rec=records[ds.guid]
                 if rec['datemodified']==fi['datemodified']:
                     pl.info('Metadata did not need updating for %s, %s files remaining' % (Crawler.file,len(Crawler.files)))
                     pl.updateProgress(newMax=Crawler.filecount)
-                    continue #
+                    continue
                 else:
                     md=ds.metadata
                     geom=ds.extent

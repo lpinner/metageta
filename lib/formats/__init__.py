@@ -179,6 +179,7 @@ def Open(f):
     '''
     errors=[] #error stack
     f=utilities.encode(f) #Issue 20
+    f=utilities.normcase(utilities.uncpath(utilities.realpath(f)))
 
     #Try custom formats
     for lib in __formats__:

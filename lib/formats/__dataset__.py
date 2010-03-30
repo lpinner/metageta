@@ -187,8 +187,6 @@ class Dataset(object):
     # ===================== #
     def __setfileinfo__(self,f):
         self.fileinfo=utilities.FileInfo(f)
-        self.fileinfo['filename']=os.path.basename(f)
-        self.fileinfo['filepath']=f
         self.guid=self.fileinfo['guid']
         self.fileinfo['metadatadate']=time.strftime(utilities.dateformat,time.localtime())  #Just use yyy-mm-dd
 

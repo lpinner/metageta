@@ -51,7 +51,7 @@ class Crawler:
         '''
 
         format_regex  = formats.format_regex
-
+        dir=utilities.uncpath(utilities.realpath(utilities.normcase(utilities.encode(dir))))
         #Build a dict of matching files and regexes then sort according to the priority of the regex formats 
         fileformats={}
         for f in utilities.rglob(dir,'|'.join(format_regex), True, re.IGNORECASE):
@@ -68,7 +68,7 @@ class Crawler:
 
         #Class vars
         self.errors=[] #A list of files that couldn't be opened. Contains a tuple with file name, error info, debug info
-        self.files=utilities.normcase(files)
+        self.files=files
         self.file=''
         self.filecount=len(self.files)
 

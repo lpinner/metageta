@@ -85,24 +85,36 @@ def main(dir,xls, update=False, getovs=False, nogui=True, debug=False):
 
     pl.debug(' '.join(sys.argv))
 
-    #Build a dict of existing records
-    if update:
-        records={}
-        if os.path.exists(shp):
-            ShapeWriter=False
-        else:
-            pl.info('%s does not exist, it will be recreated...'%shp)
-            ShapeWriter=geometry.ShapeWriter(shp,format_fields,update=False)
-        for row,rec in enumerate(utilities.ExcelReader(xls)):
-            if ShapeWriter:
-                ext=[rec['UL'].split(','),rec['UR'].split(','),rec['LR'].split(','),rec['LL'].split(',')]
-                ShapeWriter.WriteRecord(ext,rec)
-            #Kludge to ensure backwards compatibility with previously generated guids
-            #records[str(rec['guid'])]=rec
-            records[utilities.uuid(str(rec['filepath']))]=(row,rec)
-        del ShapeWriter
+   
     try:
         ExcelWriter=utilities.ExcelWriter(xls,format_fields.keys(),update=update)
+
+        #Are we updating an existing crawl?
+        if update:
+
+            #Do we need to recreate the shapefile?
+            if os.path.exists(shp):
+                ShapeWriter=False
+            else:
+                pl.info('%s does not exist, it will be recreated...'%shp)
+                ShapeWriter=geometry.ShapeWriter(shp,format_fields,update=False)
+
+            #Build a dict of existing records
+            records={}
+            for row,rec in enumerate(utilities.ExcelReader(xls)):
+                #Check if the dataset still exists, mark it DELETED if it doesn't
+                if os.path.exists(rec['filepath']):
+                    if ShapeWriter:
+                        ext=[rec['UL'].split(','),rec['UR'].split(','),rec['LR'].split(','),rec['LL'].split(',')]
+                        ShapeWriter.WriteRecord(ext,rec)
+                    #Kludge to ensure backwards compatibility with previously generated guids
+                    #records[rec['guid']]=rec
+                    records[utilities.uuid(rec['filepath'])]=(row,rec)
+                else:
+                    rec['DELETED']=1
+                    ExcelWriter.UpdateRecord(rec,row)
+                    pl.info('Marked %s as deleted' % (rec['filepath']))
+            del ShapeWriter
         ShapeWriter=geometry.ShapeWriter(shp,format_fields,update=update)
     except Exception,err:
         pl.error('%s' % utilities.ExceptionInfo())
@@ -201,10 +213,9 @@ def main(dir,xls, update=False, getovs=False, nogui=True, debug=False):
 
     if Crawler.filecount == 0:
         pl.info("No data found")
-        pl.updateProgress(newMax=1) #Just so the progress meter hits 100%
     else:
-        pl.updateProgress(newMax=1) #Just so the progress meter hits 100%
         pl.info("Metadata extraction complete!")
+    pl.updateProgress(newMax=1) #Just so the progress meter hits 100%
 
     del pl
     del ExcelWriter

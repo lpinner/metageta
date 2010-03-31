@@ -98,8 +98,11 @@ def main(xls,xsl,dir,mef=False,log=None,debug=False,gui=False):
             if overviews:transforms.CreateMEF(dir,xmlfile,guid,overviews)
             pl.info('Transformed metadata for ' +filename)
         except Exception,err:
-            pl.error('%s\n%s' % (filename, utilities.ExceptionInfo()))
-            pl.debug(utilities.ExceptionInfo(10))
+            if 'message instruction' in err.args[0]:
+                pl.info(''.join(err.args[1]).strip())
+            else:
+                pl.error('%s\n%s' % (filename, utilities.ExceptionInfo()))
+                pl.debug(utilities.ExceptionInfo(10))
         
 ##    for rec in utilities.ExcelReader(xls):
 ##        try:

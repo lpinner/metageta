@@ -169,7 +169,7 @@ from Ft.Xml.Xslt import Transform as _Transform
 from Ft.Xml import Parse as _Parse
 from Ft.Xml import Domlette as _Dom
 
-from utilities import rglob as _rglob
+import utilities  as _utilities
 
 #++++++++++++++++++++++++
 #Public vars
@@ -219,7 +219,7 @@ def DictToXML(dic,root):
         if type(dat) is unicode:
             dat=dat.encode('ascii','xmlcharrefreplace')
         elif type(dat) is str:
-            dat=dat.decode(utilities.encoding).encode('ascii','xmlcharrefreplace')
+            dat=dat.decode(_utilities.encoding).encode('ascii','xmlcharrefreplace')
         else:dat=str(dat)
         child=doc.createElementNS(None, col)
         text=doc.createTextNode(dat)
@@ -241,7 +241,7 @@ def ListToXML(lst,root):
         if type(dat) is unicode:
             dat=dat.encode('ascii','xmlcharrefreplace')
         elif type(dat) is str:
-            dat=dat.decode(utilities.encoding).encode('ascii','xmlcharrefreplace')
+            dat=dat.decode(_utilities.encoding).encode('ascii','xmlcharrefreplace')
         else:dat=str(dat)
         child=doc.createElementNS(None, col)
         text=doc.createTextNode(dat)
@@ -292,7 +292,7 @@ def CreateMEF(outdir,xmlfile,uid,overviews=[]):
                 _sh.copy(f,_path.join('public',_path.basename(f)))
         _CreateInfo(uid,overviews)
         _sh.copy(xmlfile,'metadata.xml')
-        for f in _rglob('.'):
+        for f in _utilities.rglob('.'):
             if not _path.isdir(f): mef.write(f)
     finally:
         try:_os.chdir(curdir)

@@ -85,6 +85,5 @@ fields={'abstract'        :None,
         'UR'              :None, 
         'useConstraints'  :None,
         'viewangle'       :None,
-        'UPDATED'         :None,
         'DELETED'         :None
 }

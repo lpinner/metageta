@@ -135,7 +135,7 @@ B{Class hierarchy}::
 '''
 
 from glob import glob as _glob
-import os.path as _path, re as _re, sys as _sys, imp as _imp
+import os.path as _path, re as _re, sys as _sys, imp as _imp, warnings as _warn
 import __fields__
 import utilities
 
@@ -158,13 +158,14 @@ for _lib in _glob(_path.join(__path__[0],'[a-z]*.py')):
         
         #append module _format_regex & fields to lists
         format_regex.extend([r for r in __formats__[_lib].format_regex if not r in format_regex])
-    except:pass 
-    '''@todo: Need to pass back info about import errors - warnings.warn perhaps?'''
-
+    #except:pass 
+    except:
+        _warn.warn('Unable to import %s\n%s' % (_lib, utilities.ExceptionInfo()))
+ 
 #import generic formats (eg. GeoTiff, JP2, etc...)
 import __default__
 #append module _format_regex to list of format regexes
-format_regex.extend([r for r in __default__.format_regex if not r in format_regex])
+format_regex.extend([_r for _r in __default__.format_regex if not _r in format_regex])
 
 def Open(f):
     ''' Open an image with the appropriate driver.

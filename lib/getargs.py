@@ -227,6 +227,43 @@ class FileArg(object):
             var.set(fd)
             dir.set(os.path.split(fd)[0])
 
+class DropListArg(object):
+    ''' Build a droplist 
+
+        @type  root: C{Tkinter.Tk}
+        @param root: Root Tk instance.
+        @type  row:  C{int}
+        @param row:  Grid row to place the file browser in.
+        @type  arg:  C{U{Option<http://docs.python.org/library/optparse.html>}}
+        @param arg:  An U{Option<http://docs.python.org/library/optparse.html>}.
+        
+        @note:  The DropListArg class requires two additional custom attributes to be
+                added to the optparse.Option. These are the L{icon<icons>} to display on the button
+                and options to populate the droplist with.
+
+                Example::
+                    opt=parser.add_option("-z", dest="somevar", metavar="somevar",help="Some value")
+                    opt.argtype=getargs.DropListArg
+                    opt.icon=icons.some_img
+                    opt.options=['Some value','Another value']
+    '''
+    def __init__(self,root,row,arg):
+        self.TkPhotoImage = Tkinter.PhotoImage(format=arg.icon.format,data=arg.icon.data) # keep a reference! See http://effbot.org/tkinterbook/photoimage.htm
+        self.value = Tkinter.StringVar()
+        if arg.default is not None:self.value.set(arg.default)
+        TkLabel=Tkinter.Label(root, text=arg.help+':')
+        width=20
+        TkDropList=_DropList(root,arg.options, textvariable=self.value,width=width)
+        TkImage = Tkinter.Label(root,image=self.TkPhotoImage)
+        TkLabel.grid(row=row, column=0,sticky=Tkinter.W, padx=2)
+        TkDropList.grid(row=row, column=1,sticky=Tkinter.E+Tkinter.W, padx=2)
+        TkImage.grid(row=row, column=2,sticky=Tkinter.E, padx=2)
+        if 'tooltip' in vars(arg):
+            TkLabelToolTip=_ToolTip(TkLabel, delay=250, follow_mouse=1, text=arg.tooltip)
+            TkDropListToolTip=_ToolTip(TkDropList, delay=250, follow_mouse=1, text=arg.tooltip)
+            TkImageToolTip=_ToolTip(TkImage, delay=250, follow_mouse=1, text=arg.tooltip)
+
+        
 class BoolArg(object):
     ''' Build a boolean checkbox 
 
@@ -416,43 +453,65 @@ class _ToolTip:
         label = Tkinter.Label(self._tipwindow, **opts)
         label.pack()
         
+class _DropList(Tkinter.Frame):
+    '''
+    A Tkinter DropList menu
+    Derived from http://effbot.org/tkinterbook/menu.htm
+    '''
+    def __init__(self, root, options, textvariable, *args,**kwargs):
+        arrow=u'\u25bc'
+        lbwidth=len(arrow)+2
+        if kwargs.has_key('width'):
+            fwidth=kwargs['width']
+            ltwidth=fwidth-lbwidth
+            self.width=fwidth
+        else:
+            ltwidth=max([len(o) for o in options])+4
+            fwidth=ltwidth+lbwidth
+            self.width=fwidth
+        textvariable.set(options[0]) # default value
+        Tkinter.Frame.__init__(self,root,relief="sunken", bd=2,background='white',width=fwidth)
+        self._lt=Tkinter.Label(self,textvariable=textvariable, bd=0,relief="sunken",activebackground='white',background='white',width=ltwidth)
+        self._lb=Tkinter.Label(self,text=arrow,relief="raised", bd=2)
+        self._m=Tkinter.Menu(self, tearoff=0,background='white')
+        for o in options:
+            self._m.add_command(label=o.center(ltwidth), command=_Command(textvariable.set,o))
+        # attach popup to canvas
+        self._lt.bind("<Button-1>", self._popup)
+        self._lt.grid(row=0, column=0)
+        self._lb.bind("<Button-1>", self._popup)
+        self._lb.grid(row=0, column=1)
+        self.pack()
+    def _popup(self,event):
+        self._m.post(self._lt.winfo_rootx(), self._lt.winfo_rooty())
+
 if __name__ == '__main__':
     import optparse,icons,getargs
     reload(getargs)
-    description='Run the metadata crawler'
+    description='Run the getargs test'
     parser = optparse.OptionParser(description=description)
-    opt=parser.add_option('-d', dest="dir", metavar="dir",help='The directory to crawl')
+
+    opt=parser.add_option('-d', dest="dir", metavar="dir",help='A directory')
     opt.icon=icons.dir_img
     opt.argtype=getargs.DirArg
     
-    opt=parser.add_option("-x", dest="xls", metavar="xls",help="Output Excel spreadsheet")
-    opt.argtype=getargs.FileArg
-    opt.icon=icons.xls_img
-    opt.filter=[('Excel Spreadsheet','*.xls')]
-
-    opt=parser.add_option("-s", dest="shp", metavar="shp",help="Output shapefile")
-    opt.argtype=getargs.FileArg
-    opt.icon=icons.shp_img
-    opt.filter=[('ESRI Shapefile','*.shp')]
-
-    opt=parser.add_option("-l", dest="log", metavar="log",help="Log file")
+    opt=parser.add_option("-f", dest="f", metavar="f",help="A file")
     opt.argtype=getargs.FileArg
     opt.icon=icons.log_img
     opt.filter=[('Log File',('*.txt','*.log'))]
-    
-    opt=parser.add_option("-o", action="store_true", dest="ovs",default=False,
-                      help="Generate overview images")
-    #opt.argtype=getargs.BoolArg
-    opt=parser.add_option("--nomd", action="store_true", dest="nomd",default=False,
-                      help="Get basic file info only")
+
+    opt=parser.add_option("-n", action="store_true", dest="no",default=False,
+                      help="A boolean arg")
     opt.argtype=getargs.BoolArg
-    opt=parser.add_option("--debug", action="store_true", dest="debug",default=False,
-                      help="Turn debug output on")
-    opt=parser.add_option("--gui", action="store_true", dest="gui", default=False,
-                      help="Show the GUI progress dialog")
+
+    opt=parser.add_option('-l', dest="lst", metavar="lst",help='A list')
+    opt.icon=icons.xsl_img
+    opt.options=['aaaa','bbbb','cccc','dddd']
+    opt.argtype=getargs.DropListArg
+    opt.tooltip='Tooltip!'
+    
     optvals,argvals = parser.parse_args()
     for opt in parser.option_list:
         if 'argtype' in vars(opt):
             opt.default=vars(optvals)[opt.dest]
-    if not optvals.dir or not optvals.log or not optvals.shp or not optvals.xls:
-        args=getargs.GetArgs(*[opt for opt in parser.option_list if 'argtype' in vars(opt)])
+    args=getargs.GetArgs(*[opt for opt in parser.option_list if 'argtype' in vars(opt)])

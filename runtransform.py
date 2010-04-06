@@ -112,179 +112,56 @@ def main(xls,xsl,dir,mef=False,log=None,debug=False,gui=False):
 ##        except Exception,err:
 ##            pl.error('%s\n%s' % (rec['filename'], utilities.ExceptionInfo()))
 ##            pl.debug(utilities.ExceptionInfo(10))
-#========================================================================================================
-#Below is for the GUI if run without arguments
-#========================================================================================================
-class Command:
-    """ A class we can use to avoid using the tricky "Lambda" expression.
-    "Python and Tkinter Programming" by John Grayson, introduces this idiom."""
-    def __init__(self, func, *args, **kwargs):
-        self.func = func
-        self.args = args
-        self.kwargs = kwargs
-    def __call__(self, *args, **kwargs):
-        apply(self.func, self.args, self.kwargs)
-        
-class DropList(Tkinter.Widget):
-    '''
-    A Tkinter DropList menu
-    Derived from http://effbot.org/tkinterbook/menu.htm
-    '''
-    def __init__(self, root, options, stringvar, cnf={},**kwargs):
-        self.root=root
-        self.tk=root
-        arrow=u'\u25bc'
-        lbwidth=len(arrow)+2
-        if kwargs.has_key('width'):
-            fwidth=kwargs['width']
-            ltwidth=fwidth-lbwidth
-            self.width=fwidth
-        else:
-            ltwidth=max([len(o) for o in options])+4
-            fwidth=ltwidth+lbwidth
-            self.width=fwidth
-        stringvar.set(options[0]) # default value
-        self.frame=Tkinter.Frame(root,relief="sunken", bd=2,background='white')#,width=fwidth)
-        self._lt=Tkinter.Label(self.frame,textvariable=stringvar, bd=0,relief="sunken",activebackground='white',background='white',width=ltwidth)
-        self._lb=Tkinter.Label(self.frame,text=arrow,relief="raised", bd=2)
-        self._m=Tkinter.Menu(root, tearoff=0,background='white')
-        for o in options:
-            self._m.add_command(label=o, command=Command(stringvar.set,o))
-        # attach popup to canvas
-        self._lt.bind("<Button-1>", self._popup)
-        self._lt.grid(row=0, column=0)
-        self._lb.bind("<Button-1>", self._popup)
-        self._lb.grid(row=0, column=1)
-        self.frame.pack()
-    def _popup(self,event):
-        self._m.post(self._lt.winfo_rootx(), self._lt.winfo_rooty())
-    def pack(self, *args, **kw):
-        self.frame.pack(*args, **kw)
-    def grid(self, *args, **kw):
-        self.frame.grid(*args, **kw)
-class GetArgs:
-    '''Pop up a GUI dialog to gather arguments'''
-    def __init__(self):
-        '''Build and show the GUI dialog'''
-        #base 64 encoded gif images for the GUI buttons
-        from icons import dir_img, xls_img, xsl_img
 
-        windowicon=os.environ['CURDIR']+'/lib/wm_icon.ico'
-        
-        self.root = Tkinter.Tk()
-        self.root.title('Metadata Transform')
-        try:self.root.wm_iconbitmap(windowicon)
-        except:pass
-        # Calculate the geometry to centre the app
-        scrnWt = self.root.winfo_screenwidth()
-        scrnHt = self.root.winfo_screenheight()
-        appWt = self.root.winfo_width()
-        appHt = self.root.winfo_height()
-        appXPos = (scrnWt / 2) - (appWt / 2)
-        appYPos = (scrnHt / 2) - (appHt / 2)
-        self.root.geometry('+%d+%d' % (appXPos, appYPos))
-        last_dir = Tkinter.StringVar()
-        last_dir.set('C:\\')
-        xls_ico = Tkinter.PhotoImage(format=xls_img.format,data=xls_img.data)
-        xsl_ico = Tkinter.PhotoImage(format=xsl_img.format,data=xsl_img.data)
-        dir_ico = Tkinter.PhotoImage(format=dir_img.format,data=dir_img.data)
-        sxls = Tkinter.StringVar()
-        sxsl = Tkinter.StringVar()
-        sdir = Tkinter.StringVar()
-        smef = Tkinter.IntVar()
-        lxls=Tkinter.Label(self.root, text="Input spreadsheet:")
-        lxsl=Tkinter.Label(self.root, text="XSL Stylesheet:")
-        ldir=Tkinter.Label(self.root, text="Output directory:")
-        lmef=Tkinter.Label(self.root, text="Create MEF:")
-        self.transforms=transforms.transforms.keys()
-        # exls=Tkinter.Entry(self.root, textvariable=sxls)
-        # exsl=DropList(self.root,options,sxsl)
-        # edir=Tkinter.Entry(self.root, textvariable=sdir)
-        exsl=DropList(self.root,self.transforms,sxsl)
-        exls=Tkinter.Entry(self.root, textvariable=sxls, width=exsl.width)
-        edir=Tkinter.Entry(self.root, textvariable=sdir, width=exsl.width)
-        emef=Tkinter.Checkbutton(self.root, variable=smef, text="",onvalue=True, offvalue=False)
-        bxls = Tkinter.Button(self.root,image=xls_ico, command=Command(self.cmdFile,sxls,[('Excel Spreadsheet','*.xls')],last_dir))
-        bxsl = Tkinter.Label(self.root,image=xsl_ico)
-        bdir = Tkinter.Button(self.root,image=dir_ico, command=Command(self.cmdDir, sdir,last_dir))
-        lxls.grid(row=0, column=0, sticky=Tkinter.W)
-        lxsl.grid(row=1, column=0, sticky=Tkinter.W)
-        ldir.grid(row=2, column=0, sticky=Tkinter.W)
-        #lmef.grid(row=3, column=0, sticky=Tkinter.W)
-        exls.grid(row=0, column=1, sticky=Tkinter.W)
-        exsl.grid(row=1, column=1, sticky=Tkinter.W)
-        edir.grid(row=2, column=1, sticky=Tkinter.W)
-        #emef.grid(row=3, column=1, sticky=Tkinter.W)
-        bxls.grid(row=0, column=2, sticky=Tkinter.E)
-        bxsl.grid(row=1, column=2, sticky=Tkinter.E)
-        bdir.grid(row=2, column=2, sticky=Tkinter.E)
-        bOK = Tkinter.Button(self.root,text="Ok", command=self.cmdOK)
-        self.root.bind("<Return>", self.cmdOK)
-        bOK.config(width=10)
-        bCancel = Tkinter.Button(self.root,text="Cancel", command=self.cmdCancel)
-        bOK.grid(row=4, column=1,sticky=Tkinter.E, padx=5,pady=5)
-        bCancel.grid(row=4, column=2,sticky=Tkinter.E, pady=5)
-        scrnWt = self.root.winfo_screenwidth()
-        scrnHt = self.root.winfo_screenheight()
-        imgWt = self.root.winfo_width()
-        imgHt = self.root.winfo_height()
-        imgXPos = (scrnWt / 2.0) - (imgWt / 2.0)
-        imgYPos = (scrnHt / 2.0) - (imgHt / 2.0)
-        #self.root.overrideredirect(1)
-        self.root.geometry('+%d+%d' % (imgXPos, imgYPos))
-        
-        self.vars={'dir':sdir,'xls':sxls,'xsl':sxsl,'mef':smef}
-       #self.root.update()
-        self.root.mainloop()
-        
-    def cmdOK(self):
-        ok,args=True,{}
-        for var in self.vars:
-            arg=self.vars[var].get()
-            if arg=='':ok=False
-            else:args[var]=arg
-        if ok:
-            self.root.destroy()
-            main(**args)
-    def cmdCancel(self):
-        self.root.destroy()
-    def cmdDir(self,var,dir):
-        ad = tkFileDialog.askdirectory(parent=self.root,initialdir=dir.get(),title='Please select a directory to output metadata to')
-        if ad:
-            var.set(ad)
-            dir.set(ad)
-    def cmdFile(self,var,filter,dir):
-        fd = tkFileDialog.askopenfilename(parent=self.root,filetypes=filter,initialdir=dir.get(),title='Please select a file')
-        if fd:
-            var.set(fd)
-            dir.set(os.path.split(fd)[0])
-#========================================================================================================
-#Above is for the GUI if run without arguments
+
 #========================================================================================================
 if __name__ == '__main__':
     #To ensure uri's work...
     if os.path.basename(sys.argv[0])!=sys.argv[0]:os.chdir(os.path.dirname(sys.argv[0]))
-    import optparse
+    import optparse,icons,getargs
     description='Transform metadata to XML'
     parser = optparse.OptionParser(description=description)
-    parser.add_option('-d', dest="dir", metavar="dir",
-                      help='The directory to output metadata XML to')
-    parser.add_option("-x", dest="xls", metavar="xls",
-                      help="Excel spreadsheet to read metadata from")
-    parser.add_option("-t", dest="xsl", metavar="xsl",
-                      help="XSL transform {*.xsl|%s}" % '|'.join(['"%s"'%s for s in transforms.transforms.keys()]))
-                      #help="XSL transform {*.xsl|%s}" % '|'.join(['"%s"'%s for s in transforms.xslfiles.values()]))
-    parser.add_option("-m", action="store_true", dest="mef",default=False,   
+    opt=parser.add_option("-x", dest="xls", metavar="xls",
+                      help="Excel spreadsheet")
+    opt.argtype=getargs.FileArg
+    opt.icon=icons.xls_img
+    opt.filter=[('Excel Spreadsheet','*.xls')]
+    opt.tooltip="Excel spreadsheet to read metadata from"
+
+    opt=parser.add_option('-d', dest="dir", metavar="dir",
+                      help='Output directory')
+    opt.icon=icons.dir_img
+    opt.argtype=getargs.DirArg
+    opt.tooltip='The directory to output metadata XML to'
+    
+    opt=parser.add_option("-t", dest="xsl", metavar="xsl",
+                      help="XSL transform")
+    opt.argtype=getargs.DropListArg
+    opt.icon=icons.xsl_img
+    opt.tooltip="XSL transform {*.xsl|%s}" % '|'.join(['"%s"'%s for s in transforms.transforms.keys()])
+    opt.options=transforms.transforms.keys()
+
+    opt=parser.add_option("-m", action="store_true", dest="mef",default=False,   
                       help="Create Metadata Exchange Format (MEF) file")
-    parser.add_option("--debug", action="store_true", dest="debug",default=False,   
+    opt=parser.add_option("--debug", action="store_true", dest="debug",default=False,   
                       help="Turn debug output on")
-    parser.add_option("-l", dest="log", metavar="log",                            
+    opt=parser.add_option("-l", dest="log", metavar="log",                            
                       help=optparse.SUPPRESS_HELP) #help="Log file")                     #Not yet implemented
-    parser.add_option("--gui", action="store_true", dest="gui", default=False,
+    opt=parser.add_option("--gui", action="store_true", dest="gui", default=False,
                       help=optparse.SUPPRESS_HELP) #help="Show the GUI progress dialog") #Not yet implemented
-    opts,args = parser.parse_args()
-    if not opts.dir or not opts.xls or not opts.xsl:
-        GetArgs()
-    else:
-        if opts.xsl in transforms.xslfiles.values():pass
-        main(opts.xls,opts.xsl,opts.dir,opts.log,opts.gui,opts.debug)
+
+    optvals,argvals = parser.parse_args()
+
+    #Do we need to pop up the GUI?
+    if not optvals.dir or not optvals.xls or not optvals.xsl:
+        #Add existing command line args values to opt default values so they show in the gui
+        for opt in parser.option_list:
+            if 'argtype' in vars(opt):
+                opt.default=vars(optvals)[opt.dest]
+        #Pop up the GUI
+        args=getargs.GetArgs(*[opt for opt in parser.option_list if 'argtype' in vars(opt)])
+        if args:#GetArgs returns None if user cancels the GUI
+            main(args.xls,args.xsl,args.dir,optvals.log,optvals.gui,optvals.debug)
+    else: #No need for the GUI
+        main(optvals.xls,optvals.xsl,optvals.dir,optvals.log,optvals.gui,optvals.debug)
+        

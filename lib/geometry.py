@@ -818,7 +818,7 @@ class ShapeWriter:
         self._srs=osr.SpatialReference()
         self.fields={} #Dict to map full names to truncated names if name >10 chars
         try:
-            if update:
+            if update and os.path.exists(shapefile):
                 self._shape=self.__openshapefile__(shapefile,fields)
             else:
                 self._shape=self.__createshapefile__(shapefile,fields,srs_wkt)

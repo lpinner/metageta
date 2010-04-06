@@ -477,12 +477,14 @@ class ExcelWriter:
                     self._wb.get_sheet(i).write(0,col,field)
                 col+=1
             self._fields=fields
+            self._wb.save(self._file)
 
             del rb,ws
         else:
             if os.path.exists(xls):os.remove(xls)
             self._wb = xlwt.Workbook(encoding=encoding)
             self.__addsheet__()
+            self._wb.save(self._file)
 
         self._cols=dict(zip(self._fields,range(len(self._fields))))
 

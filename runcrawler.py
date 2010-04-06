@@ -84,13 +84,12 @@ def main(dir,xls, update=False, getovs=False, nogui=True, debug=False):
     except:pl = progresslogger.ProgressLogger('MetadataCrawler',logfile=log, logToConsole=True, logToFile=True, logToGUI=not nogui, level=level, callback=exit)
 
     pl.debug(' '.join(sys.argv))
-
    
     try:
-        ExcelWriter=utilities.ExcelWriter(xls,format_fields.keys(),update=update)
 
         #Are we updating an existing crawl?
-        if update:
+        records={}
+        if update and os.path.exists(xls):
 
             #Do we need to recreate the shapefile?
             if os.path.exists(shp):
@@ -100,7 +99,6 @@ def main(dir,xls, update=False, getovs=False, nogui=True, debug=False):
                 ShapeWriter=geometry.ShapeWriter(shp,format_fields,update=False)
 
             #Build a dict of existing records
-            records={}
             for row,rec in enumerate(utilities.ExcelReader(xls)):
                 #Check if the dataset still exists, mark it DELETED if it doesn't
                 if os.path.exists(rec['filepath']):
@@ -115,6 +113,7 @@ def main(dir,xls, update=False, getovs=False, nogui=True, debug=False):
                     ExcelWriter.UpdateRecord(rec,row)
                     pl.info('Marked %s as deleted' % (rec['filepath']))
             del ShapeWriter
+        ExcelWriter=utilities.ExcelWriter(xls,format_fields.keys(),update=update)
         ShapeWriter=geometry.ShapeWriter(shp,format_fields,update=update)
     except Exception,err:
         pl.error('%s' % utilities.ExceptionInfo())

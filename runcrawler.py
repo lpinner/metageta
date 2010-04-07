@@ -87,6 +87,8 @@ def main(dir,xls, update=False, getovs=False, nogui=True, debug=False):
    
     try:
 
+        ExcelWriter=utilities.ExcelWriter(xls,format_fields.keys(),update=update)
+
         #Are we updating an existing crawl?
         records={}
         if update and os.path.exists(xls):
@@ -113,7 +115,6 @@ def main(dir,xls, update=False, getovs=False, nogui=True, debug=False):
                     ExcelWriter.UpdateRecord(rec,row)
                     pl.info('Marked %s as deleted' % (rec['filepath']))
             del ShapeWriter
-        ExcelWriter=utilities.ExcelWriter(xls,format_fields.keys(),update=update)
         ShapeWriter=geometry.ShapeWriter(shp,format_fields,update=update)
     except Exception,err:
         pl.error('%s' % utilities.ExceptionInfo())

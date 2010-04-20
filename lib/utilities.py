@@ -247,6 +247,7 @@ def FileInfo(filepath):
         'datecreated': '',
         'dateaccessed':''
     }
+    if not os.path.exists(filepath): raise IOError,'File not found'
     try:
         filepath=normcase(realpath(filepath))
         filestat = os.stat(filepath)
@@ -354,6 +355,31 @@ def checkExt(filepath,ext):
         return vars[0]+ext[0]
     else:
         return filepath
+def volname(path):
+    ''' Get the volume label for a CD/DVD
+
+        @type    path: C{str}
+        @param   path: Disc path
+        @rtype:  C{str}
+        @return: Volume label
+    '''
+    volname=None
+    try:
+        if sys.platform[0:3].lower()=='win':
+            import win32api
+            drive=os.path.splitdrive(path)[0]
+            if drive: volinfo=win32api.GetVolumeInformation(drive)
+            if volinfo[4]=='CDFS':volname=volinfo[0]
+        else:
+            #get the device from mount point
+            exit_code,stdout,stderr=utilities.runcmd('df '+path)
+            if exit_code == 0:
+                device=stdout.split('\n')[1].split()[0]
+                exit_code,stdout,stderr=runcmd('volname '+device)
+                if exit_code == 0:volname=stdout.strip()
+    finally:
+        return volname
+
 class rglob:
     '''A recursive/regex enhanced glob
        adapted from os-path-walk-example-3.py - http://effbot.org/librarybook/os-path.htm 

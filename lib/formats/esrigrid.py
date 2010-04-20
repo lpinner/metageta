@@ -49,13 +49,19 @@ class Dataset(__default__.Dataset):
         #__default__.Dataset.__getmetadata__(self, self.fileinfo['filepath']) #autopopulate basic metadata
         try:__default__.Dataset.__getmetadata__(self,  self.fileinfo['filepath']) #autopopulate basic metadata
         except geometry.GDALError,err:
-            if 'aux' in err.errmsg.lower():#Sometimes AUX files can cause problems, workaround, cd to the grid dir.
+            #Sometimes AUX files can cause problems, this is related to the HFA driver,
+            #workaround, cd to the grid dir.
+            #The "if" is commented out now as not all error messages contain 'aux'
+            #Deregistering the HFA driver results in another error:
+            #   Unable to open <somegrid>
+            #   '<somegrid>.aux' not recognised as a supported file format
+            #if 'aux' in err.errmsg.lower():
                 curdir = os.path.abspath(os.path.curdir)
                 os.chdir(self.fileinfo['filepath'])
                 __default__.Dataset.__getmetadata__(self,  os.path.basename(self._adf))
                 self._gdaldataset.SetDescription(self._adf)
                 os.chdir(curdir)
-            else:raise #Something else caused it, reraise the error
+            #else:raise #Something else caused it, reraise the error
         if self.metadata['compressiontype']=='Unknown':self.metadata['compressiontype']='RLE'
 
     def getoverview(self,outfile=None,width=800,format='JPG'):

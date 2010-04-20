@@ -318,7 +318,9 @@ def _stretch_STDDEV(vrtcols,vrtrows,ds,bands,std):
         dfScaleSrcMin=max([dfScaleSrcMin, math.floor(dfBandMean-std*dfBandStdDev)])
         dfScaleSrcMax=min([dfScaleSrcMax, math.ceil(dfBandMean+std*dfBandStdDev)])
         
-        dfScale = (dfScaleDstMax - dfScaleDstMin) / (dfScaleSrcMax - dfScaleSrcMin)
+        try:dfScale = (dfScaleDstMax - dfScaleDstMin) / (dfScaleSrcMax - dfScaleSrcMin)
+        except ZeroDivisionError:return _stretch_RANDOM(vrtcols,vrtrows,ds,bands)
+        
         dfOffset = -1 * dfScaleSrcMin * dfScale + dfScaleDstMin
 
         vrt.append('  <VRTRasterBand dataType="Byte" band="%s">' % str(bandnum+1))

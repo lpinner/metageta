@@ -29,7 +29,8 @@ Defines the metadata fields and populates some basic info
 
 import os,time,sys,glob,time,math
 import UserDict 
-import utilities, geometry, uuid
+import utilities, geometry, uuid, overviews
+
 
 #Import fieldnames
 import __fields__
@@ -99,7 +100,6 @@ class Dataset(object):
             - B{filepath} (if outfile is supplied) B{OR}
             - B{binary image data} (if outfile is not supplied)
         '''
-        import overviews
 
         md=self.metadata
         ds=self._gdaldataset

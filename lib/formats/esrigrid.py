@@ -33,7 +33,7 @@ format_regex=[r'hdr\.adf$']
 import __default__
 
 # import other modules (use "_"  prefix to import privately)
-import sys, os,glob,geometry,utilities
+import sys, os,glob,geometry,utilities,overviews
 
 class Dataset(__default__.Dataset): 
     '''Subclass of __default__.Dataset class so we get a load of metadata populated automatically'''
@@ -47,21 +47,9 @@ class Dataset(__default__.Dataset):
     def __getmetadata__(self):
         '''Read Metadata for a ESRI GRID dataset'''
         #__default__.Dataset.__getmetadata__(self, self.fileinfo['filepath']) #autopopulate basic metadata
-        try:__default__.Dataset.__getmetadata__(self,  self.fileinfo['filepath']) #autopopulate basic metadata
-        except geometry.GDALError,err:
-            #Sometimes AUX files can cause problems, this is related to the HFA driver,
-            #workaround, cd to the grid dir.
-            #The "if" is commented out now as not all error messages contain 'aux'
-            #Deregistering the HFA driver results in another error:
-            #   Unable to open <somegrid>
-            #   '<somegrid>.aux' not recognised as a supported file format
-            #if 'aux' in err.errmsg.lower():
-                curdir = os.path.abspath(os.path.curdir)
-                os.chdir(self.fileinfo['filepath'])
-                __default__.Dataset.__getmetadata__(self,  os.path.basename(self._adf))
-                self._gdaldataset.SetDescription(self._adf)
-                os.chdir(curdir)
-            #else:raise #Something else caused it, reraise the error
+
+        try:__default__.Dataset.__getmetadata__(self, self.fileinfo['filepath'])
+        except:self.__aux_workaround__(__default__.Dataset.__getmetadata__, self,self.fileinfo['filepath'])
         if self.metadata['compressiontype']=='Unknown':self.metadata['compressiontype']='RLE'
 
     def getoverview(self,outfile=None,width=800,format='JPG'):
@@ -70,4 +58,28 @@ class Dataset(__default__.Dataset):
         if clr:
             clr=clr[0]
             self._stretch=['COLOURTABLELUT',[1],[clr]]
-        return __default__.Dataset.getoverview(self,outfile,width,format)
+
+        try:return __default__.Dataset.getoverview(self,outfile,width,format)
+        except:return self.__aux_workaround__(__default__.Dataset.getoverview, self,outfile,width,format)
+    def __aux_workaround__(self, func,*args,**kwargs):
+        ##  Sometimes AUX files can cause problems, this is related to the HFA driver,
+        ##  One workaround is to cd to the grid dir and open the hdr.adf file.
+        ##  This sometimes causes issue with statistics calculations
+        ##  Deregistering the HFA driver results in another error:
+        ##    Unable to open <somegrid>
+        ##   '<somegrid>.aux' not recognised as a supported file format
+        ##  Workaround, disable PAM, reload gdal, disable Erdas Imagine (HFA) driver,
+        ##  which is what opens aux files
+        GDAL_PAM_ENABLED=os.environ.get('GDAL_PAM_ENABLED',None)
+        os.environ['GDAL_PAM_ENABLED']='NO'
+        reload(__default__.gdal)
+        hfa=__default__.gdal.GetDriverByName('HFA')
+        hfa.Deregister()
+        retval=func(*args,**kwargs)
+        if GDAL_PAM_ENABLED:os.environ['GDAL_PAM_ENABLED']=GDAL_PAM_ENABLED
+        else:os.environ.pop('GDAL_PAM_ENABLED')
+        reload(__default__.gdal)
+        hfa.Register()
+        return retval
+    
+        

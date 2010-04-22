@@ -39,7 +39,7 @@ Usage::
 @note: See U{Issue 22<http://code.google.com/p/metageta/issues/detail?id=22>}
 '''
 
-import sys, os, re,time
+import sys, os, re,time,tempfile
 
 import progresslogger
 import formats
@@ -48,7 +48,7 @@ import utilities
 import crawler
 import overviews
 
-def main(dir,xls, update=False, getovs=False, nogui=True, debug=False): 
+def main(dir,xls, mediaid=None, update=False, getovs=False, nogui=True, debug=False): 
     """ Run the Metadata Crawler
 
         @type  dir:    C{str}
@@ -63,6 +63,7 @@ def main(dir,xls, update=False, getovs=False, nogui=True, debug=False):
         @param debug:  Turn debug output on
         @return:  C{None}
     """
+    
     xls = utilities.checkExt(utilities.encode(xls), ['.xls'])
     shp=xls.replace('.xls','.shp')
     log=xls.replace('.xls','.log')
@@ -86,7 +87,7 @@ def main(dir,xls, update=False, getovs=False, nogui=True, debug=False):
     pl.debug(' '.join(sys.argv))
    
     try:
-
+        #raise Exception
         ExcelWriter=utilities.ExcelWriter(xls,format_fields.keys(),update=update)
 
         #Are we updating an existing crawl?
@@ -121,7 +122,8 @@ def main(dir,xls, update=False, getovs=False, nogui=True, debug=False):
         pl.debug(utilities.ExceptionInfo(10))
         del pl
         time.sleep(0.5)# So the progresslogger picks up the error message before this python process exits.
-        sys.exit(1)
+        #sys.exit(1)
+        return
 
     pl.info('Searching for files...')
     now=time.time()
@@ -176,6 +178,7 @@ def main(dir,xls, update=False, getovs=False, nogui=True, debug=False):
                 md=ds.metadata
                 geom=ds.extent
                 md.update(fi)
+                if mediaid:md.update({'mediaid':mediaid})
                 pl.info('Extracted metadata from %s, %s files remaining' % (Crawler.file,len(Crawler.files)))
                 try:
                     if getovs:
@@ -227,33 +230,63 @@ def exit():
 #========================================================================================================
 #========================================================================================================
 if __name__ == '__main__':
+
+    def mediacallback(dirarg,medarg):
+        dir=dirarg.value.get()
+        if os.path.exists(dir):
+            volname=utilities.volname(dir)
+            if volname: #Is it a CD/DVD
+                if not medarg.value.get():#If it hasn't already been set
+                        medarg.enabled=True
+                        medarg.value.set(volname)
+            else:
+                medarg.enabled=False
+                medarg.value.set('')
+
+    def writablecallback(arg):
+        filepath=arg.value.get()
+        if utilities.writable(filepath):
+            return True
+        else:
+            arg.value.set('')
+            getargs.tkMessageBox.showerror('I/O Error','%s is not writable.'%filepath)
+            return False
+      
     import optparse,icons,getargs
     description='Run the metadata crawler'
     parser = optparse.OptionParser(description=description)
+
     opt=parser.add_option('-d', dest="dir", metavar="dir",help='The directory to crawl')
-    opt.icon=icons.dir_img
-    opt.argtype=getargs.DirArg
-    opt.tooltip='The directory to start recursively searching for raster imagery.'
-    
+    dirarg=getargs.DirArg(opt,initialdir='',enabled=True,icon=icons.dir_img)
+    dirarg.tooltip='The directory to start recursively searching for raster imagery.'
+
+    opt=parser.add_option('-m', dest="med", metavar="media",help='CD/DVD ID')
+    medarg=getargs.StringArg(opt,enabled=False,required=False)
+    medarg.tooltip='You can enter an ID for a CD/DVD, this defaults to the disc volume label.'
+
     opt=parser.add_option("-x", dest="xls", metavar="xls",help="Output metadata spreadsheet")
-    opt.argtype=getargs.FileArg
-    opt.icon=icons.xls_img
-    opt.filter=[('Excel Spreadsheet','*.xls')]
-    opt.tooltip='The Excel Spreadsheet to write the metadata to. A shapefile of extents, a logfile and overview images are also output to the same directory.'
+    xlsarg=getargs.FileArg(opt,filter=[('Excel Spreadsheet','*.xls')],icon=icons.xls_img)
+    xlsarg.tooltip='The Excel Spreadsheet to write the metadata to. A shapefile of extents, a logfile and overview images are also output to the same directory.'
+
     opt=parser.add_option("-u", "--update", action="store_true", dest="update",default=False,
                       help="Update existing crawl results")
-    opt.argtype=getargs.BoolArg
-    opt.tooltip='Do you want to update existing crawl results?'
+    updatearg=getargs.BoolArg(opt,tooltip='Do you want to update existing crawl results?')
 
     opt=parser.add_option("-o", "--overviews", action="store_true", dest="ovs",default=False,
                       help="Generate overview images")
-    opt.tooltip='Do you want to generate overview (quicklook and thumbnail) images?'
-
-    opt.argtype=getargs.BoolArg
+    ovarg=getargs.BoolArg(opt)
+    ovarg.tooltip='Do you want to generate overview (quicklook and thumbnail) images?'
+        
     opt=parser.add_option("--debug", action="store_true", dest="debug",default=False,
                       help="Turn debug output on")
     opt=parser.add_option("--nogui", action="store_true", dest="nogui", default=False,
                       help="Don't show the GUI progress dialog")
+    opt=parser.add_option("--keep-alive", action="store_true", dest="keepalive", default=False, help="Keep this dialog box open")
+    kaarg=getargs.BoolArg(opt)
+    kaarg.tooltip='Do you want to keep this dialog box open after running the metadata crawl so you can run another?'
+
+    #Add a callback to the directory arg, use the Command class so we can has arguments
+    dirarg.callback=getargs.Command(mediacallback,dirarg,medarg)
 
     #Parse existing command line args
     optvals,argvals = parser.parse_args()
@@ -263,11 +296,16 @@ if __name__ == '__main__':
     if not optvals.dir or not optvals.xls:
         #Add existing command line args values to opt default values so they show in the gui
         for opt in parser.option_list:
-            if 'argtype' in vars(opt):
-                opt.default=vars(optvals)[opt.dest]
+            opt.default=vars(optvals).get(opt.dest,None)
         #Pop up the GUI
-        args=getargs.GetArgs(*[opt for opt in parser.option_list if 'argtype' in vars(opt)])
-        if args:#GetArgs returns None if user cancels the GUI
-            main(args.dir,args.xls,args.update,args.ovs,optvals.nogui,optvals.debug)
+        keepalive=True
+        validate=getargs.Command(writablecallback,xlsarg)
+        while keepalive:
+            args=getargs.GetArgs(dirarg,medarg,xlsarg,updatearg,ovarg,kaarg,callback=validate)
+            if args:#GetArgs returns None if user cancels the GUI
+                main(args.dir,args.xls,args.med,args.update,args.ovs,optvals.nogui,optvals.debug)
+                keepalive=args.keepalive
+            else:keepalive=False
+        
     else: #No need for the GUI
-        main(optvals.dir,optvals.xls,optvals.update,optvals.ovs,optvals.nogui,optvals.debug)
+        main(optvals.dir,optvals.xls,optvals.med,optvals.update,optvals.ovs,optvals.nogui,optvals.debug)

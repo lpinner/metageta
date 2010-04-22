@@ -1163,21 +1163,19 @@
                     </gmd:onLine>                            
                   </xsl:if>
                 </xsl:for-each>
-                <!--gmd:offLine>
-                  <gmd:MD_Medium>
-                    <gmd:name>
-                      <gmd:MD_MediumNameCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_MediumNameCode"
-                                             codeListValue="digitalLinearTap"/>
-                    </gmd:name>
-                    <gmd:mediumFormat>
-                      <gmd:MD_MediumFormatCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_MediumFormatCode"
-                                               codeListValue="tar"/>
-                    </gmd:mediumFormat>
-                    <gmd:mediumNote>
-                      <gco:CharacterString>RSA000002</gco:CharacterString>
-                    </gmd:mediumNote>
-                  </gmd:MD_Medium>
-                </gmd:offLine-->
+                <xsl:if test="normalize-space(mediaid)">
+                  <gmd:offLine>
+                    <gmd:MD_Medium>
+                      <gmd:name>
+                        <gmd:MD_MediumNameCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_MediumNameCode"
+                                               codeListValue="dvd"/>
+                      </gmd:name>
+                      <gmd:mediumNote>
+                        <gco:CharacterString><xsl:value-of select="normalize-space(mediaid)"/></gco:CharacterString>
+                      </gmd:mediumNote>
+                    </gmd:MD_Medium>
+                  </gmd:offLine>
+                </xsl:if>
             </gmd:MD_DigitalTransferOptions>
         </gmd:transferOptions>
       </gmd:MD_Distribution>

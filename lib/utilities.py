@@ -42,7 +42,7 @@ except:
     from xlutils import xlrd
     from xlutils import xlwt
 from xlutils import copy as xlcp
-import sys, os.path, os, re, struct, glob, shutil,traceback,time #,uuid
+import sys, os.path, os, re, struct, glob, shutil,traceback,time,tempfile
 import uuid as _uuid
 
 #========================================================================================================
@@ -380,6 +380,16 @@ def volname(path):
     finally:
         return volname
 
+def writable(filepath):
+    if not os.path.isdir(filepath):
+        filepath=os.path.dirname(filepath)
+    try:
+        tmp=tempfile.TemporaryFile(dir=filepath) #Can we write a temp file there...?
+        del tmp
+        return True
+    except:
+        return False          
+
 class rglob:
     '''A recursive/regex enhanced glob
        adapted from os-path-walk-example-3.py - http://effbot.org/librarybook/os-path.htm 
@@ -427,11 +437,11 @@ class rglob:
                 if self.regex:
                     import re
                     if re.search(self.pattern,file,self.regex_flags):
-                        return fullname
+                        return normcase(fullname)
                 else:
                     import fnmatch
                     if fnmatch.fnmatch(file, self.pattern):
-                        return fullname
+                        return normcase(fullname)
 
 #========================================================================================================
 #{Exception Utilities

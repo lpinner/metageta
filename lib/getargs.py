@@ -22,8 +22,10 @@
 '''
 Module to generate a GUI dialog to collect arguments
 '''
-import os,sys,Tkinter,tkFileDialog
+#import os,sys,Tkinter,tkFileDialog
+import os,sys,Tix,tkFileDialog,tkMessageBox
 from icons import *
+import utilities
 
 class GetArgs(object):
     ''' Build and show a GUI dialog to collect arguments
@@ -62,16 +64,21 @@ class GetArgs(object):
 
             @see: L{runcrawler} for a more complete example.                  
     '''
-    def __new__(self,*args):
+    def __new__(self,*args,**kwargs):#We use __new__ instead of __init__ so we can return None if the user click cancel
         self=object.__new__(self)
         title='MetaGETA'
         icon=os.environ['CURDIR']+'/lib/wm_icon.ico'
         windowicon=icon
 
-        self._root = Tkinter.Tk()
+        self._root = Tix.Tk()
+        self._root.withdraw()
         self._root.title(title)
         try:self._root.wm_iconbitmap(windowicon)
         except:pass
+
+        #On Ok callback
+        self._callback=lambda *a,**kw:True #default
+        self.callback=kwargs.get('callback',self._callback)
 
         # Calculate the geometry to centre the app
         scrnWt = self._root.winfo_screenwidth()
@@ -81,44 +88,45 @@ class GetArgs(object):
         appXPos = (scrnWt / 2) - (appWt / 2)
         appYPos = (scrnHt / 2) - (appHt / 2)
         self._root.geometry('+%d+%d' % (appXPos, appYPos))
-        
-        self._lastdir = Tkinter.StringVar()
-        self._lastdir.set('')
+        initialdir=''
+        self._lastdir = Tix.StringVar(self._root,initialdir)
 
         self._args={}
         self._objs={}
         for i,arg in enumerate(args):
-            if 'argtype' in vars(arg):
-                argtype=arg.argtype
-                argname=arg.dest
+            argname=arg.opt.dest
+            if 'initialdir' in vars(arg) and not arg.initialdir:
                 arg.lastdir=self._lastdir
-                self._objs[argname]=argtype(self._root,i, arg)
-                self._args[argname]=self._objs[argname].value
-
+            arg.__build__(self._root,i)
+            self._args[argname]=arg
+                
         nargs=len(self._args)
         self._root.bind("<Return>", self._cmdok)
-        TkFrame=Tkinter.Frame(self._root)
-        TkFrame.grid(row=nargs,columnspan=3,sticky=Tkinter.E)
-        bOK = Tkinter.Button(TkFrame,text="Ok", command=self._cmdok)
+        TkFrame=Tix.Frame(self._root)
+        TkFrame.grid(row=nargs,columnspan=3,sticky=Tix.E)
+        bOK = Tix.Button(TkFrame,text="Ok", command=self._cmdok)
         bOK.config(width=8)
-        bOK.grid(row=0, column=1,sticky=Tkinter.E, padx=5,pady=5)
-        bCancel = Tkinter.Button(TkFrame,text="Cancel", command=self._cmdcancel)
+        bOK.grid(row=0, column=1,sticky=Tix.E, padx=5,pady=5)
+        bCancel = Tix.Button(TkFrame,text="Cancel", command=self._cmdcancel)
         bCancel.config(width=8)
-        bCancel.grid(row=0, column=2,sticky=Tkinter.E, padx=5,pady=5)
-        self._cancelled = False
+        bCancel.grid(row=0, column=2,sticky=Tix.E, padx=5,pady=5)
 
+        self._cancelled = False
+        
+        self._root.deiconify()
         self._root.mainloop()
         if self._cancelled:return None
         else:return self
 
     def _cmdok(self,*args,**kwargs):
-        ok=True
         for arg in self._args:
-            try:vars(self)[arg]=self._args[arg].get()
+            try:vars(self)[arg]=self._args[arg].value.get()
             except:pass            
-            if vars(self)[arg]=='':
-                ok=False
-                break
+            #Every required arg (except disabled ones) must have a value
+            if vars(self)[arg]=='' and self._args[arg].enabled and self._args[arg].required:
+                return None
+            self._args[arg].opt.default=vars(self)[arg]
+        ok=self.callback()
         if ok:
             self._root.destroy()
 
@@ -126,10 +134,93 @@ class GetArgs(object):
         self._root.destroy()
         self._cancelled =True
 
-class DirArg(object):
+    def __classproperty__(fcn):
+        '''The class property decorator function'''
+        try:return property( **fcn() )
+        except:pass
+
+    @__classproperty__
+    def callback():
+        '''The callback property.'''
+
+        def fget(self):
+            return self._callback
+
+        def fset(self,arg):
+            if callable(arg):
+                self._callback=arg
+            else:
+                raise AttributeError, 'Callback object is not callable.'
+
+        def fdel(self):pass
+
+        return locals()
+
+class _Arg(object):
+
+    def __init__(self,opt,enabled=True,callback=None,icon=None,tooltip=None,required=True):
+        self.opt=opt
+        self._enabled=True #default
+        self._callback=lambda *a,**kw:'break' #default
+        self.enabled=enabled
+        self.required=required
+        self.icon=icon
+        self.tooltip=tooltip
+
+        #On update callback
+        if callback and callable(callback):
+            self.callback=callback
+        else:
+            self.callback=self._callback
+
+    def __classproperty__(fcn):
+        '''The class property decorator function'''
+        try:return property( **fcn() )
+        except:pass
+
+    @__classproperty__
+    def callback():
+        '''The callback property.'''
+
+        def fget(self):
+            return self._callback
+
+        def fset(self,arg):
+            if callable(arg):
+                self._callback=arg
+            else:
+                raise AttributeError, 'Callback object is not callable.'
+
+        def fdel(self):pass
+
+        return locals()
+
+    @__classproperty__
+    def enabled():
+        '''The enabled property.'''
+
+        def fget(self):
+            return self._enabled
+
+        def fset(self,enabled,*args, **kwargs):
+            if enabled:
+                for var in vars(self).values():
+                    try:var.config(state=Tix.NORMAL)
+                    except:pass
+            else:
+                for var in vars(self).values():
+                    try:var.config(state=Tix.DISABLED)
+                    except:pass
+            self._enabled=enabled
+
+        def fdel(self):pass
+
+        return locals()
+
+class DirArg(_Arg):
     ''' Build a directory browser 
 
-        @type  root: C{Tkinter.Tk}
+        @type  root: C{Tix.Tk}
         @param root: Root Tk instance.
         @type  row:  C{int}
         @param row:  Grid row to place the directory browser in.
@@ -145,32 +236,43 @@ class DirArg(object):
                         opt.argtype=getargs.DirArg
                         opt.icon=icons.dir_img
     '''
-    def __init__(self,root,row,arg):
-        self.TkPhotoImage = Tkinter.PhotoImage(format=arg.icon.format,data=arg.icon.data) # keep a reference! See http://effbot.org/tkinterbook/photoimage.htm
-        self.value = Tkinter.StringVar()
-        if arg.default is not None:self.value.set(arg.default)
-        TkLabel=Tkinter.Label(root, text=arg.help+':')
-        TkEntry=Tkinter.Entry(root, textvariable=self.value)
-        TkButton = Tkinter.Button(root,image=self.TkPhotoImage, command=_Command(self.cmd,root,arg.help,arg.lastdir,self.value))
-        TkLabel.grid(row=row, column=0,sticky=Tkinter.W, padx=2)
-        TkEntry.grid(row=row, column=1,sticky=Tkinter.E+Tkinter.W, padx=2)
-        TkButton.grid(row=row, column=2,sticky=Tkinter.E, padx=2)
-        if 'tooltip' in vars(arg):
-            TkLabelToolTip=_ToolTip(TkLabel, delay=250, follow_mouse=1, text=arg.tooltip)
-            TkEntryToolTip=_ToolTip(TkEntry, delay=250, follow_mouse=1, text=arg.tooltip)
-            TkButtonToolTip=_ToolTip(TkButton, delay=250, follow_mouse=1, text=arg.tooltip)
+    def __init__(self,opt,initialdir='',**kwargs):
+        self.initialdir=initialdir
+        self.lastdir=None
+        _Arg.__init__(self,opt,**kwargs)
         
+    def __build__(self,root,row):
+        self.TkPhotoImage = Tix.PhotoImage(format=self.icon.format,data=self.icon.data) # keep a reference! See http://effbot.org/tkinterbook/photoimage.htm
+        self.value = Tix.StringVar(root)
+        if not self.lastdir:self.lastdir=Tix.StringVar(root,self.initialdir)
+
+        if self.opt.default is not None:self.value.set(self.opt.default)
+        self.TkLabel=Tix.Label(root, text=self.opt.help+':')
+        self.TkEntry=Tix.Entry(root, textvariable=self.value)
+        
+        self.TkButton = Tix.Button(root,image=self.TkPhotoImage, command=Command(self.cmd,root,self.opt.help,self.lastdir,self.value))
+        self.TkLabel.grid(row=row, column=0,sticky=Tix.W, padx=2)
+        self.TkEntry.grid(row=row, column=1,sticky=Tix.E+Tix.W, padx=2)
+        self.TkButton.grid(row=row, column=2,sticky=Tix.E, padx=2)
+        if self.tooltip:
+            self.TkLabelToolTip=_ToolTip(self.TkLabel, delay=250, follow_mouse=1, text=self.tooltip)
+            self.TkEntryToolTip=_ToolTip(self.TkEntry, delay=250, follow_mouse=1, text=self.tooltip)
+            self.TkButtonToolTip=_ToolTip(self.TkButton, delay=250, follow_mouse=1, text=self.tooltip)
+
+        self.value.trace('w',self.callback)
+        self.enabled=self.enabled #Force update
+
     def cmd(self,root,label,dir,var):
         ad = tkFileDialog.askdirectory(parent=root,initialdir=dir.get(),title=label)
         if ad:
-            ad=os.path.normpath(ad)
-            var.set(ad)
+            ad=utilities.encode(os.path.normpath(ad))
             dir.set(ad)
+            var.set(ad)
             
-class FileArg(object):
+class FileArg(_Arg):
     ''' Build a file browser 
 
-        @type  root: C{Tkinter.Tk}
+        @type  root: C{Tix.Tk}
         @param root: Root Tk instance.
         @type  row:  C{int}
         @param row:  Grid row to place the file browser in.
@@ -179,7 +281,7 @@ class FileArg(object):
         
         @note:  The FileArg class requires two additional custom attributes to be
                 added to the optparse.Option. These are the L{icon<icons>} to display on the button
-                and filter in U{tkFileDialog.askopenfilename<http://tkinter.unpythonic.net/wiki/tkFileDialog>}
+                and filter in U{tkFileDialog.askopenfilename<http://Tix.unpythonic.net/wiki/tkFileDialog>}
                 filetypes format.
 
                 Example::
@@ -188,24 +290,35 @@ class FileArg(object):
                     opt.icon=icons.log_img
                     opt.filter=[('Log File',('*.txt','*.log'))]
     '''
-    def __init__(self,root,row,arg):
-        self.TkPhotoImage = Tkinter.PhotoImage(format=arg.icon.format,data=arg.icon.data) # keep a reference! See http://effbot.org/tkinterbook/photoimage.htm
-        self.value = Tkinter.StringVar()
-        if arg.default is not None:self.value.set(arg.default)
-        TkLabel=Tkinter.Label(root, text=arg.help+':')
-        TkEntry=Tkinter.Entry(root, textvariable=self.value)
-        TkButton = Tkinter.Button(root,image=self.TkPhotoImage,command=_Command(self.cmd,root,arg.help,arg.filter,arg.lastdir,self.value))
-        TkLabel.grid(row=row, column=0,sticky=Tkinter.W, padx=2)
-        TkEntry.grid(row=row, column=1,sticky=Tkinter.E+Tkinter.W, padx=2)
-        TkButton.grid(row=row, column=2,sticky=Tkinter.E, padx=2)
-        if 'tooltip' in vars(arg):
-            TkLabelToolTip=_ToolTip(TkLabel, delay=250, follow_mouse=1, text=arg.tooltip)
-            TkEntryToolTip=_ToolTip(TkEntry, delay=250, follow_mouse=1, text=arg.tooltip)
-            TkButtonToolTip=_ToolTip(TkButton, delay=250, follow_mouse=1, text=arg.tooltip)
+    def __init__(self,opt,initialdir='',filter='',**kwargs):
+        self.filter=filter
+        self.initialdir=initialdir
+        self.lastdir=None
+        _Arg.__init__(self,opt,**kwargs)
         
+    def __build__(self,root,row):
+        self.TkPhotoImage = Tix.PhotoImage(format=self.icon.format,data=self.icon.data) # keep a reference! See http://effbot.org/tkinterbook/photoimage.htm
+        self.value = Tix.StringVar()
+
+        if not self.lastdir:self.lastdir=Tix.StringVar(root,self.initialdir)
+        if self.opt.default is not None:self.value.set(self.opt.default)
+        self.TkLabel=Tix.Label(root, text=self.opt.help+':')
+        self.TkEntry=Tix.Entry(root, textvariable=self.value)
+        self.TkButton = Tix.Button(root,image=self.TkPhotoImage,command=Command(self.cmd,root,self.opt.help,self.filter,self.lastdir,self.value))
+        self.TkLabel.grid(row=row, column=0,sticky=Tix.W, padx=2)
+        self.TkEntry.grid(row=row, column=1,sticky=Tix.E+Tix.W, padx=2)
+        self.TkButton.grid(row=row, column=2,sticky=Tix.E, padx=2)
+        if self.tooltip:
+            self.TkLabelToolTip=_ToolTip(self.TkLabel, delay=250, follow_mouse=1, text=self.tooltip)
+            self.TkEntryToolTip=_ToolTip(self.TkEntry, delay=250, follow_mouse=1, text=self.tooltip)
+            self.TkButtonToolTip=_ToolTip(self.TkButton, delay=250, follow_mouse=1, text=self.tooltip)
+
+        self.value.trace('w',self.callback)
+        self.enabled=self.enabled #Force update
+
     def cmd(self,root,label,filter,dir,var):
         if sys.platform[0:3].lower()=='win':
-            ##Win32 GUI hack to avoid "<somefile> exists. Do you want to replace it?"
+            ##Win32 GUI hack to avoid "<somefile>/ exists. Do you want to replace it?"
             ##when using tkFileDialog.asksaveasfilename
             import win32gui
             #Convert filter from [('Python Scripts',('*.py','*.pyw')),('Text files','*.txt')] format
@@ -224,13 +337,13 @@ class FileArg(object):
             fd = tkFileDialog.asksaveasfilename(parent=root,filetypes=filter,initialdir=dir.get(),title=label)
         if fd:
             fd=os.path.normpath(fd)
-            var.set(fd)
             dir.set(os.path.split(fd)[0])
+            var.set(fd)
 
-class DropListArg(object):
+class ComboBoxArg(_Arg):
     ''' Build a droplist 
 
-        @type  root: C{Tkinter.Tk}
+        @type  root: C{Tix.Tk}
         @param root: Root Tk instance.
         @type  row:  C{int}
         @param row:  Grid row to place the file browser in.
@@ -247,45 +360,87 @@ class DropListArg(object):
                     opt.icon=icons.some_img
                     opt.options=['Some value','Another value']
     '''
-    def __init__(self,root,row,arg):
-        self.TkPhotoImage = Tkinter.PhotoImage(format=arg.icon.format,data=arg.icon.data) # keep a reference! See http://effbot.org/tkinterbook/photoimage.htm
-        self.value = Tkinter.StringVar()
-        if arg.default is not None:self.value.set(arg.default)
-        TkLabel=Tkinter.Label(root, text=arg.help+':')
-        width=20
-        TkDropList=_DropList(root,arg.options, textvariable=self.value,width=width)
-        TkImage = Tkinter.Label(root,image=self.TkPhotoImage)
-        TkLabel.grid(row=row, column=0,sticky=Tkinter.W, padx=2)
-        TkDropList.grid(row=row, column=1,sticky=Tkinter.E+Tkinter.W, padx=2)
-        TkImage.grid(row=row, column=2,sticky=Tkinter.E, padx=2)
-        if 'tooltip' in vars(arg):
-            TkLabelToolTip=_ToolTip(TkLabel, delay=250, follow_mouse=1, text=arg.tooltip)
-            TkDropListToolTip=_ToolTip(TkDropList, delay=250, follow_mouse=1, text=arg.tooltip)
-            TkImageToolTip=_ToolTip(TkImage, delay=250, follow_mouse=1, text=arg.tooltip)
-
+    def __init__(self,opt,options=[],**kwargs):
+        self.options=options
+        _Arg.__init__(self,opt,**kwargs)
         
-class BoolArg(object):
-    ''' Build a boolean checkbox 
+    def __build__(self,root,row):
+        self.TkPhotoImage = Tix.PhotoImage(format=self.icon.format,data=self.icon.data) # keep a reference! See http://effbot.org/tkinterbook/photoimage.htm
+        self.value = Tix.StringVar()
 
-        @type  root: C{Tkinter.Tk}
+        self.TkLabel=Tix.Label(root, text=self.opt.help+':')
+        self.TkComboBox=Tix.ComboBox(root, dropdown=1, editable=1, variable=self.value,options='listbox.height 6 listbox.background white')
+        for o in self.options:self.TkComboBox.insert(Tix.END, o)
+        if self.opt.default is not None:
+            self.value.set(self.opt.default)
+            self.TkComboBox.set_silent(self.opt.default)
+        else:
+            self.TkComboBox.set_silent(self.options[0])
+
+        self.TkComboBox.subwidget('entry').bind('<Key>', lambda e: 'break')
+        self.TkImage = Tix.Label(root,image=self.TkPhotoImage)
+        self.TkLabel.grid(row=row, column=0,sticky=Tix.W, padx=2)
+        self.TkComboBox.grid(row=row, column=1,sticky=Tix.E+Tix.W)
+        self.TkImage.grid(row=row, column=2,sticky=Tix.E, padx=2)
+        if self.tooltip:
+            self.TkLabelToolTip=_ToolTip(self.TkLabel, delay=250, follow_mouse=1, text=self.tooltip)
+            self.TkDropListToolTip=_ToolTip(self.TkComboBox, delay=250, follow_mouse=1, text=self.tooltip)
+            self.TkImageToolTip=_ToolTip(self.TkImage, delay=250, follow_mouse=1, text=self.tooltip)
+        
+        self.value.trace('w',self.callback)
+        self.enabled=self.enabled #Force update
+
+class StringArg(_Arg):
+    ''' Build a text entry box
+
+        @type  root: C{Tix.Tk}
         @param root: Root Tk instance.
         @type  row:  C{int}
         @param row:  Grid row to place the checkbox in.
         @type  arg:  C{U{Option<http://docs.python.org/library/optparse.html>}}
         @param arg:  An U{Option<http://docs.python.org/library/optparse.html>}.
     '''
-    def __init__(self,root,row,arg):
-        self.value = Tkinter.BooleanVar()
-        self.value.set(arg.default)
-        TkLabel=Tkinter.Label(root, text=arg.help+':')
-        TkCheckbutton=Tkinter.Checkbutton(root, variable=self.value)
-        TkLabel.grid(row=row, column=0,sticky=Tkinter.W)
-        TkCheckbutton.grid(row=row, column=1,sticky=Tkinter.W)
-        if 'tooltip' in vars(arg):
-            TkLabelToolTip=_ToolTip(TkLabel, delay=250, follow_mouse=1, text=arg.tooltip)
-            TkCheckbuttonToolTip=_ToolTip(TkCheckbutton, delay=250, follow_mouse=1, text=arg.tooltip)
+    def __build__(self,root,row):
+        self.value = Tix.StringVar()
+        if self.opt.default is not None:self.value.set(self.opt.default)
 
-class _Command(object):
+        self.TkLabel=Tix.Label(root, text=self.opt.help+':')
+        self.TkEntry=Tix.Entry(root, textvariable=self.value)
+        #self.TkEntry.bind('<Key>', self.keypress)
+        self.TkLabel.grid(row=row, column=0,sticky=Tix.W)
+        self.TkEntry.grid(row=row, column=1,sticky=Tix.E+Tix.W, padx=2)
+        if self.tooltip:
+            self.TkLabelToolTip=_ToolTip(self.TkLabel, delay=250, follow_mouse=1, text=self.tooltip)
+            self.TkEntryToolTip=_ToolTip(self.TkEntry, delay=250, follow_mouse=1, text=self.tooltip)
+
+        self.value.trace('w',self.callback)
+        self.enabled=self.enabled #Force update
+
+class BoolArg(_Arg):
+    ''' Build a boolean checkbox 
+
+        @type  root: C{Tix.Tk}
+        @param root: Root Tk instance.
+        @type  row:  C{int}
+        @param row:  Grid row to place the checkbox in.
+        @type  arg:  C{U{Option<http://docs.python.org/library/optparse.html>}}
+        @param arg:  An U{Option<http://docs.python.org/library/optparse.html>}.
+    '''
+    def __build__(self,root,row):
+        self.value = Tix.BooleanVar()
+        self.value.set(self.opt.default)
+        self.TkLabel=Tix.Label(root, text=self.opt.help+':')
+        self.TkCheckbutton=Tix.Checkbutton(root, variable=self.value)
+        self.TkLabel.grid(row=row, column=0,sticky=Tix.W)
+        self.TkCheckbutton.grid(row=row, column=1,sticky=Tix.W)
+        if self.tooltip:
+            self.TkLabelToolTip=_ToolTip(self.TkLabel, delay=250, follow_mouse=1, text=self.tooltip)
+            self.TkCheckbuttonToolTip=_ToolTip(self.TkCheckbutton, delay=250, follow_mouse=1, text=self.tooltip)
+
+        self.value.trace('w',self.callback)
+        self.enabled=self.enabled #Force update
+
+class Command(object):
     """ A class we can use to avoid using the tricky "Lambda" expression.
     "Python and Tkinter Programming" by John Grayson, introduces this idiom."""
     def __init__(self, func, *args, **kwargs):
@@ -294,12 +449,12 @@ class _Command(object):
         self.kwargs = kwargs
 
     def __call__(self, *args, **kwargs):
-        apply(self.func, self.args, self.kwargs)
+        return apply(self.func, self.args, self.kwargs)
         
 
 class _ToolTip:
     '''
-    From http://tkinter.unpythonic.net/wiki/ToolTip
+    From http://Tix.unpythonic.net/wiki/ToolTip
     Michael Lange <klappnase at 8ung dot at>
     The ToolTip class provides a flexible tooltip widget for Tkinter; it is based on IDLE's ToolTip
     module which unfortunately seems to be broken (at least the version I saw).
@@ -321,7 +476,7 @@ class _ToolTip:
     relief :        one of "flat", "ridge", "groove", "raised", "sunken" or "solid"; default is "solid"
     state :         must be "normal" or "disabled"; if set to "disabled" the tooltip will not appear; default is "normal"
     text :          the text that is displayed inside the widget
-    textvariable :  if set to an instance of Tkinter.StringVar() the variable's value will be used as text for the widget
+    textvariable :  if set to an instance of Tix.StringVar() the variable's value will be used as text for the widget
     width :         width of the widget; the default is 0, which means that "wraplength" will be used to limit the widgets width
     wraplength :    limits the number of characters in each line; default is 150
 
@@ -335,7 +490,7 @@ class _ToolTip:
     motion() :          is called when the mouse pointer moves inside the parent widget if follow_mouse is set to 1 and the
                         tooltip has shown up to continually update the coordinates of the tooltip window
     coords() :          calculates the screen coordinates of the tooltip window
-    create_contents() : creates the contents of the tooltip window (by default a Tkinter.Label)
+    create_contents() : creates the contents of the tooltip window (by default a Tix.Label)
     '''
     # Ideas gleaned from PySol
     def __init__(self, master, text='Your text here', delay=1500, **opts):
@@ -362,6 +517,7 @@ class _ToolTip:
             else:
                 KeyError = 'KeyError: Unknown option: "%s"' %key
                 raise KeyError
+    config=configure
 
     ##----these methods handle the callbacks on "<Enter>", "<Leave>" and "<Motion>"---------------##
     ##----events on the parent widget; override them if you want to change the widget's behavior--##
@@ -397,7 +553,7 @@ class _ToolTip:
             self._unschedule()
             return
         if not self._tipwindow:
-            self._tipwindow = tw = Tkinter.Toplevel(self.master)
+            self._tipwindow = tw = Tix.Toplevel(self.master)
             # hide the window until we know the geometry
             tw.withdraw()
             tw.wm_overrideredirect(1)
@@ -450,68 +606,54 @@ class _ToolTip:
         opts = self._opts.copy()
         for opt in ('delay', 'follow_mouse', 'state'):
             del opts[opt]
-        label = Tkinter.Label(self._tipwindow, **opts)
+        label = Tix.Label(self._tipwindow, **opts)
         label.pack()
         
-class _DropList(Tkinter.Frame):
-    '''
-    A Tkinter DropList menu
-    Derived from http://effbot.org/tkinterbook/menu.htm
-    '''
-    def __init__(self, root, options, textvariable, *args,**kwargs):
-        arrow=u'\u25bc'
-        lbwidth=len(arrow)+2
-        if kwargs.has_key('width'):
-            fwidth=kwargs['width']
-            ltwidth=fwidth-lbwidth
-            self.width=fwidth
-        else:
-            ltwidth=max([len(o) for o in options])+4
-            fwidth=ltwidth+lbwidth
-            self.width=fwidth
-        textvariable.set(options[0]) # default value
-        Tkinter.Frame.__init__(self,root,relief="sunken", bd=2,background='white',width=fwidth)
-        self._lt=Tkinter.Label(self,textvariable=textvariable, bd=0,relief="sunken",activebackground='white',background='white',width=ltwidth)
-        self._lb=Tkinter.Label(self,text=arrow,relief="raised", bd=2)
-        self._m=Tkinter.Menu(self, tearoff=0,background='white')
-        for o in options:
-            self._m.add_command(label=o.center(ltwidth), command=_Command(textvariable.set,o))
-        # attach popup to canvas
-        self._lt.bind("<Button-1>", self._popup)
-        self._lt.grid(row=0, column=0)
-        self._lb.bind("<Button-1>", self._popup)
-        self._lb.grid(row=0, column=1)
-        self.pack()
-    def _popup(self,event):
-        self._m.post(self._lt.winfo_rootx(), self._lt.winfo_rooty())
-
 if __name__ == '__main__':
+    def testcmd(dirarg,filearg):
+        print dirarg.value.get()
+        if dirarg.value.get() == 'C:\\':
+            filearg.enabled=False
+        else:
+            filearg.enabled=True
+
+    def onupdate(*args,**kwargs):
+        print args
+        print 'Something has been updated...'
+        
     import optparse,icons,getargs
     reload(getargs)
     description='Run the getargs test'
     parser = optparse.OptionParser(description=description)
 
     opt=parser.add_option('-d', dest="dir", metavar="dir",help='A directory')
-    opt.icon=icons.dir_img
-    opt.argtype=getargs.DirArg
-    
+    dirarg=getargs.DirArg(opt,initialdir='',enabled=True,icon=icons.dir_img,tooltip='Tooltip!')
+
     opt=parser.add_option("-f", dest="f", metavar="f",help="A file")
-    opt.argtype=getargs.FileArg
-    opt.icon=icons.log_img
-    opt.filter=[('Log File',('*.txt','*.log'))]
+    filearg=getargs.FileArg(opt,initialdir='',enabled=False)
+    filearg.icon=icons.log_img
+    filearg.filter=[('Log File',('*.txt','*.log'))]
+
+    #Add a callback
+    dirarg.callback=Command(testcmd,dirarg,filearg)
+    
+    opt=parser.add_option('-s', dest="str", metavar="str",help='string test')
+    strarg=getargs.StringArg(opt,callback=onupdate,enabled=True)
+    strarg.tooltip='Testing string entry 123'
+    
 
     opt=parser.add_option("-n", action="store_true", dest="no",default=False,
                       help="A boolean arg")
-    opt.argtype=getargs.BoolArg
+    boolarg=getargs.BoolArg(opt)
 
     opt=parser.add_option('-l', dest="lst", metavar="lst",help='A list')
-    opt.icon=icons.xsl_img
-    opt.options=['aaaa','bbbb','cccc','dddd']
-    opt.argtype=getargs.DropListArg
-    opt.tooltip='Tooltip!'
+    comboboxarg=getargs.ComboBoxArg(opt,icon=icons.xsl_img,callback=onupdate)
+    comboboxarg.options=['aaaa','bbbb','cccc','dddd']
+    comboboxarg.tooltip='Tooltip!'
+    comboboxarg.enabled=False
     
     optvals,argvals = parser.parse_args()
+    callback=lambda *a,**kw:False
     for opt in parser.option_list:
-        if 'argtype' in vars(opt):
-            opt.default=vars(optvals)[opt.dest]
-    args=getargs.GetArgs(*[opt for opt in parser.option_list if 'argtype' in vars(opt)])
+        opt.default=vars(optvals).get(opt.dest,None)
+    args=getargs.GetArgs(dirarg,filearg,strarg,boolarg,comboboxarg,callback=callback)

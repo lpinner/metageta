@@ -121,30 +121,24 @@ if __name__ == '__main__':
     import optparse,icons,getargs
     description='Transform metadata to XML'
     parser = optparse.OptionParser(description=description)
-    opt=parser.add_option("-x", dest="xls", metavar="xls",
-                      help="Excel spreadsheet")
-    opt.argtype=getargs.FileArg
-    opt.icon=icons.xls_img
-    opt.filter=[('Excel Spreadsheet','*.xls')]
-    opt.tooltip="Excel spreadsheet to read metadata from"
 
-    opt=parser.add_option('-d', dest="dir", metavar="dir",
-                      help='Output directory')
+    opt=parser.add_option("-x", dest="xls", metavar="xls", help="Excel spreadsheet")
+    xlsarg=getargs.FileArg(opt,filter=[('Excel Spreadsheet','*.xls')],icon=icons.xls_img)
+    xlsarg.tooltip="Excel spreadsheet to read metadata from"
+
+    opt=parser.add_option('-d', dest="dir", metavar="dir", help='Output directory')
     opt.icon=icons.dir_img
-    opt.argtype=getargs.DirArg
-    opt.tooltip='The directory to output metadata XML to'
+    dirarg=getargs.DirArg(opt,initialdir='',enabled=True,icon=icons.dir_img,tooltip='Tooltip!')
+    dirarg.tooltip='The directory to output metadata XML to'
     
-    opt=parser.add_option("-t", dest="xsl", metavar="xsl",
-                      help="XSL transform")
-    opt.argtype=getargs.DropListArg
-    opt.icon=icons.xsl_img
-    opt.tooltip="XSL transform {*.xsl|%s}" % '|'.join(['"%s"'%s for s in transforms.transforms.keys()])
-    opt.options=transforms.transforms.keys()
+    opt=parser.add_option("-t", dest="xsl", metavar="xsl", help="XSL transform")
+    xslarg=getargs.ComboBoxArg(opt,icon=icons.xls_img)
+    xslarg.tooltip="XSL transform {*.xsl|%s}" % '|'.join(['"%s"'%s for s in transforms.transforms.keys()])
+    xslarg.options=transforms.transforms.keys()
 
     opt=parser.add_option("-m", action="store_true", dest="mef",default=False,   
-                      help="Create Metadata Exchange Format (MEF) file")
-    opt=parser.add_option("--debug", action="store_true", dest="debug",default=False,   
-                      help="Turn debug output on")
+                     help="Create Metadata Exchange Format (MEF) file")
+    opt=parser.add_option("--debug", action="store_true", dest="debug",default=False, help="Turn debug output on")
     opt=parser.add_option("-l", dest="log", metavar="log",                            
                       help=optparse.SUPPRESS_HELP) #help="Log file")                     #Not yet implemented
     opt=parser.add_option("--gui", action="store_true", dest="gui", default=False,
@@ -156,10 +150,9 @@ if __name__ == '__main__':
     if not optvals.dir or not optvals.xls or not optvals.xsl:
         #Add existing command line args values to opt default values so they show in the gui
         for opt in parser.option_list:
-            if 'argtype' in vars(opt):
-                opt.default=vars(optvals)[opt.dest]
+            opt.default=vars(optvals).get(opt.dest,None)
         #Pop up the GUI
-        args=getargs.GetArgs(*[opt for opt in parser.option_list if 'argtype' in vars(opt)])
+        args=getargs.GetArgs(dirarg,xlsarg,xslarg)
         if args:#GetArgs returns None if user cancels the GUI
             main(args.xls,args.xsl,args.dir,optvals.log,optvals.gui,optvals.debug)
     else: #No need for the GUI

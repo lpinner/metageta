@@ -368,6 +368,7 @@ def volname(path):
         if sys.platform[0:3].lower()=='win':
             import win32api
             drive=os.path.splitdrive(path)[0]
+            if drive[-1]!='\\':drive+='\\'
             if drive: volinfo=win32api.GetVolumeInformation(drive)
             if volinfo[4]=='CDFS':volname=volinfo[0]
         else:

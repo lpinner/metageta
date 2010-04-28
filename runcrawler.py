@@ -104,7 +104,7 @@ def main(dir,xls, mediaid=None, update=False, getovs=False, nogui=True, debug=Fa
             #Build a dict of existing records
             for row,rec in enumerate(utilities.ExcelReader(xls)):
                 #Check if the dataset still exists, mark it DELETED if it doesn't
-                if os.path.exists(rec['filepath']):
+                if os.path.exists(rec['filepath']) or rec['mediaid'] !='':
                     if ShapeWriter:
                         ext=[rec['UL'].split(','),rec['UR'].split(','),rec['LR'].split(','),rec['LL'].split(',')]
                         ShapeWriter.WriteRecord(ext,rec)

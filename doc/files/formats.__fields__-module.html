@@ -58,24 +58,36 @@
 </table>
 <!-- ==================== MODULE DESCRIPTION ==================== -->
 <h1 class="epydoc">Module __fields__</h1><p class="nomargin-top"><span class="codelink"><a href="formats.__fields__-pysrc.html">source&nbsp;code</a></span></p>
-<pre class="literalblock">
+<h1 class="heading">Metadata Fields</h1>
+    <p>Dictionary of field names and data types. If a field is not to be 
+    included in the output shapefile, set type as None. Currently supported
+    field types are:</p>
+    <ul>
+      <li>
+        string (tuple of type name and size)
+      </li>
+      <li>
+        int
+      </li>
+      <li>
+        float
+      </li>
+    </ul>
 
-Metadata Fields
-===============
-Dictionary of field names and data types.
-If a field is not to be included in the output shapefile, set type as None.
-Currently supported field types are:
-    string (tuple of type name and size)
-    int
-    float
-@note: Field names &gt; 10 characters will be truncated.
-       Field names can not contain spaces or special characters, except underscores.
-@see: U{http://www.gdal.org/ogr/drv_shapefile.html}
-@todo: We should probably have separate LLX and LLY etc... fields with 'float' type... This would also need to be changed in the transform XSL
-
-</pre>
-
-<!-- ==================== VARIABLES ==================== -->
+<hr />
+<div class="fields">      <p><strong>Note:</strong>
+        Field names &gt; 10 characters will be truncated. Field names can 
+        not contain spaces or special characters, except underscores.
+      </p>
+      <p><strong>See Also:</strong>
+        <a href="http://www.gdal.org/ogr/drv_shapefile.html" 
+        target="_top">http://www.gdal.org/ogr/drv_shapefile.html</a>
+      </p>
+      <p><strong>To Do:</strong>
+        We should probably have separate LLX and LLY etc... fields with 'float'
+    type... This would also need to be changed in the transform XSL
+      </p>
+</div><!-- ==================== VARIABLES ==================== -->
 <a name="section-Variables"></a>
 <table class="summary" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
@@ -100,10 +112,10 @@ Currently supported field types are:
  'LL': None,
  'LR': None,
  'UL': None,
- 'UPDATED': None,
  'UR': None,
  'abstract': None,
  'bands': ('string', 50),
+ 'cellx': 'float',
 ..."><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">DELETED</code><code class="variable-quote">'</code><code class="variable-op">: </code>None<code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">LL</code><code class="variable-quote">'</code><code class="variable-op">: </code>None<code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">LR</code><code class="variable-quote">'</code><code class="variable-op">: </code>None<code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">UL</code><code class="variable-quote">'</code><code class="variable-op">: </code>None<code class="variable-op">,</code><code class="variable-ellipsis">...</code></code>
     </td>
   </tr>
@@ -149,10 +161,10 @@ Currently supported field types are:
  <code class="variable-quote">'</code><code class="variable-string">LL</code><code class="variable-quote">'</code><code class="variable-op">: </code>None<code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">LR</code><code class="variable-quote">'</code><code class="variable-op">: </code>None<code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">UL</code><code class="variable-quote">'</code><code class="variable-op">: </code>None<code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">UPDATED</code><code class="variable-quote">'</code><code class="variable-op">: </code>None<code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">UR</code><code class="variable-quote">'</code><code class="variable-op">: </code>None<code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">abstract</code><code class="variable-quote">'</code><code class="variable-op">: </code>None<code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">bands</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">string</code><code class="variable-quote">'</code><code class="variable-op">, </code>50<code class="variable-group">)</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">cellx</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">float</code><code class="variable-quote">'</code><code class="variable-op">,</code>
 <code class="variable-ellipsis">...</code>
 </pre></td></tr></table>
 </dd>

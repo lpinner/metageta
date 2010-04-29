@@ -69,6 +69,10 @@ class ProgressLogger(logging.Logger):
 
         self.logToGUI=logToGUI
 
+        #Dummy methods, updated if logToGUI is True
+        self.updateProgress=lambda *a,**k:None
+        self.resetProgress=lambda *a,**k:None
+
         ##Cos we've overwritten the class __init__ method        
         logging.Logger.__init__(self,name,level=level-1)#To handle the PROGRESS log records without them going to the console or file
 
@@ -92,14 +96,18 @@ class ProgressLogger(logging.Logger):
 
         if logToGUI:
             self.progress=0
-            ph = ProgressLoggerHandler(name=name, maxprogress=maxprogress,windowicon=windowicon,callback=callback)
+            self.ProgressLoggerHandler = ProgressLoggerHandler(name=name, maxprogress=maxprogress,windowicon=windowicon,callback=callback)
 
             #To handle the PROGRESS & END events without them going to the console or file
             logging.PROGRESS = level - 1
             logging.addLevelName(logging.PROGRESS, "PROGRESS") 
-            ph.setLevel(logging.PROGRESS) 
-            ph.setFormatter(fmt)
-            self.addHandler(ph)
+            self.ProgressLoggerHandler.setLevel(logging.PROGRESS) 
+            self.ProgressLoggerHandler.setFormatter(fmt)
+            self.addHandler(self.ProgressLoggerHandler)
+
+            #Update the dummy methods
+            self.updateProgress=self.ProgressLoggerHandler.updateProgress
+            self.resetProgress=self.ProgressLoggerHandler.resetProgress
 
         #Handle warnings
         warnings.simplefilter('always')
@@ -107,9 +115,6 @@ class ProgressLogger(logging.Logger):
 
     def showwarning(self, msg, cat, fname, lno, file=None, line=None):
         self.warn(msg)
-
-    def updateProgress(self,newMax=None):
-        if self.logToGUI:self.log(logging.PROGRESS, newMax)
 
     def shutdown(self):
         '''
@@ -157,35 +162,33 @@ class ProgressLoggerHandler(logging.Handler):
     def sendmsgs(self):
         for msg in range(len(self.msgs)):
             try:
-                msg=self.msgs[0]
+                msg=self.msgs.pop(0)
                 client = socket.socket (socket.AF_INET, socket.SOCK_STREAM )
                 client.connect((self.host,self.inport))
                 client.send(pickle.dumps(msg))
                 client.close()
                 del client
-                del self.msgs[0]
                 time.sleep(0.1)
             except:pass
 
     def emit(self, record):
         ''' Process a log message '''
-        if record.levelname == 'PROGRESS':
-            self.msgs.append([record.levelname,record.getMessage()])
-        else:
-            self.msgs.append([record.levelname, self.format(record)])
+        self.msgs.append([record.levelname, self.format(record)])
         self.sendmsgs()
 
     def close(self):
         '''
         Tidy up any resources used by the handler.
         '''
+        self.msgs.append(['EXIT',0])
         self.sendmsgs()
-        
-    def close(self):
-        '''
-        Tidy up any resources used by the handler.
-        '''
-        self.msgs.append('EXIT')
+
+    def updateProgress(self,newMax=None):
+        self.msgs.append(['PROGRESS',newMax])
+        self.sendmsgs()
+
+    def resetProgress(self):
+        self.msgs.append(['RESET',0])
         self.sendmsgs()
 
 class ProgressLoggerChecker(threading.Thread):
@@ -211,7 +214,7 @@ class ProgressLoggerChecker(threading.Thread):
                 if part:data+=part
                 else:break
             msg=pickle.loads(data)
-            if msg=='EXIT':
+            if msg[0]=='EXIT':
                 break
             channel.close()
             time.sleep(1)
@@ -254,7 +257,7 @@ class ProgressLoggerServer:
                 if part:data+=part
                 else:break
             msg=pickle.loads(data)
-            if msg=='EXIT':
+            if msg[0]=='EXIT':
                 self.serving=False
                 self.queue.put(msg)
                 break
@@ -331,17 +334,22 @@ class ProgressLoggerGUI(threading.Thread):
         ''' Process events '''
         eventName = msg[0]
         eventMsg  = msg[1]
-        if msg == 'EXIT':
+        if eventName == 'EXIT':
             self.ok.configure(state=Tkinter.ACTIVE)
             self.master.bind("<Return>", self.onOk)
             self.keepchecking=False
         elif eventName == 'PROGRESS':
-            max=eval(eventMsg)
+            max=float(eventMsg)
             self.progress+=1
             self.progress_bar.updateProgress(self.progress, newMax=max)
             if self.progress>=max:
                 self.ok.configure(state=Tkinter.ACTIVE)
                 self.master.bind("<Return>", self.onOk)
+        elif eventName == 'RESET':
+            self.progress=0
+            self.progress_bar.updateProgress(self.progress)
+            self.ok.configure(state=Tkinter.DISABLED)
+            self.master.bind("<Return>", lambda *a,**k:'break')
         else:
             self.onLogMessage(eventMsg)
 
@@ -361,7 +369,7 @@ class ProgressLoggerGUI(threading.Thread):
             for port in (self.inport,self.outport):
                 client = socket.socket (socket.AF_INET, socket.SOCK_STREAM )
                 client.connect((self.host,port))
-                client.send(pickle.dumps('EXIT'))
+                client.send(pickle.dumps(['EXIT',0]))
                 client.close()
                 del client
         except:pass        

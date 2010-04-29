@@ -338,13 +338,10 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="ApplyGeoTransform"></a><span class="summary-sig-name">ApplyGeoTransform</span>(<span class="summary-sig-arg">inx</span>,
+          <td><span class="summary-sig"><a href="geometry-module.html#ApplyGeoTransform" class="summary-sig-name">ApplyGeoTransform</a>(<span class="summary-sig-arg">inx</span>,
         <span class="summary-sig-arg">iny</span>,
         <span class="summary-sig-arg">gt</span>)</span><br />
-      Apply a geotransform @param  inx       Input x coordinate (double) 
-      @param  iny       Input y coordinate (double) @param  gt        Input
-      geotransform (six doubles) @return outx,outy Output coordinates (two 
-      doubles)</td>
+      Apply a geotransform</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="geometry-pysrc.html#ApplyGeoTransform">source&nbsp;code</a></span>
             
@@ -360,13 +357,10 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="MapToPixel"></a><span class="summary-sig-name">MapToPixel</span>(<span class="summary-sig-arg">mx</span>,
+          <td><span class="summary-sig"><a href="geometry-module.html#MapToPixel" class="summary-sig-name">MapToPixel</a>(<span class="summary-sig-arg">mx</span>,
         <span class="summary-sig-arg">my</span>,
         <span class="summary-sig-arg">gt</span>)</span><br />
-      Convert map to pixel coordinates @param  mx    Input map x coordinate
-      (double) @param  my    Input map y coordinate (double) @param  gt    
-      Input geotransform (six doubles) @return px,py Output coordinates 
-      (two ints)</td>
+      Convert map to pixel coordinates</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="geometry-pysrc.html#MapToPixel">source&nbsp;code</a></span>
             
@@ -382,13 +376,10 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="PixelToMap"></a><span class="summary-sig-name">PixelToMap</span>(<span class="summary-sig-arg">px</span>,
+          <td><span class="summary-sig"><a href="geometry-module.html#PixelToMap" class="summary-sig-name">PixelToMap</a>(<span class="summary-sig-arg">px</span>,
         <span class="summary-sig-arg">py</span>,
         <span class="summary-sig-arg">gt</span>)</span><br />
-      Convert pixel to map coordinates @param  px    Input pixel x 
-      coordinate (double) @param  py    Input pixel y coordinate (double) 
-      @param  gt    Input geotransform (six doubles) @return mx,my Output 
-      coordinates (two doubles)</td>
+      Convert pixel to map coordinates</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="geometry-pysrc.html#PixelToMap">source&nbsp;code</a></span>
             
@@ -819,8 +810,8 @@
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
         <li><strong class="pname"><code>gt</code></strong> (<code>tuple/list</code>) - geotransform</li>
-        <li><strong class="pname"><code>cols</code></strong> (<code>int</code>) - number of columns in the dataset</li>
-        <li><strong class="pname"><code>rows</code></strong> (<code>int</code>) - number of rows in the dataset</li>
+        <li><strong class="pname"><code>cols</code></strong> (<code>int</code>) - Number of columns in the dataset</li>
+        <li><strong class="pname"><code>rows</code></strong> (<code>int</code>) - Number of rows in the dataset</li>
     </ul></dd>
     <dt>Returns: <code>(float,float)</code></dt>
         <dd>Scene centre coordinates</dd>
@@ -849,9 +840,10 @@
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>gt</code></strong> - Extent, must be in order: 
+        <li><strong class="pname"><code>ext</code></strong> (<code>tuple/list</code>) - Extent, must be in order: 
           [[ulx,uly],[urx,ury],[lrx,lry],[llx,lly]]</li>
-        <li><strong class="pname"><code>ext</code></strong> (<code>tuple/list</code>)</li>
+        <li><strong class="pname"><code>cols</code></strong> (<code>int</code>) - Number of columns in the dataset</li>
+        <li><strong class="pname"><code>rows</code></strong> (<code>int</code>) - Number of rows in the dataset</li>
     </ul></dd>
     <dt>Returns: <code>[gcp,...,gcp]</code></dt>
         <dd>List of GCP objects</dd>
@@ -969,6 +961,93 @@
   doubles - updated) on success, *                None if the equation is 
   uninvertable.</p>
   <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="ApplyGeoTransform"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">ApplyGeoTransform</span>(<span class="sig-arg">inx</span>,
+        <span class="sig-arg">iny</span>,
+        <span class="sig-arg">gt</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="geometry-pysrc.html#ApplyGeoTransform">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Apply a geotransform</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>inx</code></strong> - Input x coordinate (double)</li>
+        <li><strong class="pname"><code>iny</code></strong> - Input y coordinate (double)</li>
+        <li><strong class="pname"><code>gt</code></strong> - Input geotransform (six doubles)</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>outx,outy Output coordinates (two doubles)</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="MapToPixel"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">MapToPixel</span>(<span class="sig-arg">mx</span>,
+        <span class="sig-arg">my</span>,
+        <span class="sig-arg">gt</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="geometry-pysrc.html#MapToPixel">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Convert map to pixel coordinates</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>mx</code></strong> - Input map x coordinate (double)</li>
+        <li><strong class="pname"><code>my</code></strong> - Input map y coordinate (double)</li>
+        <li><strong class="pname"><code>gt</code></strong> - Input geotransform (six doubles)</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>px,py Output coordinates (two ints)</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="PixelToMap"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">PixelToMap</span>(<span class="sig-arg">px</span>,
+        <span class="sig-arg">py</span>,
+        <span class="sig-arg">gt</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="geometry-pysrc.html#PixelToMap">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Convert pixel to map coordinates</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>px</code></strong> - Input pixel x coordinate (double)</li>
+        <li><strong class="pname"><code>py</code></strong> - Input pixel y coordinate (double)</li>
+        <li><strong class="pname"><code>gt</code></strong> - Input geotransform (six doubles)</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>mx,my Output coordinates (two doubles)</dd>
   </dl>
 </td></tr></table>
 </div>

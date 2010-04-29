@@ -482,7 +482,7 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type"><code>list</code></span>
+      <span class="summary-type"><code>str</code></span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -1272,12 +1272,12 @@
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>filepath</code></strong> (<code>str</code>) - Path to colour lookup file</li>
-        <li><strong class="pname"><code>nvals</code></strong> (<code>int</code>) - Number of values</li>
+        <li><strong class="pname"><code>infile</code></strong> (<code>str</code>) - Path to image to resize</li>
+        <li><strong class="pname"><code>outfile</code></strong> (<code>str</code>) - Path to output image that will be created</li>
+        <li><strong class="pname"><code>width</code></strong> (<code>int</code>) - Width in pixels of output image</li>
     </ul></dd>
-    <dt>Returns: <code>list</code></dt>
-        <dd>List of cell and R,G,B,A values e.g ((12,0,0,0,255), 
-          (25,255,255,255,0))</dd>
+    <dt>Returns: <code>str</code></dt>
+        <dd>Path to output image that was created</dd>
   </dl>
 </td></tr></table>
 </div>

@@ -25,9 +25,9 @@ Metadata Fields
 Dictionary of field names and data types.
 If a field is not to be included in the output shapefile, set type as None.
 Currently supported field types are:
-    string (tuple of type name and size)
-    int
-    float
+    - string (tuple of type name and size)
+    - int
+    - float
 @note: Field names > 10 characters will be truncated.
        Field names can not contain spaces or special characters, except underscores.
 @see: U{http://www.gdal.org/ogr/drv_shapefile.html}

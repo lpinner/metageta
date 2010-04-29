@@ -688,12 +688,14 @@ ExpandedColorLUT=ExpandedColourLUT #Synonym for the norteamericanos
 def resize(infile,outfile,width):
     ''' Resize an image
 
-        @type filepath:   C{str}
-        @param filepath:  Path to colour lookup file
-        @type nvals:      C{int}
-        @param nvals:     Number of values
-        @rtype:           C{list}
-        @return:          List of cell and R,G,B,A values e.g ((12,0,0,0,255), (25,255,255,255,0))
+        @type infile:   C{str}
+        @param infile:  Path to image to resize
+        @type outfile:   C{str}
+        @param outfile:  Path to output image that will be created
+        @type width:    C{int}
+        @param width:   Width in pixels of output image
+        @rtype:         C{str}
+        @return:        Path to output image that was created
     '''
     ds=gdal.Open(infile)
     bands=range(1,ds.RasterCount+1)

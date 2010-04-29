@@ -48,15 +48,15 @@ import uuid as _uuid
 #========================================================================================================
 #{String Utilities
 #========================================================================================================
-def encode(u):
+def encode(string):
     ''' Encode a unicode string
-        @type     cmd:  C{unicode}
-        @param    cmd:  Unicode string
+        @type     string:  C{unicode}
+        @param    string:  Unicode string
         @rtype:   C{str}
         @return:  Encoded string
     '''
-    if type(u) is unicode:return u.encode(encoding)
-    else:return u
+    if type(string) is unicode:return string.encode(encoding)
+    else:return string
     
 #========================================================================================================
 #{Filesystem Utilities

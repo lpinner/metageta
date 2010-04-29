@@ -31,6 +31,7 @@ Usage::
 @newfield sysarg: Argument, Arguments
 @sysarg: C{-d [dir]}        : Directory to to recursively search for imagery
 @sysarg: C{-x [xls]}        : MS Excel spreadsheet to write metadata to
+@sysarg: C{-m, --mediaid}   : CD/DVD media ID, defaults to volume label.
 @sysarg: C{-u, --update}    : Update previous crawl results.
 @sysarg: C{-o, --overviews} : Generate overview (quicklook/thumbnail) images")
 @sysarg: C{--nogui}         : Don't show the GUI progress dialog")
@@ -48,41 +49,48 @@ import utilities
 import crawler
 import overviews
 
-def main(dir,xls, mediaid=None, update=False, getovs=False, nogui=True, debug=False): 
+def main(dir,xls, mediaid=None, update=False, getovs=False, nogui=True, debug=False, pl=None): 
     """ Run the Metadata Crawler
 
         @type  dir:    C{str}
         @param dir:    The directory to start the metadata crawl.
         @type  xls:    C{str}
         @param xls:    Excel spreadsheet to write metadata to
+        @type  mediaid:C{str}
+        @param mediaid:CD/DVD media ID
         @type  getovs: C{boolean}
         @param getovs: Generate overview (quicklook/thumbnail) images
         @type  nogui:  C{boolean}
         @param nogui:  Don't show the GUI progress dialog
         @type  debug:  C{boolean}
         @param debug:  Turn debug output on
-        @return:  C{None}
+        @type  pl:     C{progresslogger.ProgressLogger}
+        @param pl:     Use an already instantiated logger
+        @return:  C{progresslogger.ProgressLogger}
     """
     
     xls = utilities.checkExt(utilities.encode(xls), ['.xls'])
     shp=xls.replace('.xls','.shp')
-    log=xls.replace('.xls','.log')
 
     format_regex  = formats.format_regex
     format_fields = formats.fields
     
-    formats.debug=debug
-    crawler.debug=debug
-    geometry.debug=debug
-    if debug:
-        level=progresslogger.DEBUG
-    else:
-        level=progresslogger.INFO
-        geometry.gdal.PushErrorHandler( 'CPLQuietErrorHandler' )
+    if not pl:
+        log=xls.replace('.xls','.log')
+
+        formats.debug=debug
+        crawler.debug=debug
+        geometry.debug=debug
+        if debug:
+            level=progresslogger.DEBUG
+        else:
+            level=progresslogger.INFO
+            geometry.gdal.PushErrorHandler( 'CPLQuietErrorHandler' )
+        
+        windowicon=os.environ['CURDIR']+'/lib/wm_icon.ico'
+        try:pl = progresslogger.ProgressLogger('MetaGETA',logfile=log, logToConsole=True, logToFile=True, logToGUI=not nogui, level=level, windowicon=windowicon, callback=exit)
+        except:pl = progresslogger.ProgressLogger('MetaGETA',logfile=log, logToConsole=True, logToFile=True, logToGUI=not nogui, level=level, callback=exit)
     
-    windowicon=os.environ['CURDIR']+'/lib/wm_icon.ico'
-    try:pl = progresslogger.ProgressLogger('MetadataCrawler',logfile=log, logToConsole=True, logToFile=True, logToGUI=not nogui, level=level, windowicon=windowicon, callback=exit)
-    except:pl = progresslogger.ProgressLogger('MetadataCrawler',logfile=log, logToConsole=True, logToFile=True, logToGUI=not nogui, level=level, callback=exit)
 
     pl.debug(' '.join(sys.argv))
    
@@ -220,9 +228,11 @@ def main(dir,xls, mediaid=None, update=False, getovs=False, nogui=True, debug=Fa
         pl.info("Metadata extraction complete!")
     pl.updateProgress(newMax=1) #Just so the progress meter hits 100%
 
-    del pl
     del ExcelWriter
     del ShapeWriter
+
+    return pl
+
 def exit(): 
     '''Force exit after closure of the ProgressBar GUI'''
     os._exit(0)
@@ -298,14 +308,16 @@ if __name__ == '__main__':
         for opt in parser.option_list:
             opt.default=vars(optvals).get(opt.dest,None)
         #Pop up the GUI
+        logger=None
         keepalive=True
         validate=getargs.Command(writablecallback,xlsarg)
         while keepalive:
             args=getargs.GetArgs(dirarg,medarg,xlsarg,updatearg,ovarg,kaarg,callback=validate)
             if args:#GetArgs returns None if user cancels the GUI
-                main(args.dir,args.xls,args.med,args.update,args.ovs,optvals.nogui,optvals.debug)
+                if logger:logger.resetProgress()
+                logger=main(args.dir,args.xls,args.med,args.update,args.ovs,optvals.nogui,optvals.debug,logger)
                 keepalive=args.keepalive
             else:keepalive=False
-        
+        del logger
     else: #No need for the GUI
         main(optvals.dir,optvals.xls,optvals.med,optvals.update,optvals.ovs,optvals.nogui,optvals.debug)

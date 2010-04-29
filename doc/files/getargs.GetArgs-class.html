@@ -65,50 +65,7 @@ object --+
 </pre>
 
 <hr />
-<p>Build and show a GUI dialog to collect arguments</p>
-
-<hr />
-<div class="fields">      <p><strong>Note:</strong>
-        The GetArgs class requires at least one additional custom attribute
-        to be added to the optparse.Option. The required attribute is the 
-        'argtype' to use, either <a href="getargs.DirArg-class.html" 
-        class="link">DirArg</a>, <a href="getargs.FileArg-class.html" 
-        class="link">FileArg</a> or <a href="getargs.BoolArg-class.html" 
-        class="link">BoolArg</a>.  <a href="getargs.DirArg-class.html" 
-        class="link">DirArg</a> and <a href="getargs.FileArg-class.html" 
-        class="link">FileArg</a> also require additional custom attributes.
-        <p><a href="getargs.DirArg-class.html" class="link">DirArg</a>, <a 
-        href="getargs.FileArg-class.html" class="link">FileArg</a> or <a 
-        href="getargs.BoolArg-class.html" class="link">BoolArg</a> also 
-        accept an optional 'tooltip' custom attribute.</p>
-        <p>Example:</p>
-<pre class="literalblock">
-       parser = optparse.OptionParser(description=description)
-       opt=parser.add_option('-d', dest=&quot;dir&quot;, metavar=&quot;dir&quot;,help='The directory to crawl')
-       opt.icon=icons.dir_img      #Custom icon and argtype attributes
-       opt.argtype=getargs.DirArg
-       
-       opt=parser.add_option(&quot;-u&quot;, &quot;--update&quot;, action=&quot;store_true&quot;, dest=&quot;update&quot;,default=False,
-                         help=&quot;Update existing spreadsheet&quot;)
-       opt.argtype=getargs.BoolArg #Custom argtype attribute
-       opt.tooltip='This is a tool tip!'
-       
-       opt=parser.add_option(&quot;-l&quot;, dest=&quot;log&quot;, metavar=&quot;log&quot;,help=&quot;Log file&quot;)
-       opt.argtype=getargs.FileArg #Custom argtype, icon and filter attributes
-       opt.icon=icons.log_img
-       opt.filter=[('Log File',('*.txt','*.log'))]
-
-       #Parse existing command line args
-       optvals,argvals = parser.parse_args()
-       #Pop up the GUI
-       args=getargs.GetArgs(*parser.option_list)
-</pre>
-      </p>
-      <p><strong>See Also:</strong>
-        <a href="runcrawler-module.html" class="link">runcrawler</a> for a 
-        more complete example.
-      </p>
-</div><!-- ==================== INSTANCE METHODS ==================== -->
+<!-- ==================== INSTANCE METHODS ==================== -->
 <a name="section-InstanceMethods"></a>
 <table class="summary" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
@@ -159,6 +116,23 @@ object --+
       
     </td>
   </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__classproperty__"></a><span class="summary-sig-name">__classproperty__</span>(<span class="summary-sig-arg">fcn</span>)</span><br />
+      The class property decorator function</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="getargs-pysrc.html#GetArgs.__classproperty__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
   <tr>
     <td colspan="2" class="summary">
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
@@ -197,12 +171,14 @@ object --+
 </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">a new object with type S, a subtype of T</span>
+      <span class="summary-type"><code>GetArgs</code></span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="getargs.GetArgs-class.html#__new__" class="summary-sig-name">__new__</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">*args</span>)</span></td>
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
+      Build and show a GUI dialog to collect arguments</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="getargs-pysrc.html#GetArgs.__new__">source&nbsp;code</a></span>
             
@@ -210,32 +186,6 @@ object --+
         </tr>
       </table>
       
-    </td>
-  </tr>
-</table>
-<!-- ==================== CLASS VARIABLES ==================== -->
-<a name="section-ClassVariables"></a>
-<table class="summary" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr bgcolor="#70b0f0" class="table-header">
-  <td colspan="2" class="table-header">
-    <table border="0" cellpadding="0" cellspacing="0" width="100%">
-      <tr valign="top">
-        <td align="left"><span class="table-header">Class Variables</span></td>
-        <td align="right" valign="top"
-         ><span class="options">[<a href="#section-ClassVariables"
-         class="privatelink" onclick="toggle_private();"
-         >hide private</a>]</span></td>
-      </tr>
-    </table>
-  </td>
-</tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type"><code><a href="http://docs.python.org/library/optparse.html" 
-      target="_top">Option</a></code></span>
-    </td><td class="summary">
-        <a name="args"></a><span class="summary-name">args</span>
     </td>
   </tr>
 </table>
@@ -256,6 +206,13 @@ object --+
     </table>
   </td>
 </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="getargs.GetArgs-class.html#callback" class="summary-name">callback</a>
+    </td>
+  </tr>
   <tr>
     <td colspan="2" class="summary">
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
@@ -290,7 +247,8 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">__new__</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">*args</span>)</span>
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
     <br /><em class="fname">Static Method</em>
   </h3>
   </td><td align="right" valign="top"
@@ -298,13 +256,69 @@ object --+
     </td>
   </tr></table>
   
-  
+  <p>Build and show a GUI dialog to collect arguments</p>
   <dl class="fields">
-    <dt>Returns: a new object with type S, a subtype of T</dt>
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>args</code></strong> (<code>list of <a href="getargs.Arg-class.html" 
+          class="link">Arg</a>s</code>) - One or more <code><a href="getargs.Arg-class.html" 
+          class="link">Arg</a>s</code>.</li>
+        <li><strong class="pname"><code>callback</code></strong> (<code><a 
+          href="http://docs.python.org/library/functions.html#callable" 
+          target="_top">callable</a> object</code>) - A function/class that is called when the OK button is clicked. No
+          positional/keyword arguments are supported (unless the <a 
+          href="getargs.Command-class.html" class="link">Command</a> class 
+          is used).</li>
+    </ul></dd>
+    <dt>Returns: <code>GetArgs</code></dt>
+        <dd><code>GetArgs</code></dd>
     <dt>Overrides:
         object.__new__
-        <dd><em class="note">(inherited documentation)</em></dd>
     </dt>
+  </dl>
+<div class="fields">      <p><strong>See Also:</strong>
+        <a href="runcrawler-module.html" class="link">runcrawler</a> for an
+        example.
+      </p>
+</div></td></tr></table>
+</div>
+<br />
+<!-- ==================== PROPERTY DETAILS ==================== -->
+<a name="section-PropertyDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Property Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-PropertyDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="callback"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">callback</h3>
+  
+  <dl class="fields">
+    <dt>Get Method:</dt>
+    <dd class="value"><span class="summary-sig"><i>unreachable</i>.fget(<span class="summary-sig-arg">self</span>)</span>
+    </dd>
+    <dt>Set Method:</dt>
+    <dd class="value"><span class="summary-sig"><i>unreachable</i>.fset(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">arg</span>)</span>
+    </dd>
+    <dt>Delete Method:</dt>
+    <dd class="value"><span class="summary-sig"><i>unreachable</i>.fdel(<span class="summary-sig-arg">self</span>)</span>
+    </dd>
   </dl>
 </td></tr></table>
 </div>

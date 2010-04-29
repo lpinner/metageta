@@ -247,9 +247,9 @@ def SceneCentre(gt,cols,rows):
         @type gt: C{tuple/list}
         @param gt: geotransform
         @type cols: C{int}
-        @param cols: number of columns in the dataset
+        @param cols: Number of columns in the dataset
         @type rows: C{int}
-        @param rows: number of rows in the dataset
+        @param rows: Number of rows in the dataset
         @rtype:    C{(float,float)}
         @return:   Scene centre coordinates
     '''
@@ -265,8 +265,12 @@ def ExtentToGCPs(ext,cols,rows):
         This function is meant to be used to convert an extent 
         to gcp's for use in the gdal.GCPsToGeoTransform function.
 
-        @type ext:  C{tuple/list}
-        @param gt:  Extent, must be in order: [[ulx,uly],[urx,ury],[lrx,lry],[llx,lly]]
+        @type ext:   C{tuple/list}
+        @param ext:  Extent, must be in order: [[ulx,uly],[urx,ury],[lrx,lry],[llx,lly]]
+        @type cols: C{int}
+        @param cols: Number of columns in the dataset
+        @type rows: C{int}
+        @param rows: Number of rows in the dataset
         @rtype:    C{[gcp,...,gcp]}
         @return:   List of GCP objects
     '''
@@ -476,10 +480,11 @@ def InvGeoTransform(gt_in):
 
 def ApplyGeoTransform(inx,iny,gt):
     ''' Apply a geotransform
-        @param  inx       Input x coordinate (double)
-        @param  iny       Input y coordinate (double)
-        @param  gt        Input geotransform (six doubles)
-        @return outx,outy Output coordinates (two doubles)
+        @param  inx:       Input x coordinate (double)
+        @param  iny:       Input y coordinate (double)
+        @param  gt:        Input geotransform (six doubles)
+
+        @return: outx,outy Output coordinates (two doubles)
     '''
     outx = gt[0] + inx*gt[1] + iny*gt[2]
     outy = gt[3] + inx*gt[4] + iny*gt[5]
@@ -487,10 +492,10 @@ def ApplyGeoTransform(inx,iny,gt):
 
 def MapToPixel(mx,my,gt):
     ''' Convert map to pixel coordinates
-        @param  mx    Input map x coordinate (double)
-        @param  my    Input map y coordinate (double)
-        @param  gt    Input geotransform (six doubles)
-        @return px,py Output coordinates (two ints)
+        @param  mx:    Input map x coordinate (double)
+        @param  my:    Input map y coordinate (double)
+        @param  gt:    Input geotransform (six doubles)
+        @return: px,py Output coordinates (two ints)
     '''
     if gt[2]+gt[4]==0: #Simple calc, no inversion required
         px = (mx - gt[0]) / gt[1]
@@ -501,10 +506,10 @@ def MapToPixel(mx,my,gt):
 
 def PixelToMap(px,py,gt):
     ''' Convert pixel to map coordinates
-        @param  px    Input pixel x coordinate (double)
-        @param  py    Input pixel y coordinate (double)
-        @param  gt    Input geotransform (six doubles)
-        @return mx,my Output coordinates (two doubles)
+        @param  px:    Input pixel x coordinate (double)
+        @param  py:    Input pixel y coordinate (double)
+        @param  gt:    Input geotransform (six doubles)
+        @return: mx,my Output coordinates (two doubles)
     '''
     mx,my=ApplyGeoTransform(px,py,gt)
     return mx,my

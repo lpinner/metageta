@@ -78,6 +78,10 @@
         metadata to
         </li>
         <li>
+        <code>-m, --mediaid</code>   : CD/DVD media ID, defaults to volume 
+        label.
+        </li>
+        <li>
         <code>-u, --update</code>    : Update previous crawl results.
         </li>
         <li>
@@ -121,10 +125,12 @@
         <tr>
           <td><span class="summary-sig"><a href="runcrawler-module.html#main" class="summary-sig-name">main</a>(<span class="summary-sig-arg">dir</span>,
         <span class="summary-sig-arg">xls</span>,
+        <span class="summary-sig-arg">mediaid</span>=<span class="summary-sig-default">None</span>,
         <span class="summary-sig-arg">update</span>=<span class="summary-sig-default">False</span>,
         <span class="summary-sig-arg">getovs</span>=<span class="summary-sig-default">False</span>,
         <span class="summary-sig-arg">nogui</span>=<span class="summary-sig-default">True</span>,
-        <span class="summary-sig-arg">debug</span>=<span class="summary-sig-default">False</span>)</span><br />
+        <span class="summary-sig-arg">debug</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">pl</span>=<span class="summary-sig-default">None</span>)</span><br />
       Run the Metadata Crawler</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="runcrawler-pysrc.html#main">source&nbsp;code</a></span>
@@ -205,10 +211,12 @@
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">main</span>(<span class="sig-arg">dir</span>,
         <span class="sig-arg">xls</span>,
+        <span class="sig-arg">mediaid</span>=<span class="sig-default">None</span>,
         <span class="sig-arg">update</span>=<span class="sig-default">False</span>,
         <span class="sig-arg">getovs</span>=<span class="sig-default">False</span>,
         <span class="sig-arg">nogui</span>=<span class="sig-default">True</span>,
-        <span class="sig-arg">debug</span>=<span class="sig-default">False</span>)</span>
+        <span class="sig-arg">debug</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">pl</span>=<span class="sig-default">None</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="runcrawler-pysrc.html#main">source&nbsp;code</a></span>&nbsp;
@@ -221,12 +229,14 @@
     <dd><ul class="nomargin-top">
         <li><strong class="pname"><code>dir</code></strong> (<code>str</code>) - The directory to start the metadata crawl.</li>
         <li><strong class="pname"><code>xls</code></strong> (<code>str</code>) - Excel spreadsheet to write metadata to</li>
+        <li><strong class="pname"><code>mediaid</code></strong> (<code>str</code>) - CD/DVD media ID</li>
         <li><strong class="pname"><code>getovs</code></strong> (<code>boolean</code>) - Generate overview (quicklook/thumbnail) images</li>
         <li><strong class="pname"><code>nogui</code></strong> (<code>boolean</code>) - Don't show the GUI progress dialog</li>
         <li><strong class="pname"><code>debug</code></strong> (<code>boolean</code>) - Turn debug output on</li>
+        <li><strong class="pname"><code>pl</code></strong> (<code>progresslogger.ProgressLogger</code>) - Use an already instantiated logger</li>
     </ul></dd>
     <dt>Returns:</dt>
-        <dd><code>None</code></dd>
+        <dd><code>progresslogger.ProgressLogger</code></dd>
   </dl>
 </td></tr></table>
 </div>

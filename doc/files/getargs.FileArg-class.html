@@ -59,31 +59,17 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class FileArg</h1><p class="nomargin-top"><span class="codelink"><a href="getargs-pysrc.html#FileArg">source&nbsp;code</a></span></p>
 <pre class="base-tree">
-object --+
-         |
-        <strong class="uidshort">FileArg</strong>
+object --+    
+         |    
+       <a href="getargs.Arg-class.html">Arg</a> --+
+             |
+            <strong class="uidshort">FileArg</strong>
 </pre>
 
 <hr />
 <p>Build a file browser</p>
 
-<hr />
-<div class="fields">      <p><strong>Note:</strong>
-        The FileArg class requires two additional custom attributes to be 
-        added to the optparse.Option. These are the <a 
-        href="icons-module.html" class="link">icon</a> to display on the 
-        button and filter in <a 
-        href="http://tkinter.unpythonic.net/wiki/tkFileDialog" 
-        target="_top">tkFileDialog.askopenfilename</a> filetypes format.
-        <p>Example:</p>
-<pre class="literalblock">
-   opt=parser.add_option(&quot;-l&quot;, dest=&quot;log&quot;, metavar=&quot;log&quot;,help=&quot;Log file&quot;)
-   opt.argtype=getargs.FileArg
-   opt.icon=icons.log_img
-   opt.filter=[('Log File',('*.txt','*.log'))]
-</pre>
-      </p>
-</div><!-- ==================== INSTANCE METHODS ==================== -->
+<!-- ==================== INSTANCE METHODS ==================== -->
 <a name="section-InstanceMethods"></a>
 <table class="summary" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
@@ -107,12 +93,31 @@ object --+
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="getargs.FileArg-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">root</span>,
-        <span class="summary-sig-arg">row</span>,
-        <span class="summary-sig-arg">arg</span>)</span><br />
+        <span class="summary-sig-arg">opt</span>,
+        <span class="summary-sig-arg">initialdir</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">filter</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="getargs-pysrc.html#FileArg.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__build__"></a><span class="summary-sig-name">__build__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">root</span>,
+        <span class="summary-sig-arg">row</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="getargs-pysrc.html#FileArg.__build__">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -159,6 +164,55 @@ object --+
       </p>
     </td>
   </tr>
+<tr bgcolor="#e8f0f8" >
+  <th colspan="2" class="group-header"
+    >&nbsp;&nbsp;&nbsp;&nbsp;Inherited from <a href="getargs.Arg-class.html">Arg</a></th></tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__classproperty__"></a><span class="summary-sig-name">__classproperty__</span>(<span class="summary-sig-arg">fcn</span>)</span><br />
+      The class property decorator function</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="getargs-pysrc.html#Arg.__classproperty__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== INSTANCE VARIABLES ==================== -->
+<a name="section-InstanceVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceVariables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr bgcolor="#e8f0f8"  class="private">
+  <th colspan="2" class="group-header"
+    >&nbsp;&nbsp;&nbsp;&nbsp;Inherited from <a href="getargs.Arg-class.html">Arg</a></th></tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="_callback"></a><span class="summary-name">_callback</span><br />
+      break
+    </td>
+  </tr>
 </table>
 <!-- ==================== PROPERTIES ==================== -->
 <a name="section-Properties"></a>
@@ -182,6 +236,23 @@ object --+
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__class__</code>
       </p>
+    </td>
+  </tr>
+<tr bgcolor="#e8f0f8" >
+  <th colspan="2" class="group-header"
+    >&nbsp;&nbsp;&nbsp;&nbsp;Inherited from <a href="getargs.Arg-class.html">Arg</a></th></tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="getargs.Arg-class.html#callback" class="summary-name">callback</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="getargs.Arg-class.html#enabled" class="summary-name">enabled</a>
     </td>
   </tr>
 </table>
@@ -211,9 +282,10 @@ object --+
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">root</span>,
-        <span class="sig-arg">row</span>,
-        <span class="sig-arg">arg</span>)</span>
+        <span class="sig-arg">opt</span>,
+        <span class="sig-arg">initialdir</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">filter</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">**kwargs</span>)</span>
     <br /><em class="fname">(Constructor)</em>
   </h3>
   </td><td align="right" valign="top"
@@ -226,11 +298,9 @@ object --+
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>root</code></strong> (<code>Tkinter.Tk</code>) - Root Tk instance.</li>
-        <li><strong class="pname"><code>row</code></strong> (<code>int</code>) - Grid row to place the file browser in.</li>
-        <li><strong class="pname"><code>arg</code></strong> (<code><a href="http://docs.python.org/library/optparse.html" 
-          target="_top">Option</a></code>) - An <a href="http://docs.python.org/library/optparse.html" 
-          target="_top">Option</a>.</li>
+        <li><strong class="pname"><code>initialdir</code></strong> (<code>list/tuple of strings</code>) - The folder to open the browser at initially.</li>
+        <li><strong class="pname"><code>filter</code></strong> (<code>str</code>) - The filter to show in the file browser. eg. [('Log 
+          File',('*.txt','*.log'))]</li>
     </ul></dd>
     <dt>Overrides:
         object.__init__

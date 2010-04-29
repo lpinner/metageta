@@ -28,43 +28,19 @@ from icons import *
 import utilities
 
 class GetArgs(object):
-    ''' Build and show a GUI dialog to collect arguments
-        @type  args:    C{U{Option<http://docs.python.org/library/optparse.html>}}
-        @param args:    One or more U{Option<http://docs.python.org/library/optparse.html>}s.
-        
-        @return:  C{None}
+    def __new__(self,*args,**kwargs):#We use __new__ instead of __init__ so we can return None if the user clicks cancel
+        ''' Build and show a GUI dialog to collect arguments
+            @type  args:        C{list of L{Arg}s}
+            @param args:        One or more C{L{Arg}s}.
+            @type    callback:  C{U{callable<http://docs.python.org/library/functions.html#callable>} object}
+            @keyword callback:  A function/class that is called when the OK button is clicked. 
+                                No positional/keyword arguments are supported (unless the L{Command} class is used).
+            
+            @rtype:  C{GetArgs}
+            @return:  C{GetArgs}
 
-        @note:  The GetArgs class requires at least one additional custom attribute to be
-                added to the optparse.Option. The required attribute is the 'argtype' to use,
-                either L{DirArg}, L{FileArg} or L{BoolArg}.  L{DirArg} and L{FileArg} also require
-                additional custom attributes.
-
-                L{DirArg}, L{FileArg} or L{BoolArg} also accept an optional 'tooltip' custom attribute.
-
-                Example::
-                        parser = optparse.OptionParser(description=description)
-                        opt=parser.add_option('-d', dest="dir", metavar="dir",help='The directory to crawl')
-                        opt.icon=icons.dir_img      #Custom icon and argtype attributes
-                        opt.argtype=getargs.DirArg
-                        
-                        opt=parser.add_option("-u", "--update", action="store_true", dest="update",default=False,
-                                          help="Update existing spreadsheet")
-                        opt.argtype=getargs.BoolArg #Custom argtype attribute
-                        opt.tooltip='This is a tool tip!'
-                        
-                        opt=parser.add_option("-l", dest="log", metavar="log",help="Log file")
-                        opt.argtype=getargs.FileArg #Custom argtype, icon and filter attributes
-                        opt.icon=icons.log_img
-                        opt.filter=[('Log File',('*.txt','*.log'))]
-
-                        #Parse existing command line args
-                        optvals,argvals = parser.parse_args()
-                        #Pop up the GUI
-                        args=getargs.GetArgs(*parser.option_list)
-
-            @see: L{runcrawler} for a more complete example.                  
-    '''
-    def __new__(self,*args,**kwargs):#We use __new__ instead of __init__ so we can return None if the user click cancel
+            @see: L{runcrawler} for an example.                  
+        '''
         self=object.__new__(self)
         title='MetaGETA'
         icon=os.environ['CURDIR']+'/lib/wm_icon.ico'
@@ -156,8 +132,21 @@ class GetArgs(object):
 
         return locals()
 
-class _Arg(object):
-
+class Arg(object):
+    ''' Build and show a GUI dialog to collect arguments
+        @type  opt:  C{U{Option<http://docs.python.org/library/optparse.html>}}
+        @param opt:  An U{Option<http://docs.python.org/library/optparse.html>}.
+        @type    enabled:  C{boolean}
+        @keyword enabled:  The Arg is enabled.
+        @type    callback:  C{U{callable<http://docs.python.org/library/functions.html#callable>} object}
+        @keyword callback:  A function/class that is called when the Arg value is changed.
+        @type    icon:      C{L{icons}}
+        @keyword icon:      An icon class from the L{icons} module.
+        @type    tooltip:   C{str}
+        @keyword tooltip:   A tooltip string.
+        @type    required:  C{boolean}
+        @keyword required:  The Arg is required to have a value .
+    '''
     def __init__(self,opt,enabled=True,callback=None,icon=None,tooltip=None,required=True):
         self.opt=opt
         self._enabled=True #default
@@ -217,29 +206,16 @@ class _Arg(object):
 
         return locals()
 
-class DirArg(_Arg):
+class DirArg(Arg):
     ''' Build a directory browser 
 
-        @type  root: C{Tix.Tk}
-        @param root: Root Tk instance.
-        @type  row:  C{int}
-        @param row:  Grid row to place the directory browser in.
-        @type  arg:  C{U{Option<http://docs.python.org/library/optparse.html>}}
-        @param arg:  An U{Option<http://docs.python.org/library/optparse.html>}.
-        
-        @note:  The DirArg class requires an additional custom attribute to be
-                added to the optparse.Option. This is the L{icon<icons>} to display on the button.
-
-                Example::
-                        parser = optparse.OptionParser(description=description)
-                        opt=parser.add_option('-d', dest="dir", metavar="dir",help='The directory to crawl')
-                        opt.argtype=getargs.DirArg
-                        opt.icon=icons.dir_img
+        @type    initialdir:   C{str}
+        @keyword initialdir:   The folder to open the browser at initially.
     '''
     def __init__(self,opt,initialdir='',**kwargs):
         self.initialdir=initialdir
         self.lastdir=None
-        _Arg.__init__(self,opt,**kwargs)
+        Arg.__init__(self,opt,**kwargs)
         
     def __build__(self,root,row):
         self.TkPhotoImage = Tix.PhotoImage(format=self.icon.format,data=self.icon.data) # keep a reference! See http://effbot.org/tkinterbook/photoimage.htm
@@ -269,32 +245,20 @@ class DirArg(_Arg):
             dir.set(ad)
             var.set(ad)
             
-class FileArg(_Arg):
+class FileArg(Arg):
     ''' Build a file browser 
 
-        @type  root: C{Tix.Tk}
-        @param root: Root Tk instance.
-        @type  row:  C{int}
-        @param row:  Grid row to place the file browser in.
-        @type  arg:  C{U{Option<http://docs.python.org/library/optparse.html>}}
-        @param arg:  An U{Option<http://docs.python.org/library/optparse.html>}.
-        
-        @note:  The FileArg class requires two additional custom attributes to be
-                added to the optparse.Option. These are the L{icon<icons>} to display on the button
-                and filter in U{tkFileDialog.askopenfilename<http://Tix.unpythonic.net/wiki/tkFileDialog>}
-                filetypes format.
-
-                Example::
-                    opt=parser.add_option("-l", dest="log", metavar="log",help="Log file")
-                    opt.argtype=getargs.FileArg
-                    opt.icon=icons.log_img
-                    opt.filter=[('Log File',('*.txt','*.log'))]
+        @type    initialdir:   C{list/tuple of strings}
+        @keyword initialdir:   The folder to open the browser at initially.
+        @type    filter:       C{str}
+        @keyword filter:       The filter to show in the file browser.
+                               eg. [('Log File',('*.txt','*.log'))]
     '''
     def __init__(self,opt,initialdir='',filter='',**kwargs):
         self.filter=filter
         self.initialdir=initialdir
         self.lastdir=None
-        _Arg.__init__(self,opt,**kwargs)
+        Arg.__init__(self,opt,**kwargs)
         
     def __build__(self,root,row):
         self.TkPhotoImage = Tix.PhotoImage(format=self.icon.format,data=self.icon.data) # keep a reference! See http://effbot.org/tkinterbook/photoimage.htm
@@ -340,31 +304,26 @@ class FileArg(_Arg):
             dir.set(os.path.split(fd)[0])
             var.set(fd)
 
-class ComboBoxArg(_Arg):
-    ''' Build a droplist 
+class ComboBoxArg(Arg):
+    ''' Build a combobox 
 
-        @type  root: C{Tix.Tk}
-        @param root: Root Tk instance.
-        @type  row:  C{int}
-        @param row:  Grid row to place the file browser in.
-        @type  arg:  C{U{Option<http://docs.python.org/library/optparse.html>}}
-        @param arg:  An U{Option<http://docs.python.org/library/optparse.html>}.
-        
-        @note:  The DropListArg class requires two additional custom attributes to be
-                added to the optparse.Option. These are the L{icon<icons>} to display on the button
-                and options to populate the droplist with.
-
-                Example::
-                    opt=parser.add_option("-z", dest="somevar", metavar="somevar",help="Some value")
-                    opt.argtype=getargs.DropListArg
-                    opt.icon=icons.some_img
-                    opt.options=['Some value','Another value']
+        @type    options:  C{list of strings}
+        @keyword options:  The options to show in the combo box.
+                           ['Some value','Another value']
     '''
     def __init__(self,opt,options=[],**kwargs):
+
         self.options=options
-        _Arg.__init__(self,opt,**kwargs)
+        Arg.__init__(self,opt,**kwargs)
         
     def __build__(self,root,row):
+        ''' Build a combobox 
+
+            @type  root: C{Tix.Tk}
+            @param root: Root Tk instance.
+            @type  row:  C{int}
+            @param row:  Grid row to place the file browser in.
+        '''
         self.TkPhotoImage = Tix.PhotoImage(format=self.icon.format,data=self.icon.data) # keep a reference! See http://effbot.org/tkinterbook/photoimage.htm
         self.value = Tix.StringVar()
 
@@ -390,16 +349,8 @@ class ComboBoxArg(_Arg):
         self.value.trace('w',self.callback)
         self.enabled=self.enabled #Force update
 
-class StringArg(_Arg):
-    ''' Build a text entry box
-
-        @type  root: C{Tix.Tk}
-        @param root: Root Tk instance.
-        @type  row:  C{int}
-        @param row:  Grid row to place the checkbox in.
-        @type  arg:  C{U{Option<http://docs.python.org/library/optparse.html>}}
-        @param arg:  An U{Option<http://docs.python.org/library/optparse.html>}.
-    '''
+class StringArg(Arg):
+    ''' Build a text entry box'''
     def __build__(self,root,row):
         self.value = Tix.StringVar()
         if self.opt.default is not None:self.value.set(self.opt.default)
@@ -416,16 +367,9 @@ class StringArg(_Arg):
         self.value.trace('w',self.callback)
         self.enabled=self.enabled #Force update
 
-class BoolArg(_Arg):
-    ''' Build a boolean checkbox 
+class BoolArg(Arg):
+    ''' Build a boolean checkbox '''
 
-        @type  root: C{Tix.Tk}
-        @param root: Root Tk instance.
-        @type  row:  C{int}
-        @param row:  Grid row to place the checkbox in.
-        @type  arg:  C{U{Option<http://docs.python.org/library/optparse.html>}}
-        @param arg:  An U{Option<http://docs.python.org/library/optparse.html>}.
-    '''
     def __build__(self,root,row):
         self.value = Tix.BooleanVar()
         self.value.set(self.opt.default)
@@ -441,8 +385,8 @@ class BoolArg(_Arg):
         self.enabled=self.enabled #Force update
 
 class Command(object):
-    """ A class we can use to avoid using the tricky "Lambda" expression.
-    "Python and Tkinter Programming" by John Grayson, introduces this idiom."""
+    ''' A class we can use to avoid using the tricky "Lambda" expression.
+    "Python and Tkinter Programming" by John Grayson, introduces this idiom.'''
     def __init__(self, func, *args, **kwargs):
         self.func = func
         self.args = args
@@ -456,41 +400,43 @@ class _ToolTip:
     '''
     From http://Tix.unpythonic.net/wiki/ToolTip
     Michael Lange <klappnase at 8ung dot at>
+
     The ToolTip class provides a flexible tooltip widget for Tkinter; it is based on IDLE's ToolTip
     module which unfortunately seems to be broken (at least the version I saw).
-    INITIALIZATION OPTIONS:
-    anchor :        where the text should be positioned inside the widget, must be on of "n", "s", "e", "w", "nw" and so on;
-                    default is "center"
-    bd :            borderwidth of the widget; default is 1 (NOTE: don't use "borderwidth" here)
-    bg :            background color to use for the widget; default is "lightyellow" (NOTE: don't use "background")
-    delay :         time in ms that it takes for the widget to appear on the screen when the mouse pointer has
-                    entered the parent widget; default is 1500
-    fg :            foreground (i.e. text) color to use; default is "black" (NOTE: don't use "foreground")
-    follow_mouse :  if set to 1 the tooltip will follow the mouse pointer instead of being displayed
-                    outside of the parent widget; this may be useful if you want to use tooltips for
-                    large widgets like listboxes or canvases; default is 0
-    font :          font to use for the widget; default is system specific
-    justify :       how multiple lines of text will be aligned, must be "left", "right" or "center"; default is "left"
-    padx :          extra space added to the left and right within the widget; default is 4
-    pady :          extra space above and below the text; default is 2
-    relief :        one of "flat", "ridge", "groove", "raised", "sunken" or "solid"; default is "solid"
-    state :         must be "normal" or "disabled"; if set to "disabled" the tooltip will not appear; default is "normal"
-    text :          the text that is displayed inside the widget
-    textvariable :  if set to an instance of Tix.StringVar() the variable's value will be used as text for the widget
-    width :         width of the widget; the default is 0, which means that "wraplength" will be used to limit the widgets width
-    wraplength :    limits the number of characters in each line; default is 150
+    
+    INITIALIZATION OPTIONS::
+        anchor:        where the text should be positioned inside the widget, must be on of "n", "s", "e", "w", "nw" and so on;
+                       default is "center"
+        bd:            borderwidth of the widget; default is 1 (NOTE: don't use "borderwidth" here)
+        bg:            background color to use for the widget; default is "lightyellow" (NOTE: don't use "background")
+        delay:         time in ms that it takes for the widget to appear on the screen when the mouse pointer has
+                       entered the parent widget; default is 1500
+        fg:            foreground (i.e. text) color to use; default is "black" (NOTE: don't use "foreground")
+        follow_mouse:  if set to 1 the tooltip will follow the mouse pointer instead of being displayed
+                       outside of the parent widget; this may be useful if you want to use tooltips for
+                       large widgets like listboxes or canvases; default is 0
+        font:          font to use for the widget; default is system specific
+        justify:       how multiple lines of text will be aligned, must be "left", "right" or "center"; default is "left"
+        padx:          extra space added to the left and right within the widget; default is 4
+        pady:          extra space above and below the text; default is 2
+        relief:        one of "flat", "ridge", "groove", "raised", "sunken" or "solid"; default is "solid"
+        state:         must be "normal" or "disabled"; if set to "disabled" the tooltip will not appear; default is "normal"
+        text:          the text that is displayed inside the widget
+        textvariable:  if set to an instance of Tix.StringVar() the variable's value will be used as text for the widget
+        width:         width of the widget; the default is 0, which means that "wraplength" will be used to limit the widgets width
+        wraplength:    limits the number of characters in each line; default is 150
 
-    WIDGET METHODS:
-    configure(**opts) : change one or more of the widget's options as described above; the changes will take effect the
-                        next time the tooltip shows up; NOTE: follow_mouse cannot be changed after widget initialization
+    WIDGET METHODS::
+        configure(**opts): change one or more of the widget's options as described above; the changes will take effect the
+                           next time the tooltip shows up; NOTE: follow_mouse cannot be changed after widget initialization
 
-    Other widget methods that might be useful if you want to subclass ToolTip:
-    enter() :           callback when the mouse pointer enters the parent widget
-    leave() :           called when the mouse pointer leaves the parent widget
-    motion() :          is called when the mouse pointer moves inside the parent widget if follow_mouse is set to 1 and the
-                        tooltip has shown up to continually update the coordinates of the tooltip window
-    coords() :          calculates the screen coordinates of the tooltip window
-    create_contents() : creates the contents of the tooltip window (by default a Tix.Label)
+    Other widget methods that might be useful if you want to subclass ToolTip::
+        enter():           callback when the mouse pointer enters the parent widget
+        leave():           called when the mouse pointer leaves the parent widget
+        motion():          is called when the mouse pointer moves inside the parent widget if follow_mouse is set to 1 and the
+                           tooltip has shown up to continually update the coordinates of the tooltip window
+        coords():          calculates the screen coordinates of the tooltip window
+        create_contents(): creates the contents of the tooltip window (by default a Tix.Label)
     '''
     # Ideas gleaned from PySol
     def __init__(self, master, text='Your text here', delay=1500, **opts):

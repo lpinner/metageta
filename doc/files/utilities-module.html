@@ -135,7 +135,7 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="utilities-module.html#encode" class="summary-sig-name">encode</a>(<span class="summary-sig-arg">u</span>)</span><br />
+          <td><span class="summary-sig"><a href="utilities-module.html#encode" class="summary-sig-name">encode</a>(<span class="summary-sig-arg">string</span>)</span><br />
       Encode a unicode string</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="utilities-pysrc.html#encode">source&nbsp;code</a></span>
@@ -415,6 +415,39 @@
       
     </td>
   </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type"><code>str</code></span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="utilities-module.html#volname" class="summary-sig-name">volname</a>(<span class="summary-sig-arg">path</span>)</span><br />
+      Get the volume label for a CD/DVD</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="utilities-pysrc.html#volname">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="writable"></a><span class="summary-sig-name">writable</span>(<span class="summary-sig-arg">filepath</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="utilities-pysrc.html#writable">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
 <tr bgcolor="#e8f0f8" >
   <th colspan="2" class="group-header"
     >&nbsp;&nbsp;&nbsp;&nbsp;Exception Utilities</th></tr>
@@ -532,7 +565,7 @@
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">encode</span>(<span class="sig-arg">u</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">encode</span>(<span class="sig-arg">string</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="utilities-pysrc.html#encode">source&nbsp;code</a></span>&nbsp;
@@ -543,7 +576,7 @@
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>cmd</code></strong> (<code>unicode</code>) - Unicode string</li>
+        <li><strong class="pname"><code>string</code></strong> (<code>unicode</code>) - Unicode string</li>
     </ul></dd>
     <dt>Returns: <code>str</code></dt>
         <dd>Encoded string</dd>
@@ -910,6 +943,31 @@
     </ul></dd>
     <dt>Returns: <code>str</code></dt>
         <dd>Path to file with updated extension</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="volname"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">volname</span>(<span class="sig-arg">path</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="utilities-pysrc.html#volname">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get the volume label for a CD/DVD</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>path</code></strong> (<code>str</code>) - Disc path</li>
+    </ul></dd>
+    <dt>Returns: <code>str</code></dt>
+        <dd>Volume label</dd>
   </dl>
 </td></tr></table>
 </div>

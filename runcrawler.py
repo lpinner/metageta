@@ -302,7 +302,6 @@ if __name__ == '__main__':
     optvals,argvals = parser.parse_args()
 
     #Do we need to pop up the GUI?
-    #if not optvals.dir or not optvals.log or not optvals.shp or not optvals.xls:
     if not optvals.dir or not optvals.xls:
         #Add existing command line args values to opt default values so they show in the gui
         for opt in parser.option_list:

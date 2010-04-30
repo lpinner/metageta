@@ -491,9 +491,10 @@ class ExcelWriter:
         self._heading.font = font        
 
         if update and os.path.exists(xls):
-            rb=xlrd.open_workbook(xls)
+            rb=xlrd.open_workbook(xls,encoding_override=encoding)
             self._sheets=rb.nsheets
             self._wb = xlcp.copy(rb)
+            self._wb.encoding=encoding #
             #ws=rb.get_sheet(0) #xlrd bug? "AttributeError: 'Book' object has no attribute 'mem'"
 
             #Ensure we can update cells
@@ -545,7 +546,9 @@ class ExcelWriter:
             self.__addsheet__()
         for field in data:
             if field in self._fields and data[field] not in ['',None,False]:#0 is valid
-                self._ws.write(self._rows+1, self._cols[field], data[field])
+                if type(data[field]) is str:#Issue 24 - http://code.google.com/p/metageta/issues/detail?id=24
+                    data[field]=data[field].decode(encoding)
+                self._ws.write(self._rows+1, self._cols[field], data[field]) #Issue 24 - http://code.google.com/p/metageta/issues/detail?id=24
                 dirty=True
         if dirty:self._rows+=1
         self._wb.save(self._file)
@@ -564,7 +567,9 @@ class ExcelWriter:
         ws=self._wb.get_sheet(s)
         for field in data:
             if field in self._fields and data[field] not in ['',None,False]:#0 is valid
-                ws.write(r+1, self._cols[field], data[field])
+                if type(data[field]) is str:#Issue 24 - http://code.google.com/p/metageta/issues/detail?id=24
+                    data[field]=data[field].decode(encoding)
+                ws.write(r+1, self._cols[field], data[field]) 
                 dirty=True
         if dirty:self._wb.save(self._file)
         
@@ -586,7 +591,7 @@ class ExcelReader:
             @type    returntype: C{type}
             @param   returntype: dict or list
         '''
-        self.wb=xlrd.open_workbook(xls)
+        self.wb=xlrd.open_workbook(xls,encoding_override=encoding)
         self.returntype=returntype
     def __getitem__(self, index):
         i=index/65535

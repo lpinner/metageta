@@ -47,7 +47,6 @@ class Dataset(__default__.Dataset):
                 __default__.Dataset.__getmetadata__(self, ers) #autopopulate basic metadata
                 self.metadata['filetype']='JP2ECW/ERMapper JPEG2000'
                 self.metadata['compressiontype']='JPEG2000'
-                self._gdaldataset=geometry.OpenDataset(f) 
             except:__default__.Dataset.__getmetadata__(self, f)
         else:
             __default__.Dataset.__getmetadata__(self, f) #autopopulate basic metadata

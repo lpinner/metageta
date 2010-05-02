@@ -208,7 +208,7 @@ class Dataset(object):
             try:files.extend([os.path.abspath(f) for f in self._gdaldataset.GetFileList() if os.path.exists(f)])
             except:pass
 
-        self._filelist=list(set(utilities.normpath(files))) #list(set([])) filters out duplicates
+        self._filelist=list(set(utilities.normcase(files))) #list(set([])) filters out duplicates
         
     def __getmetadata__(self,*args,**kwargs):
         '''In case subclasses don't override...'''

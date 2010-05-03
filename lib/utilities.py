@@ -370,7 +370,7 @@ def volname(path):
             drive=os.path.splitdrive(path)[0]
             if drive[-1]!='\\':drive+='\\'
             if drive: volinfo=win32api.GetVolumeInformation(drive)
-            if volinfo[4]=='CDFS':volname=volinfo[0]
+            if volinfo[4] in ['CDFS','UDF']:volname=volinfo[0]
         else:
             #get the device from mount point
             exit_code,stdout,stderr=utilities.runcmd('df '+path)

@@ -23,7 +23,7 @@
 Spatial reference helper functions
 '''
 
-import os,sys
+import os,sys,math
 try:
     from osgeo import gdal
     from osgeo import gdalconst
@@ -288,7 +288,7 @@ def GetLinearUnitsName(wkt):
         @type wkt:  C{str}
         @param wkt: WKT SRS string
         @rtype:     C{str}
-        @return:    Linear untit code (m,ft,dd, etc.)
+        @return:    Linear unit code (m,ft,dd, etc.)
     '''
 
     sw=osr.SpatialReference(wkt)
@@ -304,3 +304,12 @@ def GetLinearUnitsName(wkt):
         return SRS_UNITS_CONV[name]
     else:
         return name
+def lon2utmzone(lon):
+    ''' Calculate UTM Zone number from a Longitude
+        
+        @type  lon: C{float}
+        @param lon: Longitude
+        @rtype:     C{int}
+        @return:    UTM Zone
+    '''
+    return int(math.floor((lon - (-180.0)) / 6.0) + 1)

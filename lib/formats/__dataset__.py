@@ -279,8 +279,8 @@ class Dataset(object):
             return self._filelist
 
         def fset(self, *args, **kwargs):
-            if len(args) == 1:self._filelist = args[0]
-            elif len(args) == 2:self._filelist[args[0]] = args[1]
+            if len(args) == 1:self._filelist = utilities.normcase(args[0])
+            elif len(args) == 2:self._filelist[args[0]] = utilities.normcase(args[1])
 
         def fdel(self):pass
 

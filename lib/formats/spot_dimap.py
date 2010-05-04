@@ -107,3 +107,28 @@ class Dataset(__default__.Dataset):
         self.metadata['sunazimuth'] = float(gdalmd['SUN_AZIMUTH'])
         self.metadata['level'] = gdalmd['PROCESSING_LEVEL']
         self.metadata['viewangle'] = gdalmd['VIEWING_ANGLE']
+
+    def getoverview(self,outfile=None,width=800,format='JPG'): 
+        '''
+        Generate overviews for SPOT imagery
+
+        @type  outfile: str
+        @param outfile: a filepath to the output overview image. If supplied, format is determined from the file extension
+        @type  width:   int
+        @param width:   image width
+        @type  format:  str
+        @param format:  format to generate overview image, one of ['JPG','PNG','GIF','BMP','TIF']. Not required if outfile is supplied.
+        @rtype:         str
+        @return:        filepath (if outfile is supplied)/binary image data (if outfile is not supplied)
+        '''
+        import overviews
+
+        #First check for a browse graphic, no point re-inventing the wheel...
+        f=self.fileinfo['filepath']
+        browse=os.path.join(os.path.dirname(f),'PREVIEW.JPG')
+        if os.path.exists(browse):
+
+            try:return overviews.resize(browse,outfile,width)
+            except:return __default__.Dataset.getoverview(self,outfile,width,format) #Try it the slow way...
+
+        else: return __default__.Dataset.getoverview(self,outfile,width,format)#Do it the slow way...

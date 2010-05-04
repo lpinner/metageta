@@ -23,16 +23,6 @@
 '''
 Utility helper functions
 '''
-
-#========================================================================================================
-# Globals
-#========================================================================================================
-dateformat='%Y-%m-%d'  #ISO 8601
-timeformat='%H:%M:%S' #ISO 8601
-datetimeformat='%sT%s' % (dateformat,timeformat)
-
-encoding='latin-1'
-
 #========================================================================================================
 # Imports
 #========================================================================================================
@@ -44,6 +34,17 @@ except:
 from xlutils import copy as xlcp
 import sys, os.path, os, re, struct, glob, shutil,traceback,time,tempfile
 import uuid as _uuid
+
+#========================================================================================================
+# Globals
+#========================================================================================================
+dateformat='%Y-%m-%d'  #ISO 8601
+timeformat='%H:%M:%S' #ISO 8601
+datetimeformat='%sT%s' % (dateformat,timeformat)
+
+encoding='latin-1'
+
+iswin=sys.platform[0:3].lower()=='win'#Are we on Windows
 
 #========================================================================================================
 #{String Utilities
@@ -259,7 +260,8 @@ def FileInfo(filepath):
         fileinfo['datecreated']=time.strftime(datetimeformat, time.localtime(filestat.st_ctime))
         fileinfo['dateaccessed']=time.strftime(datetimeformat, time.localtime(filestat.st_atime))
         fileinfo['guid']=uuid(filepath)
-        if sys.platform[0:3].lower()=='win':
+        #if sys.platform[0:3].lower()=='win':
+        if iswin:
             ownerid,ownername=_WinFileOwner(filepath)
         else:
             ownerid,ownername=_NixFileOwner(filestat.st_uid)
@@ -288,7 +290,8 @@ def uncpath(filepath):
         @rtype:  C{str}
         @return: UNC filepath (if on Windows)
     '''
-    if sys.platform[0:3].lower()=='win':
+    #if sys.platform[0:3].lower()=='win':
+    if iswin:
         import win32wnet
         if type(filepath) in [list,tuple]:
             uncpath=[]
@@ -309,7 +312,8 @@ def normcase(filepath):
         @rtype:  C{str/list}
         @return: Path to file/s
     '''
-    if type(filepath) in [list,tuple]:
+    #if type(filepath) in [list,tuple]:
+    if hasattr(filepath,'__iter__'): #Is iterable
         return [os.path.normcase(i) for i in filepath]
     else:
         return os.path.normcase(filepath)
@@ -322,7 +326,7 @@ def normpath(filepath):
         @rtype:  C{str/list}
         @return: Path to file/s
     '''
-    if type(filepath) in [list,tuple]:
+    if hasattr(filepath,'__iter__'): #Is iterable
         return [os.path.normpath(i) for i in filepath]
     else:
         return os.path.normpath(filepath)
@@ -334,10 +338,18 @@ def realpath(filepath):
         @param   filepath: Path to file/s
         @rtype:  C{str/list}
         @return: Path to file/s
+
+        @note: os.path.realpath/os.path.abspath returns unexpected results on windows if filepath[-1]==':'        
     '''
-    if type(filepath) in [list,tuple]:
-        return [os.path.realpath(i) for i in filepath]
+    if hasattr(filepath,'__iter__'): #Is iterable
+        if iswin:
+            realpath=[]
+            for f in filepath:
+                if f[-1]==':':f+='\\'
+                realpath.append(os.path.realpath(f))
+        else:return [os.path.realpath(f) for f in filepath]
     else:
+        if iswin and filepath[-1]==':':filepath+='\\'
         return os.path.realpath(filepath)
 
 def checkExt(filepath,ext):
@@ -365,7 +377,8 @@ def volname(path):
     '''
     volname=None
     try:
-        if sys.platform[0:3].lower()=='win':
+        #if sys.platform[0:3].lower()=='win':
+        if iswin:
             import win32api
             drive=os.path.splitdrive(path)[0]
             if drive[-1]!='\\':drive+='\\'

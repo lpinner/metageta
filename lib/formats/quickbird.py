@@ -260,19 +260,8 @@ class Dataset(__default__.Dataset):
         browse=os.path.splitext(f)[0]+'-browse.jpg'
         if os.path.exists(browse):
 
-            try:ds=geometry.OpenDataset(browse)
+            try:return overviews.resize(browse,outfile,width)
             except:return __default__.Dataset.getoverview(self,outfile,width,format) #Try it the slow way...
-            #if not ds:return __default__.Dataset.getoverview(self,outfile,width,format) #geometry.OpenDataset raises an error now
 
-            nodata=0
-            if ds.RasterCount == 1:
-                bands=[1]
-            else:
-                bands=[1,2,3]
-
-            #Default stretch type and additional args
-            stretch_type='NONE'
-
-            return overviews.getoverview(ds,outfile,width,format,bands,stretch_type)
         else: return __default__.Dataset.getoverview(self,outfile,width,format)#Do it the slow way...
         

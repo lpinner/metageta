@@ -41,6 +41,7 @@ import __dataset__
 import sys, os, re, glob, time, math, string
 import utilities
 import geometry
+import spatialreferences
 
 try:
     from osgeo import gdal
@@ -89,6 +90,8 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
         ##################
         sceneid=utilities.readbinary(meta,(record-1)*recordlength,37,52)
 
+        cy=geometry.DMS2DD(utilities.readbinary(meta,(record-1)*recordlength,85,100),'HDDDMMSS') #Latitude of the Scene Centre
+        cx=geometry.DMS2DD(utilities.readbinary(meta,(record-1)*recordlength,101,116),'HDDDMMSS') #Longitude of the Scene Centre
         uly=geometry.DMS2DD(utilities.readbinary(meta,(record-1)*recordlength,149,164),'HDDDMMSS')
         ulx=geometry.DMS2DD(utilities.readbinary(meta,(record-1)*recordlength,165,180),'HDDDMMSS')
         ury=geometry.DMS2DD(utilities.readbinary(meta,(record-1)*recordlength,213,228),'HDDDMMSS')
@@ -151,6 +154,8 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
             type='UTM'
             units='m'
             zone=projection[3:-1]
+            if not zone:
+                zone=str(spatialreferences.lon2utmzone(cx))
             if   'GDA' in datum: epsg=int('283'+zone)
             elif 'AGD' in datum: epsg=int('202'+zone)
             elif 'WGS' in datum: epsg=int('327'+zone) if projection[-1] =='S' else int('326'+zone)

@@ -473,7 +473,7 @@ formats.spot_dimap.Dataset.__getmetadata__" class="py-name" href="#" onclick="re
 <a name="L260"></a><tt class="py-lineno">260</tt>  <tt class="py-line">        <tt class="py-name">browse</tt><tt class="py-op">=</tt><tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">splitext</tt><tt class="py-op">(</tt><tt class="py-name">f</tt><tt class="py-op">)</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt><tt class="py-op">+</tt><tt class="py-string">'-browse.jpg'</tt> </tt>
 <a name="L261"></a><tt class="py-lineno">261</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt id="link-72" class="py-name"><a title="utilities.exists" class="py-name" href="#" onclick="return doclink('link-72', 'exists', 'link-9');">exists</a></tt><tt class="py-op">(</tt><tt class="py-name">browse</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
 <a name="L262"></a><tt class="py-lineno">262</tt>  <tt class="py-line"> </tt>
-<a name="L263"></a><tt class="py-lineno">263</tt>  <tt class="py-line">            <tt class="py-keyword">try</tt><tt class="py-op">:</tt><tt class="py-name">ds</tt><tt class="py-op">=</tt><tt id="link-73" class="py-name"><a title="geometry" class="py-name" href="#" onclick="return doclink('link-73', 'geometry', 'link-4');">geometry</a></tt><tt class="py-op">.</tt><tt id="link-74" class="py-name"><a title="geometry.OpenDataset" class="py-name" href="#" onclick="return doclink('link-74', 'OpenDataset', 'link-64');">OpenDataset</a></tt><tt class="py-op">(</tt><tt class="py-name">browse</tt><tt class="py-op">)</tt> </tt>
+<a name="L263"></a><tt class="py-lineno">263</tt>  <tt class="py-line">            <tt class="py-keyword">try</tt><tt class="py-op">:</tt><tt class="py-keyword">return</tt> <tt id="link-73" class="py-name"><a title="overviews" class="py-name" href="#" onclick="return doclink('link-73', 'overviews', 'link-71');">overviews</a></tt><tt class="py-op">.</tt><tt id="link-74" class="py-name" targets="Function overviews.resize()=overviews-module.html#resize"><a title="overviews.resize" class="py-name" href="#" onclick="return doclink('link-74', 'resize', 'link-74');">resize</a></tt><tt class="py-op">(</tt><tt class="py-name">browse</tt><tt class="py-op">,</tt><tt class="py-name">outfile</tt><tt class="py-op">,</tt><tt class="py-name">width</tt><tt class="py-op">)</tt> </tt>
 <a name="L264"></a><tt class="py-lineno">264</tt>  <tt class="py-line">            <tt class="py-keyword">except</tt><tt class="py-op">:</tt><tt class="py-keyword">return</tt> <tt id="link-75" class="py-name"><a title="formats.__default__" class="py-name" href="#" onclick="return doclink('link-75', '__default__', 'link-2');">__default__</a></tt><tt class="py-op">.</tt><tt id="link-76" class="py-name"><a title="formats.__dataset__.Dataset
 formats.__default__.Dataset
 formats.ali_hyperion.Dataset
@@ -491,38 +491,19 @@ formats.netcdf.Dataset
 formats.nitf.Dataset
 formats.quickbird.Dataset
 formats.spot_cap.Dataset
-formats.spot_dimap.Dataset" class="py-name" href="#" onclick="return doclink('link-76', 'Dataset', 'link-17');">Dataset</a></tt><tt class="py-op">.</tt><tt id="link-77" class="py-name" targets="Method formats.__dataset__.Dataset.getoverview()=formats.__dataset__.Dataset-class.html#getoverview,Method formats.esribil.Dataset.getoverview()=formats.esribil.Dataset-class.html#getoverview,Method formats.esrigrid.Dataset.getoverview()=formats.esrigrid.Dataset-class.html#getoverview,Method formats.netcdf.Dataset.getoverview()=formats.netcdf.Dataset-class.html#getoverview,Method formats.quickbird.Dataset.getoverview()=formats.quickbird.Dataset-class.html#getoverview,Function overviews.getoverview()=overviews-module.html#getoverview"><a title="formats.__dataset__.Dataset.getoverview
+formats.spot_dimap.Dataset" class="py-name" href="#" onclick="return doclink('link-76', 'Dataset', 'link-17');">Dataset</a></tt><tt class="py-op">.</tt><tt id="link-77" class="py-name" targets="Method formats.__dataset__.Dataset.getoverview()=formats.__dataset__.Dataset-class.html#getoverview,Method formats.esribil.Dataset.getoverview()=formats.esribil.Dataset-class.html#getoverview,Method formats.esrigrid.Dataset.getoverview()=formats.esrigrid.Dataset-class.html#getoverview,Method formats.netcdf.Dataset.getoverview()=formats.netcdf.Dataset-class.html#getoverview,Method formats.quickbird.Dataset.getoverview()=formats.quickbird.Dataset-class.html#getoverview,Method formats.spot_dimap.Dataset.getoverview()=formats.spot_dimap.Dataset-class.html#getoverview,Function overviews.getoverview()=overviews-module.html#getoverview"><a title="formats.__dataset__.Dataset.getoverview
 formats.esribil.Dataset.getoverview
 formats.esrigrid.Dataset.getoverview
 formats.netcdf.Dataset.getoverview
 formats.quickbird.Dataset.getoverview
+formats.spot_dimap.Dataset.getoverview
 overviews.getoverview" class="py-name" href="#" onclick="return doclink('link-77', 'getoverview', 'link-77');">getoverview</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt><tt class="py-name">outfile</tt><tt class="py-op">,</tt><tt class="py-name">width</tt><tt class="py-op">,</tt><tt id="link-78" class="py-name" targets="Variable icons.dir_img.format=icons.dir_img-class.html#format,Variable icons.log_img.format=icons.log_img-class.html#format,Variable icons.shp_img.format=icons.shp_img-class.html#format,Variable icons.xls_img.format=icons.xls_img-class.html#format,Variable icons.xsl_img.format=icons.xsl_img-class.html#format"><a title="icons.dir_img.format
 icons.log_img.format
 icons.shp_img.format
 icons.xls_img.format
 icons.xsl_img.format" class="py-name" href="#" onclick="return doclink('link-78', 'format', 'link-78');">format</a></tt><tt class="py-op">)</tt> <tt class="py-comment">#Try it the slow way...</tt> </tt>
-<a name="L265"></a><tt class="py-lineno">265</tt>  <tt class="py-line">            <tt class="py-comment">#if not ds:return __default__.Dataset.getoverview(self,outfile,width,format) #geometry.OpenDataset raises an error now</tt> </tt>
-<a name="L266"></a><tt class="py-lineno">266</tt>  <tt class="py-line"> </tt>
-<a name="L267"></a><tt class="py-lineno">267</tt>  <tt class="py-line">            <tt class="py-name">nodata</tt><tt class="py-op">=</tt><tt class="py-number">0</tt> </tt>
-<a name="L268"></a><tt class="py-lineno">268</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">ds</tt><tt class="py-op">.</tt><tt class="py-name">RasterCount</tt> <tt class="py-op">==</tt> <tt class="py-number">1</tt><tt class="py-op">:</tt> </tt>
-<a name="L269"></a><tt class="py-lineno">269</tt>  <tt class="py-line">                <tt class="py-name">bands</tt><tt class="py-op">=</tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">]</tt> </tt>
-<a name="L270"></a><tt class="py-lineno">270</tt>  <tt class="py-line">            <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
-<a name="L271"></a><tt class="py-lineno">271</tt>  <tt class="py-line">                <tt class="py-name">bands</tt><tt class="py-op">=</tt><tt class="py-op">[</tt><tt class="py-number">1</tt><tt class="py-op">,</tt><tt class="py-number">2</tt><tt class="py-op">,</tt><tt class="py-number">3</tt><tt class="py-op">]</tt> </tt>
-<a name="L272"></a><tt class="py-lineno">272</tt>  <tt class="py-line"> </tt>
-<a name="L273"></a><tt class="py-lineno">273</tt>  <tt class="py-line">            <tt class="py-comment">#Default stretch type and additional args</tt> </tt>
-<a name="L274"></a><tt class="py-lineno">274</tt>  <tt class="py-line">            <tt class="py-name">stretch_type</tt><tt class="py-op">=</tt><tt class="py-string">'NONE'</tt> </tt>
-<a name="L275"></a><tt class="py-lineno">275</tt>  <tt class="py-line"> </tt>
-<a name="L276"></a><tt class="py-lineno">276</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt id="link-79" class="py-name"><a title="overviews" class="py-name" href="#" onclick="return doclink('link-79', 'overviews', 'link-71');">overviews</a></tt><tt class="py-op">.</tt><tt id="link-80" class="py-name"><a title="formats.__dataset__.Dataset.getoverview
-formats.esribil.Dataset.getoverview
-formats.esrigrid.Dataset.getoverview
-formats.netcdf.Dataset.getoverview
-formats.quickbird.Dataset.getoverview
-overviews.getoverview" class="py-name" href="#" onclick="return doclink('link-80', 'getoverview', 'link-77');">getoverview</a></tt><tt class="py-op">(</tt><tt class="py-name">ds</tt><tt class="py-op">,</tt><tt class="py-name">outfile</tt><tt class="py-op">,</tt><tt class="py-name">width</tt><tt class="py-op">,</tt><tt id="link-81" class="py-name"><a title="icons.dir_img.format
-icons.log_img.format
-icons.shp_img.format
-icons.xls_img.format
-icons.xsl_img.format" class="py-name" href="#" onclick="return doclink('link-81', 'format', 'link-78');">format</a></tt><tt class="py-op">,</tt><tt class="py-name">bands</tt><tt class="py-op">,</tt><tt class="py-name">stretch_type</tt><tt class="py-op">)</tt> </tt>
-<a name="L277"></a><tt class="py-lineno">277</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> <tt class="py-keyword">return</tt> <tt id="link-82" class="py-name"><a title="formats.__default__" class="py-name" href="#" onclick="return doclink('link-82', '__default__', 'link-2');">__default__</a></tt><tt class="py-op">.</tt><tt id="link-83" class="py-name"><a title="formats.__dataset__.Dataset
+<a name="L265"></a><tt class="py-lineno">265</tt>  <tt class="py-line"> </tt>
+<a name="L266"></a><tt class="py-lineno">266</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> <tt class="py-keyword">return</tt> <tt id="link-79" class="py-name"><a title="formats.__default__" class="py-name" href="#" onclick="return doclink('link-79', '__default__', 'link-2');">__default__</a></tt><tt class="py-op">.</tt><tt id="link-80" class="py-name"><a title="formats.__dataset__.Dataset
 formats.__default__.Dataset
 formats.ali_hyperion.Dataset
 formats.alos.Dataset
@@ -539,17 +520,18 @@ formats.netcdf.Dataset
 formats.nitf.Dataset
 formats.quickbird.Dataset
 formats.spot_cap.Dataset
-formats.spot_dimap.Dataset" class="py-name" href="#" onclick="return doclink('link-83', 'Dataset', 'link-17');">Dataset</a></tt><tt class="py-op">.</tt><tt id="link-84" class="py-name"><a title="formats.__dataset__.Dataset.getoverview
+formats.spot_dimap.Dataset" class="py-name" href="#" onclick="return doclink('link-80', 'Dataset', 'link-17');">Dataset</a></tt><tt class="py-op">.</tt><tt id="link-81" class="py-name"><a title="formats.__dataset__.Dataset.getoverview
 formats.esribil.Dataset.getoverview
 formats.esrigrid.Dataset.getoverview
 formats.netcdf.Dataset.getoverview
 formats.quickbird.Dataset.getoverview
-overviews.getoverview" class="py-name" href="#" onclick="return doclink('link-84', 'getoverview', 'link-77');">getoverview</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt><tt class="py-name">outfile</tt><tt class="py-op">,</tt><tt class="py-name">width</tt><tt class="py-op">,</tt><tt id="link-85" class="py-name"><a title="icons.dir_img.format
+formats.spot_dimap.Dataset.getoverview
+overviews.getoverview" class="py-name" href="#" onclick="return doclink('link-81', 'getoverview', 'link-77');">getoverview</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt><tt class="py-name">outfile</tt><tt class="py-op">,</tt><tt class="py-name">width</tt><tt class="py-op">,</tt><tt id="link-82" class="py-name"><a title="icons.dir_img.format
 icons.log_img.format
 icons.shp_img.format
 icons.xls_img.format
-icons.xsl_img.format" class="py-name" href="#" onclick="return doclink('link-85', 'format', 'link-78');">format</a></tt><tt class="py-op">)</tt><tt class="py-comment">#Do it the slow way...</tt> </tt>
-</div></div><a name="L278"></a><tt class="py-lineno">278</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+icons.xsl_img.format" class="py-name" href="#" onclick="return doclink('link-82', 'format', 'link-78');">format</a></tt><tt class="py-op">)</tt><tt class="py-comment">#Do it the slow way...</tt> </tt>
+</div></div><a name="L267"></a><tt class="py-lineno">267</tt>  <tt class="py-line"> </tt><script type="text/javascript">
 <!--
 expandto(location.href);
 // -->

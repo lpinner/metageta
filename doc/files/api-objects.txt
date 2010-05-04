@@ -140,6 +140,7 @@ spatialreferences.AUS_GEOGCS	spatialreferences-module.html#AUS_GEOGCS
 spatialreferences.GCTP_ELLIPSOIDS	spatialreferences-module.html#GCTP_ELLIPSOIDS
 spatialreferences.GCTP_PROJECTIONS	spatialreferences-module.html#GCTP_PROJECTIONS
 spatialreferences.__package__	spatialreferences-module.html#__package__
+spatialreferences.lon2utmzone	spatialreferences-module.html#lon2utmzone
 spatialreferences.SRS_UNITS_CONV	spatialreferences-module.html#SRS_UNITS_CONV
 spatialreferences.IdentifyAusEPSG	spatialreferences-module.html#IdentifyAusEPSG
 spatialreferences.AUS_PROJCS	spatialreferences-module.html#AUS_PROJCS
@@ -167,6 +168,7 @@ utilities.writable	utilities-module.html#writable
 utilities.datetimeformat	utilities-module.html#datetimeformat
 utilities.readbinary	utilities-module.html#readbinary
 utilities._NixFileOwner	utilities-module.html#_NixFileOwner
+utilities.iswin	utilities-module.html#iswin
 utilities.__package__	utilities-module.html#__package__
 utilities.which	utilities-module.html#which
 utilities.encode	utilities-module.html#encode
@@ -403,7 +405,7 @@ formats.__dataset__.Dataset.__classproperty__	formats.__dataset__.Dataset-class.
 formats.__dataset__.Dataset.filelist	formats.__dataset__.Dataset-class.html#filelist
 formats.spot_dimap.Dataset	formats.spot_dimap.Dataset-class.html
 formats.__dataset__.Dataset.__getfilelist__	formats.__dataset__.Dataset-class.html#__getfilelist__
-formats.__dataset__.Dataset.getoverview	formats.__dataset__.Dataset-class.html#getoverview
+formats.spot_dimap.Dataset.getoverview	formats.spot_dimap.Dataset-class.html#getoverview
 formats.spot_dimap.Dataset.__init__	formats.spot_dimap.Dataset-class.html#__init__
 formats.__dataset__.Dataset.__setfileinfo__	formats.__dataset__.Dataset-class.html#__setfileinfo__
 formats.__dataset__.Dataset.__new__	formats.__dataset__.Dataset-class.html#__new__

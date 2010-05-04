@@ -82,7 +82,7 @@
 <a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"><tt class="py-docstring">Spatial reference helper functions</tt> </tt>
 <a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"><tt class="py-docstring">'''</tt> </tt>
 <a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"> </tt>
-<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">os</tt><tt class="py-op">,</tt><tt class="py-name">sys</tt> </tt>
+<a name="L26"></a><tt class="py-lineno"> 26</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">os</tt><tt class="py-op">,</tt><tt class="py-name">sys</tt><tt class="py-op">,</tt><tt class="py-name">math</tt> </tt>
 <a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line"><tt class="py-keyword">try</tt><tt class="py-op">:</tt> </tt>
 <a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line">    <tt class="py-keyword">from</tt> <tt class="py-name">osgeo</tt> <tt class="py-keyword">import</tt> <tt class="py-name">gdal</tt> </tt>
 <a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line">    <tt class="py-keyword">from</tt> <tt class="py-name">osgeo</tt> <tt class="py-keyword">import</tt> <tt class="py-name">gdalconst</tt> </tt>
@@ -347,7 +347,7 @@
 <a name="L288"></a><tt class="py-lineno">288</tt>  <tt class="py-line"><tt class="py-docstring">        @type wkt:  C{str}</tt> </tt>
 <a name="L289"></a><tt class="py-lineno">289</tt>  <tt class="py-line"><tt class="py-docstring">        @param wkt: WKT SRS string</tt> </tt>
 <a name="L290"></a><tt class="py-lineno">290</tt>  <tt class="py-line"><tt class="py-docstring">        @rtype:     C{str}</tt> </tt>
-<a name="L291"></a><tt class="py-lineno">291</tt>  <tt class="py-line"><tt class="py-docstring">        @return:    Linear untit code (m,ft,dd, etc.)</tt> </tt>
+<a name="L291"></a><tt class="py-lineno">291</tt>  <tt class="py-line"><tt class="py-docstring">        @return:    Linear unit code (m,ft,dd, etc.)</tt> </tt>
 <a name="L292"></a><tt class="py-lineno">292</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
 <a name="L293"></a><tt class="py-lineno">293</tt>  <tt class="py-line"> </tt>
 <a name="L294"></a><tt class="py-lineno">294</tt>  <tt class="py-line">    <tt class="py-name">sw</tt><tt class="py-op">=</tt><tt class="py-name">osr</tt><tt class="py-op">.</tt><tt class="py-name">SpatialReference</tt><tt class="py-op">(</tt><tt class="py-name">wkt</tt><tt class="py-op">)</tt> </tt>
@@ -363,7 +363,16 @@
 <a name="L304"></a><tt class="py-lineno">304</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt id="link-8" class="py-name"><a title="spatialreferences.SRS_UNITS_CONV" class="py-name" href="#" onclick="return doclink('link-8', 'SRS_UNITS_CONV', 'link-0');">SRS_UNITS_CONV</a></tt><tt class="py-op">[</tt><tt class="py-name">name</tt><tt class="py-op">]</tt> </tt>
 <a name="L305"></a><tt class="py-lineno">305</tt>  <tt class="py-line">    <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
 <a name="L306"></a><tt class="py-lineno">306</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">name</tt> </tt>
-</div><a name="L307"></a><tt class="py-lineno">307</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+</div><a name="lon2utmzone"></a><div id="lon2utmzone-def"><a name="L307"></a><tt class="py-lineno">307</tt> <a class="py-toggle" href="#" id="lon2utmzone-toggle" onclick="return toggle('lon2utmzone');">-</a><tt class="py-line"><tt class="py-keyword">def</tt> <a class="py-def-name" href="spatialreferences-module.html#lon2utmzone">lon2utmzone</a><tt class="py-op">(</tt><tt class="py-param">lon</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="lon2utmzone-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="lon2utmzone-expanded"><a name="L308"></a><tt class="py-lineno">308</tt>  <tt class="py-line">    <tt class="py-docstring">''' Calculate UTM Zone number from a Longitude</tt> </tt>
+<a name="L309"></a><tt class="py-lineno">309</tt>  <tt class="py-line"><tt class="py-docstring">        </tt> </tt>
+<a name="L310"></a><tt class="py-lineno">310</tt>  <tt class="py-line"><tt class="py-docstring">        @type  lon: C{float}</tt> </tt>
+<a name="L311"></a><tt class="py-lineno">311</tt>  <tt class="py-line"><tt class="py-docstring">        @param lon: Longitude</tt> </tt>
+<a name="L312"></a><tt class="py-lineno">312</tt>  <tt class="py-line"><tt class="py-docstring">        @rtype:     C{int}</tt> </tt>
+<a name="L313"></a><tt class="py-lineno">313</tt>  <tt class="py-line"><tt class="py-docstring">        @return:    UTM Zone</tt> </tt>
+<a name="L314"></a><tt class="py-lineno">314</tt>  <tt class="py-line"><tt class="py-docstring">    '''</tt> </tt>
+<a name="L315"></a><tt class="py-lineno">315</tt>  <tt class="py-line">    <tt class="py-keyword">return</tt> <tt class="py-name">int</tt><tt class="py-op">(</tt><tt class="py-name">math</tt><tt class="py-op">.</tt><tt class="py-name">floor</tt><tt class="py-op">(</tt><tt class="py-op">(</tt><tt class="py-name">lon</tt> <tt class="py-op">-</tt> <tt class="py-op">(</tt><tt class="py-op">-</tt><tt class="py-number">180.0</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> <tt class="py-op">/</tt> <tt class="py-number">6.0</tt><tt class="py-op">)</tt> <tt class="py-op">+</tt> <tt class="py-number">1</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L316"></a><tt class="py-lineno">316</tt>  <tt class="py-line"> </tt><script type="text/javascript">
 <!--
 expandto(location.href);
 // -->

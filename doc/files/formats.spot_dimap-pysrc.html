@@ -260,7 +260,86 @@ formats.spot_dimap.Dataset.__getmetadata__" class="py-name" href="#" onclick="re
 <a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-31" class="py-name"><a title="formats.__dataset__.Dataset.metadata" class="py-name" href="#" onclick="return doclink('link-31', 'metadata', 'link-7');">metadata</a></tt><tt class="py-op">[</tt><tt class="py-string">'sunazimuth'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">float</tt><tt class="py-op">(</tt><tt class="py-name">gdalmd</tt><tt class="py-op">[</tt><tt class="py-string">'SUN_AZIMUTH'</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
 <a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-32" class="py-name"><a title="formats.__dataset__.Dataset.metadata" class="py-name" href="#" onclick="return doclink('link-32', 'metadata', 'link-7');">metadata</a></tt><tt class="py-op">[</tt><tt class="py-string">'level'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">gdalmd</tt><tt class="py-op">[</tt><tt class="py-string">'PROCESSING_LEVEL'</tt><tt class="py-op">]</tt> </tt>
 <a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-33" class="py-name"><a title="formats.__dataset__.Dataset.metadata" class="py-name" href="#" onclick="return doclink('link-33', 'metadata', 'link-7');">metadata</a></tt><tt class="py-op">[</tt><tt class="py-string">'viewangle'</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">gdalmd</tt><tt class="py-op">[</tt><tt class="py-string">'VIEWING_ANGLE'</tt><tt class="py-op">]</tt> </tt>
-</div></div><a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+</div><a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line"> </tt>
+<a name="Dataset.getoverview"></a><div id="Dataset.getoverview-def"><a name="L111"></a><tt class="py-lineno">111</tt> <a class="py-toggle" href="#" id="Dataset.getoverview-toggle" onclick="return toggle('Dataset.getoverview');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="formats.spot_dimap.Dataset-class.html#getoverview">getoverview</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt><tt class="py-param">outfile</tt><tt class="py-op">=</tt><tt class="py-name">None</tt><tt class="py-op">,</tt><tt class="py-param">width</tt><tt class="py-op">=</tt><tt class="py-number">800</tt><tt class="py-op">,</tt><tt class="py-param">format</tt><tt class="py-op">=</tt><tt class="py-string">'JPG'</tt><tt class="py-op">)</tt><tt class="py-op">:</tt>  </tt>
+</div><a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line">        <tt class="py-docstring">'''</tt> </tt>
+<a name="L113"></a><tt class="py-lineno">113</tt>  <tt class="py-line"><tt class="py-docstring">        Generate overviews for SPOT imagery</tt> </tt>
+<a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line"><tt class="py-docstring">        @type  outfile: str</tt> </tt>
+<a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line"><tt class="py-docstring">        @param outfile: a filepath to the output overview image. If supplied, format is determined from the file extension</tt> </tt>
+<a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line"><tt class="py-docstring">        @type  width:   int</tt> </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line"><tt class="py-docstring">        @param width:   image width</tt> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line"><tt class="py-docstring">        @type  format:  str</tt> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line"><tt class="py-docstring">        @param format:  format to generate overview image, one of ['JPG','PNG','GIF','BMP','TIF']. Not required if outfile is supplied.</tt> </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line"><tt class="py-docstring">        @rtype:         str</tt> </tt>
+<a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line"><tt class="py-docstring">        @return:        filepath (if outfile is supplied)/binary image data (if outfile is not supplied)</tt> </tt>
+<a name="L123"></a><tt class="py-lineno">123</tt>  <tt class="py-line"><tt class="py-docstring">        '''</tt> </tt>
+<a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line">        <tt class="py-keyword">import</tt> <tt id="link-34" class="py-name" targets="Module overviews=overviews-module.html"><a title="overviews" class="py-name" href="#" onclick="return doclink('link-34', 'overviews', 'link-34');">overviews</a></tt> </tt>
+<a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line"> </tt>
+<a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line">        <tt class="py-comment">#First check for a browse graphic, no point re-inventing the wheel...</tt> </tt>
+<a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line">        <tt class="py-name">f</tt><tt class="py-op">=</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">fileinfo</tt><tt class="py-op">[</tt><tt class="py-string">'filepath'</tt><tt class="py-op">]</tt> </tt>
+<a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line">        <tt class="py-name">browse</tt><tt class="py-op">=</tt><tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">join</tt><tt class="py-op">(</tt><tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">dirname</tt><tt class="py-op">(</tt><tt class="py-name">f</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-string">'PREVIEW.JPG'</tt><tt class="py-op">)</tt> </tt>
+<a name="L129"></a><tt class="py-lineno">129</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt id="link-35" class="py-name"><a title="utilities.exists" class="py-name" href="#" onclick="return doclink('link-35', 'exists', 'link-16');">exists</a></tt><tt class="py-op">(</tt><tt class="py-name">browse</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line"> </tt>
+<a name="L131"></a><tt class="py-lineno">131</tt>  <tt class="py-line">            <tt class="py-keyword">try</tt><tt class="py-op">:</tt><tt class="py-keyword">return</tt> <tt id="link-36" class="py-name"><a title="overviews" class="py-name" href="#" onclick="return doclink('link-36', 'overviews', 'link-34');">overviews</a></tt><tt class="py-op">.</tt><tt id="link-37" class="py-name" targets="Function overviews.resize()=overviews-module.html#resize"><a title="overviews.resize" class="py-name" href="#" onclick="return doclink('link-37', 'resize', 'link-37');">resize</a></tt><tt class="py-op">(</tt><tt class="py-name">browse</tt><tt class="py-op">,</tt><tt class="py-name">outfile</tt><tt class="py-op">,</tt><tt class="py-name">width</tt><tt class="py-op">)</tt> </tt>
+<a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line">            <tt class="py-keyword">except</tt><tt class="py-op">:</tt><tt class="py-keyword">return</tt> <tt id="link-38" class="py-name"><a title="formats.__default__" class="py-name" href="#" onclick="return doclink('link-38', '__default__', 'link-1');">__default__</a></tt><tt class="py-op">.</tt><tt id="link-39" class="py-name"><a title="formats.__dataset__.Dataset
+formats.__default__.Dataset
+formats.ali_hyperion.Dataset
+formats.alos.Dataset
+formats.aster.Dataset
+formats.ccrs.Dataset
+formats.ecw.Dataset
+formats.ecwp.Dataset
+formats.envi.Dataset
+formats.esribil.Dataset
+formats.esrigrid.Dataset
+formats.fast_l7a.Dataset
+formats.jp2.Dataset
+formats.netcdf.Dataset
+formats.nitf.Dataset
+formats.quickbird.Dataset
+formats.spot_cap.Dataset
+formats.spot_dimap.Dataset" class="py-name" href="#" onclick="return doclink('link-39', 'Dataset', 'link-12');">Dataset</a></tt><tt class="py-op">.</tt><tt id="link-40" class="py-name" targets="Method formats.__dataset__.Dataset.getoverview()=formats.__dataset__.Dataset-class.html#getoverview,Method formats.esribil.Dataset.getoverview()=formats.esribil.Dataset-class.html#getoverview,Method formats.esrigrid.Dataset.getoverview()=formats.esrigrid.Dataset-class.html#getoverview,Method formats.netcdf.Dataset.getoverview()=formats.netcdf.Dataset-class.html#getoverview,Method formats.quickbird.Dataset.getoverview()=formats.quickbird.Dataset-class.html#getoverview,Method formats.spot_dimap.Dataset.getoverview()=formats.spot_dimap.Dataset-class.html#getoverview,Function overviews.getoverview()=overviews-module.html#getoverview"><a title="formats.__dataset__.Dataset.getoverview
+formats.esribil.Dataset.getoverview
+formats.esrigrid.Dataset.getoverview
+formats.netcdf.Dataset.getoverview
+formats.quickbird.Dataset.getoverview
+formats.spot_dimap.Dataset.getoverview
+overviews.getoverview" class="py-name" href="#" onclick="return doclink('link-40', 'getoverview', 'link-40');">getoverview</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt><tt class="py-name">outfile</tt><tt class="py-op">,</tt><tt class="py-name">width</tt><tt class="py-op">,</tt><tt id="link-41" class="py-name" targets="Variable icons.dir_img.format=icons.dir_img-class.html#format,Variable icons.log_img.format=icons.log_img-class.html#format,Variable icons.shp_img.format=icons.shp_img-class.html#format,Variable icons.xls_img.format=icons.xls_img-class.html#format,Variable icons.xsl_img.format=icons.xsl_img-class.html#format"><a title="icons.dir_img.format
+icons.log_img.format
+icons.shp_img.format
+icons.xls_img.format
+icons.xsl_img.format" class="py-name" href="#" onclick="return doclink('link-41', 'format', 'link-41');">format</a></tt><tt class="py-op">)</tt> <tt class="py-comment">#Try it the slow way...</tt> </tt>
+<a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line"> </tt>
+<a name="L134"></a><tt class="py-lineno">134</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> <tt class="py-keyword">return</tt> <tt id="link-42" class="py-name"><a title="formats.__default__" class="py-name" href="#" onclick="return doclink('link-42', '__default__', 'link-1');">__default__</a></tt><tt class="py-op">.</tt><tt id="link-43" class="py-name"><a title="formats.__dataset__.Dataset
+formats.__default__.Dataset
+formats.ali_hyperion.Dataset
+formats.alos.Dataset
+formats.aster.Dataset
+formats.ccrs.Dataset
+formats.ecw.Dataset
+formats.ecwp.Dataset
+formats.envi.Dataset
+formats.esribil.Dataset
+formats.esrigrid.Dataset
+formats.fast_l7a.Dataset
+formats.jp2.Dataset
+formats.netcdf.Dataset
+formats.nitf.Dataset
+formats.quickbird.Dataset
+formats.spot_cap.Dataset
+formats.spot_dimap.Dataset" class="py-name" href="#" onclick="return doclink('link-43', 'Dataset', 'link-12');">Dataset</a></tt><tt class="py-op">.</tt><tt id="link-44" class="py-name"><a title="formats.__dataset__.Dataset.getoverview
+formats.esribil.Dataset.getoverview
+formats.esrigrid.Dataset.getoverview
+formats.netcdf.Dataset.getoverview
+formats.quickbird.Dataset.getoverview
+formats.spot_dimap.Dataset.getoverview
+overviews.getoverview" class="py-name" href="#" onclick="return doclink('link-44', 'getoverview', 'link-40');">getoverview</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">,</tt><tt class="py-name">outfile</tt><tt class="py-op">,</tt><tt class="py-name">width</tt><tt class="py-op">,</tt><tt id="link-45" class="py-name"><a title="icons.dir_img.format
+icons.log_img.format
+icons.shp_img.format
+icons.xls_img.format
+icons.xsl_img.format" class="py-name" href="#" onclick="return doclink('link-45', 'format', 'link-41');">format</a></tt><tt class="py-op">)</tt><tt class="py-comment">#Do it the slow way...</tt> </tt>
+</div></div><a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line"> </tt><script type="text/javascript">
 <!--
 expandto(location.href);
 // -->

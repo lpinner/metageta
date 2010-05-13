@@ -150,7 +150,8 @@ def main(dir,xls, mediaid=None, update=False, getovs=False, nogui=True, debug=Fa
 
             if update and ds.guid in records:
                 row,rec=records[ds.guid]
-                if rec['datemodified']==fi['datemodified']:
+                #if rec['datemodified']==fi['datemodified']:
+                if not ismodified(rec,fi):
                     pl.info('Metadata did not need updating for %s, %s files remaining' % (Crawler.file,len(Crawler.files)))
                     pl.updateProgress(newMax=Crawler.filecount)
                     continue
@@ -160,7 +161,7 @@ def main(dir,xls, mediaid=None, update=False, getovs=False, nogui=True, debug=Fa
                     md.update(fi)
                     pl.info('Updated metadata for %s, %s files remaining' % (Crawler.file,len(Crawler.files)))
                     try:
-                        if rec['quicklook']:getovs=True #Force update of overview
+                        if rec['quicklook'] and os.path.exists(rec['quicklook']):getovs=False #Don't update overview
                         if getovs:
                             qlk=ds.getoverview(qlk, width=800)
                             #We don't need to regenerate it, just resize it
@@ -232,6 +233,28 @@ def main(dir,xls, mediaid=None, update=False, getovs=False, nogui=True, debug=Fa
     del ShapeWriter
 
     return pl
+
+
+def ismodified(record,fileinfo): 
+    ''' Check if a record from a previous metadata crawl needs to be updated.
+    
+        @type  record:   C{dict}
+        @param record:   The record from a previous crawl.
+        @type  fileinfo: C{dict}
+        @param fileinfo: The fileinfo from a dataset located in the current crawl
+        @return:  C{boolean}        
+    '''
+    if record['datemodified']!=fileinfo['datemodified']:
+        return True
+    elif record['filelist']!=fileinfo['filelist']:
+        return True
+    else:
+        md=time.mktime(time.strptime(record['metadatadate'],utilities.dateformat))
+        for f in fileinfo['filelist'].split(','):
+            fs = os.stat(f)
+            if md<fs.st_mtime:return True
+
+    return False
 
 def exit(): 
     '''Force exit after closure of the ProgressBar GUI'''

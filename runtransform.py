@@ -132,7 +132,7 @@ if __name__ == '__main__':
     dirarg.tooltip='The directory to output metadata XML to'
     
     opt=parser.add_option("-t", dest="xsl", metavar="xsl", help="XSL transform")
-    xslarg=getargs.ComboBoxArg(opt,icon=icons.xls_img)
+    xslarg=getargs.ComboBoxArg(opt,icon=icons.xsl_img)
     xslarg.tooltip="XSL transform {*.xsl|%s}" % '|'.join(['"%s"'%s for s in transforms.transforms.keys()])
     xslarg.options=transforms.transforms.keys()
 

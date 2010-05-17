@@ -43,15 +43,15 @@ class Dataset(__default__.Dataset):
         #These circumstances were very repeatable and only occurred when the Crawler iterator returned a
         #certain ECW dataset, not when it was opened, when metadata was extracted nor even when overviews were generated.
         #Got me stumped!
-        ##ers=os.path.splitext(f)[0]+'.ers'
-        ##if os.path.exists(ers):
-        ##    try:
-        ##        __default__.Dataset.__getmetadata__(self, ers) #autopopulate basic metadata
-        ##        self.metadata['filetype']='ECW/ERMapper Compressed Wavelets'
-        ##        self.metadata['compressiontype']='ECW'
-        ##    except:__default__.Dataset.__getmetadata__(self, f)
-        ##else:
-        ##    __default__.Dataset.__getmetadata__(self) #autopopulate basic metadata
+        ers=os.path.splitext(f)[0]+'.ers'
+        if os.path.exists(ers):
+            try:
+                __default__.Dataset.__getmetadata__(self, ers) #autopopulate basic metadata
+                self.metadata['filetype']='ECW/ERMapper Compressed Wavelets'
+                self.metadata['compressiontype']='ECW'
+            except:__default__.Dataset.__getmetadata__(self, f)
+        else:
+            __default__.Dataset.__getmetadata__(self) #autopopulate basic metadata
         #Leave the ECW driver in place even though all it does is call the default class.
         #This is so ECWs get processed before any ERSs (which could cause a segfault)
-        __default__.Dataset.__getmetadata__(self) #autopopulate basic metadata
+        ##__default__.Dataset.__getmetadata__(self) #autopopulate basic metadata

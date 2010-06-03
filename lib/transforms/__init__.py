@@ -135,6 +135,11 @@ Additional metadata elements
     |----------------------------------|-----------------------------|------------------------
     |resourceProvider                  |As per custodian             |                           
     |----------------------------------|-----------------------------|------------------------
+    |GeographicDescription             |Text describing the          |Kakadu
+    |                                  |geographic location of the   |
+    |                                  |image. More than one column  |
+    |                                  |is permitted.                |
+    |----------------------------------|-----------------------------|------------------------
     |OnlineResource                    |More than one                |URL|http://pandora:81/ecwp/ecw_wms.dll?nautical_charts?Request=GetCapabilities
     |                                  |OnlineResource column is     |protocol|OGC:WMS-1.1.1-http-get-map
     |                                  |permitted. Spreadsheet note: |name|L00676

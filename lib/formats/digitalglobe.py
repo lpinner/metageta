@@ -95,7 +95,7 @@ class Dataset(__default__.Dataset):
                 elif tmp[-3:].lower()=='ntf':
                     self.metadata['filetype']='NITF/National Imagery Transmission Format (.ntf)'
                     break
-        else:raise IOError, 'Matching Quickbird imagery TIFF/IMG/NTF not found:\n'
+        else:raise IOError, 'Matching DigitalGlobe imagery TIFF/IMG/NTF not found:\n'
 
         self.metadata['metadata']=open(f).read()
 
@@ -103,16 +103,24 @@ class Dataset(__default__.Dataset):
         else:imgkey='SINGLE_IMAGE_PRODUCT'
         if imddata.has_key('MAP_PROJECTED_PRODUCT'):self.metadata['imgdate']=imddata['MAP_PROJECTED_PRODUCT']['earliestAcqTime'][0:10]#.replace('-','') #ISO 8601 format
         elif imddata[imgkey].has_key('firstLineTime'):self.metadata['imgdate']=imddata[imgkey]['firstLineTime'][0:10]#.replace('-','') #ISO 8601 format
-        self.metadata['satellite']='Quickbird (%s)' % imddata[imgkey]['satId']
+        if imddata[imgkey]['satId']=='QB02':
+            self.metadata['satellite']='Quickbird (QB02)'
+        elif imddata[imgkey]['satId']=='WV01':
+            self.metadata['satellite']='Worldview-1 (WV01)'
+        elif imddata[imgkey]['satId']=='WV02':
+            self.metadata['satellite']='Worldview-2 (WV02)'
+        else:
+            self.metadata['satellite']=imddata[imgkey]['satId']
         if imddata['bandId'] == 'P':self.metadata['sensor']='PANCHROMATIC'
         else:
             if imddata['panSharpenAlgorithm']== 'None':self.metadata['sensor']='MULTISPECTRAL'
             else:self.metadata['sensor']='MULTI/PAN'
-        if imddata['bandId']=='Multi':
-            if imddata['nbands'] == 3:self.metadata['bands'] = 'B,G,R'
-            elif imddata['nbands'] == 4:self.metadata['bands'] = 'B,G,R,N'
-        else: #'BGRN','RGB','P'
-            self.metadata['bands'] = ','.join([l for l in imddata['bandId']])
+        #if imddata['bandId']=='Multi':
+        #    if imddata['nbands'] == 3:self.metadata['bands'] = 'B,G,R'
+        #    elif imddata['nbands'] == 4:self.metadata['bands'] = 'B,G,R,N'
+        #else: #'BGRN','RGB','P'
+        #    self.metadata['bands'] = ','.join([l for l in imddata['bandId']])
+        self.metadata['bands'] = ','.join([b.split('_')[1] for b in imddata.keys() if b[0:5]=='BAND_'])
         if imddata[imgkey].has_key('meanSunEl'):
             self.metadata['sunelevation'] = imddata[imgkey]['meanSunEl']
             self.metadata['sunazimuth'] = imddata[imgkey]['meanSunAz']

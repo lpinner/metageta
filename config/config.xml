@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+    <defaultcontact>
+      <organisation>Organisation Name</organisation>
+      <position>Position Name</position>
+      <telephone>Telephone</telephone>
+      <facsimile>Fax</facsimile>
+      <address>
+        <deliveryPoint>Street Address</deliveryPoint>
+        <city>City/Suburb/Town</city>
+        <administrativeArea>State/Territory/Jurisdiction</administrativeArea>
+        <postalCode>Post/Zip code</postalCode>
+        <country>Country</country>
+      </address>
+      <emailAddress>email address</emailAddress>
+      <onlineResource>
+        <URL>URL</URL>
+        <description>Description</description>
+      </onlineResource>
+    </defaultcontact>
+</config>
+

@@ -147,6 +147,24 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
+          <td><span class="summary-sig"><a href="runcrawler-module.html#ismodified" class="summary-sig-name">ismodified</a>(<span class="summary-sig-arg">record</span>,
+        <span class="summary-sig-arg">fileinfo</span>)</span><br />
+      Check if a record from a previous metadata crawl needs to be updated.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="runcrawler-pysrc.html#ismodified">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
           <td><span class="summary-sig"><a name="exit"></a><span class="summary-sig-name">exit</span>()</span><br />
       Force exit after closure of the ProgressBar GUI</td>
           <td align="right" valign="top">
@@ -237,6 +255,34 @@
     </ul></dd>
     <dt>Returns:</dt>
         <dd><code>progresslogger.ProgressLogger</code></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="ismodified"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">ismodified</span>(<span class="sig-arg">record</span>,
+        <span class="sig-arg">fileinfo</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="runcrawler-pysrc.html#ismodified">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Check if a record from a previous metadata crawl needs to be 
+  updated.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>record</code></strong> (<code>dict</code>) - The record from a previous crawl.</li>
+        <li><strong class="pname"><code>fileinfo</code></strong> (<code>dict</code>) - The fileinfo from a dataset located in the current crawl</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd><code>boolean</code></dd>
   </dl>
 </td></tr></table>
 </div>

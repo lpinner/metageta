@@ -20,7 +20,7 @@
 # THE SOFTWARE.
 
 '''
-Metadata driver for Digital Globe Quickbird imagery
+Metadata driver for Digital Globe imagery
 
 B{Format specification}:
     - U{http://www.digitalglobe.com/digitalglobe2/file.php/646/QuickBird_Imagery_Products-Product_Guide.pdf}
@@ -29,7 +29,7 @@ B{Format specification}:
 format_regex=[r'[0-9][0-9][A-Z]{3,3}.*\.imd$',
               r'[0-9][0-9][A-Z]{3,3}.*\.tif$',
               r'[0-9][0-9][A-Z]{3,3}.*\.img$',
-              r'[0-9][0-9][A-Z]{3,3}.*\.ntf$']#Digital Globe Quickbird
+              r'[0-9][0-9][A-Z]{3,3}.*\.ntf$']#Digital Globe 
 '''Regular expression list of file formats'''
 
 #import base dataset modules
@@ -64,7 +64,7 @@ class Dataset(__default__.Dataset):
             else:raise Exception, 'No matching IMD file'
 
     def __getmetadata__(self):
-        '''Read Metadata for an Digital Globe Quickbird format image as GDAL doesn't quite get it all...
+        '''Read Metadata for an Digital Globe format image as GDAL doesn't quite get it all...
 
         @todo: Fix QB GDA94 Geographic CS "Unknown datum" problem
         '''
@@ -250,7 +250,7 @@ class Dataset(__default__.Dataset):
 
     def getoverview(self,outfile=None,width=800,format='JPG'): 
         '''
-        Generate overviews for Quickbird imagery
+        Generate overviews for Digital Globe imagery
 
         @type  outfile: str
         @param outfile: a filepath to the output overview image. If supplied, format is determined from the file extension

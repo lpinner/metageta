@@ -470,9 +470,9 @@
                 <xsl:when test="abstract">
                   <!--xsl:value-of select="normalize-space(abstract)"/-->
                   <xsl:value-of select="str:replaceNewLine(abstract)"/>
-                    <xsl:if test="normalize-space(mediaid)">
+                    <!--xsl:if test="normalize-space(mediaid)">
                         <gco:CharacterString>MEDIA ID:<xsl:value-of select="normalize-space(mediaid)"/></gco:CharacterString>
-                    </xsl:if>
+                    </xsl:if-->
                 </xsl:when>
                 <xsl:otherwise>
                   <xsl:value-of select="'PLEASE ENTER AN ABSTRACT!'"/>
@@ -931,6 +931,25 @@
               </gmd:geographicElement>
             </gmd:EX_Extent>
           </gmd:extent>
+          <xsl:for-each select="*[starts-with(name(),'GeographicDescription')]">
+            <xsl:if test="normalize-space(.)">
+              <gmd:extent>
+                <gmd:EX_Extent>
+                  <gmd:geographicElement>
+                    <gmd:EX_GeographicDescription>
+                      <gmd:geographicIdentifier>
+                        <gmd:MD_Identifier>
+                          <gmd:code>
+                            <gco:CharacterString><xsl:value-of select="."/></gco:CharacterString>
+                          </gmd:code>
+                        </gmd:MD_Identifier>
+                      </gmd:geographicIdentifier>
+                    </gmd:EX_GeographicDescription>
+                  </gmd:geographicElement>
+                </gmd:EX_Extent>
+              </gmd:extent>
+            </xsl:if>
+          </xsl:for-each>
           <gmd:extent>
             <gmd:EX_Extent>
               <gmd:temporalElement>
@@ -966,9 +985,11 @@
           <gmd:supplementalInformation>
             <gco:CharacterString>
               <xsl:for-each select="*[not(self::quicklook)][not(self::thumbnail)][not(self::abstract)]">
+                <xsl:if test="normalize-space(.)">
                   <xsl:value-of select="local-name(.)"/>: <xsl:value-of select="."/>
                   <!--xsl:if test="position() != last()">  |  </xsl:if-->
                   <xsl:if test="position() != last()"><xsl:text>&#xA;</xsl:text></xsl:if><!--insert line break-->
+                </xsl:if>
               </xsl:for-each>
             </gco:CharacterString>
           </gmd:supplementalInformation>

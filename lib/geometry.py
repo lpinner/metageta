@@ -496,13 +496,15 @@ def MapToPixel(mx,my,gt):
         @param  my:    Input map y coordinate (double)
         @param  gt:    Input geotransform (six doubles)
         @return: px,py Output coordinates (two ints)
+
+        @change: changed int(p[x,y]+0.5) to int(p[x,y]) as per http://lists.osgeo.org/pipermail/gdal-dev/2010-June/024956.html
     '''
     if gt[2]+gt[4]==0: #Simple calc, no inversion required
         px = (mx - gt[0]) / gt[1]
         py = (my - gt[3]) / gt[5]
     else:
         px,py=ApplyGeoTransform(mx,my,InvGeoTransform(gt))
-    return int(px+0.5),int(py+0.5)
+    return int(px),int(py)
 
 def PixelToMap(px,py,gt):
     ''' Convert pixel to map coordinates
@@ -510,8 +512,10 @@ def PixelToMap(px,py,gt):
         @param  py:    Input pixel y coordinate (double)
         @param  gt:    Input geotransform (six doubles)
         @return: mx,my Output coordinates (two doubles)
+
+        @change: changed p[x,y] to p[x,y]+0.5 as per http://lists.osgeo.org/pipermail/gdal-dev/2010-June/024956.html
     '''
-    mx,my=ApplyGeoTransform(px,py,gt)
+    mx,my=ApplyGeoTransform(px+0.5,py+0.5,gt)
     return mx,my
 
 #========================================================================================================

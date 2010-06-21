@@ -67,7 +67,7 @@ class Dataset(__default__.Dataset):
         for line in open(f, 'r'):
             if line.upper().strip()=='<DATA_STRIP>':break
             else: strxml+=line
-        strxml+='</Dimap_Document>'
+        if not '</Dimap_Document>' in strxml:strxml+='</Dimap_Document>'
         dom=_xmldom.parseString(strxml)
         self.metadata['sceneid'] = dom.documentElement.getElementsByTagName('DATASET_NAME')[0].childNodes[0].data
         bands=dom.documentElement.getElementsByTagName('BAND_DESCRIPTION')
@@ -106,7 +106,7 @@ class Dataset(__default__.Dataset):
         self.metadata['sunelevation'] = float(gdalmd['SUN_ELEVATION'])
         self.metadata['sunazimuth'] = float(gdalmd['SUN_AZIMUTH'])
         self.metadata['level'] = gdalmd['PROCESSING_LEVEL']
-        self.metadata['viewangle'] = gdalmd['VIEWING_ANGLE']
+        self.metadata['viewangle'] = gdalmd.get('VIEWING_ANGLE',gdalmd.get('INCIDENCE_ANGLE',''))
 
     def getoverview(self,outfile=None,width=800,format='JPG'): 
         '''

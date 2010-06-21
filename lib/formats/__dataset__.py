@@ -102,6 +102,8 @@ class Dataset(object):
         '''
 
         md=self.metadata
+        if md['compressionratio'] > 10000 and md['filetype'] != 'VRT/Virtual Raster': #Possibly a dodgy JP2 that will grash GDAL and therefore python...
+            raise IOError, 'Unable to generate overview image from %s\nFile may be corrupt' % self.fileinfo['filepath']
         ds=self._gdaldataset
         if not ds:raise AttributeError, 'No GDALDataset object available, overview image can not be generated'
 
@@ -241,8 +243,8 @@ class Dataset(object):
                 #Pretty print the SRS
                 srs=osr.SpatialReference(self._metadata['srs'])
                 self._metadata['srs']=srs.ExportToPrettyWkt()
-                if self._metadata['compressionratio'] > 10000 and self._metadata['filetype'] != 'VRT/Virtual Raster': #Possibly a dodgy JP2 that will grash GDAL and therefore python...
-                    raise IOError, 'Unable to extract metadata from %s\nFile may be corrupt' % self.fileinfo['filepath']
+                #if self._metadata['compressionratio'] > 10000 and self._metadata['filetype'] != 'VRT/Virtual Raster': #Possibly a dodgy JP2 that will grash GDAL and therefore python...
+                #    raise IOError, 'Unable to extract metadata from %s\nFile may be corrupt' % self.fileinfo['filepath']
 
             return self._metadata
 

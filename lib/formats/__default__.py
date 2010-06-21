@@ -30,10 +30,32 @@ format_regex=[
     r'\.vrt$',
     r'\.ers$',
     r'\.img$',
-    r'\.ecw$',
-    r'\.sid$',
-    r'\.jp2$',
-    r'\.tif$'
+    r'\.tif$',        #Completely untested with following formats...
+    r'.*\.asc$',      #Arc/Info ASCII Grid 
+    r'.*\.bag$',      #Bathymetry Attributed Grid
+    r'.*\.kap$',      #BSB Nautical Chart Format
+    r'.*\.bt$',       #VTP Binary Terrain Format
+    r'.*\.doq$',      #First Generation/New Labelled USGS DOQ
+    r'.*\.n1$',       #Envisat Image Product
+    r'.*\.fits$',     #FITS
+    r'.*\.grb$',      #WMO GRIB1/GRIB2
+    r'.*\.mem$',      #Japanese DEM (.mem) 
+    r'.*\.nat$',      #EUMETSAT Archive native
+    r'.*\.rik$',      #Swedish Grid RIK
+    r'a\.toc$',       #Raster Product Format/RPF
+    r'product\.xml$', #RadarSat2 XML 
+    r'.*CATD\.DDF$',  #USGS SDTS DEM
+    r'.*\.ter$',      #Terragen Heightfield
+    r'.*\.dem$',      #USGS ASCII DEM
+    r'.*\.xpm$',      #X11 Pixmap
+    r'.*\.gen$|.*\.thf$', #ADRG/ARC Digitilized Raster Graphics
+    r'.*\.blx$|.*\.xlb$', #Magellan BLX Topo
+    r'.*\.mpr$|.*\.mpl$', #ILWIS Raster Map
+    r'.*\.LAN$|.*\.GIS$', #Erdas 7.x .LAN and .GIS 
+    r'.*\.ppm$|.*\.pgm$', #Netpbm
+    r'.*\.rsw$|.*\.mtw$',#Raster Matrix Format
+    r'.*\.dt0$|.*\.dt1$|.*\.dt2$', #Military Elevation Data
+    r'.*\.grc$|.*\.grd$|.*\.tab$'  #Northwood/VerticalMapper Classified/Numeric Grid Format
 ]
 '''Regular expression list of file formats'''
 
@@ -127,17 +149,21 @@ class Dataset(__dataset__.Dataset):
                 self.metadata['LL']='%s,%s' % tuple(ext[3])
 
                 rb=self._gdaldataset.GetRasterBand(1)
-                self.metadata['datatype']=gdal.GetDataTypeName(rb.DataType)
-                self.metadata['nbits']=gdal.GetDataTypeSize(rb.DataType)
-                nodata=rb.GetNoDataValue()
-                if nodata is not None:self.metadata['nodata']=str(nodata)
-                else: 
-                    if self.metadata['datatype'][0:4] in ['Byte','UInt']: nodata=0 #Unsigned, assume 0
-                    else:nodata=-2**(self.metadata['nbits']-1)                     #Signed, assume min value in data range
-                    self.metadata['nodata']=str(nodata)
-                    #Fix for Issue 17
-                    for i in range(1,self._gdaldataset.RasterCount+1):
-                        self._gdaldataset.GetRasterBand(i).SetNoDataValue(nodata)
+                if rb:
+                    self.metadata['datatype']=gdal.GetDataTypeName(rb.DataType)
+                    self.metadata['nbits']=gdal.GetDataTypeSize(rb.DataType)
+                    nodata=rb.GetNoDataValue()
+                    if nodata is not None:self.metadata['nodata']=str(nodata)
+                    else:
+                        ct = rb.GetColorTable() #Fix for Issue 31
+                        if ct is None:
+                            if self.metadata['datatype'][0:4] in ['Byte','UInt']: nodata=0 #Unsigned, assume 0
+                            else:nodata=-2**(self.metadata['nbits']-1)                     #Signed, assume min value in data range
+                            self.metadata['nodata']=str(nodata)
+                            #Fix for Issue 17
+                            for i in range(1,self._gdaldataset.RasterCount+1):
+                                self._gdaldataset.GetRasterBand(i).SetNoDataValue(nodata)
+                else:raise IOError,'No valid rasterbands found.'
 
                 metadata=self._gdaldataset.GetMetadata()
                 self.metadata['metadata']='\n'.join(['%s: %s' %(m,metadata[m]) for m in metadata])

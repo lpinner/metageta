@@ -40,9 +40,10 @@ class Dataset(__default__.Dataset):
         if not f:f=self.fileinfo['filepath']
         lin=open(f).readline().strip() #read first line
         hdr=os.path.splitext(f)[0]
+        self._datafile=''
         if os.path.exists(hdr):self._datafile=hdr
-        else:  #Handle the odd ENVI files held by SSD (.bil/etc. files with ENVI style headers)
-            data_formats=['bil','bip','bsq'] 
+        else:  #Handle the odd ENVI files held by SSD (.bil/etc. files with ENVI style headers) + .envi and .dat files
+            data_formats=['bil','bip','bsq','envi','dat','raw'] 
             for fmt in data_formats:
                 dat='%s.%s' % (hdr,fmt)
                 if os.path.exists(dat):break

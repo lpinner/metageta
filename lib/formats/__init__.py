@@ -202,11 +202,11 @@ def Open(f):
 
     #Try default formats
     try:
-        #fr='|'.join(__default__.format_regex)
-        #rx=_re.compile(fr, _re.IGNORECASE)
-        #if rx.search(f):
-        ds=__default__.Dataset(f)
-        return ds
+        fr='|'.join(__default__.format_regex)
+        rx=_re.compile(fr, _re.IGNORECASE)
+        if rx.search(f):
+            ds=__default__.Dataset(f)
+            return ds
     except NotImplementedError:
         pass #Used when a format driver can't open a file, but doesn't want to raise an error
     except Exception,err:

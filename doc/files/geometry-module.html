@@ -1020,7 +1020,11 @@
     <dt>Returns:</dt>
         <dd>px,py Output coordinates (two ints)</dd>
   </dl>
-</td></tr></table>
+<div class="fields">      <p><strong>Change Log:</strong>
+        changed int(p[x,y]+0.5) to int(p[x,y]) as per 
+    http://lists.osgeo.org/pipermail/gdal-dev/2010-June/024956.html
+      </p>
+</div></td></tr></table>
 </div>
 <a name="PixelToMap"></a>
 <div>
@@ -1049,7 +1053,11 @@
     <dt>Returns:</dt>
         <dd>mx,my Output coordinates (two doubles)</dd>
   </dl>
-</td></tr></table>
+<div class="fields">      <p><strong>Change Log:</strong>
+        changed p[x,y] to p[x,y]+0.5 as per 
+    http://lists.osgeo.org/pipermail/gdal-dev/2010-June/024956.html
+      </p>
+</div></td></tr></table>
 </div>
 <a name="CreateVRTCopy"></a>
 <div>

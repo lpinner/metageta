@@ -432,9 +432,10 @@ def _stretch_COLOURTABLE(vrtcols,vrtrows,ds,bands):
     for val,count in zip(range(min,max+1),rat):
         if val != nodata and count > 0 and i < ct_count: #Bugfix - sometime there are more values than
             ce=[val]                                     #colortable entries which causes gdal to segfault
-            ce.extend(ct.GetColorEntry(i))               #http://trac.osgeo.org/gdal/ticket/3271
-            vals.append(ce)
-            i+=1
+            #ce.extend(ct.GetColorEntry(i))              #http://trac.osgeo.org/gdal/ticket/3271
+            #vals.append(ce)
+            #i+=1
+            ce.extend(ct.GetColorEntry(val))             #Bugfix - the above can cause the colourtable-pixel value to get out of sync.             
         else:vals.append([val,255,255,255,0])
     return _stretch_UNIQUE(vrtcols,vrtrows,ds,bands,vals)
 ##def _stretch_COLOURTABLE(vrtcols,vrtrows,ds,bands): #gdal doesn't handle esri colour tables with missing or negative values

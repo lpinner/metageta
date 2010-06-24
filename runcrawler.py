@@ -248,6 +248,8 @@ def ismodified(record,fileinfo):
         return True
     elif record['filelist']!=fileinfo['filelist']:
         return True
+    elif not os.path.exists(record['quicklook']):
+        return True
     else:
         md=time.mktime(time.strptime(record['metadatadate'],utilities.dateformat))
         for f in fileinfo['filelist'].split(','):

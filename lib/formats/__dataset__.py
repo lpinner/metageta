@@ -162,7 +162,7 @@ class Dataset(object):
                     if ct and ct.GetCount() > 0:
                         stretch_type='COLOURTABLE'
                         stretch_args=[]
-                    elif at and at.GetRowCount() > 0:
+                    elif at and at.GetRowCount() > 0 and at.GetRowCount() < 256:
                         stretch_type='RANDOM'
                         stretch_args=[]
                         

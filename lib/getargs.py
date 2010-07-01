@@ -78,6 +78,7 @@ class GetArgs(object):
                 
         nargs=len(self._args)
         self._root.bind("<Return>", self._cmdok)
+        self._root.protocol("WM_DELETE_WINDOW", self._cmdcancel)
         TkFrame=Tix.Frame(self._root)
         TkFrame.grid(row=nargs,columnspan=3,sticky=Tix.E)
         bOK = Tix.Button(TkFrame,text="Ok", command=self._cmdok)

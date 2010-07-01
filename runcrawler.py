@@ -41,21 +41,22 @@ Usage::
 '''
 
 import sys, os, re,time,tempfile
-
-import progresslogger
 import formats
 import geometry
 import utilities
 import crawler
 import overviews
+import progresslogger
 
-def main(dir,xls, mediaid=None, update=False, getovs=False, nogui=True, debug=False, pl=None): 
+def main(dir, xls, logger, mediaid=None, update=False, getovs=False):
     """ Run the Metadata Crawler
 
         @type  dir:    C{str}
         @param dir:    The directory to start the metadata crawl.
         @type  xls:    C{str}
         @param xls:    Excel spreadsheet to write metadata to
+        @type  logger: C{progresslogger.ProgressLogger}
+        @param logger: Use an already instantiated logger
         @type  mediaid:C{str}
         @param mediaid:CD/DVD media ID
         @type  getovs: C{boolean}
@@ -64,35 +65,15 @@ def main(dir,xls, mediaid=None, update=False, getovs=False, nogui=True, debug=Fa
         @param nogui:  Don't show the GUI progress dialog
         @type  debug:  C{boolean}
         @param debug:  Turn debug output on
-        @type  pl:     C{progresslogger.ProgressLogger}
-        @param pl:     Use an already instantiated logger
         @return:  C{progresslogger.ProgressLogger}
     """
     
-    xls = utilities.checkExt(utilities.encode(xls), ['.xls'])
     shp=xls.replace('.xls','.shp')
 
     format_regex  = formats.format_regex
     format_fields = formats.fields
     
-    if not pl:
-        log=xls.replace('.xls','.log')
-
-        formats.debug=debug
-        crawler.debug=debug
-        geometry.debug=debug
-        if debug:
-            level=progresslogger.DEBUG
-        else:
-            level=progresslogger.INFO
-            geometry.gdal.PushErrorHandler( 'CPLQuietErrorHandler' )
-        
-        windowicon=os.environ['CURDIR']+'/lib/wm_icon.ico'
-        try:pl = progresslogger.ProgressLogger('MetaGETA',logfile=log, logToConsole=True, logToFile=True, logToGUI=not nogui, level=level, windowicon=windowicon, callback=exit)
-        except:pl = progresslogger.ProgressLogger('MetaGETA',logfile=log, logToConsole=True, logToFile=True, logToGUI=not nogui, level=level, callback=exit)
-    
-
-    pl.debug(' '.join(sys.argv))
+    logger.debug(' '.join(sys.argv))
    
     try:
         #raise Exception
@@ -106,7 +87,7 @@ def main(dir,xls, mediaid=None, update=False, getovs=False, nogui=True, debug=Fa
             if os.path.exists(shp):
                 ShapeWriter=False
             else:
-                pl.info('%s does not exist, it will be recreated...'%shp)
+                logger.info('%s does not exist, it will be recreated...'%shp)
                 ShapeWriter=geometry.ShapeWriter(shp,format_fields,update=False)
 
             #Build a dict of existing records
@@ -122,26 +103,25 @@ def main(dir,xls, mediaid=None, update=False, getovs=False, nogui=True, debug=Fa
                 else:
                     rec['DELETED']=1
                     ExcelWriter.UpdateRecord(rec,row)
-                    pl.info('Marked %s as deleted' % (rec['filepath']))
+                    logger.info('Marked %s as deleted' % (rec['filepath']))
             del ShapeWriter
         ShapeWriter=geometry.ShapeWriter(shp,format_fields,update=update)
     except Exception,err:
-        pl.error('%s' % utilities.ExceptionInfo())
-        pl.debug(utilities.ExceptionInfo(10))
-        del pl
+        logger.error('%s' % utilities.ExceptionInfo())
+        logger.debug(utilities.ExceptionInfo(10))
         time.sleep(0.5)# So the progresslogger picks up the error message before this python process exits.
         #sys.exit(1)
         return
 
-    pl.info('Searching for files...')
+    logger.info('Searching for files...')
     now=time.time()
     Crawler=crawler.Crawler(dir)
-    pl.info('Found %s files...'%Crawler.filecount)
+    logger.info('Found %s files...'%Crawler.filecount)
 
     #Loop thru dataset objects returned by Crawler
     for ds in Crawler:
         try:
-            pl.debug('Attempting to open %s'%Crawler.file)
+            logger.debug('Attempting to open %s'%Crawler.file)
             fi=ds.fileinfo
             fi['filepath']=utilities.uncpath(fi['filepath'])
             fi['filelist']=','.join(utilities.uncpath(ds.filelist))
@@ -152,14 +132,14 @@ def main(dir,xls, mediaid=None, update=False, getovs=False, nogui=True, debug=Fa
                 row,rec=records[ds.guid]
                 #if rec['datemodified']==fi['datemodified']:
                 if not ismodified(rec,fi):
-                    pl.info('Metadata did not need updating for %s, %s files remaining' % (Crawler.file,len(Crawler.files)))
-                    pl.updateProgress(newMax=Crawler.filecount)
+                    logger.info('Metadata did not need updating for %s, %s files remaining' % (Crawler.file,len(Crawler.files)))
+                    logger.updateProgress(newMax=Crawler.filecount)
                     continue
                 else:
                     md=ds.metadata
                     geom=ds.extent
                     md.update(fi)
-                    pl.info('Updated metadata for %s, %s files remaining' % (Crawler.file,len(Crawler.files)))
+                    logger.info('Updated metadata for %s, %s files remaining' % (Crawler.file,len(Crawler.files)))
                     try:
                         if rec['quicklook'] and os.path.exists(rec['quicklook']):getovs=False #Don't update overview
                         if getovs:
@@ -169,26 +149,26 @@ def main(dir,xls, mediaid=None, update=False, getovs=False, nogui=True, debug=Fa
                             thm=overviews.resize(qlk,thm,width=150)
                             md['quicklook']=utilities.uncpath(qlk)
                             md['thumbnail']=utilities.uncpath(thm)
-                            pl.info('Updated overviews for %s' % Crawler.file)
+                            logger.info('Updated overviews for %s' % Crawler.file)
                     except Exception,err:
-                        pl.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
-                        pl.debug(utilities.ExceptionInfo(10))
+                        logger.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
+                        logger.debug(utilities.ExceptionInfo(10))
                     try:
                         ExcelWriter.UpdateRecord(md,row)
                     except Exception,err:
-                        pl.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
-                        pl.debug(utilities.ExceptionInfo(10))
+                        logger.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
+                        logger.debug(utilities.ExceptionInfo(10))
                     try:
                         ShapeWriter.UpdateRecord(geom,md,'guid="%s"'%rec['guid'])
                     except Exception,err:
-                        pl.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
-                        pl.debug(utilities.ExceptionInfo(10))
+                        logger.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
+                        logger.debug(utilities.ExceptionInfo(10))
             else:
                 md=ds.metadata
                 geom=ds.extent
                 md.update(fi)
                 if mediaid:md.update({'mediaid':mediaid})
-                pl.info('Extracted metadata from %s, %s files remaining' % (Crawler.file,len(Crawler.files)))
+                logger.info('Extracted metadata from %s, %s files remaining' % (Crawler.file,len(Crawler.files)))
                 try:
                     if getovs:
                         qlk=ds.getoverview(qlk, width=800)
@@ -197,43 +177,40 @@ def main(dir,xls, mediaid=None, update=False, getovs=False, nogui=True, debug=Fa
                         thm=overviews.resize(qlk,thm,width=150)
                         md['quicklook']=utilities.uncpath(qlk)
                         md['thumbnail']=utilities.uncpath(thm)
-                        pl.info('Generated overviews from %s' % Crawler.file)
+                        logger.info('Generated overviews from %s' % Crawler.file)
                 except Exception,err:
-                    pl.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
-                    pl.debug(utilities.ExceptionInfo(10))
+                    logger.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
+                    logger.debug(utilities.ExceptionInfo(10))
                 try:
                     ExcelWriter.WriteRecord(md)
                 except Exception,err:
-                    pl.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
-                    pl.debug(utilities.ExceptionInfo(10))
+                    logger.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
+                    logger.debug(utilities.ExceptionInfo(10))
                 try:
                     ShapeWriter.WriteRecord(geom,md)
                 except Exception,err:
-                    pl.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
-                    pl.debug(utilities.ExceptionInfo(10))
+                    logger.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
+                    logger.debug(utilities.ExceptionInfo(10))
 
-            pl.updateProgress(newMax=Crawler.filecount)
+            logger.updateProgress(newMax=Crawler.filecount)
         except Exception,err:
-            pl.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
-            pl.debug(utilities.ExceptionInfo(10))
+            logger.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
+            logger.debug(utilities.ExceptionInfo(10))
     then=time.time()
-    pl.debug(then-now)
+    logger.debug(then-now)
     #Check for files that couldn't be opened
     for file,err,dbg in Crawler.errors:
-       pl.error('%s\n%s' % (file, err))
-       pl.debug(dbg)
+       logger.error('%s\n%s' % (file, err))
+       logger.debug(dbg)
 
     if Crawler.filecount == 0:
-        pl.info("No data found")
+        logger.info("No data found")
     else:
-        pl.info("Metadata extraction complete!")
-    pl.updateProgress(newMax=1) #Just so the progress meter hits 100%
+        logger.info("Metadata extraction complete!")
+    logger.updateProgress(newMax=1) #Just so the progress meter hits 100%
 
     del ExcelWriter
     del ShapeWriter
-
-    return pl
-
 
 def ismodified(record,fileinfo): 
     ''' Check if a record from a previous metadata crawl needs to be updated.
@@ -260,8 +237,22 @@ def ismodified(record,fileinfo):
 
 def exit(): 
     '''Force exit after closure of the ProgressBar GUI'''
-    os._exit(0)
+    exe=os.path.splitext(os.path.basename(sys.executable.lower()))[0]
+    if exe in ['python','pythonw']: #Little kludge to stop killing dev IDEs
+        os._exit(0)
 
+def getlogger(log,nogui=False, debug=False):
+        geometry.debug=debug
+        if debug:
+            level=progresslogger.DEBUG
+        else:
+            level=progresslogger.INFO
+            geometry.gdal.PushErrorHandler( 'CPLQuietErrorHandler' )
+        
+        windowicon=os.environ['CURDIR']+'/lib/wm_icon.ico'
+        try:logger = progresslogger.ProgressLogger('MetaGETA',logfile=log, logToConsole=True, logToFile=True, logToGUI=not nogui, level=level, windowicon=windowicon, callback=exit)
+        except:logger = progresslogger.ProgressLogger('MetaGETA',logfile=log, logToConsole=True, logToFile=True, logToGUI=not nogui, level=level, callback=exit)
+        return logger
 #========================================================================================================
 #========================================================================================================
 if __name__ == '__main__':
@@ -332,16 +323,27 @@ if __name__ == '__main__':
         for opt in parser.option_list:
             opt.default=vars(optvals).get(opt.dest,None)
         #Pop up the GUI
-        logger=None
         keepalive=True
         validate=getargs.Command(writablecallback,xlsarg)
+        logger=None
         while keepalive:
             args=getargs.GetArgs(dirarg,medarg,xlsarg,updatearg,ovarg,kaarg,callback=validate)
-            if args:#GetArgs returns None if user cancels the GUI
-                if logger:logger.resetProgress()
-                logger=main(args.dir,args.xls,args.med,args.update,args.ovs,optvals.nogui,optvals.debug,logger)
+            if args:#GetArgs returns None if user cancels the GUI/closes the dialog
                 keepalive=args.keepalive
+                args.xls = utilities.checkExt(utilities.encode(args.xls), ['.xls'])
+                log=args.xls.replace('.xls','.log')
+                if logger:
+                    logger.resetProgress()
+                    logger.logfile=log
+                else:
+                    logger=getlogger(log,nogui=optvals.nogui, debug=optvals.debug)
+                keepalive=args.keepalive
+                main(args.dir,args.xls,logger,args.med,args.update,args.ovs)
             else:keepalive=False
-        del logger
     else: #No need for the GUI
-        main(optvals.dir,optvals.xls,optvals.med,optvals.update,optvals.ovs,optvals.nogui,optvals.debug)
+        xls = utilities.checkExt(utilities.encode(optvals.xls), ['.xls'])
+        log=xls.replace('.xls','.log')
+        logger=getlogger(log,gui=True, debug=False)
+        main(optvals.dir,optvals.xls,logger,optvals.med,optvals.update,optvals.ovs)
+
+    del logger

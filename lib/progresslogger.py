@@ -50,7 +50,7 @@ ERROR=logging.ERROR
 CRITICAL=logging.CRITICAL
 FATAL=logging.FATAL
 
-class ProgressLogger(logging.Logger):
+class ProgressLogger(object,logging.Logger):
     '''Provide logger interface'''
 
     def __init__(self,
@@ -68,6 +68,10 @@ class ProgressLogger(logging.Logger):
                callback=lambda:None):
 
         self.logToGUI=logToGUI
+        self._logfile=logfile
+        self.mode=mode
+        self.level=level
+        self.dateformat=dateformat
 
         #Dummy methods, updated if logToGUI is True
         self.updateProgress=lambda *a,**k:None
@@ -77,13 +81,13 @@ class ProgressLogger(logging.Logger):
         logging.Logger.__init__(self,name,level=level-1)#To handle the PROGRESS log records without them going to the console or file
 
         #Set up the handlers
-        fmt = logging.Formatter(format, dateformat)
+        self.format = logging.Formatter(format, dateformat)
         
         if logToConsole:
            #create console handler and set level
             ch = logging.StreamHandler()
             ch.setLevel(level)
-            ch.setFormatter(fmt)
+            ch.setFormatter(self.format)
             self.addHandler(ch)
 
         if logToFile:
@@ -91,7 +95,7 @@ class ProgressLogger(logging.Logger):
             if logfile:
                 fh = logging.FileHandler(logfile, mode=mode)
                 fh.setLevel(level)
-                fh.setFormatter(fmt)
+                fh.setFormatter(self.format)
                 self.addHandler(fh)
 
         if logToGUI:
@@ -102,17 +106,22 @@ class ProgressLogger(logging.Logger):
             logging.PROGRESS = level - 1
             logging.addLevelName(logging.PROGRESS, "PROGRESS") 
             self.ProgressLoggerHandler.setLevel(logging.PROGRESS) 
-            self.ProgressLoggerHandler.setFormatter(fmt)
+            self.ProgressLoggerHandler.setFormatter(self.format)
             self.addHandler(self.ProgressLoggerHandler)
 
             #Update the dummy methods
             self.updateProgress=self.ProgressLoggerHandler.updateProgress
             self.resetProgress=self.ProgressLoggerHandler.resetProgress
 
+            time.sleep(0.5)# Fix for Issue 29, give the ProgressLoggerHandler a chance to get up and running
+
         #Handle warnings
         warnings.simplefilter('always')
         warnings.showwarning = self.showwarning
 
+    # ================ #
+    # Class Methods
+    # ================ #
     def showwarning(self, msg, cat, fname, lno, file=None, line=None):
         self.warn(msg)
 
@@ -126,7 +135,38 @@ class ProgressLogger(logging.Logger):
         for h in self.handlers:
             h.flush()
             h.close()
-    
+
+    # ================ #
+    # Class Properties
+    # ================ #
+    def __classproperty__(fcn):
+        '''The class property decorator function'''
+        try:return property( **fcn() )
+        except:pass
+
+    @__classproperty__
+    def logfile():
+        '''The logfile property.'''
+
+        def fget(self):
+            return self._logfile +' (self.logfile.fget())'
+
+        def fset(self, *args, **kwargs):
+            self._logfile=args[0]
+            for h in self.handlers:
+                if isinstance(h, logging.FileHandler):
+                    h.flush()
+                    h.close()
+                    self.removeHandler(h)
+                    fh = logging.FileHandler(self._logfile, mode=self.mode)
+                    fh.setLevel(self.level)
+                    fh.setFormatter(self.format)
+                    self.addHandler(fh)
+                    break
+
+        def fdel(self):pass #raise AttributeError('Can\'t delete metadata property')???????
+        return locals()   
+
 class ProgressLoggerHandler(logging.Handler):
     ''' Provide a Progress Bar Logging handler '''
 
@@ -190,6 +230,7 @@ class ProgressLoggerHandler(logging.Handler):
     def resetProgress(self):
         self.msgs.append(['RESET',0])
         self.sendmsgs()
+
 
 class ProgressLoggerChecker(threading.Thread):
     def __init__(self,host,port,callback):

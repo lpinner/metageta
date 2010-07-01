@@ -722,10 +722,11 @@ def ColourLUT(lut,rb):
     '''
     clr=dict((key,val) for key,val in [[v[0],v[1:]] for v in lut])
     nodata=rb.GetNoDataValue()
-    min,max,bins,rat=rb.GetDefaultHistogram()
+    min,max=rb.ComputeRasterMinMax()
+    rat=rb.GetHistogram(min-0.5,max+0.5,int(max-min+1),0,1)
     vals=[]
     keys=clr.keys()
-    for val,count in zip(range(min,max+1),rat):
+    for val,count in zip(range(int(min),int(max)+1),rat):
         if count > 0:
             val=str(val)
             if val in keys:

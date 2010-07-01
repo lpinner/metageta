@@ -154,14 +154,15 @@ class Dataset(object):
                 stretch_type='STDDEV'
                 stretch_args=[2]
                 rgb_bands=[1]
-                #But check if there's an attribute table or color table
+                #But check if there's an attribute table or colour table
                 #and change the stretch type to colour table
                 if datatype in ['Byte', 'Int16', 'UInt16']:
                     ct=rb.GetColorTable()
                     at=rb.GetDefaultRAT()
-                    if ct and ct.GetCount() > 0:
-                        stretch_type='COLOURTABLE'
-                        stretch_args=[]
+                    min,max=rb.ComputeRasterMinMax()
+                    if ct and ct.GetCount() > 0 and min>=0: #GDAL doesn't like colourtables with negative values
+                            stretch_type='COLOURTABLE'
+                            stretch_args=[]
                     elif at and at.GetRowCount() > 0 and at.GetRowCount() < 256:
                         stretch_type='RANDOM'
                         stretch_args=[]

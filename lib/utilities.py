@@ -44,7 +44,7 @@ datetimeformat='%sT%s' % (dateformat,timeformat)
 
 encoding='latin-1'
 
-iswin=sys.platform[0:3].lower()=='win'#Are we on Windows
+iswin=os.name=='nt'#sys.platform[0:3].lower()=='win'#Are we on Windows
 
 #========================================================================================================
 #{String Utilities
@@ -134,7 +134,7 @@ def exists(f,returnpath=False):
         @rtype: C{boolean}/C{(str,boolean)}
         @return: True/False, optionally full path to the case sensitive path
     '''
-    if os.name=='nt':#Windows is case insensitive anyways
+    if iswin:#Windows is case insensitive anyways
         if returnpath:return os.path.exists(f),f 
         else:return os.path.exists(f)
     import re

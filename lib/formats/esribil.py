@@ -63,12 +63,13 @@ class Dataset(__default__.Dataset):
                 hfa=__default__.gdal.GetDriverByName('HFA') 
                 hfa.Deregister()
                 __default__.Dataset.__getmetadata__(self, self._datafile)
-                __default__.gdal.AllRegister()
+                __default__.gdal.AllRegister() 
             else:raise #Something else caused it, reraise the error
     def getoverview(self,outfile=None,width=800,format='JPG'):
         '''Override the default method if there is a .clr file'''
-        clr=glob.glob(self.fileinfo['filepath'][:-3]+'.[cC][lL][rR]')
+        import overviews
+        clr=glob.glob(self.fileinfo['filepath'][:-3]+'[cC][lL][rR]')
         if clr:
-            clr=clr[0]
+            clr=overviews.ParseColourLUT(clr[0])
             self._stretch=['COLOURTABLELUT',[1],[clr]]
         return __default__.Dataset.getoverview(self,outfile,width,format)

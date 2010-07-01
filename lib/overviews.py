@@ -153,6 +153,7 @@ def _stretch_NONE(vrtcols,vrtrows,ds,bands):
     '''
     vrt=[]
     rb=ds.GetRasterBand(1)
+    nodata=rb.GetNoDataValue()
     if rb.DataType == gdal.GDT_Byte:
         rescale=False
     else:
@@ -160,8 +161,9 @@ def _stretch_NONE(vrtcols,vrtrows,ds,bands):
         dfScaleSrcMin,dfScaleSrcMax=GetDataTypeRange(rb.DataType)
         dfRatio,dfOffset = GetScaleRatioOffset(dfScaleSrcMin,dfScaleSrcMax,0,255)
     for bandnum, band in enumerate(bands):
-        srcband=ds.GetRasterBand(band)
+        rb=ds.GetRasterBand(band)
         vrt.append('  <VRTRasterBand dataType="Byte" band="%s">' % str(bandnum+1))
+        if nodata is not None:vrt.append('    <NoDataValue>%s</NoDataValue>'%nodata)
         if rescale:
             vrt.append('    <ComplexSource>')
             vrt.append('      <SourceFilename relativeToVRT="0">%s</SourceFilename>' % ds.GetDescription())
@@ -203,11 +205,12 @@ def _stretch_PERCENT(vrtcols,vrtrows,ds,bands,low,high):
         high=high/100.0
     vrt=[]
     for bandnum, band in enumerate(bands):
-        srcband=ds.GetRasterBand(band)
-        nbits=gdal.GetDataTypeSize(srcband.DataType)
-        dfScaleSrcMin,dfScaleSrcMax=GetDataTypeRange(srcband.DataType)
-        #dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = GetStatistics(srcband,0,1)
-        dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = GetStatistics(srcband,1,1)
+        rb=ds.GetRasterBand(band)
+        nodata=rb.GetNoDataValue()
+        nbits=gdal.GetDataTypeSize(rb.DataType)
+        dfScaleSrcMin,dfScaleSrcMax=GetDataTypeRange(rb.DataType)
+        #dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = GetStatistics(rb,0,1)
+        dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = GetStatistics(rb,1,1)
         dfBandRange=dfBandMax-dfBandMin
         if nbits == 8 or dfBandRange<=255:
             nbins=int(math.ceil(dfBandRange))
@@ -216,9 +219,9 @@ def _stretch_PERCENT(vrtcols,vrtrows,ds,bands,low,high):
             nbins=256
             binsize=int(math.ceil((dfBandRange)/nbins))
         
-        #hs=srcband.GetHistogram(dfBandMin+abs(dfBandMin)*0.0001,dfBandMax-abs(dfBandMax)*0.0001, nbins,include_out_of_range=1,approx_ok=0)
-        #hs=srcband.GetHistogram(dfBandMin+abs(dfBandMin)*0.0001,dfBandMax-abs(dfBandMax)*0.0001, nbins,include_out_of_range=1,approx_ok=1)
-        hs=srcband.GetHistogram(dfBandMin+abs(dfBandMin)*0.0001,dfBandMax-abs(dfBandMax)*0.0001, nbins,include_out_of_range=0,approx_ok=1)
+        #hs=rb.GetHistogram(dfBandMin+abs(dfBandMin)*0.0001,dfBandMax-abs(dfBandMax)*0.0001, nbins,include_out_of_range=1,approx_ok=0)
+        #hs=rb.GetHistogram(dfBandMin+abs(dfBandMin)*0.0001,dfBandMax-abs(dfBandMax)*0.0001, nbins,include_out_of_range=1,approx_ok=1)
+        hs=rb.GetHistogram(dfBandMin+abs(dfBandMin)*0.0001,dfBandMax-abs(dfBandMax)*0.0001, nbins,include_out_of_range=0,approx_ok=1)
         #Check that outliers haven't really skewed the histogram
         #this is a kludge to workaround datasets with multiple nodata values
 ##        for j in range(0,10):
@@ -231,8 +234,8 @@ def _stretch_PERCENT(vrtcols,vrtrows,ds,bands,low,high):
 ##                        if i<startbin:startbin=i
 ##                dfBandMin=dfBandMin+startbin*binsize
 ##                dfBandMax=dfBandMin+lastbin*binsize+binsize
-##                #hs=srcband.GetHistogram(dfBandMin-abs(dfBandMin)*0.0001,dfBandMax+abs(dfBandMax)*0.0001,include_out_of_range=1,approx_ok=0)
-##                hs=srcband.GetHistogram(dfBandMin-abs(dfBandMin)*0.0001,dfBandMax+abs(dfBandMax)*0.0001,include_out_of_range=1,approx_ok=1)
+##                #hs=rb.GetHistogram(dfBandMin-abs(dfBandMin)*0.0001,dfBandMax+abs(dfBandMax)*0.0001,include_out_of_range=1,approx_ok=0)
+##                hs=rb.GetHistogram(dfBandMin-abs(dfBandMin)*0.0001,dfBandMax+abs(dfBandMax)*0.0001,include_out_of_range=1,approx_ok=1)
 ##                if nbits == 8:binsize=1
 ##                else:binsize=(dfBandRange)/nbins
 ##            else:break
@@ -247,6 +250,7 @@ def _stretch_PERCENT(vrtcols,vrtrows,ds,bands,low,high):
             dfScale=1
 
         vrt.append('  <VRTRasterBand dataType="Byte" band="%s">' % str(bandnum+1))
+        if nodata is not None:vrt.append('    <NoDataValue>%s</NoDataValue>'%nodata)
         vrt.append('    <ComplexSource>')
         vrt.append('      <SourceFilename relativeToVRT="0">%s</SourceFilename>' % ds.GetDescription())
         vrt.append('      <SourceBand>%s</SourceBand>' % band)
@@ -273,15 +277,17 @@ def _stretch_MINMAX(vrtcols,vrtrows,ds,bands):
     '''
     vrt=[]
     for bandnum, band in enumerate(bands):
-        srcband=ds.GetRasterBand(band)
-        dfScaleSrcMin,dfScaleSrcMax=GetDataTypeRange(srcband.DataType)
-        #dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = GetStatistics(srcband,0,1)
-        dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = GetStatistics(srcband,1,1)
+        rb=ds.GetRasterBand(band)
+        nodata=rb.GetNoDataValue()
+        dfScaleSrcMin,dfScaleSrcMax=GetDataTypeRange(rb.DataType)
+        #dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = GetStatistics(rb,0,1)
+        dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = GetStatistics(rb,1,1)
         dfScaleDstMin,dfScaleDstMax=0.0,255.0 #Always going to be Byte for output jpegs
         dfScale = (dfScaleDstMax - dfScaleDstMin) / (dfScaleSrcMax - dfScaleSrcMin)
         dfOffset = -1 * dfScaleSrcMin * dfScale + dfScaleDstMin
 
         vrt.append('  <VRTRasterBand dataType="Byte" band="%s">' % str(bandnum+1))
+        if nodata is not None:vrt.append('    <NoDataValue>%s</NoDataValue>'%nodata)
         vrt.append('    <ComplexSource>')
         vrt.append('      <SourceFilename relativeToVRT="0">%s</SourceFilename>' % ds.GetDescription())
         vrt.append('      <SourceBand>%s</SourceBand>' % band)
@@ -310,10 +316,11 @@ def _stretch_STDDEV(vrtcols,vrtrows,ds,bands,std):
     '''
     vrt=[]
     for bandnum, band in enumerate(bands):
-        srcband=ds.GetRasterBand(band)
-        dfScaleSrcMin,dfScaleSrcMax=GetDataTypeRange(srcband.DataType)
-        #dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = GetStatistics(srcband,0,1)
-        dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = GetStatistics(srcband,1,1)
+        rb=ds.GetRasterBand(band)
+        nodata=rb.GetNoDataValue()
+        dfScaleSrcMin,dfScaleSrcMax=GetDataTypeRange(rb.DataType)
+        #dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = GetStatistics(rb,0,1)
+        dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = GetStatistics(rb,1,1)
         dfScaleDstMin,dfScaleDstMax=0.0,255.0 #Always going to be Byte for output jpegs
         dfScaleSrcMin=max([dfScaleSrcMin, math.floor(dfBandMean-std*dfBandStdDev)])
         dfScaleSrcMax=min([dfScaleSrcMax, math.ceil(dfBandMean+std*dfBandStdDev)])
@@ -324,6 +331,7 @@ def _stretch_STDDEV(vrtcols,vrtrows,ds,bands,std):
         dfOffset = -1 * dfScaleSrcMin * dfScale + dfScaleDstMin
 
         vrt.append('  <VRTRasterBand dataType="Byte" band="%s">' % str(bandnum+1))
+        if nodata is not None:vrt.append('    <NoDataValue>%s</NoDataValue>'%nodata)
         vrt.append('    <ComplexSource>')
         vrt.append('      <SourceFilename relativeToVRT="0">%s</SourceFilename>' % ds.GetDescription())
         vrt.append('      <SourceBand>%s</SourceBand>' % band)
@@ -350,9 +358,12 @@ def _stretch_UNIQUE(vrtcols,vrtrows,ds,bands,vals):
         @return:       VRT XML string
     '''
     band=bands[0]
+    rb=ds.GetRasterBand(band)
+    nodata=rb.GetNoDataValue()
     vrt=[]
     for iclr,clr in enumerate(['Red','Green','Blue']):
         vrt.append('  <VRTRasterBand dataType="Byte" band="%s">' % str(iclr+1))
+        if nodata is not None:vrt.append('    <NoDataValue>%s</NoDataValue>'%nodata)
         vrt.append('    <ColorInterp>%s</ColorInterp>' % clr)
         vrt.append('    <ComplexSource>')
         vrt.append('      <SourceFilename relativeToVRT="0">%s</SourceFilename>' % ds.GetDescription())
@@ -386,7 +397,7 @@ def _stretch_RANDOM(vrtcols,vrtrows,ds,bands):
     rb=ds.GetRasterBand(bands[0])
     min,max=map(int,rb.ComputeRasterMinMax())
 
-    nodata=rb.GetNoDataValue()
+    nodata=rb.GetNoDataValue() #Is this kludge required if we include <NoDataValue> in the VRT...?
     if nodata is not None:
         nodata=int(nodata)
         nodatavals=(nodata,255,255,255,0)
@@ -431,7 +442,7 @@ def _stretch_COLOURTABLE(vrtcols,vrtrows,ds,bands):
     for val,count in zip(range(min,max+1),rat):
         if val != nodata and count > 0 and val < ct_count: #Bugfix - sometime there are more values than
             ce=[val]                                       #colortable entries which causes gdal to segfault
-            ce.extend(ct.GetColorEntry(val))                 #http://trac.osgeo.org/gdal/ticket/3271
+            ce.extend(ct.GetColorEntry(val))               #http://trac.osgeo.org/gdal/ticket/3271
             vals.append(ce)
         else:vals.append([val,255,255,255,0])
     return _stretch_UNIQUE(vrtcols,vrtrows,ds,bands,vals)
@@ -472,11 +483,12 @@ def _stretch_COLOURTABLELUT(vrtcols,vrtrows,ds,bands,clr):
     '''
     vrt=[]
     band=bands[0]
-    srcband=ds.GetRasterBand(band)
-    nvals=2**(gdal.GetDataTypeSize(srcband.DataType))
-    lut=ExpandedColorLUT(clr,nvals)
+    rb=ds.GetRasterBand(band)
+    nodata=rb.GetNoDataValue()
+    lut=ColourLUT(clr,rb)
     for iclr,clr in enumerate(['Red','Green','Blue']):
         vrt.append('  <VRTRasterBand dataType="Byte" band="%s">' % str(iclr+1))
+        if nodata is not None:vrt.append('    <NoDataValue>%s</NoDataValue>'%nodata)
         vrt.append('    <ColorInterp>%s</ColorInterp>' % clr)
         vrt.append('    <ComplexSource>')
         vrt.append('      <SourceFilename relativeToVRT="0">%s</SourceFilename>' % ds.GetDescription())
@@ -589,6 +601,43 @@ def HistPercentileValue(inhist, percent, binsize, lowerlimit):
     score = lowerlimit+binsize*i-binsize
     return score
 
+def RATtoLUT(rat):
+    ''' Create a LUT from an attribute table with RGB columns
+    
+        @type filepath:   C{str}
+        @param filepath:  Path to colour lookup file
+        @rtype:           C{list}
+        @return:          List of cell values and R,G,B,A values e.g ((12,0,0,0,255), (25,255,255,255,0))
+    '''
+    rgbcols={}
+    for iCol in range(0,rat.GetColumnCount()+1):
+        sCol=rat.GetNameOfCol(iCol)
+        if sCol.upper() == 'VALUE':
+            rgbcols['VALUE']=iCol
+        if sCol.upper() in ['R','RED']:
+            rgbcols['R']=iCol
+        if sCol.upper() in ['G','GREEN']:
+            rgbcols['G']=iCol
+        if sCol.upper() in ['B','BLUE']:
+            rgbcols['B']=iCol
+    if sorted(rgbcols.keys()) == ['B', 'G', 'R','VALUE']:
+        clr,vals=[],[]
+        for iRow in range(0,rat.GetRowCount()+1):
+            val=rat.GetValueAsInt(iRow,rgbcols['VALUE'])
+            if not val in vals: #Have been getting VALUE=0,COUNT=0 as the last row
+                                #in the ESRI grids I've tested on, even if 0 is already in the VAT
+                r=rat.GetValueAsDouble(iRow,rgbcols['R'])
+                if r > 0 and r < 1:r=int(r*255)
+                g=rat.GetValueAsDouble(iRow,rgbcols['G'])
+                if g > 0 and g < 1:g=int(g*255)
+                b=rat.GetValueAsDouble(iRow,rgbcols['B'])
+                if b > 0 and b < 1:b=int(b*255)
+                vals.append(val)
+                clr.append([val,r,g,b,255])
+        return clr
+    else:
+        return None
+        
 def ParseColourLUT(filepath):
     ''' Open and parse a colour lookup table
     
@@ -632,9 +681,10 @@ def ParseColourLUT(filepath):
             elif len(line) == 4: line.append('255') #Is it just pixel, r, g, b?
 
             #Check for range of pixel values
-            if line[0].find('-') > 0:
+            sep=line[0].find('-',1)
+            if sep != -1:
                 r,g,b,a=line[1:]
-                i,j=[int(val) for val in line[0].split('-')]
+                i,j=int(line[0][:sep]),int(line[0][sep+1:])
                 for val in range(i,j+1):
                     line=[str(val),r,g,b,a]
                     clr.append(line)
@@ -644,8 +694,8 @@ def ParseColourLUT(filepath):
     lut.close() 
     return clr
 ParseColorLUT=ParseColourLUT #Synonym for the norteamericanos
-def ExpandedColourLUT(filepath,nvals):
-    ''' Open and parse a colour lookup table, expanding missing values as required.
+def ColourLUT(lut,rb):
+    ''' Open and parse a colour lookup table.
     
         Values must be space separated. Comment characters are stripped out.
         Format is: C{pixel red green blue [optional alpha]}.
@@ -670,19 +720,68 @@ def ExpandedColourLUT(filepath,nvals):
         @rtype:           C{list}
         @return:          List of cell and R,G,B,A values e.g ((12,0,0,0,255), (25,255,255,255,0))
     '''
-    lut=iter(ParseColourLUT(filepath))
+    clr=dict((key,val) for key,val in [[v[0],v[1:]] for v in lut])
+    nodata=rb.GetNoDataValue()
+    min,max,bins,rat=rb.GetDefaultHistogram()
+    vals=[]
+    keys=clr.keys()
+    for val,count in zip(range(min,max+1),rat):
+        if count > 0:
+            val=str(val)
+            if val in keys:
+                vals.append([val])
+                vals[-1].extend(clr[val])
+            else:vals.append([val,'255','255','255','0'])
+    return vals
+    #Not all entries in colourtable occur in the dataset
+    #return [map(str, col) for col in lut]
+ColorLUT=ColourLUT #Synonym for the norteamericanos
+def ExpandedColourLUT(lut,rb):
+    ''' Open and parse a colour lookup table, expanding missing values as required.
+        Workaround for http://trac.osgeo.org/gdal/ticket/3253
+        
+        Values must be space separated. Comment characters are stripped out.
+        Format is: C{pixel red green blue [optional alpha]}.
+        Pixel value may be a range (eg 15-20).
+        The following comment characters may be used: C{'#' '//' ';' '/*'}.
+
+        Example::
+        
+                #value   R   G   B   A
+                 11-15   255 0   0   255 #(red)
+                 16      255 165 0   255 #(orange)
+                 18      255 255 0   255 #(yellow)
+                 19      0   255 0   255 /*(green)
+                 21      0   0   255 255 /*(blue)
+                 98      0   255 255 255 ;(cyan)
+                 99-255  160 32  240 255 ;(purple)
+
+        @type filepath:   C{str}
+        @param filepath:  Path to colour lookup file
+        @type nvals:      C{int}
+        @param nvals:     Number of values
+        @rtype:           C{list}
+        @return:          List of cell and R,G,B,A values e.g ((12,0,0,0,255), (25,255,255,255,0))
+    '''
+    lut=iter(lut)
     tbl=[]
-    rng=range(0,nvals)
-    val,red,green,blue,alpha=lut.next()
+    dfScaleSrcMin,dfScaleSrcMax=GetDataTypeRange(rb.DataType)
+    rng=range(dfScaleSrcMin,dfScaleSrcMax)
+    val,red,green,blue,alpha=[str(v) for v in lut.next()]
     for r in rng:
         if int(val) == r:
             clr = (str(r),red,green,blue,alpha)
-            try:val,red,green,blue,alpha=lut.next()
+            try:val,red,green,blue,alpha=[str(v) for v in lut.next()]
             except:pass #No more color table entries
         else:clr = (str(r),'255','255','255','0') #default - white/transparent
         tbl.append(clr)
     return tbl
 ExpandedColorLUT=ExpandedColourLUT #Synonym for the norteamericanos
+#Workaround for missing values http://trac.osgeo.org/gdal/ticket/3253
+if int(gdal.VersionInfo()[0:2]) < 17: #Missing values fixed in 1.7+
+    ColourLUT = ExpandedColourLUT
+    ColorLUT  = ExpandedColorLUT
+
 def resize(infile,outfile,width):
     ''' Resize an image
 

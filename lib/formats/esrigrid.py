@@ -53,11 +53,22 @@ class Dataset(__default__.Dataset):
         if self.metadata['compressiontype']=='Unknown':self.metadata['compressiontype']='RLE'
 
     def getoverview(self,outfile=None,width=800,format='JPG'):
-        '''Override the default method if there is a .clr file'''
-        clr=glob.glob(self.fileinfo['filepath']+'.[cC][lL][rR]')
-        if clr:
-            clr=clr[0]
-            self._stretch=['COLOURTABLELUT',[1],[clr]]
+        '''Override the default method if there is a clr file or the attribute table contains RGB values'''
+
+        #Check for clr file first
+        clr=[self.fileinfo['filepath']+'.[cC][lL][rR]',os.path.join(self.fileinfo['filepath'],'[cC][lL][rR].[aA][dD][fF]')]
+        for c in clr:
+            c=glob.glob(c)
+            if c:
+                clr=overviews.ParseColourLUT(c[0])
+                self._stretch=['COLOURTABLELUT',[1],[clr]]
+                break
+        #Check for attribute table with RGB values
+        if not self._stretch:
+            rat=self._gdaldataset.GetRasterBand(1).GetDefaultRAT()
+            if rat:
+                clr = overviews.RATtoLUT(rat)
+                if clr:self._stretch=['COLOURTABLELUT',[1],[clr]]
 
         try:return __default__.Dataset.getoverview(self,outfile,width,format)
         except:return self.__aux_workaround__(__default__.Dataset.getoverview, self,outfile,width,format)

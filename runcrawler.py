@@ -250,8 +250,8 @@ def getlogger(log,nogui=False, debug=False):
             geometry.gdal.PushErrorHandler( 'CPLQuietErrorHandler' )
         
         windowicon=os.environ['CURDIR']+'/lib/wm_icon.ico'
-        try:logger = progresslogger.ProgressLogger('MetaGETA',logfile=log, logToConsole=True, logToFile=True, logToGUI=not nogui, level=level, windowicon=windowicon, callback=exit)
-        except:logger = progresslogger.ProgressLogger('MetaGETA',logfile=log, logToConsole=True, logToFile=True, logToGUI=not nogui, level=level, callback=exit)
+        try:logger = progresslogger.ProgressLogger('MetaGETA Crawler',logfile=log, logToConsole=True, logToFile=True, logToGUI=not nogui, level=level, windowicon=windowicon, callback=exit)
+        except:logger = progresslogger.ProgressLogger('MetaGETA Crawler',logfile=log, logToConsole=True, logToFile=True, logToGUI=not nogui, level=level, callback=exit)
         return logger
 #========================================================================================================
 #========================================================================================================

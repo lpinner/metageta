@@ -64,7 +64,7 @@ class ProgressLogger(object,logging.Logger):
                maxprogress=100,
                logfile=None,
                mode='w',
-               windowicon=None,
+               icon=None,
                callback=lambda:None):
 
         self.logToGUI=logToGUI
@@ -100,7 +100,7 @@ class ProgressLogger(object,logging.Logger):
 
         if logToGUI:
             self.progress=0
-            self.ProgressLoggerHandler = ProgressLoggerHandler(name=name, maxprogress=maxprogress,windowicon=windowicon,callback=callback)
+            self.ProgressLoggerHandler = ProgressLoggerHandler(name=name, maxprogress=maxprogress,icon=icon,callback=callback)
 
             #To handle the PROGRESS & END events without them going to the console or file
             logging.PROGRESS = level - 1
@@ -164,13 +164,13 @@ class ProgressLogger(object,logging.Logger):
                     self.addHandler(fh)
                     break
 
-        def fdel(self):pass #raise AttributeError('Can\'t delete metadata property')???????
+        def fdel(self):pass
         return locals()   
 
 class ProgressLoggerHandler(logging.Handler):
     ''' Provide a Progress Bar Logging handler '''
 
-    def __init__(self, name='Progress Log', level=logging.INFO, maxprogress=100, windowicon=None, callback=lambda:None):
+    def __init__(self, name='Progress Log', level=logging.INFO, maxprogress=100, icon=None, callback=lambda:None):
         '''
         Initializes the instance - set up the Tkinter GUI and log output.
         '''
@@ -191,8 +191,8 @@ class ProgressLoggerHandler(logging.Handler):
         else: python = 'python'
         pythonPath=utilities.which(python)
         pythonScript=__file__
-        parameterList = [pythonPath, pythonScript, self.host,str(self.inport),str(self.outport),name,str(maxprogress)]
-        if windowicon:parameterList.append(windowicon)
+        parameterList = [pythonPath, pythonScript,str(self.inport),str(self.outport),'-s',self.host,'-n',name,'-m',str(maxprogress)]
+        if icon:parameterList.extend(['-i',icon])
         for i,v in enumerate(parameterList): #Fix any spaces in parameters
             if ' ' in v:parameterList[i]='"%s"'%v
         
@@ -266,13 +266,13 @@ class ProgressLoggerChecker(threading.Thread):
 class ProgressLoggerServer:
     ''' Provide a Progress Bar Logging Server '''
 
-    def __init__(self,host,inport,outport,name=None, maxprogress=100, windowicon=None):
+    def __init__(self,inport,outport,name=None, server='localhost',maxprogress=100, icon=None):
         self.server=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.server.bind((host,int(inport)))
+        self.server.bind((server,int(inport)))
         self.server.listen(1)
         self.serving=True
 
-        self.host = host
+        self.host = server
         self.inport = int(inport)
         self.outport = int(outport)
         self.name = name
@@ -283,7 +283,7 @@ class ProgressLoggerServer:
         self.queue  = Queue.Queue()
         
         ##Create the GUI
-        self.gui=ProgressLoggerGUI(self.queue, self.host,self.inport,self.outport, name=name, maxprogress=maxprogress, windowicon=windowicon)
+        self.gui=ProgressLoggerGUI(self.queue, self.host,self.inport,self.outport, name=name, maxprogress=maxprogress, icon=icon)
         self.gui.start()
 
         self.startLogging()
@@ -311,7 +311,7 @@ class ProgressLoggerServer:
 class ProgressLoggerGUI(threading.Thread):
     ''' Provide a Progress Bar Logging GUI '''
 
-    def __init__(self, queue, host, inport, outport, name=None, maxprogress=100, windowicon=None):
+    def __init__(self, queue, host, inport, outport, name=None, maxprogress=100, icon=None):
         
         ##Cos we've overwritten the class __init__ method        
         threading.Thread.__init__(self)
@@ -323,8 +323,8 @@ class ProgressLoggerGUI(threading.Thread):
         self.maxprogress = maxprogress
         self.progress = 0
         self.keepchecking = True
-
-        self.windowicon=windowicon
+        self.ppid = os.getppid()
+        self.icon=icon
     def run(self):
         '''
         self.q
@@ -332,7 +332,7 @@ class ProgressLoggerGUI(threading.Thread):
         '''
 
         self.master=Tkinter.Tk()
-        try:self.master.wm_iconbitmap(self.windowicon)
+        try:self.master.wm_iconbitmap(self.icon)
         except:pass
         self.master.protocol("WM_DELETE_WINDOW", self.onOk)
         self.master.title(self.name)
@@ -368,7 +368,10 @@ class ProgressLoggerGUI(threading.Thread):
                 self.onMsg(msg)
             except Queue.Empty:
                 pass
-
+        #Check parent is still alive.
+        if os.getppid() == 1:
+            self.onMsg(['INFO','Parent process "%s" has stopped working unexpectedly.'%self.name])
+            self.onMsg(['EXIT',''])
         if self.keepchecking:self.master.after(100, self.checkQueue)
 
     def onMsg(self, msg):
@@ -516,16 +519,66 @@ class ProgressBarView:
             self.canvas.itemconfig(self.label, text=self.labelFormat % self.labelText)
         self.canvas.update_idletasks()
 
+############################################################################
+# PROCESSENTRY32 and getppid derived from:
+# http://d.hatena.ne.jp/chrono-meter/20090325/p1
+############################################################################
+import ctypes
+class PROCESSENTRY32(ctypes.Structure):
+    from ctypes.wintypes import DWORD,POINTER,ULONG,LONG,MAX_PATH,c_char
+    _fields_ = (
+        ('dwSize', DWORD, ),
+        ('cntUsage', DWORD, ),
+        ('th32ProcessID', DWORD, ),
+        ('th32DefaultHeapID', POINTER(ULONG), ),
+        ('th32ModuleID', DWORD, ),
+        ('cntThreads', DWORD, ),
+        ('th32ParentProcessID', DWORD, ),
+        ('pcPriClassBase', LONG, ),
+        ('dwFlags', DWORD, ),
+        ('szExeFile', c_char * MAX_PATH, ),
+        )
+def getppid(pid=None):
+    """the Windows version of os.getppid"""
+    if pid is None:pid=os.getpid()
+    from ctypes import windll,sizeof,byref
+    import win32process
+    pe = PROCESSENTRY32()
+    pe.dwSize = sizeof(PROCESSENTRY32)
+
+    snapshot = windll.kernel32.CreateToolhelp32Snapshot(2, 0)
+    try:
+        if not windll.kernel32.Process32First(snapshot, byref(pe)):
+            raise WindowsError
+        while pe.th32ProcessID != pid:
+            if not windll.kernel32.Process32Next(snapshot, byref(pe)):
+                raise WindowsError
+        result = pe.th32ParentProcessID
+    finally:
+        windll.kernel32.CloseHandle(snapshot)
+
+    if result not in win32process.EnumProcesses():
+        result = 1
+
+    return result
+if not hasattr(os, 'getppid'):
+    os.getppid = getppid
+############################################################################
+
 if __name__ == '__main__':
-    kwargs={}
-    if len(sys.argv) >= 4:
-        kwargs['host']=sys.argv[1]
-        kwargs['inport']=sys.argv[2]
-        kwargs['outport']=sys.argv[3]
-    if len(sys.argv) >= 5:
-        kwargs['name']=sys.argv[4]
-    if len(sys.argv) >= 6:
-        kwargs['maxprogress']=sys.argv[5]
-    if len(sys.argv) >= 7:
-        kwargs['windowicon']=sys.argv[6]
-    pl = ProgressLoggerServer(**kwargs)
+    import optparse
+    description='Run the progress logger GUI'
+    usage = "usage: %prog in_port out_port [options]"
+    parser = optparse.OptionParser(usage=usage,description=description)
+    opt=parser.add_option('-m', '--maxprogress', type="int", dest="maxprogress",default=100,help='The maximum value to show in the progress bar (%default)')
+    opt=parser.add_option('-n', '--name', type="string", dest="name",default='Progress', help='The name to display in the window title bar (%default)')
+    opt=parser.add_option('-i', '--icon', type="string", dest="icon", help='The icon to display in the window title bar')
+    opt=parser.add_option('-s', '--server', type="string", dest="server",default='localhost', help='The server hostname (%default)')
+    #Parse command line args
+    kwargs,args = parser.parse_args()
+    kwargs=kwargs.__dict__
+    if len(args) <> 2:
+        parser.error('Incorrect number of arguments.')
+    try: args=map(int,args)
+    except:parser.error('Incorrect argument types.')
+    pl = ProgressLoggerServer(*args,**kwargs)

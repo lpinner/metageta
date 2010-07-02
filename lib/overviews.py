@@ -695,30 +695,14 @@ def ParseColourLUT(filepath):
     return clr
 ParseColorLUT=ParseColourLUT #Synonym for the norteamericanos
 def ColourLUT(lut,rb):
-    ''' Open and parse a colour lookup table.
-    
-        Values must be space separated. Comment characters are stripped out.
-        Format is: C{pixel red green blue [optional alpha]}.
-        Pixel value may be a range (eg 15-20).
-        The following comment characters may be used: C{'#' '//' ';' '/*'}.
+    ''' Populate a colour lookup table, making sure all values get included
 
-        Example::
-        
-                #value   R   G   B   A
-                 11-15   255 0   0   255 #(red)
-                 16      255 165 0   255 #(orange)
-                 18      255 255 0   255 #(yellow)
-                 19      0   255 0   255 /*(green)
-                 21      0   0   255 255 /*(blue)
-                 98      0   255 255 255 ;(cyan)
-                 99-255  160 32  240 255 ;(purple)
-
-        @type filepath:   C{str}
-        @param filepath:  Path to colour lookup file
-        @type nvals:      C{int}
-        @param nvals:     Number of values
-        @rtype:           C{list}
-        @return:          List of cell and R,G,B,A values e.g ((12,0,0,0,255), (25,255,255,255,0))
+        @type lut:  C{list}
+        @param lut: A list of one or more [values,r,g,b,a] lists.
+        @type rb:   C{gdal.RasterBand}
+        @param rb:  A gdal RasterBand object.
+        @rtype:     C{list}
+        @return:    A list of one or more [values,r,g,b,a] lists.
     '''
     clr=dict((key,val) for key,val in [[v[0],v[1:]] for v in lut])
     nodata=rb.GetNoDataValue()
@@ -738,31 +722,15 @@ def ColourLUT(lut,rb):
     #return [map(str, col) for col in lut]
 ColorLUT=ColourLUT #Synonym for the norteamericanos
 def ExpandedColourLUT(lut,rb):
-    ''' Open and parse a colour lookup table, expanding missing values as required.
+    ''' Populate a colour lookup table, expanding missing values as required.
         Workaround for http://trac.osgeo.org/gdal/ticket/3253
         
-        Values must be space separated. Comment characters are stripped out.
-        Format is: C{pixel red green blue [optional alpha]}.
-        Pixel value may be a range (eg 15-20).
-        The following comment characters may be used: C{'#' '//' ';' '/*'}.
-
-        Example::
-        
-                #value   R   G   B   A
-                 11-15   255 0   0   255 #(red)
-                 16      255 165 0   255 #(orange)
-                 18      255 255 0   255 #(yellow)
-                 19      0   255 0   255 /*(green)
-                 21      0   0   255 255 /*(blue)
-                 98      0   255 255 255 ;(cyan)
-                 99-255  160 32  240 255 ;(purple)
-
-        @type filepath:   C{str}
-        @param filepath:  Path to colour lookup file
-        @type nvals:      C{int}
-        @param nvals:     Number of values
-        @rtype:           C{list}
-        @return:          List of cell and R,G,B,A values e.g ((12,0,0,0,255), (25,255,255,255,0))
+        @type lut:  C{list}
+        @param lut: A list of one or more [values,r,g,b,a] lists.
+        @type rb:   C{gdal.RasterBand}
+        @param rb:  A gdal RasterBand object.
+        @rtype:     C{list}
+        @return:    A list of one or more [values,r,g,b,a] lists.
     '''
     lut=iter(lut)
     tbl=[]

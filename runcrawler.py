@@ -39,7 +39,6 @@ Usage::
 
 @note: See U{Issue 22<http://code.google.com/p/metageta/issues/detail?id=22>}
 '''
-
 import sys, os, re,time,tempfile
 import formats
 import geometry
@@ -207,6 +206,7 @@ def main(dir, xls, logger, mediaid=None, update=False, getovs=False):
         logger.info("No data found")
     else:
         logger.info("Metadata extraction complete!")
+
     logger.updateProgress(newMax=1) #Just so the progress meter hits 100%
 
     del ExcelWriter
@@ -241,7 +241,7 @@ def exit():
     if exe in ['python','pythonw']: #Little kludge to stop killing dev IDEs
         os._exit(0)
 
-def getlogger(log,nogui=False, debug=False):
+def getlogger(logfile,name=None,nogui=False, debug=False, icon=None):
         geometry.debug=debug
         if debug:
             level=progresslogger.DEBUG
@@ -249,9 +249,8 @@ def getlogger(log,nogui=False, debug=False):
             level=progresslogger.INFO
             geometry.gdal.PushErrorHandler( 'CPLQuietErrorHandler' )
         
-        windowicon=os.environ['CURDIR']+'/lib/wm_icon.ico'
-        try:logger = progresslogger.ProgressLogger('MetaGETA Crawler',logfile=log, logToConsole=True, logToFile=True, logToGUI=not nogui, level=level, windowicon=windowicon, callback=exit)
-        except:logger = progresslogger.ProgressLogger('MetaGETA Crawler',logfile=log, logToConsole=True, logToFile=True, logToGUI=not nogui, level=level, callback=exit)
+        try:   logger = progresslogger.ProgressLogger(name=name,logfile=logfile, logToConsole=True, logToFile=True, logToGUI=not nogui, level=level, icon=icon, callback=exit)
+        except:logger = progresslogger.ProgressLogger(name=name,logfile=logfile, logToConsole=True, logToFile=True, logToGUI=not nogui, level=level, callback=exit)
         return logger
 #========================================================================================================
 #========================================================================================================
@@ -279,6 +278,10 @@ if __name__ == '__main__':
             return False
       
     import optparse,icons,getargs
+
+    APP='MetaGETA Crawler'
+    ICON=icons.app_img
+
     description='Run the metadata crawler'
     parser = optparse.OptionParser(description=description)
 
@@ -317,6 +320,7 @@ if __name__ == '__main__':
     #Parse existing command line args
     optvals,argvals = parser.parse_args()
 
+    logger=None
     #Do we need to pop up the GUI?
     if not optvals.dir or not optvals.xls:
         #Add existing command line args values to opt default values so they show in the gui
@@ -325,9 +329,8 @@ if __name__ == '__main__':
         #Pop up the GUI
         keepalive=True
         validate=getargs.Command(writablecallback,xlsarg)
-        logger=None
         while keepalive:
-            args=getargs.GetArgs(dirarg,medarg,xlsarg,updatearg,ovarg,kaarg,callback=validate)
+            args=getargs.GetArgs(dirarg,medarg,xlsarg,updatearg,ovarg,kaarg,callback=validate,title=APP,icon=ICON)
             if args:#GetArgs returns None if user cancels the GUI/closes the dialog
                 keepalive=args.keepalive
                 args.xls = utilities.checkExt(utilities.encode(args.xls), ['.xls'])
@@ -336,14 +339,16 @@ if __name__ == '__main__':
                     logger.resetProgress()
                     logger.logfile=log
                 else:
-                    logger=getlogger(log,nogui=optvals.nogui, debug=optvals.debug)
+                    logger=getlogger(log,name=APP,nogui=optvals.nogui, debug=optvals.debug, icon=ICON)
                 keepalive=args.keepalive
                 main(args.dir,args.xls,logger,args.med,args.update,args.ovs)
             else:keepalive=False
     else: #No need for the GUI
         xls = utilities.checkExt(utilities.encode(optvals.xls), ['.xls'])
         log=xls.replace('.xls','.log')
-        logger=getlogger(log,gui=True, debug=False)
+        logger=getlogger(log, name=APP,nogui=optvals.nogui, debug=optvals.debug, icon=ICON)
         main(optvals.dir,optvals.xls,logger,optvals.med,optvals.update,optvals.ovs)
 
-    del logger
+    if logger:
+        logger.shutdown()
+        del logger

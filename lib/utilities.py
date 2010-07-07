@@ -457,6 +457,24 @@ class rglob:
                     if fnmatch.fnmatch(file, self.pattern):
                         return normcase(fullname)
 
+
+#========================================================================================================
+#{Process Utilities
+#========================================================================================================
+def isrunning(pid):
+    if hasattr(os,'kill'):
+        try:
+            os.kill(pid, 0) #Sending a 0 signal does nothing.
+            return True
+        except:
+            return False
+    elif iswin:
+        import win32process
+        try:
+            return pid in win32process.EnumProcesses()
+        except:
+            return False
+
 #========================================================================================================
 #{Exception Utilities
 #========================================================================================================

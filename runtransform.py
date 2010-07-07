@@ -119,7 +119,11 @@ if __name__ == '__main__':
     #To ensure uri's work...
     if os.path.basename(sys.argv[0])!=sys.argv[0]:os.chdir(os.path.dirname(sys.argv[0]))
     import optparse,icons,getargs
+    
+    APP='MetaGETA Transforms'
+    ICON=icons.app_img
     description='Transform metadata to XML'
+
     parser = optparse.OptionParser(description=description)
 
     opt=parser.add_option("-x", dest="xls", metavar="xls", help="Excel spreadsheet")
@@ -152,7 +156,7 @@ if __name__ == '__main__':
         for opt in parser.option_list:
             opt.default=vars(optvals).get(opt.dest,None)
         #Pop up the GUI
-        args=getargs.GetArgs(dirarg,xlsarg,xslarg)
+        args=getargs.GetArgs(xlsarg,dirarg,xslarg,title=APP,icon=ICON)
         if args:#GetArgs returns None if user cancels the GUI
             main(args.xls,args.xsl,args.dir,optvals.log,optvals.gui,optvals.debug)
     else: #No need for the GUI

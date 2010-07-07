@@ -23,6 +23,19 @@
 base 64 encoded gif images for the GUI buttons
 '''
 
+class app_img:
+    format='gif'
+    data='''R0lGODlhEAAQAMZdAAAAADYePzQhSjkiNDslKDImSD4mOTYrNjkrSkYsLSw1QzA1QSE+JSY9Iz80
+            Oj81RyhCIkc4LydDKjk/IjhANCdHKSVJJUc+PCZKKipKKSpLKE89SihMLStMKSdNKyhNKidPLCxP
+            LSlQLCdRKCdRLCxQLClTK1NESFxDVW1FQ0tRYGBOY1RVVVtWWL4znME2j7k4k7RGGMI1mqNOE1xg
+            ZrtAlKpSFlhkVrdBnbNPI7pDlKtVIcRFjXdhYK1WMF1ocL1Ik2hmabtLkcpJmc1Kl8RMqLpSl7tT
+            jHBubr9fMchTo8xUo89Tp3F3ZsZZoMFoQbpsNcJqQsNgp8NsRrl1QcB1Tr94TcGBW8aDbL+KWsWK
+            XMCNWs2JZP//////////////////////////////////////////////////////////////////
+            /////////////////////////////////////////////////////////////////////////yH5
+            BAEKAH8ALAAAAAAQABAAAAeQgH+Cg4SFggCIiYqGfwApGwYTBwIDJwCMAEgPDgEFCxQ0l4OKPREJ
+            CAoEF0Gihw0VAE03KiwoLSs/rY0MGYq+l4ojHBgdISUmFroAUkoAEh4aJCIgHxDKTkS/i4pDLjhG
+            QEc8S8pcWABFMDo1Qi8yTMpbV9qJhABaT1NRVlVUWbqjksTI4WPHDBtQAB6iByAQADs='''
+
 class shp_img:
     format='gif'
     data='''R0lGODlhEAAQAMIFABAQEIBnII+HgLS0pfDwsC8gIC8gIC8gICH5BAEKAAcALAAAAAAQABAAAAND

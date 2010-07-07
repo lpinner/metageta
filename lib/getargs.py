@@ -22,9 +22,7 @@
 '''
 Module to generate a GUI dialog to collect arguments
 '''
-#import os,sys,Tkinter,tkFileDialog
 import os,sys,Tix,tkFileDialog,tkMessageBox
-from icons import *
 import utilities
 
 class GetArgs(object):
@@ -32,6 +30,10 @@ class GetArgs(object):
         ''' Build and show a GUI dialog to collect arguments
             @type  args:        C{list of L{Arg}s}
             @param args:        One or more C{L{Arg}s}.
+            @type    title:     C{str}
+            @keyword title:     Window title. 
+            @type    icon:      C{L{icons}}
+            @keyword icon:      An icon class from the L{icons} module.
             @type    callback:  C{U{callable<http://docs.python.org/library/functions.html#callable>} object}
             @keyword callback:  A function/class that is called when the OK button is clicked. 
                                 No positional/keyword arguments are supported (unless the L{Command} class is used).
@@ -42,15 +44,17 @@ class GetArgs(object):
             @see: L{runcrawler} for an example.                  
         '''
         self=object.__new__(self)
-        title='MetaGETA'
-        icon=os.environ['CURDIR']+'/lib/wm_icon.ico'
-        windowicon=icon
+        
+        title=kwargs.get('title','Arguments')
+        icon=kwargs.get('icon',None)
 
         self._root = Tix.Tk()
         self._root.withdraw()
         self._root.title(title)
-        try:self._root.wm_iconbitmap(windowicon)
-        except:pass
+
+        if icon is not None:
+            self.icon=Tix.PhotoImage(data=icon.data,format=icon.format)
+            self._root.tk.call('wm', 'iconphoto', self._root._w, self.icon)
 
         #On Ok callback
         self._callback=lambda *a,**kw:True #default

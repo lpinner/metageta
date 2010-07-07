@@ -36,9 +36,8 @@ Example:
 
 '''
 
-import logging,warnings,random,os,sys,socket,pickle,threading,Queue,time
-#from Tkinter import *
-import Tkinter
+import logging,warnings,random,os,sys,socket,pickle,threading,Queue,time,subprocess
+import Tkinter,tkMessageBox
 import ScrolledText
 import utilities
 
@@ -100,28 +99,42 @@ class ProgressLogger(object,logging.Logger):
 
         if logToGUI:
             self.progress=0
-            self.ProgressLoggerHandler = ProgressLoggerHandler(name=name, maxprogress=maxprogress,icon=icon,callback=callback)
+            try:
+                self.ProgressLoggerHandler = ProgressLoggerHandler(name=name, maxprogress=maxprogress,icon=icon,callback=callback)
 
-            #To handle the PROGRESS & END events without them going to the console or file
-            logging.PROGRESS = level - 1
-            logging.addLevelName(logging.PROGRESS, "PROGRESS") 
-            self.ProgressLoggerHandler.setLevel(logging.PROGRESS) 
-            self.ProgressLoggerHandler.setFormatter(self.format)
-            self.addHandler(self.ProgressLoggerHandler)
+                #To handle the PROGRESS & END events without them going to the console or file
+                logging.PROGRESS = level - 1
+                logging.addLevelName(logging.PROGRESS, "PROGRESS") 
+                self.ProgressLoggerHandler.setLevel(logging.PROGRESS) 
+                self.ProgressLoggerHandler.setFormatter(self.format)
+                self.addHandler(self.ProgressLoggerHandler)
 
-            #Update the dummy methods
-            self.updateProgress=self.ProgressLoggerHandler.updateProgress
-            self.resetProgress=self.ProgressLoggerHandler.resetProgress
-
-            time.sleep(0.5)# Fix for Issue 29, give the ProgressLoggerHandler a chance to get up and running
+                #Update the dummy methods
+                self.updateProgress=self.ProgressLoggerHandler.updateProgress
+                self.resetProgress=self.ProgressLoggerHandler.resetProgress
+            
+            except:
+                if logToFile:
+                    msg='The Progress Logger GUI failed.\nLog messages will be output to %s'%logfile
+                else:
+                    msg='The Progress Logger failed.'
+                self.warn(msg.replace('\n',' '))
+                self.showmessage('Progress Logger error', msg)
 
         #Handle warnings
         warnings.simplefilter('always')
         warnings.showwarning = self.showwarning
 
+
     # ================ #
     # Class Methods
     # ================ #
+    def showmessage(self, title, msg,type=None):
+        tk=Tkinter.Tk()
+        tk.withdraw()
+        tkMessageBox.showinfo(title,msg,type=type)
+        tk.destroy()
+    
     def showwarning(self, msg, cat, fname, lno, file=None, line=None):
         self.warn(msg)
 
@@ -132,6 +145,7 @@ class ProgressLogger(object,logging.Logger):
 
         Should be called at application exit.
         '''
+        self.debug('Shutting down')
         for h in self.handlers:
             h.flush()
             h.close()
@@ -149,7 +163,7 @@ class ProgressLogger(object,logging.Logger):
         '''The logfile property.'''
 
         def fget(self):
-            return self._logfile +' (self.logfile.fget())'
+            return self._logfile
 
         def fset(self, *args, **kwargs):
             self._logfile=args[0]
@@ -187,24 +201,29 @@ class ProgressLoggerHandler(logging.Handler):
         self.host='localhost'
         self.inport= random.randint(1024, 10000)
         self.outport= random.randint(1024, 10000)
-        if sys.platform[0:3].lower()=='win':python = 'pythonw.exe'
+
+        if utilities.iswin:python = 'pythonw.exe'
         else: python = 'python'
         pythonPath=utilities.which(python)
         pythonScript=__file__
         parameterList = [pythonPath, pythonScript,str(self.inport),str(self.outport),'-s',self.host,'-n',name,'-m',str(maxprogress)]
-        if icon:parameterList.extend(['-i',icon])
+        if icon:parameterList.extend(['-i',str(icon)])
         for i,v in enumerate(parameterList): #Fix any spaces in parameters
             if ' ' in v:parameterList[i]='"%s"'%v
+        pid = subprocess.Popen(parameterList).pid
+        pc=ProgressLoggerChecker(self.host,self.outport,callback,pid)
+        while not pc.ready: #Fixes Issue 29
+            if pc.failed:raise
+            else:time.sleep(0.1)
         
-        os.spawnv(os.P_NOWAIT, pythonPath, parameterList)
-        pc=ProgressLoggerChecker(self.host,self.outport,callback)
-        
-    def sendmsgs(self):
+    def sendmsgs(self, host=None,port=None):
+        if host is None:host=self.host
+        if port is None:port=self.inport
         for msg in range(len(self.msgs)):
             try:
                 msg=self.msgs.pop(0)
                 client = socket.socket (socket.AF_INET, socket.SOCK_STREAM )
-                client.connect((self.host,self.inport))
+                client.connect((host,port))
                 client.send(pickle.dumps(msg))
                 client.close()
                 del client
@@ -222,6 +241,8 @@ class ProgressLoggerHandler(logging.Handler):
         '''
         self.msgs.append(['EXIT',0])
         self.sendmsgs()
+        self.msgs.append(['EXIT',0])
+        self.sendmsgs(port=self.outport)
 
     def updateProgress(self,newMax=None):
         self.msgs.append(['PROGRESS',newMax])
@@ -231,13 +252,15 @@ class ProgressLoggerHandler(logging.Handler):
         self.msgs.append(['RESET',0])
         self.sendmsgs()
 
-
 class ProgressLoggerChecker(threading.Thread):
-    def __init__(self,host,port,callback):
+    def __init__(self,host,port,callback,pid):
         self.gui=True
         self.host = host
         self.port = int(port)
         self.callback = callback
+        self.pid = pid
+        self.ready=False
+        self.failed=False
 
         threading.Thread.__init__ (self)
         self.start()
@@ -247,22 +270,35 @@ class ProgressLoggerChecker(threading.Thread):
         self.server=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.bind((self.host,self.port))
         self.server.listen(1)
-        while True:
-            channel, details = self.server.accept()
-            data=''
+
+        #Give the GUI time to start
+        time.sleep(1)
+        if utilities.isrunning(self.pid):
             while True:
-                part=channel.recv(1024).strip()
-                if part:data+=part
-                else:break
-            msg=pickle.loads(data)
-            if msg[0]=='EXIT':
-                break
-            channel.close()
-            time.sleep(1)
+                #Check for messages
+                channel, details = self.server.accept()
+                data=''
+                while True:
+                    part=channel.recv(1024).strip()
+                    if part:data+=part
+                    else:break
+                msg=pickle.loads(data)
+                if msg[0]=='STARTUP':
+                    self.ready=True
+                elif msg[0]=='EXIT':
+                    channel.close()
+                    self.stop()
+                channel.close()
+                time.sleep(1)
+        else:self.failed=True
+
+    def stop(self):
         #Stop listening
         self.server.close()
+        del self.server
         self.callback()
-
+        sys.exit()
+        
 class ProgressLoggerServer:
     ''' Provide a Progress Bar Logging Server '''
 
@@ -283,8 +319,11 @@ class ProgressLoggerServer:
         self.queue  = Queue.Queue()
         
         ##Create the GUI
-        self.gui=ProgressLoggerGUI(self.queue, self.host,self.inport,self.outport, name=name, maxprogress=maxprogress, icon=icon)
-        self.gui.start()
+        #self.gui=ProgressLoggerGUI(self.queue, self.host,self.inport,self.outport, name=name, maxprogress=maxprogress, icon=icon)
+        #self.gui.start()
+        #Don't subclass threading.Thread, just use it. This avoids "RuntimeError: RuntimeError('main thread is not in main loop',)"
+        self.t=threading.Thread(target=ProgressLoggerGUI,args=(self.queue, self.host,self.inport,self.outport), kwargs={'name':name, 'maxprogress':maxprogress, 'icon':icon})
+        self.t.start()
 
         self.startLogging()
 
@@ -300,21 +339,18 @@ class ProgressLoggerServer:
             msg=pickle.loads(data)
             if msg[0]=='EXIT':
                 self.serving=False
-                self.queue.put(msg)
-                break
-            else:self.queue.put(msg)
+            self.queue.put(msg)
             channel.close()
 
         #Stop listening
         self.server.close()
         
-class ProgressLoggerGUI(threading.Thread):
+class ProgressLoggerGUI(object):#(threading.Thread): #Don't subclass threading.Thread
     ''' Provide a Progress Bar Logging GUI '''
-
     def __init__(self, queue, host, inport, outport, name=None, maxprogress=100, icon=None):
         
-        ##Cos we've overwritten the class __init__ method        
-        threading.Thread.__init__(self)
+        ##Cos we've overwritten the class __init__ method
+        #threading.Thread.__init__(self)
         self.queue = queue
         self.host = host
         self.inport = inport
@@ -325,15 +361,31 @@ class ProgressLoggerGUI(threading.Thread):
         self.keepchecking = True
         self.ppid = os.getppid()
         self.icon=icon
+        self.run()
+
     def run(self):
         '''
-        self.q
         Initializes the instance - set up the Tkinter progress bar and log output.
         '''
 
         self.master=Tkinter.Tk()
-        try:self.master.wm_iconbitmap(self.icon)
-        except:pass
+        self.master.withdraw()
+        if self.icon is not None:
+            icon=self.icon.split('.')
+            try:
+                try:
+                    self.icon=getattr(__import__('.'.join(icon[:-1])),icon[-1])
+                except:
+                    pass
+                try:
+                    self.icon=Tkinter.PhotoImage(master=self.master,data=self.icon.data,format=self.icon.format)
+                except:
+                    self.icon=Tkinter.PhotoImage(master=self.master,file=self.icon)
+                self.master.tk.call('wm', 'iconphoto', self.master._w, self.icon)
+            except:
+                pass
+                
+        
         self.master.protocol("WM_DELETE_WINDOW", self.onOk)
         self.master.title(self.name)
         self.master.geometry("700x800")
@@ -353,6 +405,8 @@ class ProgressLoggerGUI(threading.Thread):
         self.ok = Tkinter.Button(self.master, text="OK", width=10, command=self.onOk, state=Tkinter.DISABLED)
         self.ok.pack(side=Tkinter.RIGHT, padx=5, pady=5)
 
+        self.master.deiconify()
+        self.onStartup()
         self.checkQueue()
         self.master.mainloop()
 
@@ -406,9 +460,17 @@ class ProgressLoggerGUI(threading.Thread):
         w.see(Tkinter.END)
         w.configure(state=Tkinter.DISABLED)
         
+    def onStartup(self):
+        try:
+            client = socket.socket (socket.AF_INET, socket.SOCK_STREAM )
+            client.connect((self.host,self.outport))
+            client.send(pickle.dumps(['STARTUP',0]))
+            client.close()
+            del client
+        except:pass
+
     def onOk(self, event=None):
         self.master.withdraw()
-        self.master.destroy()
         try:
             for port in (self.inport,self.outport):
                 client = socket.socket (socket.AF_INET, socket.SOCK_STREAM )
@@ -416,7 +478,8 @@ class ProgressLoggerGUI(threading.Thread):
                 client.send(pickle.dumps(['EXIT',0]))
                 client.close()
                 del client
-        except:pass        
+        except:pass
+        self.master.destroy()
     
 class ProgressBarView: 
     '''A progress bar widget
@@ -523,48 +586,47 @@ class ProgressBarView:
 # PROCESSENTRY32 and getppid derived from:
 # http://d.hatena.ne.jp/chrono-meter/20090325/p1
 ############################################################################
-import ctypes
-class PROCESSENTRY32(ctypes.Structure):
-    from ctypes.wintypes import DWORD,POINTER,ULONG,LONG,MAX_PATH,c_char
-    _fields_ = (
-        ('dwSize', DWORD, ),
-        ('cntUsage', DWORD, ),
-        ('th32ProcessID', DWORD, ),
-        ('th32DefaultHeapID', POINTER(ULONG), ),
-        ('th32ModuleID', DWORD, ),
-        ('cntThreads', DWORD, ),
-        ('th32ParentProcessID', DWORD, ),
-        ('pcPriClassBase', LONG, ),
-        ('dwFlags', DWORD, ),
-        ('szExeFile', c_char * MAX_PATH, ),
-        )
-def getppid(pid=None):
-    """the Windows version of os.getppid"""
-    if pid is None:pid=os.getpid()
-    from ctypes import windll,sizeof,byref
-    import win32process
-    pe = PROCESSENTRY32()
-    pe.dwSize = sizeof(PROCESSENTRY32)
+if utilities.iswin:
+    import ctypes
+    class PROCESSENTRY32(ctypes.Structure):
+        from ctypes.wintypes import DWORD,POINTER,ULONG,LONG,MAX_PATH,c_char
+        _fields_ = (
+            ('dwSize', DWORD, ),
+            ('cntUsage', DWORD, ),
+            ('th32ProcessID', DWORD, ),
+            ('th32DefaultHeapID', POINTER(ULONG), ),
+            ('th32ModuleID', DWORD, ),
+            ('cntThreads', DWORD, ),
+            ('th32ParentProcessID', DWORD, ),
+            ('pcPriClassBase', LONG, ),
+            ('dwFlags', DWORD, ),
+            ('szExeFile', c_char * MAX_PATH, ),
+            )
+    def getppid(pid=None):
+        """the Windows version of os.getppid"""
+        if pid is None:pid=os.getpid()
+        from ctypes import windll,sizeof,byref
+        import win32process
+        pe = PROCESSENTRY32()
+        pe.dwSize = sizeof(PROCESSENTRY32)
 
-    snapshot = windll.kernel32.CreateToolhelp32Snapshot(2, 0)
-    try:
-        if not windll.kernel32.Process32First(snapshot, byref(pe)):
-            raise WindowsError
-        while pe.th32ProcessID != pid:
-            if not windll.kernel32.Process32Next(snapshot, byref(pe)):
+        snapshot = windll.kernel32.CreateToolhelp32Snapshot(2, 0)
+        try:
+            if not windll.kernel32.Process32First(snapshot, byref(pe)):
                 raise WindowsError
-        result = pe.th32ParentProcessID
-    finally:
-        windll.kernel32.CloseHandle(snapshot)
+            while pe.th32ProcessID != pid:
+                if not windll.kernel32.Process32Next(snapshot, byref(pe)):
+                    raise WindowsError
+            result = pe.th32ParentProcessID
+        finally:
+            windll.kernel32.CloseHandle(snapshot)
 
-    if result not in win32process.EnumProcesses():
-        result = 1
+        if result not in win32process.EnumProcesses():
+            result = 1
 
-    return result
-if not hasattr(os, 'getppid'):
+        return result
     os.getppid = getppid
 ############################################################################
-
 if __name__ == '__main__':
     import optparse
     description='Run the progress logger GUI'
@@ -572,7 +634,7 @@ if __name__ == '__main__':
     parser = optparse.OptionParser(usage=usage,description=description)
     opt=parser.add_option('-m', '--maxprogress', type="int", dest="maxprogress",default=100,help='The maximum value to show in the progress bar (%default)')
     opt=parser.add_option('-n', '--name', type="string", dest="name",default='Progress', help='The name to display in the window title bar (%default)')
-    opt=parser.add_option('-i', '--icon', type="string", dest="icon", help='The icon to display in the window title bar')
+    opt=parser.add_option('-i', '--icon', type="string", dest="icon", help='The GIF to display in the window title bar, either a filepath or a class string')
     opt=parser.add_option('-s', '--server', type="string", dest="server",default='localhost', help='The server hostname (%default)')
     #Parse command line args
     kwargs,args = parser.parse_args()

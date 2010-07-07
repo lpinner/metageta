@@ -604,10 +604,10 @@ def HistPercentileValue(inhist, percent, binsize, lowerlimit):
 def RATtoLUT(rat):
     ''' Create a LUT from an attribute table with RGB columns
     
-        @type filepath:   C{str}
-        @param filepath:  Path to colour lookup file
-        @rtype:           C{list}
-        @return:          List of cell values and R,G,B,A values e.g ((12,0,0,0,255), (25,255,255,255,0))
+        @type rat:   C{GDALRasterAttributeTable}
+        @param rat:  A GDALRasterAttributeTable
+        @rtype:      C{list}
+        @return:     List of cell values and R,G,B,A values e.g ((12,0,0,0,255), (25,255,255,255,0))
     '''
     rgbcols={}
     for iCol in range(0,rat.GetColumnCount()+1):

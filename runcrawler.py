@@ -60,10 +60,6 @@ def main(dir, xls, logger, mediaid=None, update=False, getovs=False):
         @param mediaid:CD/DVD media ID
         @type  getovs: C{boolean}
         @param getovs: Generate overview (quicklook/thumbnail) images
-        @type  nogui:  C{boolean}
-        @param nogui:  Don't show the GUI progress dialog
-        @type  debug:  C{boolean}
-        @param debug:  Turn debug output on
         @return:  C{progresslogger.ProgressLogger}
     """
     

@@ -414,6 +414,23 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
+          <td><span class="summary-sig"><a href="overviews-module.html#RATtoLUT" class="summary-sig-name">RATtoLUT</a>(<span class="summary-sig-arg">rat</span>)</span><br />
+      Create a LUT from an attribute table with RGB columns</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="overviews-pysrc.html#RATtoLUT">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type"><code>list</code></span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
           <td><span class="summary-sig"><a href="overviews-module.html#ParseColourLUT" class="summary-sig-name">ParseColourLUT</a>(<span class="summary-sig-arg">filepath</span>)</span><br />
       Open and parse a colour lookup table</td>
           <td align="right" valign="top">
@@ -448,10 +465,9 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="overviews-module.html#ExpandedColourLUT" class="summary-sig-name">ExpandedColourLUT</a>(<span class="summary-sig-arg">filepath</span>,
-        <span class="summary-sig-arg">nvals</span>)</span><br />
-      Open and parse a colour lookup table, expanding missing values as 
-      required.</td>
+          <td><span class="summary-sig"><a href="overviews-module.html#ExpandedColourLUT" class="summary-sig-name">ExpandedColourLUT</a>(<span class="summary-sig-arg">lut</span>,
+        <span class="summary-sig-arg">rb</span>)</span><br />
+      Populate a colour lookup table, expanding missing values as required.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="overviews-pysrc.html#ExpandedColourLUT">source&nbsp;code</a></span>
             
@@ -467,12 +483,47 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="overviews-module.html#ExpandedColorLUT" class="summary-sig-name">ExpandedColorLUT</a>(<span class="summary-sig-arg">filepath</span>,
-        <span class="summary-sig-arg">nvals</span>)</span><br />
-      Open and parse a colour lookup table, expanding missing values as 
-      required.</td>
+          <td><span class="summary-sig"><a href="overviews-module.html#ExpandedColorLUT" class="summary-sig-name">ExpandedColorLUT</a>(<span class="summary-sig-arg">lut</span>,
+        <span class="summary-sig-arg">rb</span>)</span><br />
+      Populate a colour lookup table, expanding missing values as required.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="overviews-pysrc.html#ExpandedColourLUT">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type"><code>list</code></span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="overviews-module.html#ColourLUT" class="summary-sig-name">ColourLUT</a>(<span class="summary-sig-arg">lut</span>,
+        <span class="summary-sig-arg">rb</span>)</span><br />
+      Populate a colour lookup table, making sure all values get included</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="overviews-pysrc.html#ColourLUT">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type"><code>list</code></span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="overviews-module.html#ColorLUT" class="summary-sig-name">ColorLUT</a>(<span class="summary-sig-arg">lut</span>,
+        <span class="summary-sig-arg">rb</span>)</span><br />
+      Populate a colour lookup table, making sure all values get included</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="overviews-pysrc.html#ColourLUT">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -1082,6 +1133,32 @@
   </dl>
 </td></tr></table>
 </div>
+<a name="RATtoLUT"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">RATtoLUT</span>(<span class="sig-arg">rat</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="overviews-pysrc.html#RATtoLUT">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Create a LUT from an attribute table with RGB columns</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>rat</code></strong> (<code>GDALRasterAttributeTable</code>) - A GDALRasterAttributeTable</li>
+    </ul></dd>
+    <dt>Returns: <code>list</code></dt>
+        <dd>List of cell values and R,G,B,A values e.g ((12,0,0,0,255), 
+          (25,255,255,255,0))</dd>
+  </dl>
+</td></tr></table>
+</div>
 <a name="ParseColourLUT"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -1171,40 +1248,24 @@
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">ExpandedColourLUT</span>(<span class="sig-arg">filepath</span>,
-        <span class="sig-arg">nvals</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">ExpandedColourLUT</span>(<span class="sig-arg">lut</span>,
+        <span class="sig-arg">rb</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="overviews-pysrc.html#ExpandedColourLUT">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>Open and parse a colour lookup table, expanding missing values as 
-  required.</p>
-  <p>Values must be space separated. Comment characters are stripped out. 
-  Format is: <code>pixel red green blue [optional alpha]</code>. Pixel 
-  value may be a range (eg 15-20). The following comment characters may be 
-  used: <code>'#' '//' ';' '/*'</code>.</p>
-  <p>Example:</p>
-<pre class="literalblock">
-       #value   R   G   B   A
-        11-15   255 0   0   255 #(red)
-        16      255 165 0   255 #(orange)
-        18      255 255 0   255 #(yellow)
-        19      0   255 0   255 /*(green)
-        21      0   0   255 255 /*(blue)
-        98      0   255 255 255 ;(cyan)
-        99-255  160 32  240 255 ;(purple)
-</pre>
+  <p>Populate a colour lookup table, expanding missing values as required. 
+  Workaround for http://trac.osgeo.org/gdal/ticket/3253</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>filepath</code></strong> (<code>str</code>) - Path to colour lookup file</li>
-        <li><strong class="pname"><code>nvals</code></strong> (<code>int</code>) - Number of values</li>
+        <li><strong class="pname"><code>lut</code></strong> (<code>list</code>) - A list of one or more [values,r,g,b,a] lists.</li>
+        <li><strong class="pname"><code>rb</code></strong> (<code>gdal.RasterBand</code>) - A gdal RasterBand object.</li>
     </ul></dd>
     <dt>Returns: <code>list</code></dt>
-        <dd>List of cell and R,G,B,A values e.g ((12,0,0,0,255), 
-          (25,255,255,255,0))</dd>
+        <dd>A list of one or more [values,r,g,b,a] lists.</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1215,40 +1276,80 @@
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">ExpandedColorLUT</span>(<span class="sig-arg">filepath</span>,
-        <span class="sig-arg">nvals</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">ExpandedColorLUT</span>(<span class="sig-arg">lut</span>,
+        <span class="sig-arg">rb</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="overviews-pysrc.html#ExpandedColourLUT">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>Open and parse a colour lookup table, expanding missing values as 
-  required.</p>
-  <p>Values must be space separated. Comment characters are stripped out. 
-  Format is: <code>pixel red green blue [optional alpha]</code>. Pixel 
-  value may be a range (eg 15-20). The following comment characters may be 
-  used: <code>'#' '//' ';' '/*'</code>.</p>
-  <p>Example:</p>
-<pre class="literalblock">
-       #value   R   G   B   A
-        11-15   255 0   0   255 #(red)
-        16      255 165 0   255 #(orange)
-        18      255 255 0   255 #(yellow)
-        19      0   255 0   255 /*(green)
-        21      0   0   255 255 /*(blue)
-        98      0   255 255 255 ;(cyan)
-        99-255  160 32  240 255 ;(purple)
-</pre>
+  <p>Populate a colour lookup table, expanding missing values as required. 
+  Workaround for http://trac.osgeo.org/gdal/ticket/3253</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>filepath</code></strong> (<code>str</code>) - Path to colour lookup file</li>
-        <li><strong class="pname"><code>nvals</code></strong> (<code>int</code>) - Number of values</li>
+        <li><strong class="pname"><code>lut</code></strong> (<code>list</code>) - A list of one or more [values,r,g,b,a] lists.</li>
+        <li><strong class="pname"><code>rb</code></strong> (<code>gdal.RasterBand</code>) - A gdal RasterBand object.</li>
     </ul></dd>
     <dt>Returns: <code>list</code></dt>
-        <dd>List of cell and R,G,B,A values e.g ((12,0,0,0,255), 
-          (25,255,255,255,0))</dd>
+        <dd>A list of one or more [values,r,g,b,a] lists.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="ColourLUT"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">ColourLUT</span>(<span class="sig-arg">lut</span>,
+        <span class="sig-arg">rb</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="overviews-pysrc.html#ColourLUT">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Populate a colour lookup table, making sure all values get 
+  included</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>lut</code></strong> (<code>list</code>) - A list of one or more [values,r,g,b,a] lists.</li>
+        <li><strong class="pname"><code>rb</code></strong> (<code>gdal.RasterBand</code>) - A gdal RasterBand object.</li>
+    </ul></dd>
+    <dt>Returns: <code>list</code></dt>
+        <dd>A list of one or more [values,r,g,b,a] lists.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="ColorLUT"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">ColorLUT</span>(<span class="sig-arg">lut</span>,
+        <span class="sig-arg">rb</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="overviews-pysrc.html#ColourLUT">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Populate a colour lookup table, making sure all values get 
+  included</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>lut</code></strong> (<code>list</code>) - A list of one or more [values,r,g,b,a] lists.</li>
+        <li><strong class="pname"><code>rb</code></strong> (<code>gdal.RasterBand</code>) - A gdal RasterBand object.</li>
+    </ul></dd>
+    <dt>Returns: <code>list</code></dt>
+        <dd>A list of one or more [values,r,g,b,a] lists.</dd>
   </dl>
 </td></tr></table>
 </div>

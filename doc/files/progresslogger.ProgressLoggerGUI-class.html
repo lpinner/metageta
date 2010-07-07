@@ -59,13 +59,9 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class ProgressLoggerGUI</h1><p class="nomargin-top"><span class="codelink"><a href="progresslogger-pysrc.html#ProgressLoggerGUI">source&nbsp;code</a></span></p>
 <pre class="base-tree">
-        object --+        
-                 |        
-threading._Verbose --+    
-                     |    
-      threading.Thread --+
-                         |
-                        <strong class="uidshort">ProgressLoggerGUI</strong>
+object --+
+         |
+        <strong class="uidshort">ProgressLoggerGUI</strong>
 </pre>
 
 <hr />
@@ -101,7 +97,7 @@ threading._Verbose --+
         <span class="summary-sig-arg">outport</span>,
         <span class="summary-sig-arg">name</span>=<span class="summary-sig-default">None</span>,
         <span class="summary-sig-arg">maxprogress</span>=<span class="summary-sig-default">100</span>,
-        <span class="summary-sig-arg">windowicon</span>=<span class="summary-sig-default">None</span>)</span><br />
+        <span class="summary-sig-arg">icon</span>=<span class="summary-sig-default">None</span>)</span><br />
       x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="progresslogger-pysrc.html#ProgressLoggerGUI.__init__">source&nbsp;code</a></span>
@@ -118,9 +114,9 @@ threading._Verbose --+
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="progresslogger.ProgressLoggerGUI-class.html#run" class="summary-sig-name">run</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      self.q Initializes the instance - set up the Tkinter progress bar and
-      log output.</td>
+          <td><span class="summary-sig"><a name="run"></a><span class="summary-sig-name">run</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Initializes the instance - set up the Tkinter progress bar and log 
+      output.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="progresslogger-pysrc.html#ProgressLoggerGUI.run">source&nbsp;code</a></span>
             
@@ -189,6 +185,22 @@ threading._Verbose --+
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
+          <td><span class="summary-sig"><a name="onStartup"></a><span class="summary-sig-name">onStartup</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="progresslogger-pysrc.html#ProgressLoggerGUI.onStartup">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
           <td><span class="summary-sig"><a name="onOk"></a><span class="summary-sig-name">onOk</span>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">event</span>=<span class="summary-sig-default">None</span>)</span></td>
           <td align="right" valign="top">
@@ -202,24 +214,6 @@ threading._Verbose --+
   </tr>
   <tr>
     <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code>threading.Thread</code></b>:
-      <code>__repr__</code>,
-      <code>getName</code>,
-      <code>isAlive</code>,
-      <code>isDaemon</code>,
-      <code>is_alive</code>,
-      <code>join</code>,
-      <code>setDaemon</code>,
-      <code>setName</code>,
-      <code>start</code>
-      </p>
-    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code>threading.Thread</code></b> (private):
-      <code>_set_daemon</code>,
-      <code>_set_ident</code>
-      </p></div>
-    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code>threading._Verbose</code></b> (private):
-      <code>_note</code>
-      </p></div>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__delattr__</code>,
       <code>__format__</code>,
@@ -228,6 +222,7 @@ threading._Verbose --+
       <code>__new__</code>,
       <code>__reduce__</code>,
       <code>__reduce_ex__</code>,
+      <code>__repr__</code>,
       <code>__setattr__</code>,
       <code>__sizeof__</code>,
       <code>__str__</code>,
@@ -255,11 +250,6 @@ threading._Verbose --+
 </tr>
   <tr>
     <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code>threading.Thread</code></b>:
-      <code>daemon</code>,
-      <code>ident</code>,
-      <code>name</code>
-      </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__class__</code>
       </p>
@@ -298,7 +288,7 @@ threading._Verbose --+
         <span class="sig-arg">outport</span>,
         <span class="sig-arg">name</span>=<span class="sig-default">None</span>,
         <span class="sig-arg">maxprogress</span>=<span class="sig-default">100</span>,
-        <span class="sig-arg">windowicon</span>=<span class="sig-default">None</span>)</span>
+        <span class="sig-arg">icon</span>=<span class="sig-default">None</span>)</span>
     <br /><em class="fname">(Constructor)</em>
   </h3>
   </td><td align="right" valign="top"
@@ -312,29 +302,6 @@ threading._Verbose --+
     <dt>Overrides:
         object.__init__
         <dd><em class="note">(inherited documentation)</em></dd>
-    </dt>
-  </dl>
-</td></tr></table>
-</div>
-<a name="run"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">run</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="progresslogger-pysrc.html#ProgressLoggerGUI.run">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>self.q Initializes the instance - set up the Tkinter progress bar and 
-  log output.</p>
-  <dl class="fields">
-    <dt>Overrides:
-        threading.Thread.run
     </dt>
   </dl>
 </td></tr></table>

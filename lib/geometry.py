@@ -929,7 +929,7 @@ class ShapeWriter:
             feat = ogr.Feature(lyr.GetLayerDefn())
             for a in attributes:
                 #if a in self.fields:feat.SetField(a, attributes[a])
-                if a in self.fields:feat.SetField(self.fields[a], attributes[a])
+                if a in self.fields:feat.SetField(self.fields[a], utilities.encode(attributes[a]))
             feat.SetGeometryDirectly(geom)
             lyr.CreateFeature(feat)
             lyr.SyncToDisk()

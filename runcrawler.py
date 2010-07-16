@@ -221,7 +221,7 @@ def ismodified(record,fileinfo):
         return True
     elif record['filelist']!=fileinfo['filelist']:
         return True
-    elif not os.path.exists(record['quicklook']):
+    elif record['quicklook'] and not os.path.exists(record['quicklook']):
         return True
     else:
         md=time.mktime(time.strptime(record['metadatadate'],utilities.dateformat))
@@ -234,8 +234,9 @@ def ismodified(record,fileinfo):
 def exit(): 
     '''Force exit after closure of the ProgressBar GUI'''
     exe=os.path.splitext(os.path.basename(sys.executable.lower()))[0]
-    if exe in ['python','pythonw']: #Little kludge to stop killing dev IDEs
-        os._exit(0)
+    if forceexit:   #Issue?
+        if exe in ['python','pythonw']: #Little kludge to stop killing dev IDEs
+            os._exit(0)
 
 def getlogger(logfile,name=None,nogui=False, debug=False, icon=None):
         geometry.debug=debug
@@ -317,6 +318,7 @@ if __name__ == '__main__':
     optvals,argvals = parser.parse_args()
 
     logger=None
+    forceexit=True
     #Do we need to pop up the GUI?
     if not optvals.dir or not optvals.xls:
         #Add existing command line args values to opt default values so they show in the gui
@@ -331,19 +333,21 @@ if __name__ == '__main__':
                 keepalive=args.keepalive
                 args.xls = utilities.checkExt(utilities.encode(args.xls), ['.xls'])
                 log=args.xls.replace('.xls','.log')
-                if logger:
+                if logger and logger.logging:
                     logger.resetProgress()
                     logger.logfile=log
                 else:
                     logger=getlogger(log,name=APP,nogui=optvals.nogui, debug=optvals.debug, icon=ICON)
                 keepalive=args.keepalive
+                forceexit=True
                 main(args.dir,args.xls,logger,args.med,args.update,args.ovs)
+                forceexit=False
             else:keepalive=False
     else: #No need for the GUI
         xls = utilities.checkExt(utilities.encode(optvals.xls), ['.xls'])
         log=xls.replace('.xls','.log')
         logger=getlogger(log, name=APP,nogui=optvals.nogui, debug=optvals.debug, icon=ICON)
-        main(optvals.dir,optvals.xls,logger,optvals.med,optvals.update,optvals.ovs)
+        main(optvals.dir,xls,logger,optvals.med,optvals.update,optvals.ovs)
 
     if logger:
         logger.shutdown()

@@ -40,8 +40,10 @@ class Dataset(__default__.Dataset):
     def __init__(self,f):
         ''' Set the filename from <path>\hdr.adf to <path>'''
         self._adf=f
-        self.fileinfo['filepath']=os.path.dirname(f)
-        self.fileinfo['filename']=os.path.basename(self.fileinfo['filepath'])
+        f=os.path.dirname(f)
+        self.__setfileinfo__(f)
+        #self.fileinfo['filepath']=f
+        #self.fileinfo['filename']=os.path.basename(f)
         self.filelist=glob.glob(self.fileinfo['filepath']+'.*')
         self.filelist.extend(glob.glob(self.fileinfo['filepath']+'/*'))
     def __getmetadata__(self):

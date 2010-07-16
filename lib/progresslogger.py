@@ -71,6 +71,7 @@ class ProgressLogger(object,logging.Logger):
         self.mode=mode
         self.level=level
         self.dateformat=dateformat
+        self.logging=True
 
         #Dummy methods, updated if logToGUI is True
         self.updateProgress=lambda *a,**k:None
@@ -100,7 +101,7 @@ class ProgressLogger(object,logging.Logger):
         if logToGUI:
             self.progress=0
             try:
-                self.ProgressLoggerHandler = ProgressLoggerHandler(name=name, maxprogress=maxprogress,icon=icon,callback=callback)
+                self.ProgressLoggerHandler = ProgressLoggerHandler(self, name=name, maxprogress=maxprogress,icon=icon,callback=callback)
 
                 #To handle the PROGRESS & END events without them going to the console or file
                 logging.PROGRESS = level - 1
@@ -146,6 +147,7 @@ class ProgressLogger(object,logging.Logger):
         Should be called at application exit.
         '''
         self.debug('Shutting down')
+        self.logging=False
         for h in self.handlers:
             h.flush()
             h.close()
@@ -184,10 +186,11 @@ class ProgressLogger(object,logging.Logger):
 class ProgressLoggerHandler(logging.Handler):
     ''' Provide a Progress Bar Logging handler '''
 
-    def __init__(self, name='Progress Log', level=logging.INFO, maxprogress=100, icon=None, callback=lambda:None):
+    def __init__(self, parent, name='Progress Log', level=logging.INFO, maxprogress=100, icon=None, callback=lambda:None):
         '''
         Initializes the instance - set up the Tkinter GUI and log output.
         '''
+        self.parent=parent
 
         ##Cos we've overwritten the class __init__ method        
         logging.Handler.__init__(self)
@@ -211,7 +214,7 @@ class ProgressLoggerHandler(logging.Handler):
         for i,v in enumerate(parameterList): #Fix any spaces in parameters
             if ' ' in v:parameterList[i]='"%s"'%v
         pid = subprocess.Popen(parameterList).pid
-        pc=ProgressLoggerChecker(self.host,self.outport,callback,pid)
+        pc=ProgressLoggerChecker(self,self.host,self.outport,callback,pid)
         while not pc.ready: #Fixes Issue 29
             if pc.failed:raise
             else:time.sleep(0.1)
@@ -252,8 +255,12 @@ class ProgressLoggerHandler(logging.Handler):
         self.msgs.append(['RESET',0])
         self.sendmsgs()
 
+    def shutdown(self):
+        self.parent.shutdown()
+
 class ProgressLoggerChecker(threading.Thread):
-    def __init__(self,host,port,callback,pid):
+    def __init__(self,parent,host,port,callback,pid):
+        self.parent=parent
         self.gui=True
         self.host = host
         self.port = int(port)
@@ -296,6 +303,7 @@ class ProgressLoggerChecker(threading.Thread):
         #Stop listening
         self.server.close()
         del self.server
+        self.parent.shutdown()
         self.callback()
         sys.exit()
         

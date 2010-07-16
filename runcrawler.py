@@ -119,7 +119,7 @@ def main(dir, xls, logger, mediaid=None, update=False, getovs=False):
             logger.debug('Attempting to open %s'%Crawler.file)
             fi=ds.fileinfo
             fi['filepath']=utilities.uncpath(fi['filepath'])
-            fi['filelist']=','.join(utilities.uncpath(ds.filelist))
+            fi['filelist']='|'.join(utilities.uncpath(ds.filelist))
             qlk=utilities.uncpath(os.path.join(os.path.dirname(xls),'%s.%s.qlk.jpg'%(fi['filename'],fi['guid'])))
             thm=utilities.uncpath(os.path.join(os.path.dirname(xls),'%s.%s.thm.jpg'%(fi['filename'],fi['guid'])))
 
@@ -225,7 +225,7 @@ def ismodified(record,fileinfo):
         return True
     else:
         md=time.mktime(time.strptime(record['metadatadate'],utilities.dateformat))
-        for f in fileinfo['filelist'].split(','):
+        for f in fileinfo['filelist'].split('|'):
             fs = os.stat(f)
             if md<fs.st_mtime:return True
 

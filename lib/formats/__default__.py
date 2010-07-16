@@ -168,7 +168,6 @@ class Dataset(__dataset__.Dataset):
                 metadata=self._gdaldataset.GetMetadata()
                 self.metadata['metadata']='\n'.join(['%s: %s' %(m,metadata[m]) for m in metadata])
                 self.metadata['filesize']=sum([os.path.getsize(tmp) for tmp in self.filelist])
-                #self.metadata['filelist']=','.join(self.filelist)
                 if self.metadata['filesize']>0:self.metadata['compressionratio']=int((self.metadata['nbands']*self.metadata['cols']*self.metadata['rows']*(self.metadata['nbits']/8.0))/self.metadata['filesize'])
                 if self.metadata['compressionratio'] > 0:
                     try:

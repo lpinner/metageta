@@ -960,7 +960,7 @@ class ShapeWriter:
             feat.SetGeometryDirectly(geom)
             while feat:
                 for a in attributes:
-                    if a in self.fields:feat.SetField(self.fields[a], attributes[a])
+                    if a in self.fields:feat.SetField(self.fields[a], utilities.encode(attributes[a]))
                 lyr.SetFeature(feat)
                 feat=lyr.GetNextFeature()
             lyr.SyncToDisk()

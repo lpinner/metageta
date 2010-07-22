@@ -25,16 +25,24 @@ base 64 encoded gif images for the GUI buttons
 
 class app_img:
     format='gif'
-    data='''R0lGODlhEAAQAMZdAAAAADYePzQhSjkiNDslKDImSD4mOTYrNjkrSkYsLSw1QzA1QSE+JSY9Iz80
-            Oj81RyhCIkc4LydDKjk/IjhANCdHKSVJJUc+PCZKKipKKSpLKE89SihMLStMKSdNKyhNKidPLCxP
-            LSlQLCdRKCdRLCxQLClTK1NESFxDVW1FQ0tRYGBOY1RVVVtWWL4znME2j7k4k7RGGMI1mqNOE1xg
-            ZrtAlKpSFlhkVrdBnbNPI7pDlKtVIcRFjXdhYK1WMF1ocL1Ik2hmabtLkcpJmc1Kl8RMqLpSl7tT
-            jHBubr9fMchTo8xUo89Tp3F3ZsZZoMFoQbpsNcJqQsNgp8NsRrl1QcB1Tr94TcGBW8aDbL+KWsWK
-            XMCNWs2JZP//////////////////////////////////////////////////////////////////
-            /////////////////////////////////////////////////////////////////////////yH5
-            BAEKAH8ALAAAAAAQABAAAAeQgH+Cg4SFggCIiYqGfwApGwYTBwIDJwCMAEgPDgEFCxQ0l4OKPREJ
-            CAoEF0Gihw0VAE03KiwoLSs/rY0MGYq+l4ojHBgdISUmFroAUkoAEh4aJCIgHxDKTkS/i4pDLjhG
-            QEc8S8pcWABFMDo1Qi8yTMpbV9qJhABaT1NRVlVUWbqjksTI4WPHDBtQAB6iByAQADs='''
+    data='''R0lGODlhEAAQAOeRACcLIiAbCSAjCjMdMzsfMjUkGUcmRjwwJ0YqRj4xJVwoUFguRkU2MS0/LzQ8
+            PC8/LzM+QTJCMDJCQTpCQCxIME1CIXQyYW48KTpLO1REPEpKSktKS01KSkpLSkxLTE1LS0VNUDtS
+            PD9PT0tMTExMTE1MTUxNTU1NTU5NTUFUQFFOTkZRU1BPTU9QUUVTVF9PO1JUVVRVSnlNMEVeRlZX
+            W1ZYVVZYWF5XVFBdUkpfX2RZXIZMgVtdX11eX1tfW1xfW1tfXqZEkFtgW2NfYWZgW2tdal9iXk9m
+            Z19iYk9pTqZIn5lNlU1rTp1XOF9lZVxnXF5oXlNrZ59eM1FzU1dyVcVItJJmSl5ycq1Wp1t0cLlU
+            tWB1eF52dmKBY12DX9RWwGN/f+RSzaVzTdNbxmaEhLlzRdFhs2WJZWeJZmOMZ7Z2UXGGhm2IiGqJ
+            iKV+VmuKimyKi26Ojm2ScnGQkGuWb22Wb3OTk+xp2+dr5eF73Pl154SfoMKYeIampoimptiYbPuB
+            8viD8I2sq/KJ7pOtrZGuruebbpGvr/+I/Ja1tdqrf9i3i/iweviwhP+zhf/Hif/Lpf//////////
+            ////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////
+            /////////////////////////////////////////////////////yH5BAEKAP8ALAAAAAAQABAA
+            AAjRAP8JHEiwoMGBGk6MOChQgwYgEnJwcdGjoAYbIo5EyQIGjh02axyYIOjkSqI4bci8mdPnECEk
+            Ggi2WFHIj6A9WyDQgEFiYIcfKR5MAMHDhJAQTCLUIGgEQ5cZDZKgqUMnDRUfMQVu8ADFi5wzUyjg
+            KLEh6z8PCAZhGfIEBQALZgAtMUCwyI48Y6roQRToThglAzYMZEFkgRY8X4Io0CEgBkENByDxYUAg
+            QAU3jB6JKUBQxYtFigw5avSnjBQZN8wKTGBFTZMLGRwy/Mfhg2qCAQEAOw=='''
 
 class shp_img:
     format='gif'

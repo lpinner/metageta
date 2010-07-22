@@ -149,8 +149,11 @@ class ProgressLogger(object,logging.Logger):
         self.debug('Shutting down')
         self.logging=False
         for h in self.handlers:
-            h.flush()
-            h.close()
+            try:
+                h.flush()
+                h.close()
+            except:pass
+        
 
     # ================ #
     # Class Properties
@@ -191,6 +194,7 @@ class ProgressLoggerHandler(logging.Handler):
         Initializes the instance - set up the Tkinter GUI and log output.
         '''
         self.parent=parent
+        self.callback=callback
 
         ##Cos we've overwritten the class __init__ method        
         logging.Handler.__init__(self)
@@ -214,7 +218,7 @@ class ProgressLoggerHandler(logging.Handler):
         #for i,v in enumerate(parameterList): #Fix any spaces in parameters
         #    if ' ' in v:parameterList[i]='"%s"'%v
         pid = subprocess.Popen(parameterList).pid
-        pc=ProgressLoggerChecker(self,self.host,self.outport,callback,pid)
+        pc=ProgressLoggerChecker(parent,self.host,self.outport,pid)
         while not pc.ready: #Fixes Issue 29
             if pc.failed:raise
             else:time.sleep(0.1)
@@ -244,8 +248,7 @@ class ProgressLoggerHandler(logging.Handler):
         '''
         self.msgs.append(['EXIT',0])
         self.sendmsgs()
-        self.msgs.append(['EXIT',0])
-        self.sendmsgs(port=self.outport)
+        self.callback()
 
     def updateProgress(self,newMax=None):
         self.msgs.append(['PROGRESS',newMax])
@@ -255,16 +258,12 @@ class ProgressLoggerHandler(logging.Handler):
         self.msgs.append(['RESET',0])
         self.sendmsgs()
 
-    def shutdown(self):
-        self.parent.shutdown()
-
 class ProgressLoggerChecker(threading.Thread):
-    def __init__(self,parent,host,port,callback,pid):
+    def __init__(self,parent,host,port,pid):
         self.parent=parent
         self.gui=True
         self.host = host
         self.port = int(port)
-        self.callback = callback
         self.pid = pid
         self.ready=False
         self.failed=False
@@ -304,9 +303,8 @@ class ProgressLoggerChecker(threading.Thread):
         self.server.close()
         del self.server
         self.parent.shutdown()
-        self.callback()
         sys.exit()
-        
+
 class ProgressLoggerServer:
     ''' Provide a Progress Bar Logging Server '''
 
@@ -488,7 +486,7 @@ class ProgressLoggerGUI(object):#(threading.Thread): #Don't subclass threading.T
                 del client
         except:pass
         self.master.destroy()
-    
+   
 class ProgressBarView: 
     '''A progress bar widget
        

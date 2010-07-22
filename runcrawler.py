@@ -238,17 +238,24 @@ def exit():
         if exe in ['python','pythonw']: #Little kludge to stop killing dev IDEs
             os._exit(0)
 
+def showmessage(title, msg,type=None):
+    import Tkinter,tkMessageBox
+    tk=Tkinter.Tk()
+    tk.withdraw()
+    tkMessageBox.showinfo(title,msg,type=type)
+    tk.destroy()
+
 def getlogger(logfile,name=None,nogui=False, debug=False, icon=None):
-        geometry.debug=debug
-        if debug:
-            level=progresslogger.DEBUG
-        else:
-            level=progresslogger.INFO
-            geometry.gdal.PushErrorHandler( 'CPLQuietErrorHandler' )
-        
-        try:   logger = progresslogger.ProgressLogger(name=name,logfile=logfile, logToConsole=True, logToFile=True, logToGUI=not nogui, level=level, icon=icon, callback=exit)
-        except:logger = progresslogger.ProgressLogger(name=name,logfile=logfile, logToConsole=True, logToFile=True, logToGUI=not nogui, level=level, callback=exit)
-        return logger
+    geometry.debug=debug
+    if debug:
+        level=progresslogger.DEBUG
+    else:
+        level=progresslogger.INFO
+        geometry.gdal.PushErrorHandler( 'CPLQuietErrorHandler' )
+    
+    try:   logger = progresslogger.ProgressLogger(name=name,logfile=logfile, logToConsole=True, logToFile=True, logToGUI=not nogui, level=level, icon=icon, callback=exit)
+    except:logger = progresslogger.ProgressLogger(name=name,logfile=logfile, logToConsole=True, logToFile=True, logToGUI=not nogui, level=level, callback=exit)
+    return logger
 #========================================================================================================
 #========================================================================================================
 if __name__ == '__main__':

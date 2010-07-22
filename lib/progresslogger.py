@@ -211,8 +211,8 @@ class ProgressLoggerHandler(logging.Handler):
         pythonScript=__file__
         parameterList = [pythonPath, pythonScript,str(self.inport),str(self.outport),'-s',self.host,'-n',name,'-m',str(maxprogress)]
         if icon:parameterList.extend(['-i',str(icon)])
-        for i,v in enumerate(parameterList): #Fix any spaces in parameters
-            if ' ' in v:parameterList[i]='"%s"'%v
+        #for i,v in enumerate(parameterList): #Fix any spaces in parameters
+        #    if ' ' in v:parameterList[i]='"%s"'%v
         pid = subprocess.Popen(parameterList).pid
         pc=ProgressLoggerChecker(self,self.host,self.outport,callback,pid)
         while not pc.ready: #Fixes Issue 29

@@ -298,7 +298,7 @@ if __name__ == '__main__':
     medarg.tooltip='You can enter an ID for a CD/DVD, this defaults to the disc volume label.'
 
     opt=parser.add_option("-x", dest="xls", metavar="xls",help="Output metadata spreadsheet")
-    xlsarg=getargs.FileArg(opt,filter=[('Excel Spreadsheet','*.xls')],icon=icons.xls_img)
+    xlsarg=getargs.FileArg(opt,filter=[('Excel Spreadsheet','*.xls')],icon=icons.xls_img,saveas=True)
     xlsarg.tooltip='The Excel Spreadsheet to write the metadata to. A shapefile of extents, a logfile and overview images are also output to the same directory.'
 
     opt=parser.add_option("-u", "--update", action="store_true", dest="update",default=False,

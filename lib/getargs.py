@@ -259,10 +259,11 @@ class FileArg(Arg):
         @keyword filter:       The filter to show in the file browser.
                                eg. [('Log File',('*.txt','*.log'))]
     '''
-    def __init__(self,opt,initialdir='',filter='',**kwargs):
+    def __init__(self,opt,initialdir='',filter='',saveas=False,**kwargs):
         self.filter=filter
         self.initialdir=initialdir
         self.lastdir=None
+        self.saveas=saveas
         Arg.__init__(self,opt,**kwargs)
         
     def __build__(self,root,row):
@@ -286,24 +287,28 @@ class FileArg(Arg):
         self.enabled=self.enabled #Force update
 
     def cmd(self,root,label,filter,dir,var):
-        if sys.platform[0:3].lower()=='win':
-            ##Win32 GUI hack to avoid "<somefile>/ exists. Do you want to replace it?"
-            ##when using tkFileDialog.asksaveasfilename
-            import win32gui
-            #Convert filter from [('Python Scripts',('*.py','*.pyw')),('Text files','*.txt')] format
-            #to 'Python Scripts\0*.py;*.pyw\0Text files\0*.txt\0' format
-            winfilter=''
-            for desc,ext in filter:
-                if type(ext) in [list,tuple]:ext=';'.join(ext)
-                winfilter+='%s (%s)\0%s\0'%(desc,ext,ext)
-            try:
-                fd, filter, flags=win32gui.GetSaveFileNameW(
-                    InitialDir=dir.get(),
-                    Title='Please select a file',
-                    Filter=winfilter)
-            except:fd=None
+        if self.saveas:
+            if sys.platform[0:3].lower()=='win':
+                ##Win32 GUI hack to avoid "<somefile>/ exists. Do you want to replace it?"
+                ##when using tkFileDialog.asksaveasfilename
+                import win32gui
+                #Convert filter from [('Python Scripts',('*.py','*.pyw')),('Text files','*.txt')] format
+                #to 'Python Scripts\0*.py;*.pyw\0Text files\0*.txt\0' format
+                winfilter=''
+                for desc,ext in filter:
+                    if type(ext) in [list,tuple]:ext=';'.join(ext)
+                    winfilter+='%s (%s)\0%s\0'%(desc,ext,ext)
+                try:
+                    fd, filter, flags=win32gui.GetSaveFileNameW(
+                        InitialDir=dir.get(),
+                        Title='Please select a file',
+                        Filter=winfilter)
+                except:fd=None
+            else:
+                fd = tkFileDialog.asksaveasfilename(parent=root,filetypes=filter,initialdir=dir.get(),title=label)
         else:
-            fd = tkFileDialog.asksaveasfilename(parent=root,filetypes=filter,initialdir=dir.get(),title=label)
+            fd = tkFileDialog.askopenfilename(parent=root,filetypes=filter,initialdir=dir.get(),title=label)
+
         if fd:
             fd=os.path.normpath(fd)
             dir.set(os.path.split(fd)[0])

@@ -825,12 +825,15 @@ class ShapeWriter:
         ogr.UseExceptions()
         self._driver = ogr.GetDriverByName('ESRI Shapefile')
         self._srs=osr.SpatialReference()
+        self._filename=shapefile
+        self._fields=fields
+        self._srs_wkt=srs_wkt
         self.fields={} #Dict to map full names to truncated names if name >10 chars
         try:
             if update and os.path.exists(shapefile):
-                self._shape=self.__openshapefile__(shapefile,fields)
+                self._shape=self.__openshapefile__()
             else:
-                self._shape=self.__createshapefile__(shapefile,fields,srs_wkt)
+                self._shape=self.__createshapefile__()
         except Exception, err:
             self.__error__(err)
         ogr.DontUseExceptions()
@@ -849,25 +852,25 @@ class ShapeWriter:
         if gdalerr:errmsg += '\n%s' % gdalerr
         raise err.__class__, errmsg
         
-    def __createshapefile__(self,shapefile,fields,srs_wkt=None):
+    def __createshapefile__(self):
         '''Open the shapefile for writing'''
-        if srs_wkt:self._srs.ImportFromWkt(srs_wkt)
+        if self._srs_wkt:self._srs.ImportFromWkt(self._srs_wkt)
         else:self._srs.ImportFromEPSG(4283) #default=GDA94 Geographic
 
-        if os.path.exists(shapefile):self._driver.DeleteDataSource(shapefile)
-        shp = self._driver.CreateDataSource(shapefile)
-        lyr=os.path.splitext(os.path.split(shapefile)[1])[0]
+        if os.path.exists(self._filename):self._driver.DeleteDataSource(self._filename)
+        shp = self._driver.CreateDataSource(self._filename)
+        lyr=os.path.splitext(os.path.split(self._filename)[1])[0]
         lyr = shp.CreateLayer(lyr,geom_type=ogr.wkbPolygon,srs=self._srs)
         i=0
-        fieldnames=sorted(fields.keys())
+        fieldnames=sorted(self._fields.keys())
         for f in fieldnames:
-            if fields[f]:
+            if self._fields[f]:
                 #Get field types
-                if type(fields[f]) in [list,tuple]:
-                    ftype=fields[f][0]
-                    fwidth=fields[f][1]
+                if type(self._fields[f]) in [list,tuple]:
+                    ftype=self._fields[f][0]
+                    fwidth=self._fields[f][1]
                 else:
-                    ftype=fields[f]
+                    ftype=self._fields[f]
                     fwidth=0
                 if ftype.upper()=='STRING':
                     fld = ogr.FieldDefn(f, ogr.OFTString)
@@ -885,18 +888,23 @@ class ShapeWriter:
 
         return shp
 
-    def __openshapefile__(self,shapefile,fields):
+    def __openshapefile__(self,):
         '''Open the shapefile for updating/appending'''
-        fieldnames=sorted(fields.keys())
-        shp=self._driver.Open(shapefile,update=1)
-        if not shp:raise GDALError, 'Unable to open %s'%filepath
+        fieldnames=sorted(self._fields.keys())
+        shp=self._driver.Open(self._filename,update=1)
+        if not shp:raise GDALError, 'Unable to open %s'%self._filename
         lyr=shp.GetLayer(0)
         lyrdef=lyr.GetLayerDefn()
+        if lyrdef.GetFieldCount()==0:
+            del lyrdef
+            del lyr
+            del shp
+            return self.__createshapefile__()
         self._srs=lyr.GetSpatialRef()
         #Loop thru input fields and match to shp fields
         i=0
         for f in fieldnames:
-            if fields[f]: #does it have a field type?
+            if self._fields[f]: #does it have a field type?
                 if len(f)>10:self.fields[f]=lyrdef.GetFieldDefn(i).GetName()
                 else:self.fields[f]=f
                 i+=1

@@ -86,6 +86,7 @@ def main(dir, xls, logger, mediaid=None, update=False, getovs=False):
                 ShapeWriter=geometry.ShapeWriter(shp,format_fields,update=False)
 
             #Build a dict of existing records
+            row=-1
             for row,rec in enumerate(utilities.ExcelReader(xls)):
                 #Check if the dataset still exists, mark it DELETED if it doesn't
                 if os.path.exists(rec['filepath']) or rec['mediaid'] !='':
@@ -99,6 +100,7 @@ def main(dir, xls, logger, mediaid=None, update=False, getovs=False):
                     rec['DELETED']=1
                     ExcelWriter.UpdateRecord(rec,row)
                     logger.info('Marked %s as deleted' % (rec['filepath']))
+            if row==-1:logger.info('Output spreadsheet is empty, no records to update')
             del ShapeWriter
         ShapeWriter=geometry.ShapeWriter(shp,format_fields,update=update)
     except Exception,err:

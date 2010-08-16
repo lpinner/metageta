@@ -65,7 +65,7 @@ class GDALError(Exception):
         if msg:self.errmsg='\n'.join([msg,self.errmsg])
         Exception.__init__(self,self.errmsg,self.errnum,self.errtyp)
     def __str__(self):
-        ''' For printing GDAL related errors 
+        ''' For printing GDAL related errors
 
             @rtype:  C{str}
             @return: String representation of the exception
@@ -99,14 +99,14 @@ def ParseGDALinfo(filepath):
         @rtype:  C{(dict,list)}
         @return: GDAL info,extent coordinates
     '''
-    
+
     metadata={}
     extent=[]
 
     cmd='gdalinfo -noct '+filepath
     exit_code,stdout,stderr=utilities.runcmd(cmd)
     if exit_code != 0: raise Exception, stderr
-    
+
     decimal=r'([-+]?\d+\.?\d+e?[-+]?\d+?)'
 
     rex=r'Size is (\d+),\s*(\d+)'
@@ -154,7 +154,7 @@ def ParseGDALinfo(filepath):
     rex=re.compile(rex, re.I)
     rex=rex.findall(stdout)
     if rex:metadata['datatype']=rex[0]
-    
+
     rex=r'NoData Value='+decimal
     rex=re.compile(rex, re.I)
     rex=rex.findall(stdout)
@@ -219,7 +219,7 @@ def DMS2DD(dms,format):
 #========================================================================================================
 #{Geometry Utilities
 #========================================================================================================
-def Rotation(gt):   
+def Rotation(gt):
     ''' Get rotation angle from a geotransform
         @type gt: C{tuple/list}
         @param gt: geotransform
@@ -229,7 +229,7 @@ def Rotation(gt):
     try:return math.degrees(math.tanh(gt[2]/gt[5]))
     except:return 0
 
-def CellSize(gt):   
+def CellSize(gt):
     ''' Get cell size from a geotransform
 
         @type gt:  C{tuple/list}
@@ -243,7 +243,7 @@ def CellSize(gt):
 
 def SceneCentre(gt,cols,rows):
     ''' Get scene centre from a geotransform.
-        
+
         @type gt: C{tuple/list}
         @param gt: geotransform
         @type cols: C{int}
@@ -262,7 +262,7 @@ def SceneCentre(gt,cols,rows):
 def ExtentToGCPs(ext,cols,rows):
     ''' Form a gcp list from the 4 corners.
 
-        This function is meant to be used to convert an extent 
+        This function is meant to be used to convert an extent
         to gcp's for use in the gdal.GCPsToGeoTransform function.
 
         @type ext:   C{tuple/list}
@@ -295,7 +295,7 @@ def ExtentToGCPs(ext,cols,rows):
             id+=1
             gcp_list.append(cgcp)
         larr.reverse()
-        
+
     return gcp_list
 
 def GeoTransformToGCPs(gt,cols,rows):
@@ -314,7 +314,7 @@ def GeoTransformToGCPs(gt,cols,rows):
         @return:   List of GCP objects
     '''
     ###############################################################################
-    # This code is modified from the GeoTransformToGCPs function 
+    # This code is modified from the GeoTransformToGCPs function
     # in the OpenEV module vrtutils.py
     ###############################################################################
     # $Id: vrtutils.py,v 1.17 2005/07/07 21:36:06 gmwalter Exp $
@@ -325,23 +325,23 @@ def GeoTransformToGCPs(gt,cols,rows):
     #
     ###############################################################################
     # Copyright (c) 2000, Atlantis Scientific Inc. (www.atlsci.com)
-    # 
+    #
     # This library is free software; you can redistribute it and/or
     # modify it under the terms of the GNU Library General Public
     # License as published by the Free Software Foundation; either
     # version 2 of the License, or (at your option) any later version.
-    # 
+    #
     # This library is distributed in the hope that it will be useful,
     # but WITHOUT ANY WARRANTY; without even the implied warranty of
     # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
     # Library General Public License for more details.
-    # 
+    #
     # You should have received a copy of the GNU Library General Public
     # License along with this library; if not, write to the
     # Free Software Foundation, Inc., 59 Temple Place - Suite 330,
     # Boston, MA 02111-1307, USA.
     ###############################################################################
-    
+
     gcp_list=[]
     parr=[0,cols]
     larr=[0,rows]
@@ -362,7 +362,7 @@ def GeoTransformToGCPs(gt,cols,rows):
 
 def GeomFromExtent(ext,srs=None,srs_wkt=None):
     ''' Get and OGR geometry object from a extent list
-        
+
         @type ext:  C{tuple/list}
         @param ext: extent coordinates
         @type srs:  C{str}
@@ -407,7 +407,7 @@ def ReprojectGeom(geom,src_srs,tgt_srs):
 def InvGeoTransform(gt_in):
     '''
      ************************************************************************
-     *                        InvGeoTransform(gt_in)                         
+     *                        InvGeoTransform(gt_in)
      ************************************************************************
 
      **
@@ -417,7 +417,7 @@ def InvGeoTransform(gt_in):
      *
      * @param  gt_in  Input geotransform (six doubles - unaltered).
      * @return gt_out Output geotransform (six doubles - updated) on success,
-     *                None if the equation is uninvertable. 
+     *                None if the equation is uninvertable.
     '''
     #    ******************************************************************************
     #    * This code ported from GDALInvGeoTransform() in gdaltransformer.cpp
@@ -433,7 +433,7 @@ def InvGeoTransform(gt_in):
     #    * Author:   Frank Warmerdam, warmerdam@pobox.com
     #    *
     #    ******************************************************************************
-    #    * Copyright (c) 2002, i3 - information integration and imaging 
+    #    * Copyright (c) 2002, i3 - information integration and imaging
     #    *                          Fort Collin, CO
     #    *
     #    * Permission is hereby granted, free of charge, to any person obtaining a
@@ -454,7 +454,7 @@ def InvGeoTransform(gt_in):
     #    * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
     #    * DEALINGS IN THE SOFTWARE.
     #    ****************************************************************************
-        
+
     # we assume a 3rd row that is [1 0 0]
 
     # Compute determinate
@@ -498,13 +498,16 @@ def MapToPixel(mx,my,gt):
         @return: px,py Output coordinates (two ints)
 
         @change: changed int(p[x,y]+0.5) to int(p[x,y]) as per http://lists.osgeo.org/pipermail/gdal-dev/2010-June/024956.html
+        @change: return floats
+        @note:   0,0 is UL corner of UL pixel, 0.5,0.5 is centre of UL pixel
     '''
     if gt[2]+gt[4]==0: #Simple calc, no inversion required
         px = (mx - gt[0]) / gt[1]
         py = (my - gt[3]) / gt[5]
     else:
         px,py=ApplyGeoTransform(mx,my,InvGeoTransform(gt))
-    return int(px),int(py)
+    #return int(px),int(py)
+    return px,py
 
 def PixelToMap(px,py,gt):
     ''' Convert pixel to map coordinates
@@ -513,9 +516,9 @@ def PixelToMap(px,py,gt):
         @param  gt:    Input geotransform (six doubles)
         @return: mx,my Output coordinates (two doubles)
 
-        @change: changed p[x,y] to p[x,y]+0.5 as per http://lists.osgeo.org/pipermail/gdal-dev/2010-June/024956.html
+        @note:   0,0 is UL corner of UL pixel, 0.5,0.5 is centre of UL pixel
     '''
-    mx,my=ApplyGeoTransform(px+0.5,py+0.5,gt)
+    mx,my=ApplyGeoTransform(px,py,gt)
     return mx,my
 
 #========================================================================================================
@@ -546,7 +549,7 @@ def CreateMosaicedVRT(files,bands,srcrects,dstrects,cols,rows,datatype,relativeT
         @type bands:          C{[int,...,int]}
         @param bands:         List of band numbers (1 based). Eg. [1,2,3] will mosaic
                               the first band from each file into the 1st band of the output VRT, etc.
-                              
+
         @type srcrects:       C{[SrcRect,...,SrcRect]}
         @param srcrects:      List of SrcRects, one per file, in image not map units. E.g [[0,0,512,512],...]
                               will be output as <SrcRect xOff="0" yOff="0" xSize="512" ySize="512"/>.
@@ -655,7 +658,7 @@ def CreateRawRasterVRT(bands,cols,rows,datatype,headeroffset=0,byteorder=None,re
 def CreateBSQRawRasterVRT(filename,nbands,cols,rows,datatype,nodata=None,headeroffset=0,byteorder=None,relativeToVRT=0):
     ''' Create RawRaster VRT from a BSQ
 
-        BSQ = Band-Sequential or Band-Interleaved    
+        BSQ = Band-Sequential or Band-Interleaved
 
         For further info on VRT's, see the U{GDAL VRT Tutorial<http://www.gdal.org/gdal_vrttut.html>}
 
@@ -796,7 +799,7 @@ def CreateCustomVRT(vrtxml,vrtcols,vrtrows):
         return '\n'.join(vrt)
     except:
         return None
-    
+
 
 #========================================================================================================
 #{Shapefile Writer
@@ -837,7 +840,7 @@ class ShapeWriter:
         except Exception, err:
             self.__error__(err)
         ogr.DontUseExceptions()
-        
+
     def __del__(self):
         '''Shutdown and release the lock on the shapefile'''
         try:
@@ -851,7 +854,7 @@ class ShapeWriter:
         errmsg = str(err)
         if gdalerr:errmsg += '\n%s' % gdalerr
         raise err.__class__, errmsg
-        
+
     def __createshapefile__(self):
         '''Open the shapefile for writing'''
         if self._srs_wkt:self._srs.ImportFromWkt(self._srs_wkt)
@@ -921,19 +924,19 @@ class ShapeWriter:
             @param extent:     [[ulx,uly],[urx,ury],[lrx,lry],[llx,lly]]
             @type attributes:  C{dict}
             @param attributes: Must match field names passed to __init__()
-        '''        
+        '''
         try:
             geom=GeomFromExtent(extent,self._srs)
             if self._srs.IsGeographic(): #basic coordinate bounds test. Can't do for projected though
                 srs=osr.SpatialReference()
                 srs.ImportFromEPSG(4283)#4326)
                 valid = GeomFromExtent([-180,-90,180,90], srs=srs)
-                if not valid.Contains(geom): 
+                if not valid.Contains(geom):
                     #raise ValueError, 'Invalid extent coordinates'
                     warnings.warn('Invalid extent coordinates')
 
             lyr=self._shape.GetLayer(0)
-            
+
             feat = ogr.Feature(lyr.GetLayerDefn())
             for a in attributes:
                 #if a in self.fields:feat.SetField(a, attributes[a])
@@ -952,14 +955,14 @@ class ShapeWriter:
             @param where_clause: Shapefile supported SQL where clause
             @type attributes:    C{dict}
             @param attributes:   Must match field names passed to __init__()
-        '''        
+        '''
         try:
             geom=GeomFromExtent(extent,self._srs)
             if self._srs.IsGeographic(): #basic coordinate bounds test. Can't do for projected though
                 srs=osr.SpatialReference()
                 srs.ImportFromEPSG(4283)#4326)
                 valid = GeomFromExtent([-180,-90,180,90], srs=srs)
-                if not valid.Contains(geom): 
+                if not valid.Contains(geom):
                     #raise ValueError, 'Invalid extent coordinates'
                     warnings.warn('Invalid extent coordinates')
             lyr=self._shape.GetLayer()
@@ -980,7 +983,7 @@ class ShapeWriter:
 
             @type where_clause:  C{str}
             @param where_clause: Shapefile supported SQL where clause
-        '''        
+        '''
         try:
             lyr=self._shape.GetLayer()
             lyr.SetAttributeFilter(where_clause)

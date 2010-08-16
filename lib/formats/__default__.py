@@ -28,8 +28,11 @@ Metadata driver for generic imagery formats including GDAL Virtual Rasters (VRT 
 format_regex=[
     r'\.nc$',
     r'\.vrt$',
+    r'\.jpg$',
+    r'\.png$',
     r'\.ers$',
     r'\.img$',
+    r'\.tiff$',
     r'\.tif$',        #Completely untested with following formats...
     r'.*\.asc$',      #Arc/Info ASCII Grid 
     r'.*\.bag$',      #Bathymetry Attributed Grid
@@ -117,10 +120,13 @@ class Dataset(__dataset__.Dataset):
                 self.metadata['units'] = spatialreferences.GetLinearUnitsName(self.metadata['srs'])
                 
                 geotransform = self._gdaldataset.GetGeoTransform()
-                if geotransform == (0, 1, 0, 0, 0, 1) and self._gdaldataset.GetGCPCount() > 0:
-                    gcps=self._gdaldataset.GetGCPs()
-                    geotransform=gdal.GCPsToGeoTransform(gcps)
-                    gcps=geometry.GeoTransformToGCPs(geotransform,self.metadata['cols'],self.metadata['rows']) #Just get the 4 corner GCP's
+                if geotransform == (0, 1, 0, 0, 0, 1):
+                    if self._gdaldataset.GetGCPCount() > 0:
+                        gcps=self._gdaldataset.GetGCPs()
+                        geotransform=gdal.GCPsToGeoTransform(gcps)
+                        gcps=geometry.GeoTransformToGCPs(geotransform,self.metadata['cols'],self.metadata['rows']) #Just get the 4 corner GCP's
+                    else:
+                        raise NotImplementedError, 'Dataset is not georeferenced'
                 else:
                     gcps=geometry.GeoTransformToGCPs(geotransform,self.metadata['cols'],self.metadata['rows'])
 

@@ -51,3 +51,9 @@ class Dataset(__default__.Dataset):
         else:
             __default__.Dataset.__getmetadata__(self, f) #autopopulate basic metadata
         if jp2mrsid:jp2mrsid.Register()
+
+    def getoverview(self,*args,**kwargs):
+        '''Check for possibly corrupt files that can crash GDAL and therefore python...'''
+        if self.metadata['compressionratio'] > 10000:
+            raise IOError, 'Unable to generate overview image from %s\nFile may be corrupt' % self.fileinfo['filepath']
+        else:return __default__.Dataset.getoverview(self,*args,**kwargs)

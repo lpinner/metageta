@@ -55,3 +55,9 @@ class Dataset(__default__.Dataset):
         #Leave the ECW driver in place even though all it does is call the default class.
         #This is so ECWs get processed before any ERSs (which could cause a segfault)
         ##__default__.Dataset.__getmetadata__(self) #autopopulate basic metadata
+
+    def getoverview(self,*args,**kwargs):
+        '''Check for possibly corrupt files that can crash GDAL and therefore python...'''
+        if self.metadata['compressionratio'] > 10000:
+            raise IOError, 'Unable to generate overview image from %s\nFile may be corrupt' % self.fileinfo['filepath']
+        else:return __default__.Dataset.getoverview(self,*args,**kwargs)

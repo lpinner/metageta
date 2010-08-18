@@ -87,12 +87,12 @@ class Dataset(__default__.Dataset):
         os.environ['GDAL_PAM_ENABLED']='NO'
         reload(__default__.gdal)
         hfa=__default__.gdal.GetDriverByName('HFA')
-        hfa.Deregister()
+        if hfa:hfa.Deregister()
         retval=func(*args,**kwargs)
         if GDAL_PAM_ENABLED:os.environ['GDAL_PAM_ENABLED']=GDAL_PAM_ENABLED
         else:os.environ.pop('GDAL_PAM_ENABLED')
         reload(__default__.gdal)
-        hfa.Register()
+        if hfa:hfa.Register()
         return retval
     
         

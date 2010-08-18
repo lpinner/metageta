@@ -102,8 +102,6 @@ class Dataset(object):
         '''
 
         md=self.metadata
-        if md['compressionratio'] > 10000 and md['filetype'] != 'VRT/Virtual Raster': #Possibly a dodgy JP2 that will grash GDAL and therefore python...
-            raise IOError, 'Unable to generate overview image from %s\nFile may be corrupt' % self.fileinfo['filepath']
         ds=self._gdaldataset
         if not ds:raise AttributeError, 'No GDALDataset object available, overview image can not be generated'
 

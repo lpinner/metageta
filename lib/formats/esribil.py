@@ -60,10 +60,12 @@ class Dataset(__default__.Dataset):
         except geometry.GDALError,err:
             if 'HFAEntry' in err.errmsg:#Sometimes AUX files can cause problems. AUXs seem to be handled by the HFA (ERDAS Imagine) driver,
                                         #so deregister it and try again. We won't get as much info though :(
-                hfa=__default__.gdal.GetDriverByName('HFA') 
-                hfa.Deregister()
-                __default__.Dataset.__getmetadata__(self, self._datafile)
-                __default__.gdal.AllRegister() 
+                try:
+                    hfa=__default__.gdal.GetDriverByName('HFA') 
+                    hfa.Deregister()
+                finally:
+                    __default__.Dataset.__getmetadata__(self, self._datafile)
+                    __default__.gdal.AllRegister() 
             else:raise #Something else caused it, reraise the error
     def getoverview(self,outfile=None,width=800,format='JPG'):
         '''Override the default method if there is a .clr file'''

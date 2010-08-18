@@ -376,6 +376,19 @@ class ProgressLoggerGUI(object):#(threading.Thread): #Don't subclass threading.T
 
         self.master=Tkinter.Tk()
         self.master.withdraw()
+        self.master.protocol("WM_DELETE_WINDOW", self.onOk)
+        self.master.title(self.name)
+
+        # Set geometry and centre the GUI:
+        swidth = self.master.winfo_screenwidth()
+        sheight = self.master.winfo_screenheight()
+        width = min([700, int(swidth/10 * 0.75)*10])
+        height = int(sheight/10 * 0.75)*10
+        xpos = max([0, (swidth - width)   / 2 - self.master.winfo_vrootx()])
+        ypos = max([0, (sheight - height) / 3 - self.master.winfo_vrooty()])
+        self.master.geometry("%sx%s"%(width,height))
+        self.master.geometry('+%d+%d' % (xpos, ypos))
+
         if self.icon is not None:
             icon=self.icon.split('.')
             try:
@@ -390,12 +403,7 @@ class ProgressLoggerGUI(object):#(threading.Thread): #Don't subclass threading.T
                 self.master.tk.call('wm', 'iconphoto', self.master._w, self.icon)
             except:
                 pass
-                
         
-        self.master.protocol("WM_DELETE_WINDOW", self.onOk)
-        self.master.title(self.name)
-        self.master.geometry("700x800")
-
         ''' Pack text message '''
         Tkinter.Label(self.master, text='Progress', anchor=Tkinter.NW, justify=Tkinter.LEFT).pack(fill=Tkinter.X)
 

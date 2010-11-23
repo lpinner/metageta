@@ -36,7 +36,9 @@ Example:
 
 '''
 
-import logging,warnings,random,os,sys,socket,pickle,threading,Queue,time,subprocess
+#Workaround for Issue 34: 
+#pickle doesn't like unicode, so use cPickle instead
+import logging,warnings,random,os,sys,socket,cPickle,threading,Queue,time,subprocess
 import Tkinter,tkMessageBox
 import ScrolledText
 import utilities
@@ -209,7 +211,8 @@ class ProgressLoggerHandler(logging.Handler):
         self.inport= random.randint(1024, 10000)
         self.outport= random.randint(1024, 10000)
 
-        if utilities.iswin:python = 'pythonw.exe'
+        #if utilities.iswin:python = 'pythonw.exe'
+        if utilities.iswin:python = 'python.exe'
         else: python = 'python'
         pythonPath=utilities.which(python)
         pythonScript=__file__
@@ -231,7 +234,7 @@ class ProgressLoggerHandler(logging.Handler):
                 msg=self.msgs.pop(0)
                 client = socket.socket (socket.AF_INET, socket.SOCK_STREAM )
                 client.connect((host,port))
-                client.send(pickle.dumps(msg))
+                client.send(cPickle.dumps(msg))
                 client.close()
                 del client
                 time.sleep(0.1)
@@ -288,7 +291,7 @@ class ProgressLoggerChecker(threading.Thread):
                     part=channel.recv(1024).strip()
                     if part:data+=part
                     else:break
-                msg=pickle.loads(data)
+                msg=cPickle.loads(data)
                 if msg[0]=='STARTUP':
                     self.ready=True
                 elif msg[0]=='EXIT':
@@ -342,7 +345,7 @@ class ProgressLoggerServer:
                 part=channel.recv(1024).strip()
                 if part:data+=part
                 else:break
-            msg=pickle.loads(data)
+            msg=cPickle.loads(data)
             if msg[0]=='EXIT':
                 self.serving=False
             self.queue.put(msg)
@@ -478,7 +481,7 @@ class ProgressLoggerGUI(object):#(threading.Thread): #Don't subclass threading.T
         try:
             client = socket.socket (socket.AF_INET, socket.SOCK_STREAM )
             client.connect((self.host,self.outport))
-            client.send(pickle.dumps(['STARTUP',0]))
+            client.send(cPickle.dumps(['STARTUP',0]))
             client.close()
             del client
         except:pass
@@ -489,7 +492,7 @@ class ProgressLoggerGUI(object):#(threading.Thread): #Don't subclass threading.T
             for port in (self.inport,self.outport):
                 client = socket.socket (socket.AF_INET, socket.SOCK_STREAM )
                 client.connect((self.host,port))
-                client.send(pickle.dumps(['EXIT',0]))
+                client.send(cPickle.dumps(['EXIT',0]))
                 client.close()
                 del client
         except:pass

@@ -127,12 +127,7 @@ def main(dir, xls, logger, mediaid=None, update=False, getovs=False):
 
             if update and ds.guid in records:
                 row,rec=records[ds.guid]
-                #if rec['datemodified']==fi['datemodified']:
-                if not ismodified(rec,fi):
-                    logger.info('Metadata did not need updating for %s, %s files remaining' % (Crawler.file,len(Crawler.files)))
-                    logger.updateProgress(newMax=Crawler.filecount)
-                    continue
-                else:
+                if ismodified(rec,fi) or (not rec['quicklook'] and getovs): #Issue 35: if it's not modified, but we've asked for overview images and it doesn't already have them....
                     md=ds.metadata
                     geom=ds.extent
                     md.update(fi)
@@ -160,6 +155,10 @@ def main(dir, xls, logger, mediaid=None, update=False, getovs=False):
                     except Exception,err:
                         logger.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
                         logger.debug(utilities.ExceptionInfo(10))
+                else:
+                    logger.info('Metadata did not need updating for %s, %s files remaining' % (Crawler.file,len(Crawler.files)))
+                    logger.updateProgress(newMax=Crawler.filecount)
+                    continue
             else:
                 md=ds.metadata
                 geom=ds.extent
@@ -226,7 +225,7 @@ def ismodified(record,fileinfo):
     elif record['quicklook'] and not os.path.exists(record['quicklook']):
         return True
     else:
-        md=time.mktime(time.strptime(record['metadatadate'],utilities.dateformat))
+        md=time.mktime(time.strptime(record['metadatadate'],utilities.dateformat)) + (60*60*24-1)
         for f in fileinfo['filelist'].split('|'):
             fs = os.stat(f)
             if md<fs.st_mtime:return True

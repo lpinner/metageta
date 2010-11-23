@@ -211,8 +211,7 @@ class ProgressLoggerHandler(logging.Handler):
         self.inport= random.randint(1024, 10000)
         self.outport= random.randint(1024, 10000)
 
-        #if utilities.iswin:python = 'pythonw.exe'
-        if utilities.iswin:python = 'python.exe'
+        if utilities.iswin:python = 'pythonw.exe'
         else: python = 'python'
         pythonPath=utilities.which(python)
         pythonScript=__file__

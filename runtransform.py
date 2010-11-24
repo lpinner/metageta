@@ -88,21 +88,28 @@ def main(xls,xsl,dir,mef=False,log=None,debug=False,gui=False):
     for rec in utilities.ExcelReader(xls, list):
         try:
             overviews=[]
-            for val in rec:
-                if val[0]=='filename':filename=val[1]
+            deleted=False
+            for val in rec: #We use a list instead of a dict as there can be multiple fields with the same header/name
+                if val[0]=='DELETED' and val[1] == 1:deleted=True
+                elif val[0]=='filename':filename=val[1]
                 elif val[0]=='guid':guid=val[1]
                 elif val[0] in ['quicklook','thumbnail'] and val[1] != '':overviews.append(val[1])
-            strxml=transforms.ListToXML(rec,'crawlresult')
             xmlfile='%s/%s.%s.xml'%(dir,filename,guid)
+            meffile='%s/%s.%s.mef'%(dir,filename,guid)
+            if deleted:
+                pl.info('%s has been marked as deleted, XSLT processing will be terminated.'%filename)
+                if os.path.exists(xmlfile):os.rename(xmlfile,'%s.deleted'%xmlfile)
+                if os.path.exists(meffile):os.rename(meffile,'%s.deleted'%meffile)
+                continue
+            strxml=transforms.ListToXML(rec,'crawlresult')
             result = transforms.Transform(strxml, xsl, xmlfile)
             if overviews:transforms.CreateMEF(dir,xmlfile,guid,overviews)
             pl.info('Transformed metadata for ' +filename)
         except Exception,err:
-            if 'message instruction' in err.args[0]:
-                pl.info(''.join(err.args[1]).strip())
-            else:
-                pl.error('%s\n%s' % (filename, utilities.ExceptionInfo()))
-                pl.debug(utilities.ExceptionInfo(10))
+            pl.error('%s\n%s' % (filename, utilities.ExceptionInfo()))
+            pl.debug(utilities.ExceptionInfo(10))
+            try:os.remove(xmlfile)
+            except:pass
         
 ##    for rec in utilities.ExcelReader(xls):
 ##        try:

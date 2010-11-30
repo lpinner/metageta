@@ -103,9 +103,12 @@ class Dataset(__default__.Dataset):
         self.metadata['imgdate']=gdalmd['IMAGING_DATE']#ISO 8601 
         self.metadata['satellite']='%s %s' % (gdalmd['MISSION'],gdalmd['MISSION_INDEX'])
         self.metadata['sensor']='%s %s' % (gdalmd['INSTRUMENT'],gdalmd['INSTRUMENT_INDEX'])
-        self.metadata['sunelevation'] = float(gdalmd['SUN_ELEVATION'])
-        self.metadata['sunazimuth'] = float(gdalmd['SUN_AZIMUTH'])
-        self.metadata['level'] = gdalmd['PROCESSING_LEVEL']
+        try:self.metadata['sunelevation'] = float(gdalmd['SUN_ELEVATION'])
+        except:pass
+        try:self.metadata['sunazimuth'] = float(gdalmd['SUN_AZIMUTH'])
+        except:pass
+        try:self.metadata['level'] = gdalmd['PROCESSING_LEVEL']
+        except:pass
         self.metadata['viewangle'] = gdalmd.get('VIEWING_ANGLE',gdalmd.get('INCIDENCE_ANGLE',''))
 
     def getoverview(self,outfile=None,width=800,format='JPG'): 

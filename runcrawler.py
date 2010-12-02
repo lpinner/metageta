@@ -225,7 +225,8 @@ def ismodified(record,fileinfo):
     elif record['quicklook'] and not os.path.exists(record['quicklook']):
         return True
     else:
-        md=time.mktime(time.strptime(record['metadatadate'],utilities.dateformat)) + (60*60*24-1)
+        try:md=time.mktime(time.strptime(record['metadatadate'],utilities.datetimeformat))
+        except:md=time.mktime(time.strptime(record['metadatadate'],utilities.dateformat)) + (60*60*24-1) #Mainain backwards compatibility with spreadsheets created using MetaGETA <=1.3.3
         for f in fileinfo['filelist'].split('|'):
             fs = os.stat(f)
             if md<fs.st_mtime:return True

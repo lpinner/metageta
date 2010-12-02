@@ -39,7 +39,8 @@ import __default__
 import sys, os, re, glob, time, math, string
 import utilities
 import geometry
-import xml.dom.minidom as _xmldom
+#import xml.dom.minidom as _xmldom
+from Ft.Xml import Parse
 
 try:
     from osgeo import gdal
@@ -68,24 +69,31 @@ class Dataset(__default__.Dataset):
             if line.upper().strip()=='<DATA_STRIP>':break
             else: strxml+=line
         if not '</Dimap_Document>' in strxml:strxml+='</Dimap_Document>'
-        dom=_xmldom.parseString(strxml)
-        self.metadata['sceneid'] = dom.documentElement.getElementsByTagName('DATASET_NAME')[0].childNodes[0].data
-        bands=dom.documentElement.getElementsByTagName('BAND_DESCRIPTION')
-        self.metadata['bands']=','.join([band.childNodes[0].data for band in bands])
+        dom=Parse(strxml)
+        #self.metadata['sceneid'] = dom.documentElement.getElementsByTagName('DATASET_NAME')[0].childNodes[0].data
+        #bands=dom.documentElement.getElementsByTagName('BAND_DESCRIPTION')
+        #self.metadata['bands']=','.join([band.childNodes[0].data for band in bands])
+        self.metadata['sceneid'] = dom.xpath('string(/Dimap_Document/Dataset_Id/DATASET_NAME)')
+        bands=dom.xpath('/Dimap_Document/Spectral_Band_Info/BAND_DESCRIPTION')
+        self.metadata['bands']=','.join([band.xpath('string(.)') for band in bands])
 
         try:__default__.Dataset.__getmetadata__(self, f) #autopopulate basic metadata
         except geometry.GDALError,err: #Work around reading images with lowercase filenames when
                                        #the DATA_FILE_PATH is uppercase
                                        # - eg samba filesystems which get converted to lowercase
-            dfp=dom.documentElement.getElementsByTagName('DATA_FILE_PATH')[0]
-            fn=str(dfp.getAttribute('href'))
+            #dfp=dom.documentElement.getElementsByTagName('DATA_FILE_PATH')[0]
+            #fn=str(dfp.getAttribute('href'))
+            dfp=dom.xpath('/Dimap_Document/Data_Access/Data_File/DATA_FILE_PATH')[0]
+            fn=utilities.encode(dfp.xpath('string(@href)')) #XML is unicode, gdal.Open doesn't like unicode
+            if not os.path.dirname(fn):fn=os.path.join(os.path.dirname(f),fn)
             exists,img=utilities.exists(fn,True)
             if exists and not os.path.exists(fn):
                 import tempfile
+                from Ft.Xml.Domlette import PrettyPrint
                 tmpfd,tmpfn=tempfile.mkstemp(suffix='.dim',prefix='metadata')
-                dfp.setAttribute('href',img)
+                dfp.xpath('@href')[0].value=img
                 tmpfo=os.fdopen(tmpfd,'w')
-                tmpfo.write(str(dom.toxml()))
+                PrettyPrint(dom,tmpfo)
                 tmpfo.flush()
                 tmpfo.close()
                 cwd=os.path.abspath(os.curdir)
@@ -98,9 +106,15 @@ class Dataset(__default__.Dataset):
                 os.unlink(tmpfn)
                 os.chdir(cwd)
             else:raise
-        #include every file in the current and upper level directory
+        dates={}
+        for src in dom.xpath('//Scene_Source'):
+            datetime='%sT%s'%(src.xpath('string(IMAGING_DATE)'),src.xpath('string(IMAGING_TIME)'))
+            dts=time.mktime(time.strptime(datetime,utilities.datetimeformat))#ISO 8601 
+            dates[dts]=datetime
+
+        self.metadata['imgdate']='%s/%s'%(dates[min(dates.keys())],dates[max(dates.keys())])
+
         gdalmd=self._gdaldataset.GetMetadata()
-        self.metadata['imgdate']=gdalmd['IMAGING_DATE']#ISO 8601 
         self.metadata['satellite']='%s %s' % (gdalmd['MISSION'],gdalmd['MISSION_INDEX'])
         self.metadata['sensor']='%s %s' % (gdalmd['INSTRUMENT'],gdalmd['INSTRUMENT_INDEX'])
         try:self.metadata['sunelevation'] = float(gdalmd['SUN_ELEVATION'])

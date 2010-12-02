@@ -99,7 +99,14 @@
       <gmd:dateStamp>
           <gco:Date>
               <xsl:choose>
-                  <xsl:when test="normalize-space(metadatadate)"><xsl:value-of select="metadatadate"/></xsl:when>
+                  <xsl:when test="normalize-space(metadatadate)">
+                      <xsl:choose>
+                          <xsl:when test="contains(metadatadate,'T')">
+                            <xsl:value-of select="str:split(metadatadate,'T')[1]"/><!--date doesn't validate with time values-->
+                          </xsl:when>
+                          <xsl:otherwise><xsl:value-of select="metadatadate"/></xsl:otherwise>
+                      </xsl:choose>
+                  </xsl:when>
                   <xsl:otherwise><xsl:value-of select="date:format-date(date:date-time(),'yyyy-MM-dd')"/></xsl:otherwise>
               </xsl:choose>
           </gco:Date>
@@ -450,7 +457,7 @@
                   <gmd:date>
                     <gco:Date>
                       <xsl:choose>
-                        <xsl:when test="normalize-space(imgdate)"><xsl:value-of select="imgdate"/></xsl:when>
+                        <xsl:when test="normalize-space(imgdate)"><xsl:value-of select="str:split(str:split(imgdate, '/')[1], 'T')[1]"/></xsl:when>
                         <xsl:otherwise><xsl:value-of select="date:format-date(date:date-time(),'yyyy-MM-dd')"/></xsl:otherwise>
                       </xsl:choose>
                     </gco:Date>
@@ -959,7 +966,14 @@
                       <gml:beginPosition>
                         <xsl:choose>
                           <xsl:when test="normalize-space(imgdate)">
-                            <xsl:value-of select="imgdate"/>
+                            <xsl:choose>
+                              <xsl:when test="contains(imgdate, '/')">
+                                <xsl:value-of select="str:split(str:split(imgdate, '/')[1], 'T')[1]"/> <!-- Strip off Time, it doesn't validate-->
+                              </xsl:when>
+                              <xsl:otherwise>
+                                <xsl:value-of select="str:split(imgdate, 'T')[1]"/><!-- Strip off Time, it doesn't validate-->
+                              </xsl:otherwise>
+                            </xsl:choose>
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:attribute name="indeterminatePosition">unknown</xsl:attribute>
@@ -969,7 +983,14 @@
                       <gml:endPosition>
                         <xsl:choose>
                           <xsl:when test="normalize-space(imgdate)">
-                            <xsl:value-of select="imgdate"/>
+                            <xsl:choose>
+                              <xsl:when test="contains(imgdate, '/')">
+                                <xsl:value-of select="str:split(str:split(imgdate, '/')[2], 'T')[1]"/><!-- Strip off Time, it doesn't validate-->
+                              </xsl:when>
+                              <xsl:otherwise>
+                                <xsl:value-of select="str:split(imgdate, 'T')[1]"/><!-- Strip off Time, it doesn't validate-->
+                              </xsl:otherwise>
+                            </xsl:choose>
                           </xsl:when>
                           <xsl:otherwise>
                             <xsl:attribute name="indeterminatePosition">unknown</xsl:attribute>
@@ -1012,7 +1033,7 @@
     <gmd:contentInfo>
       <gmd:MD_ImageDescription>
         <gmd:attributeDescription>
-           <gco:RecordType>Image and band information</gco:RecordType>
+           <gco:RecordType>Image information</gco:RecordType>
         </gmd:attributeDescription>
         <gmd:contentType>
           <gmd:MD_CoverageContentTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode"
@@ -1055,26 +1076,49 @@
           </gmd:processingLevelCode>
         </xsl:if>
         <!-- leave these in case we do something with them in the future -->
-        <xsl:if test="normalize-space(radiometricCalibrationDataAvailability)">
-          <gmd:radiometricCalibrationDataAvailability>
-            <gco:Boolean>1</gco:Boolean>
-          </gmd:radiometricCalibrationDataAvailability>
-        </xsl:if>
-        <xsl:if test="normalize-space(cameraCalibrationInformationAvailability)">
-          <gmd:cameraCalibrationInformationAvailability>
-            <gco:Boolean>0</gco:Boolean>
-          </gmd:cameraCalibrationInformationAvailability>
-        </xsl:if>
-        <xsl:if test="normalize-space(filmDistortionInformationAvailability)">
-          <gmd:filmDistortionInformationAvailability>
-            <gco:Boolean>1</gco:Boolean>
-          </gmd:filmDistortionInformationAvailability>
-        </xsl:if>
-        <xsl:if test="normalize-space(lensDistortionInformationAvailability)">
-          <gmd:lensDistortionInformationAvailability>
-           <gco:Boolean>1</gco:Boolean>
-          </gmd:lensDistortionInformationAvailability>
-        </xsl:if>
+        <gmd:radiometricCalibrationDataAvailability>
+          <gco:Boolean>
+            <xsl:choose>
+              <xsl:when test="normalize-space(radiometricCalibrationDataAvailability)"><xsl:value-of select="floor(radiometricCalibrationDataAvailability)"/></xsl:when>
+              <xsl:otherwise>0</xsl:otherwise>
+            </xsl:choose>
+          </gco:Boolean>
+        </gmd:radiometricCalibrationDataAvailability>
+        <gmd:cameraCalibrationInformationAvailability>
+          <gco:Boolean>
+            <xsl:choose>
+              <xsl:when test="normalize-space(cameraCalibrationInformationAvailability)"><xsl:value-of select="floor(cameraCalibrationInformationAvailability)"/></xsl:when>
+              <xsl:otherwise>0</xsl:otherwise>
+            </xsl:choose>
+          </gco:Boolean>
+        </gmd:cameraCalibrationInformationAvailability>
+        <gmd:filmDistortionInformationAvailability>
+          <gco:Boolean>
+            <xsl:choose>
+              <xsl:when test="normalize-space(filmDistortionInformationAvailability)"><xsl:value-of select="floor(filmDistortionInformationAvailability)"/></xsl:when>
+              <xsl:otherwise>0</xsl:otherwise>
+            </xsl:choose>
+          </gco:Boolean>
+        </gmd:filmDistortionInformationAvailability>
+        <gmd:lensDistortionInformationAvailability>
+          <gco:Boolean>
+            <xsl:choose>
+              <xsl:when test="normalize-space(lensDistortionInformationAvailability)"><xsl:value-of select="floor(lensDistortionInformationAvailability)"/></xsl:when>
+              <xsl:otherwise>0</xsl:otherwise>
+            </xsl:choose>
+          </gco:Boolean>
+        </gmd:lensDistortionInformationAvailability>
+      </gmd:MD_ImageDescription>
+    </gmd:contentInfo>
+    <gmd:contentInfo>
+      <gmd:MD_ImageDescription>
+        <gmd:attributeDescription>
+           <gco:RecordType>Band information</gco:RecordType>
+        </gmd:attributeDescription>
+        <gmd:contentType>
+          <gmd:MD_CoverageContentTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_CoverageContentTypeCode"
+                                          codeListValue="image"/>
+        </gmd:contentType>
         <xsl:call-template name="bands">
           <xsl:with-param name="band" select="1"/>
           <xsl:with-param name="count" select="$tbandcount"/>
@@ -1382,6 +1426,16 @@
     </func:function>
     <func:function name="str:replaceNewLine">
         <xsl:param name="strData" />
+        <xsl:variable name="arrData" select="str:split(string($strData), '&#10;')"/>
+        <xsl:variable name="retData">
+            <xsl:for-each select="$arrData">
+                <xsl:value-of select="."/><xsl:if test="position() != last()"><xsl:text>&#xA;</xsl:text></xsl:if><!--insert line break-->
+            </xsl:for-each>
+        </xsl:variable>
+        <func:result select="$retData" />
+    </func:function>
+    <func:function name="str:striptime">
+        <xsl:param name="strDateTime" />
         <xsl:variable name="arrData" select="str:split(string($strData), '&#10;')"/>
         <xsl:variable name="retData">
             <xsl:for-each select="$arrData">

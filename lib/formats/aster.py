@@ -172,8 +172,11 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
         self.metadata['filetype'] = self._gdaldataset.GetDriver().ShortName+'/'+self._gdaldataset.GetDriver().LongName + ' (ASTER)'
         self.metadata['sceneid'] = hdf_md['ASTERSCENEID']
         self.metadata['level'] = hdf_md['PROCESSINGLEVELID']
-        if '-' in hdf_md['CALENDARDATE']:self.metadata['imgdate'] = hdf_md['CALENDARDATE']
-        else:self.metadata['imgdate'] = time.strftime('%Y-%m-%d',time.strptime(hdf_md['CALENDARDATE'],'%Y%m%d')) #ISO 8601 
+        if '-' in hdf_md['CALENDARDATE']:imgdate = hdf_md['CALENDARDATE']
+        else:imgdate = time.strftime(utilities.dateformat,time.strptime(hdf_md['CALENDARDATE'],'%Y%m%d')) #ISO 8601
+        imgtime = hdf_md.get('TIMEOFDAY')
+        if imgtime:self.metadata['imgdate'] = time.strftime(utilities.datetimeformat,time.strptime(imgdate+imgtime[0:6],'%Y-%m-%d%H%M%S')) #ISO 8601 
+        else:self.metadata['imgdate'] = imgdate
         #self.metadata['imgdate'] = hdf_md['CALENDARDATE'] 
         self.metadata['cloudcover'] = float(hdf_md['SCENECLOUDCOVERAGE'])
         if hdf_md['FLYINGDIRECTION']=='DE':self.metadata['orbit'] = 'Descending'

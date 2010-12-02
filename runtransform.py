@@ -103,7 +103,9 @@ def main(xls,xsl,dir,mef=False,log=None,debug=False,gui=False):
                 continue
             strxml=transforms.ListToXML(rec,'crawlresult')
             result = transforms.Transform(strxml, xsl, xmlfile)
-            if overviews:transforms.CreateMEF(dir,xmlfile,guid,overviews)
+            #if overviews:transforms.CreateMEF(dir,xmlfile,guid,overviews)
+            #Create MEF even if there are no overviews
+            transforms.CreateMEF(dir,xmlfile,guid,overviews)
             pl.info('Transformed metadata for ' +filename)
         except Exception,err:
             pl.error('%s\n%s' % (filename, utilities.ExceptionInfo()))

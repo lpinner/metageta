@@ -101,8 +101,13 @@ class Dataset(__default__.Dataset):
 
         if imddata.has_key('IMAGE_1'):imgkey='IMAGE_1'
         else:imgkey='SINGLE_IMAGE_PRODUCT'
-        if imddata.has_key('MAP_PROJECTED_PRODUCT'):self.metadata['imgdate']=imddata['MAP_PROJECTED_PRODUCT']['earliestAcqTime'][0:10]#.replace('-','') #ISO 8601 format
-        elif imddata[imgkey].has_key('firstLineTime'):self.metadata['imgdate']=imddata[imgkey]['firstLineTime'][0:10]#.replace('-','') #ISO 8601 format
+        if imddata.has_key('MAP_PROJECTED_PRODUCT'):
+            imgdate1=imddata['MAP_PROJECTED_PRODUCT']['earliestAcqTime'][0:19]#Already in ISO 8601 format, just strip off millisecs
+            imgdate2=imddata['MAP_PROJECTED_PRODUCT']['latestAcqTime'][0:19]
+            if imgdate1==imgdate2:self.metadata['imgdate']='%s'%(imgdate1)
+            else:self.metadata['imgdate']='%s/%s'%(imgdate1,imgdate2)
+        elif imddata[imgkey].has_key('firstLineTime'):
+            self.metadata['imgdate']=imddata[imgkey]['firstLineTime'][0:19] #Already in ISO 8601 format, just strip off millisecs
         if imddata[imgkey]['satId']=='QB02':
             self.metadata['satellite']='Quickbird (QB02)'
         elif imddata[imgkey]['satId']=='WV01':

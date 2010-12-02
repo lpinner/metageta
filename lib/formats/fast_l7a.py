@@ -78,9 +78,9 @@ class Dataset(__dataset__.Dataset):
             #rex='BAND8\.dat|L7[0-9]{7,7}_[0-9]{11,11}_B80\.FST' #not picking up the ACRES .ers files
             rex='BAND8.*|L7[0-9]{7,7}_[0-9]{11,11}_B80\.FST'
         
-        self.filelist=[f] #header
-        self.filelist.extend([f for f in utilities.rglob(d,rex,regex=True, regex_flags=re.I, recurse=False)]) #bands
-        pass
+        filelist=[f] #header
+        filelist.extend([f for f in utilities.rglob(d,rex,regex=True, regex_flags=re.I, recurse=False)]) #bands
+        self.filelist=filelist #"self.filelist" is a property, not a list, we can only 'get' or 'set' it.
     def __getmetadata__(self):
         '''Read Metadata for an ACRES Landsat FastL7A format image as GDAL doesn't get it all.
         Format description: http://www.ga.gov.au/image_cache/GA10348.pdf
@@ -133,31 +133,16 @@ class Dataset(__dataset__.Dataset):
         for i in bandindices:
             band=utilities.readascii(hdr,(rec-1)*rl,i[0],i[1])
             if band:
-                dat_u=os.path.join(d,band.upper())
-                dat_l=os.path.join(d,band.lower())
-                if dat_u in self.filelist or dat_u in utilities.uncpath(self.filelist):
-                    dat=dat_u
-                    bandfiles[dat]=dat
-                elif dat_l in self.filelist or dat_l in utilities.uncpath(self.filelist):
-                    dat=dat_l
-                    bandfiles[dat]=dat
+                exists,path=utilities.exists(os.path.join(d,band), True)
+                if exists:bandfiles[band]=path
                 else:#Assume ACRES format (band*.dat) instead Fast format (l7*.fst)...
-                    dat=os.path.join(d,band)
                     bandid=band[23:25]
                     if bandid == '61':bandid='6l'
                     elif bandid == '62':bandid='6h'
                     else:bandid=bandid[0]
-
-                    bnd_u=os.path.join(d,'BAND%s.DAT' %bandid.upper())
-                    bnd_l=os.path.join(d,'band%s.dat' %bandid.lower())
-                    if   bnd_u in self.filelist:bnd=bnd_u
-                    elif bnd_u in utilities.uncpath(self.filelist):bnd=utilities.uncpath(bnd_u)
-                    elif bnd_l in self.filelist:bnd=bnd_l
-                    elif bnd_l in utilities.uncpath(self.filelist):bnd=utilities.uncpath(bnd_l)
-                    else:
-                        raise IOError, err
-                    
-                    bandfiles[dat]=bnd
+                    exists,path=utilities.exists(os.path.join(d,'band%s.dat'%bandid), True)
+                    if not exists:raise RuntimeError, 'Unable to open band data files.'
+                    bandfiles[band]=path
             else:break
         md['nbands']=len(bandfiles)
 

@@ -102,9 +102,7 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
         pathrow=utilities.readbinary(meta,(record-1)*recordlength,start,stop)[1:]
         start,stop=117,148
         imgdate=utilities.readbinary(meta,(record-1)*recordlength,start,stop)
-        self.metadata['imgdate']=time.strftime('%Y-%m-%d',time.strptime(imgdate[0:8],'%Y%m%d')) #ISO 8601 
-        #self.metadata['imgdate']=imgdate[0:8]
-        #self.metadata['imgtime']=imgdate[8:14]
+        self.metadata['imgdate']=time.strftime(utilities.datetimeformat,time.strptime(imgdate[0:14],'%Y%m%d%H%M%S')) #ISO 8601 
         
         #Ascending/descending flag
         start,stop=357,372

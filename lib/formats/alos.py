@@ -160,10 +160,10 @@ class Dataset(__dataset__.Dataset):
             sceneid = utilities.readbinary(meta,offset,start,stop)
             #Image date
             start,stop = 69,100
-            imgdate=utilities.readbinary(meta,offset,start,stop)[0:8]#Strip off time
-            self.metadata['imgdate'] = time.strftime('%Y-%m-%d',time.strptime(imgdate,'%Y%m%d')) #ISO 8601 
-            #self.metadata['imgdate'] = utilities.readbinary(meta,offset,start,stop)[0:8] #Strip off time
-            #SAR Channels
+            #imgdate=utilities.readbinary(meta,offset,start,stop)[0:14]#Strip off time
+            #self.metadata['imgdate'] = time.strftime(utilities.dateformat,time.strptime(imgdate,'%Y%m%d')) #ISO 8601
+            imgdate=utilities.readbinary(meta,offset,start,stop)[0:14] #Keep time, strip off milliseconds
+            self.metadata['imgdate'] = time.strftime(utilities.datetimeformat,time.strptime(imgdate,'%Y%m%d%H%M%S'))            #SAR Channels
             start,stop = 389,392
             nbands = int(utilities.readbinary(meta,offset,start,stop))
             
@@ -304,7 +304,7 @@ class Dataset(__dataset__.Dataset):
             start,stop = 401,408
             imgdate = utilities.readbinary(meta,(record-1)*recordlength,start,stop)
             imgdate = time.strptime(imgdate,'%d%b%y') #DDMmmYY
-            self.metadata['imgdate'] = time.strftime('%Y%m%d',imgdate) #YYYYMMDD
+            self.metadata['imgdate'] = time.strftime(utilities.dateformat,imgdate) #ISO 8601 
 
             #Sensor type and bands
             start,stop = 443,452

@@ -39,7 +39,7 @@ Example:
 
 import utilities
 import formats
-import re
+import re,os
 
 class Crawler:
     ''' Iterator for metadata crawling'''
@@ -57,8 +57,8 @@ class Crawler:
         for f in utilities.rglob(dir,'|'.join(format_regex), True, re.IGNORECASE):
             #Use latin-1 encoding to fix Issue 20
             f=utilities.realpath(utilities.normcase(utilities.encode(f)))
-            for r in format_regex:
-                if re.search(r,f,re.IGNORECASE):
+            for r in format_regex: #This is so we always return _default_ format datasets last.
+                if re.search(r,os.path.basename(f),re.IGNORECASE):
                     if fileformats.has_key(r):fileformats[r].append(f)
                     else:fileformats[r]=[f]
                     break

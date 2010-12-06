@@ -67,10 +67,14 @@ class Dataset(__default__.Dataset):
                 sdo.append([sd,sd_name,sd_desc])
 
             sd,sd_name,sd_desc=sdo[xy.index(max(xy))]
-            __default__.Dataset.__getmetadata__(self, sd_name) #autopopulate basic metadata
+            try:__default__.Dataset.__getmetadata__(self, sd_name) #autopopulate basic metadata
+            except NotImplementedError:
+                raise NotImplementedError('You are using GDAL %s, versions < 1.8 do not read georeferencing information for certain NetCDF files.'%geometry.gdal.__version__)
             sdmd=sd.GetMetadata()
         else:
-            __default__.Dataset.__getmetadata__(self, f) #autopopulate basic metadata
+            try:__default__.Dataset.__getmetadata__(self, f) #autopopulate basic metadata
+            except NotImplementedError:
+                raise NotImplementedError('You are using GDAL %s, versions < 1.8 do not read georeferencing information for certain NetCDF files.'%geometry.gdal.__version__)
             sdmd={}
             sd_name,sd_desc = ['','']
 

@@ -31,29 +31,32 @@ format_regex=[r'\.hdr$']
 import __default__
 
 # import other modules
-import sys, os
+import sys, os,glob
 from overviews import GetDataTypeRange
+from osgeo import gdal
 
 class Dataset(__default__.Dataset): 
     '''Subclass of __default__.Dataset class so we get a load of metadata populated automatically'''
     def __init__(self,f=None):
         if not f:f=self.fileinfo['filepath']
-        lin=open(f).readline().strip() #read first line
-        hdr=os.path.splitext(f)[0]
+        
+        lin=open(f).readline().strip() #read first line, is it an ENVI format hdr...?
+        if lin != 'ENVI':raise NotImplementedError
+        
+        dat=os.path.splitext(f)[0]
         self._datafile=''
-        if os.path.exists(hdr):self._datafile=hdr
-        else:  #Handle the odd ENVI files held by SSD (.bil/etc. files with ENVI style headers) + .envi and .dat files
-            data_formats=['bil','bip','bsq','envi','dat','raw'] 
-            for fmt in data_formats:
-                dat='%s.%s' % (hdr,fmt)
-                if os.path.exists(dat):break
-                else: dat=False
-            if dat:self._datafile=dat
+        if os.path.exists(dat):self._datafile=dat
+        else:  #Handle ENVI files with _any_ extension
+            for f in glob.glob(dat+'.*'):
+                ds=gdal.Open(f)
+                if ds and ds.GetDriver().ShortName:
+                    self._datafile=f
+                    break
+                del ds
 
-        if not lin == 'ENVI' or not os.path.exists(self._datafile): #is it an ENVI format hdr...?
+        if not self._datafile: 
             raise NotImplementedError #This error gets ignored in __init__.Open()
 
-            
     def __getmetadata__(self):
         '''Read Metadata for a ENVI image as GDAL doesn't work if you pass the header file...'''
         try:__default__.Dataset.__getmetadata__(self, self._datafile) #autopopulate basic metadata

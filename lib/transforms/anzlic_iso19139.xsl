@@ -1319,7 +1319,20 @@
                         <!--xsl:call-template name="UnknownDate"/-->
                         <gmd:date>
                           <gmd:CI_Date>
-                            <gmd:date gco:nilReason="unknown"><!--gco:Date/--></gmd:date>
+                            <!--gmd:date gco:nilReason="unknown"></gmd:date-->
+                            <gco:Date>
+                              <xsl:choose>
+                                  <xsl:when test="normalize-space(metadatadate)">
+                                      <xsl:choose>
+                                          <xsl:when test="contains(metadatadate,'T')">
+                                            <xsl:value-of select="str:split(metadatadate,'T')[1]"/><!--date doesn't validate with time values-->
+                                          </xsl:when>
+                                          <xsl:otherwise><xsl:value-of select="metadatadate"/></xsl:otherwise>
+                                      </xsl:choose>
+                                  </xsl:when>
+                                  <xsl:otherwise><xsl:value-of select="date:format-date(date:date-time(),'yyyy-MM-dd')"/></xsl:otherwise>
+                              </xsl:choose>
+                            </gco:Date>
                             <gmd:dateType>
                               <gmd:CI_DateTypeCode codeList="http://asdd.ga.gov.au/asdd/profileinfo/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
                             </gmd:dateType>

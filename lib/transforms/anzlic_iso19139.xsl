@@ -1284,6 +1284,16 @@
                       </xsl:choose>
                   </gco:CharacterString>
                 </gmd:statement>
+                <gmd:source>
+                  <gmd:LI_Source>
+                    <gmd:description>
+                      <xsl:choose>
+                          <xsl:when test="normalize-space(source)"><xsl:value-of select="source"/></xsl:when>
+                          <xsl:otherwise>Please enter dataset SOURCE</xsl:otherwise>
+                      </xsl:choose>
+                    </gmd:description>
+                  </gmd:LI_Source>
+                </gmd:source>
                 <xsl:variable name="tsteps">
                   <xsl:element name="demcorrection"><xsl:value-of select="demcorrection"/></xsl:element>
                   <xsl:element name="resampling"><xsl:value-of select="resampling"/></xsl:element>

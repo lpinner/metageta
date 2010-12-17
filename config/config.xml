@@ -12,7 +12,7 @@
         <postalCode>Post/Zip code</postalCode>
         <country>Country</country>
       </address>
-      <emailAddress>email address</emailAddress>
+      <emailAddress>email@address.com</emailAddress>
       <onlineResource>
         <URL>URL</URL>
         <description>Description</description>

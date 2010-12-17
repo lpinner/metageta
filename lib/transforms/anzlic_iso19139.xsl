@@ -474,8 +474,7 @@
           <gmd:abstract>
             <gco:CharacterString>
               <xsl:choose>
-                <xsl:when test="abstract">
-                  <!--xsl:value-of select="normalize-space(abstract)"/-->
+                <xsl:when test="normalize-space(abstract)">
                   <xsl:value-of select="str:replaceNewLine(abstract)"/>
                     <!--xsl:if test="normalize-space(mediaid)">
                         <gco:CharacterString>MEDIA ID:<xsl:value-of select="normalize-space(mediaid)"/></gco:CharacterString>
@@ -1320,7 +1319,7 @@
                         <gmd:date>
                           <gmd:CI_Date>
                             <!--gmd:date gco:nilReason="unknown"></gmd:date-->
-                            <gco:Date>
+                            <gmd:date><gco:Date>
                               <xsl:choose>
                                   <xsl:when test="normalize-space(metadatadate)">
                                       <xsl:choose>
@@ -1332,7 +1331,7 @@
                                   </xsl:when>
                                   <xsl:otherwise><xsl:value-of select="date:format-date(date:date-time(),'yyyy-MM-dd')"/></xsl:otherwise>
                               </xsl:choose>
-                            </gco:Date>
+                            </gco:Date></gmd:date>
                             <gmd:dateType>
                               <gmd:CI_DateTypeCode codeList="http://asdd.ga.gov.au/asdd/profileinfo/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
                             </gmd:dateType>

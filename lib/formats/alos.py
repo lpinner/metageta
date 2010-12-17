@@ -33,13 +33,14 @@ B{Format specifications}:
 '''
 format_regex=[
       r'LED-ALAV.*_U$',            #ALOS AVNIR-2 leader file
+      r'LED-ALAV.*___$',            #ALOS AVNIR-2 leader file
       r'LED-ALPSR.*UD$',           #ALOS PALSAR
       r'LED-ALPSM.*\_U[BFN]$'      #ALOS PRISM
       ]
 '''Regular expression list of file formats'''
 
 #import base dataset module
-import __dataset__
+import __default__
 
 # import other modules (use "_"  prefix to import privately)
 import sys, os, re, glob, time, math, string
@@ -59,17 +60,19 @@ except ImportError:
     import ogr
 gdal.AllRegister()
 
-class Dataset(__dataset__.Dataset): 
-    '''Subclass of base Dataset class'''
+class Dataset(__default__.Dataset): 
+    '''Subclass of default Dataset class'''
 
     def __init__(self,f=None):
         if not f:f=self.fileinfo['filepath']
         self.filelist=[r for r in utilities.rglob(os.path.dirname(f))]
         self._led=f
-        self._vol=glob.glob(os.path.dirname(f) + '/[Vv][Oo][Ll]*')[0] #volume file
+        try:self._vol=glob.glob(os.path.dirname(f) + '/[Vv][Oo][Ll]*')[0] #volume file
+        except:self._vol=False
 
         img_regex=[
               r'IMG-0[1-4]-ALAV.*_U$',     #ALOS AVNIR-2 img file
+              r'.*\.tif$',                 #ALOS AVNIR-2 ACRES orthocorrected tif file
               r'IMG-[HV][HV]-ALPSR.*UD$',  #ALOS PALSAR
               r'IMG-ALPSM.*\_U[BFN]$'      #ALOS PRISM
         ]
@@ -91,6 +94,9 @@ class Dataset(__dataset__.Dataset):
 
         self.metadata['satellite']='ALOS'
         nodata = 0
+
+        #ACRES ortho product is in GTIFF format
+        tif=False
 
         if driver=='SAR_CEOS':  #PALSAR - assumes Level 1.5, Level 1.0 not implemented
             #Format Description
@@ -252,6 +258,11 @@ class Dataset(__dataset__.Dataset):
             4. Radiometric transformation ancillary record;
             5. Platform position ancillary record.
             '''
+            #ACRES ortho product is in GTIFF format
+            if '.tif' in self._imgs[0].lower():
+                tif=True
+                __default__.Dataset.__getmetadata__(self, self._imgs[0])
+
             meta = open(led,'rb').read()
             recordlength = 4680
 
@@ -266,8 +277,6 @@ class Dataset(__dataset__.Dataset):
             self.metadata['level']==procinfo[1:4]
             opt=procinfo[4:6].strip().strip('_')
             if opt!='':level+='-'+opt
-            if procinfo[6]=='U':prj='UTM'
-            else:prj='PS'
 
             #SceneID
             if level[0:3] == '1B2':start,stop = 197,212
@@ -320,23 +329,24 @@ class Dataset(__dataset__.Dataset):
             self.metadata['bands']=','.join([band for band in bands])
 
             #Processing info
-            start,stop = 467,478
-            procinfo = utilities.readbinary(meta,(record-1)*recordlength,start,stop)
-            orient=procinfo[-1]
-            if orient=='G':self.metadata['orientation']='Map oriented'
-            else:self.metadata['orientation']='Path oriented'
+            if not tif:
+                start,stop = 467,478
+                procinfo = utilities.readbinary(meta,(record-1)*recordlength,start,stop)
+                orient=procinfo[-1]
+                if orient=='G':self.metadata['orientation']='Map oriented'
+                else:self.metadata['orientation']='Path oriented'
 
-            #No. bands
-            start,stop = 1413,1428
-            nbands = int(utilities.readbinary(meta,(record-1)*recordlength,start,stop))
+                #No. bands
+                start,stop = 1413,1428
+                nbands = int(utilities.readbinary(meta,(record-1)*recordlength,start,stop))
 
-            #No. cols
-            start,stop = 1429,1444
-            ncols = float(utilities.readbinary(meta,(record-1)*recordlength,start,stop))
+                #No. cols
+                start,stop = 1429,1444
+                ncols = float(utilities.readbinary(meta,(record-1)*recordlength,start,stop))
 
-            #No. rows
-            start,stop = 1445,1460
-            nrows = float(utilities.readbinary(meta,(record-1)*recordlength,start,stop))
+                #No. rows
+                start,stop = 1445,1460
+                nrows = float(utilities.readbinary(meta,(record-1)*recordlength,start,stop))
 
             #Resampling
             start,stop = 1541,1556
@@ -352,90 +362,91 @@ class Dataset(__dataset__.Dataset):
             uly,ulx,ury,urx,lly,llx,lry,lrx = map(float, coords)
             ext=[[ulx,uly],[urx,ury],[lrx,lry],[llx,lly],[ulx,uly]]
 
-            #Record 3
-            record=3
+            if not tif:
+                #Record 3
+                record=3
 
-            #Hemisphere
-            start,stop = 93,96
-            hemi = utilities.readbinary(meta,(record-1)*recordlength,start,stop)
+                #Hemisphere
+                start,stop = 93,96
+                hemi = utilities.readbinary(meta,(record-1)*recordlength,start,stop)
 
-            #UTM Zone - revisit if we get polarstereographic projection products
-            start,stop = 97,108
-            utm = utilities.readbinary(meta,(record-1)*recordlength,start,stop)
-            if hemi=='1': #South
-                epsg=int('327%s' % utm) #Assume WGS84
-            else:         #North
-                epsg=int('326%s' % utm)
-            src_srs = osr.SpatialReference()
-            src_srs.ImportFromEPSG(epsg)
-            units = 'm'
-            #Scene center position - revisit if we get polarstereographic projection products
-            ##start,stop = 141,156
-            ##ceny = float(utilities.readbinary(meta,(record-1)*recordlength,start,stop)) * 1000 #(Northing - km)
-            ##start,stop = 157,172
-            ##cenx = float(utilities.readbinary(meta,(record-1)*recordlength,start,stop)) * 1000 #(Easting - km)
+                #UTM Zone - revisit if we get polarstereographic projection products
+                start,stop = 97,108
+                utm = utilities.readbinary(meta,(record-1)*recordlength,start,stop)
+                if hemi=='1': #South
+                    epsg=int('327%s' % utm) #Assume WGS84
+                else:         #North
+                    epsg=int('326%s' % utm)
+                src_srs = osr.SpatialReference()
+                src_srs.ImportFromEPSG(epsg)
+                units = 'm'
+                #Scene center position - revisit if we get polarstereographic projection products
+                ##start,stop = 141,156
+                ##ceny = float(utilities.readbinary(meta,(record-1)*recordlength,start,stop)) * 1000 #(Northing - km)
+                ##start,stop = 157,172
+                ##cenx = float(utilities.readbinary(meta,(record-1)*recordlength,start,stop)) * 1000 #(Easting - km)
 
-            #Orientation Angle NNN.N = radians
-            start,stop = 205,220
-            rot = float(utilities.readbinary(meta,(record-1)*recordlength,start,stop))
+                #Orientation Angle NNN.N = radians
+                start,stop = 205,220
+                rot = float(utilities.readbinary(meta,(record-1)*recordlength,start,stop))
 
-            #Pixel size (x)
-            start,stop=541,572
-            xpix,ypix=map(float,utilities.readbinary(meta,(record-1)*recordlength,start,stop).split())
+                #Pixel size (x)
+                start,stop=541,572
+                xpix,ypix=map(float,utilities.readbinary(meta,(record-1)*recordlength,start,stop).split())
 
-            #Get extent of scene
-            ##xmin=(cenx+xpix/2)-(cencol*xpix)
-            ##ymin=(ceny+ypix/2)-(cenrow*ypix)
-            ##xmax=xmin+(ncols*xpix)
-            ##ymax=ymin+(nrows*ypix)
-            
-            ##if procinfo[-1]=='R': #Calculate rotated extent coordinates
-            ##    ##angc=math.cos(rot)
-            ##    ##angs=math.sin(rot)
-            ##    angc=math.cos(math.radians(rot))
-            ##    angs=math.sin(math.radians(rot))
-            ##    ulx =  (xmin-cenx)*angc + (ymax-ceny)*angs+cenx
-            ##    uly = -(xmin-cenx)*angs + (ymax-ceny)*angc+ceny
-            ##    llx =  (xmin-cenx)*angc + (ymin-ceny)*angs+cenx
-            ##    lly = -(xmin-cenx)*angs + (ymin-ceny)*angc+ceny
-            ##    urx =  (xmax-cenx)*angc + (ymax-ceny)*angs+cenx
-            ##    ury = -(xmax-cenx)*angs + (ymax-ceny)*angc+ceny
-            ##    lrx =  (xmax-cenx)*angc + (ymin-ceny)*angs+cenx
-            ##    lry = -(xmax-cenx)*angs + (ymin-ceny)*angc+ceny
-            ##else: #Just use xmin etc...
-            ##    ulx,uly = xmin,ymax
-            ##    llx,lly = xmin,ymin
-            ##    urx,ury = xmax,ymax
-            ##    lrx,lry = xmax,ymin
-            ##ext=[[ulx,uly],[urx,ury],[lrx,lry],[llx,lly],[ulx,uly]]
+                #Get extent of scene
+                ##xmin=(cenx+xpix/2)-(cencol*xpix)
+                ##ymin=(ceny+ypix/2)-(cenrow*ypix)
+                ##xmax=xmin+(ncols*xpix)
+                ##ymax=ymin+(nrows*ypix)
+                
+                ##if procinfo[-1]=='R': #Calculate rotated extent coordinates
+                ##    ##angc=math.cos(rot)
+                ##    ##angs=math.sin(rot)
+                ##    angc=math.cos(math.radians(rot))
+                ##    angs=math.sin(math.radians(rot))
+                ##    ulx =  (xmin-cenx)*angc + (ymax-ceny)*angs+cenx
+                ##    uly = -(xmin-cenx)*angs + (ymax-ceny)*angc+ceny
+                ##    llx =  (xmin-cenx)*angc + (ymin-ceny)*angs+cenx
+                ##    lly = -(xmin-cenx)*angs + (ymin-ceny)*angc+ceny
+                ##    urx =  (xmax-cenx)*angc + (ymax-ceny)*angs+cenx
+                ##    ury = -(xmax-cenx)*angs + (ymax-ceny)*angc+ceny
+                ##    lrx =  (xmax-cenx)*angc + (ymin-ceny)*angs+cenx
+                ##    lry = -(xmax-cenx)*angs + (ymin-ceny)*angc+ceny
+                ##else: #Just use xmin etc...
+                ##    ulx,uly = xmin,ymax
+                ##    llx,lly = xmin,ymin
+                ##    urx,ury = xmax,ymax
+                ##    lrx,lry = xmax,ymin
+                ##ext=[[ulx,uly],[urx,ury],[lrx,lry],[llx,lly],[ulx,uly]]
 
-            #Geotransform
-            ##gcps=[];i=0
-            ##lr=[[0,0],[ncols,0],[ncols,nrows],[0,nrows]]
-            ##while i < len(ext)-1: #don't need the last xy pair
-            ##    gcp=gdal.GCP()
-            ##    gcp.GCPPixel,gcp.GCPLine=lr[i]
-            ##    gcp.GCPX,gcp.GCPY=ext[i]
-            ##    gcp.Id=str(i)
-            ##    gcps.append(gcp)
-            ##    i+=1
-            ##geotransform = gdal.GCPsToGeoTransform(gcps)
+                #Geotransform
+                ##gcps=[];i=0
+                ##lr=[[0,0],[ncols,0],[ncols,nrows],[0,nrows]]
+                ##while i < len(ext)-1: #don't need the last xy pair
+                ##    gcp=gdal.GCP()
+                ##    gcp.GCPPixel,gcp.GCPLine=lr[i]
+                ##    gcp.GCPX,gcp.GCPY=ext[i]
+                ##    gcp.Id=str(i)
+                ##    gcps.append(gcp)
+                ##    i+=1
+                ##geotransform = gdal.GCPsToGeoTransform(gcps)
 
-            self.metadata['nbits'] = 8
-            self.metadata['datatype'] = 'Byte'
+                self.metadata['nbits'] = 8
+                self.metadata['datatype'] = 'Byte'
 
-            #Generate a VRT GDAL Dataset object
-            self._imgs.sort()
-            img=self._imgs[0]
-            meta = open(img,'rb').read(1024)
-            start,stop = 187,192
-            record=1
-            recordlength=0
-            offset=utilities.readbinary(meta,(record-1)*recordlength,start,stop)
-            #don't use ALOS provided no. cols, as it doesn't include 'dummy' pixels
-            #vrt=geometry.CreateRawRasterVRT(self._imgs,self.metadata['cols'],self.metadata['rows'],self.metadata['datatype'],offset,byteorder='MSB')
-            vrt=geometry.CreateRawRasterVRT(self._imgs,offset,nrows,self.metadata['datatype'],offset,byteorder='MSB')
-            self._gdaldataset=geometry.OpenDataset(vrt)
+                #Generate a VRT GDAL Dataset object
+                self._imgs.sort()
+                img=self._imgs[0]
+                meta = open(img,'rb').read(1024)
+                start,stop = 187,192
+                record=1
+                recordlength=0
+                offset=utilities.readbinary(meta,(record-1)*recordlength,start,stop)
+                #don't use ALOS provided no. cols, as it doesn't include 'dummy' pixels
+                #vrt=geometry.CreateRawRasterVRT(self._imgs,self.metadata['cols'],self.metadata['rows'],self.metadata['datatype'],offset,byteorder='MSB')
+                vrt=geometry.CreateRawRasterVRT(self._imgs,offset,nrows,self.metadata['datatype'],offset,byteorder='MSB')
+                self._gdaldataset=geometry.OpenDataset(vrt)
 
         #Reproject corners to lon,lat
         ##geom = geometry.GeomFromExtent(ext)
@@ -449,27 +460,28 @@ class Dataset(__dataset__.Dataset):
         for i in range(1,self._gdaldataset.RasterCount+1):
             self._gdaldataset.GetRasterBand(i).SetNoDataValue(nodata)
 
-        self.metadata['filesize']=sum([os.path.getsize(tmp) for tmp in self.filelist])
-        self.metadata['srs'] = src_srs.ExportToWkt()
-        self.metadata['epsg'] = epsg
-        self.metadata['units'] = units
-        self.metadata['cols'] = ncols
-        self.metadata['rows'] = nrows
-        self.metadata['nbands'] = nbands
         self.metadata['level'] = level
         self.metadata['sceneid'] = sceneid
         if orbit=='A':self.metadata['orbit']='Ascending'
         else: self.metadata['orbit']='Descending'
-        if abs(math.degrees(rot)) < 1.0:self.metadata['rotation'] = 0.0
-        else: self.metadata['rotation'] = math.degrees(rot)
-        self.metadata['UL']='%s,%s' % tuple(ext[0])
-        self.metadata['UR']='%s,%s' % tuple(ext[1])
-        self.metadata['LR']='%s,%s' % tuple(ext[2])
-        self.metadata['LL']='%s,%s' % tuple(ext[3])
-        self.metadata['cellx'],self.metadata['celly']=xpix,ypix
-        self.metadata['nodata'] = nodata
         self.metadata['metadata']='\n'.join(['%s: %s' %(m,extra_md[m]) for m in extra_md])
-        self.metadata['compressionratio']=0
-        self.metadata['compressiontype']='None'
-        self.extent=ext
+        if not tif:
+            self.metadata['filesize']=sum([os.path.getsize(tmp) for tmp in self.filelist])
+            self.metadata['srs'] = src_srs.ExportToWkt()
+            self.metadata['epsg'] = epsg
+            self.metadata['units'] = units
+            self.metadata['cols'] = ncols
+            self.metadata['rows'] = nrows
+            self.metadata['nbands'] = nbands
+            if abs(math.degrees(rot)) < 1.0:self.metadata['rotation'] = 0.0
+            else: self.metadata['rotation'] = math.degrees(rot)
+            self.metadata['UL']='%s,%s' % tuple(ext[0])
+            self.metadata['UR']='%s,%s' % tuple(ext[1])
+            self.metadata['LR']='%s,%s' % tuple(ext[2])
+            self.metadata['LL']='%s,%s' % tuple(ext[3])
+            self.metadata['cellx'],self.metadata['celly']=xpix,ypix
+            self.metadata['nodata'] = nodata
+            self.metadata['compressionratio']=0
+            self.metadata['compressiontype']='None'
+            self.extent=ext
 

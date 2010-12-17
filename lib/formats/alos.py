@@ -261,6 +261,7 @@ class Dataset(__default__.Dataset):
             #ACRES ortho product is in GTIFF format
             if '.tif' in self._imgs[0].lower():
                 tif=True
+                level='ORTHOCORRECTED'
                 __default__.Dataset.__getmetadata__(self, self._imgs[0])
 
             meta = open(led,'rb').read()
@@ -270,13 +271,14 @@ class Dataset(__default__.Dataset):
             record=2
 
             #Processing level
-            start,stop = 21,36
-            procinfo = utilities.readbinary(meta,(record-1)*recordlength,start,stop)
-            level=procinfo[1:4]
-            #if level != '1B2':raise Exception, 'Level %s PRISM is not supported' % level
-            self.metadata['level']==procinfo[1:4]
-            opt=procinfo[4:6].strip().strip('_')
-            if opt!='':level+='-'+opt
+            if tif:
+                start,stop = 21,36
+                procinfo = utilities.readbinary(meta,(record-1)*recordlength,start,stop)
+                level=procinfo[1:4]
+                #if level != '1B2':raise Exception, 'Level %s PRISM is not supported' % level
+                self.metadata['level']==procinfo[1:4]
+                opt=procinfo[4:6].strip().strip('_')
+                if opt!='':level+='-'+opt
 
             #SceneID
             if level[0:3] == '1B2':start,stop = 197,212
@@ -485,3 +487,28 @@ class Dataset(__default__.Dataset):
             self.metadata['compressiontype']='None'
             self.extent=ext
 
+    def getoverview(self,outfile=None,width=800,format='JPG'): 
+        '''
+        Generate overviews for ALOS imagery
+
+        @type  outfile: str
+        @param outfile: a filepath to the output overview image. If supplied, format is determined from the file extension
+        @type  width:   int
+        @param width:   image width
+        @type  format:  str
+        @param format:  format to generate overview image, one of ['JPG','PNG','GIF','BMP','TIF']. Not required if outfile is supplied.
+        @rtype:         str
+        @return:        filepath (if outfile is supplied)/binary image data (if outfile is not supplied)
+        '''
+        import overviews
+
+        #First check for a browse graphic, no point re-inventing the wheel...
+        for f in self.filelist:
+            browse=False
+            if '.jpg' in f.lower():
+                browse=f
+                break
+        if browse:
+            try:return overviews.resize(browse,outfile,width)
+            except:return __default__.Dataset.getoverview(self,outfile,width,format) #Try it the slow way...
+        else: return __default__.Dataset.getoverview(self,outfile,width,format)#Do it the slow way...

@@ -98,7 +98,7 @@
 <a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line"> </tt>
 <a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-0" class="py-name" targets="Module utilities=utilities-module.html"><a title="utilities" class="py-name" href="#" onclick="return doclink('link-0', 'utilities', 'link-0');">utilities</a></tt> </tt>
 <a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt id="link-1" class="py-name" targets="Package formats=formats-module.html"><a title="formats" class="py-name" href="#" onclick="return doclink('link-1', 'formats', 'link-1');">formats</a></tt> </tt>
-<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">re</tt> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line"><tt class="py-keyword">import</tt> <tt class="py-name">re</tt><tt class="py-op">,</tt><tt class="py-name">os</tt> </tt>
 <a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line"> </tt>
 <a name="Crawler"></a><div id="Crawler-def"><a name="L44"></a><tt class="py-lineno"> 44</tt> <a class="py-toggle" href="#" id="Crawler-toggle" onclick="return toggle('Crawler');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="crawler.Crawler-class.html">Crawler</a><tt class="py-op">:</tt> </tt>
 </div><div id="Crawler-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="Crawler-expanded"><a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line">    <tt class="py-docstring">''' Iterator for metadata crawling'''</tt> </tt>
@@ -109,7 +109,7 @@
 <a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line"><tt class="py-docstring">            @param dir: The directory to start the metadata crawl.</tt> </tt>
 <a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line"><tt class="py-docstring">        '''</tt> </tt>
 <a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line"> </tt>
-<a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line">        <tt id="link-2" class="py-name" targets="Variable formats.__default__.format_regex=formats.__default__-module.html#format_regex,Variable formats.ali_hyperion.format_regex=formats.ali_hyperion-module.html#format_regex,Variable formats.alos.format_regex=formats.alos-module.html#format_regex,Variable formats.aster.format_regex=formats.aster-module.html#format_regex,Variable formats.ccrs.format_regex=formats.ccrs-module.html#format_regex,Variable formats.digitalglobe.format_regex=formats.digitalglobe-module.html#format_regex,Variable formats.ecw.format_regex=formats.ecw-module.html#format_regex,Variable formats.ecwp.format_regex=formats.ecwp-module.html#format_regex,Variable formats.envi.format_regex=formats.envi-module.html#format_regex,Variable formats.esribil.format_regex=formats.esribil-module.html#format_regex,Variable formats.esrigrid.format_regex=formats.esrigrid-module.html#format_regex,Variable formats.fast_l7a.format_regex=formats.fast_l7a-module.html#format_regex,Variable formats.format_regex=formats-module.html#format_regex,Variable formats.jp2.format_regex=formats.jp2-module.html#format_regex,Variable formats.netcdf.format_regex=formats.netcdf-module.html#format_regex,Variable formats.nitf.format_regex=formats.nitf-module.html#format_regex,Variable formats.spot_cap.format_regex=formats.spot_cap-module.html#format_regex,Variable formats.spot_dimap.format_regex=formats.spot_dimap-module.html#format_regex"><a title="formats.__default__.format_regex
+<a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line">        <tt id="link-2" class="py-name" targets="Variable formats.__default__.format_regex=formats.__default__-module.html#format_regex,Variable formats.ali_hyperion.format_regex=formats.ali_hyperion-module.html#format_regex,Variable formats.alos.format_regex=formats.alos-module.html#format_regex,Variable formats.aster.format_regex=formats.aster-module.html#format_regex,Variable formats.ccrs.format_regex=formats.ccrs-module.html#format_regex,Variable formats.digitalglobe.format_regex=formats.digitalglobe-module.html#format_regex,Variable formats.ecw.format_regex=formats.ecw-module.html#format_regex,Variable formats.ecwp.format_regex=formats.ecwp-module.html#format_regex,Variable formats.envi.format_regex=formats.envi-module.html#format_regex,Variable formats.esribil.format_regex=formats.esribil-module.html#format_regex,Variable formats.esrigrid.format_regex=formats.esrigrid-module.html#format_regex,Variable formats.fast_l7a.format_regex=formats.fast_l7a-module.html#format_regex,Variable formats.format_regex=formats-module.html#format_regex,Variable formats.jp2.format_regex=formats.jp2-module.html#format_regex,Variable formats.landsat_mtl.format_regex=formats.landsat_mtl-module.html#format_regex,Variable formats.netcdf.format_regex=formats.netcdf-module.html#format_regex,Variable formats.nitf.format_regex=formats.nitf-module.html#format_regex,Variable formats.spot_cap.format_regex=formats.spot_cap-module.html#format_regex,Variable formats.spot_dimap.format_regex=formats.spot_dimap-module.html#format_regex"><a title="formats.__default__.format_regex
 formats.ali_hyperion.format_regex
 formats.alos.format_regex
 formats.aster.format_regex
@@ -123,6 +123,7 @@ formats.esrigrid.format_regex
 formats.fast_l7a.format_regex
 formats.format_regex
 formats.jp2.format_regex
+formats.landsat_mtl.format_regex
 formats.netcdf.format_regex
 formats.nitf.format_regex
 formats.spot_cap.format_regex
@@ -140,6 +141,7 @@ formats.esrigrid.format_regex
 formats.fast_l7a.format_regex
 formats.format_regex
 formats.jp2.format_regex
+formats.landsat_mtl.format_regex
 formats.netcdf.format_regex
 formats.nitf.format_regex
 formats.spot_cap.format_regex
@@ -161,6 +163,7 @@ formats.esrigrid.format_regex
 formats.fast_l7a.format_regex
 formats.format_regex
 formats.jp2.format_regex
+formats.landsat_mtl.format_regex
 formats.netcdf.format_regex
 formats.nitf.format_regex
 formats.spot_cap.format_regex
@@ -181,11 +184,12 @@ formats.esrigrid.format_regex
 formats.fast_l7a.format_regex
 formats.format_regex
 formats.jp2.format_regex
+formats.landsat_mtl.format_regex
 formats.netcdf.format_regex
 formats.nitf.format_regex
 formats.spot_cap.format_regex
-formats.spot_dimap.format_regex" class="py-name" href="#" onclick="return doclink('link-23', 'format_regex', 'link-2');">format_regex</a></tt><tt class="py-op">:</tt> </tt>
-<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">re</tt><tt class="py-op">.</tt><tt class="py-name">search</tt><tt class="py-op">(</tt><tt id="link-24" class="py-name"><a title="formats.r" class="py-name" href="#" onclick="return doclink('link-24', 'r', 'link-22');">r</a></tt><tt class="py-op">,</tt><tt class="py-name">f</tt><tt class="py-op">,</tt><tt class="py-name">re</tt><tt class="py-op">.</tt><tt class="py-name">IGNORECASE</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+formats.spot_dimap.format_regex" class="py-name" href="#" onclick="return doclink('link-23', 'format_regex', 'link-2');">format_regex</a></tt><tt class="py-op">:</tt> <tt class="py-comment">#This is so we always return _default_ format datasets last.</tt> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">re</tt><tt class="py-op">.</tt><tt class="py-name">search</tt><tt class="py-op">(</tt><tt id="link-24" class="py-name"><a title="formats.r" class="py-name" href="#" onclick="return doclink('link-24', 'r', 'link-22');">r</a></tt><tt class="py-op">,</tt><tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">path</tt><tt class="py-op">.</tt><tt class="py-name">basename</tt><tt class="py-op">(</tt><tt class="py-name">f</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-name">re</tt><tt class="py-op">.</tt><tt class="py-name">IGNORECASE</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
 <a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line">                    <tt class="py-keyword">if</tt> <tt class="py-name">fileformats</tt><tt class="py-op">.</tt><tt class="py-name">has_key</tt><tt class="py-op">(</tt><tt id="link-25" class="py-name"><a title="formats.r" class="py-name" href="#" onclick="return doclink('link-25', 'r', 'link-22');">r</a></tt><tt class="py-op">)</tt><tt class="py-op">:</tt><tt class="py-name">fileformats</tt><tt class="py-op">[</tt><tt id="link-26" class="py-name"><a title="formats.r" class="py-name" href="#" onclick="return doclink('link-26', 'r', 'link-22');">r</a></tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-name">f</tt><tt class="py-op">)</tt> </tt>
 <a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line">                    <tt class="py-keyword">else</tt><tt class="py-op">:</tt><tt class="py-name">fileformats</tt><tt class="py-op">[</tt><tt id="link-27" class="py-name"><a title="formats.r" class="py-name" href="#" onclick="return doclink('link-27', 'r', 'link-22');">r</a></tt><tt class="py-op">]</tt><tt class="py-op">=</tt><tt class="py-op">[</tt><tt class="py-name">f</tt><tt class="py-op">]</tt> </tt>
 <a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line">                    <tt class="py-keyword">break</tt> </tt>
@@ -204,6 +208,7 @@ formats.esrigrid.format_regex
 formats.fast_l7a.format_regex
 formats.format_regex
 formats.jp2.format_regex
+formats.landsat_mtl.format_regex
 formats.netcdf.format_regex
 formats.nitf.format_regex
 formats.spot_cap.format_regex

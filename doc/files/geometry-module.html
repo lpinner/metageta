@@ -1020,9 +1020,18 @@
     <dt>Returns:</dt>
         <dd>px,py Output coordinates (two ints)</dd>
   </dl>
-<div class="fields">      <p><strong>Change Log:</strong>
+<div class="fields">      <strong>Change Log:</strong>
+      <ul class="nomargin-top">
+        <li>
         changed int(p[x,y]+0.5) to int(p[x,y]) as per 
     http://lists.osgeo.org/pipermail/gdal-dev/2010-June/024956.html
+        </li>
+        <li>
+        return floats
+        </li>
+      </ul>
+      <p><strong>Note:</strong>
+        0,0 is UL corner of UL pixel, 0.5,0.5 is centre of UL pixel
       </p>
 </div></td></tr></table>
 </div>
@@ -1053,9 +1062,8 @@
     <dt>Returns:</dt>
         <dd>mx,my Output coordinates (two doubles)</dd>
   </dl>
-<div class="fields">      <p><strong>Change Log:</strong>
-        changed p[x,y] to p[x,y]+0.5 as per 
-    http://lists.osgeo.org/pipermail/gdal-dev/2010-June/024956.html
+<div class="fields">      <p><strong>Note:</strong>
+        0,0 is UL corner of UL pixel, 0.5,0.5 is centre of UL pixel
       </p>
 </div></td></tr></table>
 </div>

@@ -108,6 +108,26 @@
       
     </td>
   </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="formats.ecw.Dataset-class.html#getoverview" class="summary-sig-name">getoverview</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
+      Check for possibly corrupt files that can crash GDAL and therefore 
+      python...</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="formats.ecw-pysrc.html#Dataset.getoverview">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
   <tr>
     <td colspan="2" class="summary">
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
@@ -196,26 +216,6 @@
         <span class="summary-sig-arg">f</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="formats.__dataset__-pysrc.html#Dataset.__setfileinfo__">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="formats.__dataset__.Dataset-class.html#getoverview" class="summary-sig-name">getoverview</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">outfile</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">width</span>=<span class="summary-sig-default">800</span>,
-        <span class="summary-sig-arg">format</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">JPG</code><code class="variable-quote">'</code></span>)</span><br />
-      Generate overviews for generic imagery</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="formats.__dataset__-pysrc.html#Dataset.getoverview">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -386,6 +386,49 @@
         <dd>None</dd>
     <dt>Overrides:
         <a href="formats.__dataset__.Dataset-class.html#__getmetadata__">__dataset__.Dataset.__getmetadata__</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getoverview"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getoverview</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="formats.ecw-pysrc.html#Dataset.getoverview">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Check for possibly corrupt files that can crash GDAL and therefore 
+  python...</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>outfile</code></strong> - a filepath to the output overview image. If supplied, format is 
+          determined from the file extension</li>
+        <li><strong class="pname"><code>width</code></strong> - image width</li>
+        <li><strong class="pname"><code>format</code></strong> - format to generate overview image, one of 
+          ['JPG','PNG','GIF','BMP','TIF']. Not required if outfile is 
+          supplied.</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd><ul>
+            <li>
+              <b>filepath</b> (if outfile is supplied) <b>OR</b>
+            </li>
+            <li>
+              <b>binary image data</b> (if outfile is not supplied)
+            </li>
+          </ul></dd>
+    <dt>Overrides:
+        <a href="formats.__dataset__.Dataset-class.html#getoverview">__dataset__.Dataset.getoverview</a>
     </dt>
   </dl>
 </td></tr></table>

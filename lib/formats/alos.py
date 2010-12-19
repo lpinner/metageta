@@ -271,13 +271,14 @@ class Dataset(__default__.Dataset):
             record=2
 
             #Processing level
-            start,stop = 21,36
-            procinfo = utilities.readbinary(meta,(record-1)*recordlength,start,stop)
-            level=procinfo[1:4]
-            #if level != '1B2':raise Exception, 'Level %s PRISM is not supported' % level
-            self.metadata['level']==procinfo[1:4]
-            opt=procinfo[4:6].strip().strip('_')
-            if opt!='':level+='-'+opt
+            if not tif:
+                start,stop = 21,36
+                procinfo = utilities.readbinary(meta,(record-1)*recordlength,start,stop)
+                level=procinfo[1:4]
+                #if level != '1B2':raise Exception, 'Level %s PRISM is not supported' % level
+                self.metadata['level']==procinfo[1:4]
+                opt=procinfo[4:6].strip().strip('_')
+                if opt!='':level+='-'+opt
 
             #SceneID
             if level[0:3] == '1B2':start,stop = 197,212

@@ -33,9 +33,9 @@ B{Format specifications}:
 '''
 format_regex=[
       r'LED-ALAV.*_U$',            #ALOS AVNIR-2 leader file
-      r'LED-ALAV.*___$',            #ALOS AVNIR-2 leader file
+      r'LED-ALAV.*___$',           #ALOS AVNIR-2 leader file
       r'LED-ALPSR.*UD$',           #ALOS PALSAR
-      r'LED-ALPSM.*\_U[BFN]$'      #ALOS PRISM
+      r'LED-ALPSM.*\_U[BFNW]$'     #ALOS PRISM
       ]
 '''Regular expression list of file formats'''
 
@@ -74,7 +74,7 @@ class Dataset(__default__.Dataset):
               r'IMG-0[1-4]-ALAV.*_U$',     #ALOS AVNIR-2 img file
               r'.*\.tif$',                 #ALOS AVNIR-2 ACRES orthocorrected tif file
               r'IMG-[HV][HV]-ALPSR.*UD$',  #ALOS PALSAR
-              r'IMG-ALPSM.*\_U[BFN]$'      #ALOS PRISM
+              r'IMG-ALPSM.*\_U[BFNW]$'     #ALOS PRISM
         ]
         self._imgs=[i for i in utilities.rglob(os.path.dirname(f),'|'.join(img_regex),True,re.I, False)]
         

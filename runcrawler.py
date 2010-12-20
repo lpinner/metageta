@@ -244,8 +244,9 @@ def showmessage(title, msg,type=None):
     import Tkinter,tkMessageBox
     tk=Tkinter.Tk()
     tk.withdraw()
-    tkMessageBox.showinfo(title,msg,type=type)
+    val=tkMessageBox.showinfo(title,msg,type=type)
     tk.destroy()
+    return val
 
 def getlogger(logfile,name=None,nogui=False, debug=False, icon=None):
     geometry.debug=debug
@@ -273,6 +274,17 @@ if __name__ == '__main__':
             else:
                 medarg.enabled=False
                 medarg.value.set('')
+
+    #This is an extra check so existing spreadsheets don't get overwritten unless
+    #the update arg is explicitly unchecked
+    def xlscallback(xlsarg,updatearg):
+        xls=xlsarg.value.get()
+        if utilities.exists(xls):
+            updatearg.enabled=True
+            updatearg.value.set(True)
+        else:
+            updatearg.enabled=False
+            updatearg.value.set(False)
 
     def writablecallback(arg):
         filepath=arg.value.get()
@@ -305,7 +317,7 @@ if __name__ == '__main__':
 
     opt=parser.add_option("-u", "--update", action="store_true", dest="update",default=False,
                       help="Update existing crawl results")
-    updatearg=getargs.BoolArg(opt,tooltip='Do you want to update existing crawl results?')
+    updatearg=getargs.BoolArg(opt,tooltip='Do you want to update existing crawl results?', enabled=False)
 
     opt=parser.add_option("-o", "--overviews", action="store_true", dest="ovs",default=False,
                       help="Generate overview images")
@@ -322,6 +334,8 @@ if __name__ == '__main__':
 
     #Add a callback to the directory arg, use the Command class so we can has arguments
     dirarg.callback=getargs.Command(mediacallback,dirarg,medarg)
+    #Add a callback to the xls arg, use the Command class so we can has arguments
+    xlsarg.callback=getargs.Command(xlscallback,xlsarg,updatearg)
 
     #Parse existing command line args
     optvals,argvals = parser.parse_args()
@@ -349,6 +363,12 @@ if __name__ == '__main__':
                     logger=getlogger(log,name=APP,nogui=optvals.nogui, debug=optvals.debug, icon=ICON)
                 keepalive=args.keepalive
                 forceexit=True
+##                if utilities.exists(args.xls) and not args.update and not optvals.nogui:
+##                    if showmessage('Overwrite XLS?','Are you sure you want to overwrite %s'%args.xls,type='okcancel')=='ok':
+##                        main(args.dir,args.xls,logger,args.med,args.update,args.ovs)
+##                    else:keepalive=True #Make sure the GetArgs dialog pops up again
+##                else:
+##                    main(args.dir,args.xls,logger,args.med,args.update,args.ovs)
                 main(args.dir,args.xls,logger,args.med,args.update,args.ovs)
                 forceexit=False
             else:keepalive=False
@@ -358,10 +378,6 @@ if __name__ == '__main__':
         logger=getlogger(log, name=APP,nogui=optvals.nogui, debug=optvals.debug, icon=ICON)
         main(optvals.dir,xls,logger,optvals.med,optvals.update,optvals.ovs)
 
-    print 'deleting logger'
     if logger:
         logger.shutdown()
         del logger
-    print 'exiting'
-    sys.exit()
-        

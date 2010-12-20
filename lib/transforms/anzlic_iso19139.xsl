@@ -123,26 +123,38 @@
       <xsl:call-template name="identificationInfo"/>
       <xsl:call-template name="contentInfo"/>
       <xsl:call-template name="distributionInfo"/>
-      <xsl:call-template name="dataQualityInfo">
-        <xsl:with-param name="DQ_Type">lineage</xsl:with-param>
-        <xsl:with-param name="DQ_Value" select="lineage"/>
-      </xsl:call-template>
-      <xsl:call-template name="dataQualityInfo">
-        <xsl:with-param name="DQ_Type">CompletenessOmission</xsl:with-param>
-        <xsl:with-param name="DQ_Value" select="CompletenessOmission"/>
-      </xsl:call-template>
-      <xsl:call-template name="dataQualityInfo">
-        <xsl:with-param name="DQ_Type">AbsoluteExternalPositionalAccuracy</xsl:with-param>
-        <xsl:with-param name="DQ_Value" select="AbsoluteExternalPositionalAccuracy"/>
-      </xsl:call-template>
-      <xsl:call-template name="dataQualityInfo">
-        <xsl:with-param name="DQ_Type">ConceptualConsistency</xsl:with-param>
-        <xsl:with-param name="DQ_Value" select="ConceptualConsistency"/>
-      </xsl:call-template>
-      <xsl:call-template name="dataQualityInfo">
-        <xsl:with-param name="DQ_Type">NonQuantitativeAttributeAccuracy</xsl:with-param>
-        <xsl:with-param name="DQ_Value" select="NonQuantitativeAttributeAccuracy"/>
-      </xsl:call-template>
+ 
+      <gmd:dataQualityInfo>
+        <gmd:DQ_DataQuality>
+          <gmd:scope>
+            <gmd:DQ_Scope>
+              <gmd:level>
+                <gmd:MD_ScopeCode codeList="http://asdd.ga.gov.au/asdd/profileinfo/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset">dataset</gmd:MD_ScopeCode>
+              </gmd:level>
+            </gmd:DQ_Scope>
+          </gmd:scope>
+          <xsl:call-template name="dataQualityInfo">
+            <xsl:with-param name="DQ_Type">CompletenessOmission</xsl:with-param>
+            <xsl:with-param name="DQ_Value" select="CompletenessOmission"/>
+          </xsl:call-template>
+          <xsl:call-template name="dataQualityInfo">
+            <xsl:with-param name="DQ_Type">AbsoluteExternalPositionalAccuracy</xsl:with-param>
+            <xsl:with-param name="DQ_Value" select="AbsoluteExternalPositionalAccuracy"/>
+          </xsl:call-template>
+          <xsl:call-template name="dataQualityInfo">
+            <xsl:with-param name="DQ_Type">ConceptualConsistency</xsl:with-param>
+            <xsl:with-param name="DQ_Value" select="ConceptualConsistency"/>
+          </xsl:call-template>
+          <xsl:call-template name="dataQualityInfo">
+            <xsl:with-param name="DQ_Type">NonQuantitativeAttributeAccuracy</xsl:with-param>
+            <xsl:with-param name="DQ_Value" select="NonQuantitativeAttributeAccuracy"/>
+          </xsl:call-template>
+          <xsl:call-template name="dataQualityInfo">
+            <xsl:with-param name="DQ_Type">lineage</xsl:with-param>
+            <xsl:with-param name="DQ_Value" select="lineage"/>
+          </xsl:call-template>
+        </gmd:DQ_DataQuality>
+      </gmd:dataQualityInfo>
       <xsl:call-template name="metadataConstraints"/>
     </gmd:MD_Metadata>
   </xsl:template>
@@ -1263,118 +1275,106 @@
   <xsl:template name="dataQualityInfo">
     <xsl:param name="DQ_Type"/>
     <xsl:param name="DQ_Value"/>
-    <gmd:dataQualityInfo>
-      <gmd:DQ_DataQuality>
-        <gmd:scope>
-          <gmd:DQ_Scope>
-            <gmd:level>
-              <gmd:MD_ScopeCode codeList="http://asdd.ga.gov.au/asdd/profileinfo/gmxCodelists.xml#MD_ScopeCode" codeListValue="dataset">dataset</gmd:MD_ScopeCode>
-            </gmd:level>
-          </gmd:DQ_Scope>
-        </gmd:scope>
-        <xsl:choose>
-          <xsl:when test="$DQ_Type='lineage'">
-            <gmd:lineage>
-              <gmd:LI_Lineage>
-                <gmd:statement>
-                  <gco:CharacterString>
-                      <xsl:choose>
-                          <xsl:when test="normalize-space(lineage)"><xsl:value-of select="lineage"/></xsl:when>
-                          <xsl:otherwise>Please enter dataset LINEAGE</xsl:otherwise>
-                      </xsl:choose>
-                  </gco:CharacterString>
-                </gmd:statement>
-                <gmd:source>
-                  <gmd:LI_Source>
+    <xsl:choose>
+      <xsl:when test="$DQ_Type='lineage'">
+        <gmd:lineage>
+          <gmd:LI_Lineage>
+            <gmd:statement>
+              <gco:CharacterString>
+                  <xsl:choose>
+                      <xsl:when test="normalize-space(lineage)"><xsl:value-of select="lineage"/></xsl:when>
+                      <xsl:otherwise>Please enter dataset LINEAGE</xsl:otherwise>
+                  </xsl:choose>
+              </gco:CharacterString>
+            </gmd:statement>
+            <xsl:variable name="tsteps">
+              <xsl:element name="demcorrection"><xsl:value-of select="demcorrection"/></xsl:element>
+              <xsl:element name="resampling"><xsl:value-of select="resampling"/></xsl:element>
+            </xsl:variable>
+            <xsl:for-each select="exsl:node-set($tsteps)/*">
+              <xsl:if test="normalize-space(.)">
+                <gmd:processStep>
+                  <gmd:LI_ProcessStep>
                     <gmd:description>
-                      <xsl:choose>
-                          <xsl:when test="normalize-space(source)"><xsl:value-of select="source"/></xsl:when>
-                          <xsl:otherwise>Please enter dataset SOURCE</xsl:otherwise>
-                      </xsl:choose>
+                      <gco:CharacterString><xsl:value-of select="local-name(.)"/>: <xsl:value-of select="normalize-space(.)"/></gco:CharacterString>
                     </gmd:description>
-                  </gmd:LI_Source>
-                </gmd:source>
-                <xsl:variable name="tsteps">
-                  <xsl:element name="demcorrection"><xsl:value-of select="demcorrection"/></xsl:element>
-                  <xsl:element name="resampling"><xsl:value-of select="resampling"/></xsl:element>
-                </xsl:variable>
-                <xsl:for-each select="exsl:node-set($tsteps)/*">
-                  <xsl:if test="normalize-space(.)">
-                    <gmd:processStep>
-                      <gmd:LI_ProcessStep>
-                        <!--xsl:attribute name="id"><xsl:value-of select="position()"/></xsl:attribute-->
-                        <gmd:description>
-                          <gco:CharacterString><xsl:value-of select="local-name(.)"/>: <xsl:value-of select="normalize-space(.)"/></gco:CharacterString>
-                        </gmd:description>
-                        <gmd:rationale gco:nilReason="missing"><gco:CharacterString/></gmd:rationale>
-                        <gmd:dateTime gco:nilReason="missing"/>
-                        <gmd:processor gco:nilReason="missing"></gmd:processor>
-                      </gmd:LI_ProcessStep>
-                    </gmd:processStep>
-                  </xsl:if>
-                </xsl:for-each>
-              </gmd:LI_Lineage>
-            </gmd:lineage>
-          </xsl:when>
-          <xsl:otherwise>
-            <gmd:report>
-              <xsl:element name="gmd:DQ_{$DQ_Type}">
-                <gmd:result>
-                  <gmd:DQ_ConformanceResult>
-                    <gmd:specification>
-                      <gmd:CI_Citation>
-                        <!--gmd:title><gco:CharacterString><xsl:value-of select="$DQ_Value"/></gco:CharacterString></gmd:title-->
-                        <gmd:title><gco:CharacterString><xsl:value-of select="$DQ_Type"/></gco:CharacterString></gmd:title>
-                        <!--xsl:call-template name="UnknownDate"/-->
-                        <gmd:date>
-                          <gmd:CI_Date>
-                            <!--gmd:date gco:nilReason="unknown"></gmd:date-->
-                            <gmd:date><gco:Date>
-                              <xsl:choose>
-                                  <xsl:when test="normalize-space(metadatadate)">
-                                      <xsl:choose>
-                                          <xsl:when test="contains(metadatadate,'T')">
-                                            <xsl:value-of select="str:split(metadatadate,'T')[1]"/><!--date doesn't validate with time values-->
-                                          </xsl:when>
-                                          <xsl:otherwise><xsl:value-of select="metadatadate"/></xsl:otherwise>
-                                      </xsl:choose>
-                                  </xsl:when>
-                                  <xsl:otherwise><xsl:value-of select="date:format-date(date:date-time(),'yyyy-MM-dd')"/></xsl:otherwise>
-                              </xsl:choose>
-                            </gco:Date></gmd:date>
-                            <gmd:dateType>
-                              <gmd:CI_DateTypeCode codeList="http://asdd.ga.gov.au/asdd/profileinfo/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
-                            </gmd:dateType>
-                          </gmd:CI_Date>
-                        </gmd:date>
-                      </gmd:CI_Citation>
-                    </gmd:specification>
-                    <xsl:choose>
-                      <xsl:when test="normalize-space($DQ_Value)">
-                        <gmd:explanation>
-                          <gco:CharacterString><xsl:value-of select="$DQ_Value"/></gco:CharacterString>
-                        </gmd:explanation>
-                      </xsl:when>
-                      <xsl:otherwise>
-                        <gmd:explanation>
-                          <gco:CharacterString>Please enter <xsl:value-of select="$DQ_Type"/> text</gco:CharacterString>
-                        </gmd:explanation>
-                      </xsl:otherwise>
-                    </xsl:choose>
-                    <gmd:pass>
-                      <gco:Boolean>1</gco:Boolean>
-                    </gmd:pass>
-                    <!--gmd:pass gco:nilReason="missing"> <- This fails validation
-                      <gco:Boolean/> 
-                    </gmd:pass-->
-                  </gmd:DQ_ConformanceResult>
-                </gmd:result>
-              </xsl:element><!--xsl:element name="gmd:DQ_{$DQ_Type}"-->
-            </gmd:report>
-          </xsl:otherwise>
-        </xsl:choose>
-      </gmd:DQ_DataQuality>
-    </gmd:dataQualityInfo>
+                    <gmd:rationale gco:nilReason="missing"><gco:CharacterString/></gmd:rationale>
+                    <gmd:dateTime gco:nilReason="missing"/>
+                    <gmd:processor gco:nilReason="missing"></gmd:processor>
+                  </gmd:LI_ProcessStep>
+                </gmd:processStep>
+              </xsl:if>
+            </xsl:for-each>
+            <gmd:source>
+              <gmd:LI_Source>
+                <gmd:description>
+                  <gco:CharacterString><xsl:choose>
+                      <xsl:when test="normalize-space(source)"><xsl:value-of select="source"/></xsl:when>
+                      <xsl:otherwise>Please enter dataset SOURCE</xsl:otherwise>
+                  </xsl:choose></gco:CharacterString>
+                </gmd:description>
+              </gmd:LI_Source>
+            </gmd:source>
+          </gmd:LI_Lineage>
+        </gmd:lineage>
+      </xsl:when>
+      <xsl:otherwise>
+        <gmd:report>
+          <xsl:element name="gmd:DQ_{$DQ_Type}">
+            <gmd:result>
+              <gmd:DQ_ConformanceResult>
+                <gmd:specification>
+                  <gmd:CI_Citation>
+                    <!--gmd:title><gco:CharacterString><xsl:value-of select="$DQ_Value"/></gco:CharacterString></gmd:title-->
+                    <gmd:title><gco:CharacterString><xsl:value-of select="$DQ_Type"/></gco:CharacterString></gmd:title>
+                    <!--xsl:call-template name="UnknownDate"/-->
+                    <gmd:date>
+                      <gmd:CI_Date>
+                        <!--gmd:date gco:nilReason="unknown"></gmd:date-->
+                        <gmd:date><gco:Date>
+                          <xsl:choose>
+                              <xsl:when test="normalize-space(metadatadate)">
+                                  <xsl:choose>
+                                      <xsl:when test="contains(metadatadate,'T')">
+                                        <xsl:value-of select="str:split(metadatadate,'T')[1]"/><!--date doesn't validate with time values-->
+                                      </xsl:when>
+                                      <xsl:otherwise><xsl:value-of select="metadatadate"/></xsl:otherwise>
+                                  </xsl:choose>
+                              </xsl:when>
+                              <xsl:otherwise><xsl:value-of select="date:format-date(date:date-time(),'yyyy-MM-dd')"/></xsl:otherwise>
+                          </xsl:choose>
+                        </gco:Date></gmd:date>
+                        <gmd:dateType>
+                          <gmd:CI_DateTypeCode codeList="http://asdd.ga.gov.au/asdd/profileinfo/gmxCodelists.xml#CI_DateTypeCode" codeListValue="publication">publication</gmd:CI_DateTypeCode>
+                        </gmd:dateType>
+                      </gmd:CI_Date>
+                    </gmd:date>
+                  </gmd:CI_Citation>
+                </gmd:specification>
+                <xsl:choose>
+                  <xsl:when test="normalize-space($DQ_Value)">
+                    <gmd:explanation>
+                      <gco:CharacterString><xsl:value-of select="$DQ_Value"/></gco:CharacterString>
+                    </gmd:explanation>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <gmd:explanation>
+                      <gco:CharacterString>Please enter <xsl:value-of select="$DQ_Type"/> text</gco:CharacterString>
+                    </gmd:explanation>
+                  </xsl:otherwise>
+                </xsl:choose>
+                <gmd:pass>
+                  <gco:Boolean>1</gco:Boolean>
+                </gmd:pass>
+                <!--gmd:pass gco:nilReason="missing"> <- This fails validation
+                  <gco:Boolean/> 
+                </gmd:pass-->
+              </gmd:DQ_ConformanceResult>
+            </gmd:result>
+          </xsl:element><!--xsl:element name="gmd:DQ_{$DQ_Type}"-->
+        </gmd:report>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template><!--dataQualityInfo-->
   <!--
   -->  

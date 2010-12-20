@@ -237,7 +237,7 @@ def exit():
     '''Force exit after closure of the ProgressBar GUI'''
     exe=os.path.splitext(os.path.basename(sys.executable.lower()))[0]
     if forceexit:   #Issue?
-        if exe in ['python','pythonw']: #Little kludge to stop killing dev IDEs
+        if exe not in ['python','pythonw']: #Little kludge to stop killing dev IDEs
             os._exit(0)
 
 def showmessage(title, msg,type=None):
@@ -358,6 +358,10 @@ if __name__ == '__main__':
         logger=getlogger(log, name=APP,nogui=optvals.nogui, debug=optvals.debug, icon=ICON)
         main(optvals.dir,xls,logger,optvals.med,optvals.update,optvals.ovs)
 
+    print 'deleting logger'
     if logger:
         logger.shutdown()
         del logger
+    print 'exiting'
+    sys.exit()
+        

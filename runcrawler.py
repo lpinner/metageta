@@ -29,11 +29,12 @@ Usage::
     runcrawler.bat/sh -d dir -x xls -s shp -l log {-o} {--nogui} {--debug}
 
 @newfield sysarg: Argument, Arguments
-@sysarg: C{-d [dir]}        : Directory to to recursively search for imagery
+@sysarg: C{-d [dir]}        : Directory to search for imagery
 @sysarg: C{-x [xls]}        : MS Excel spreadsheet to write metadata to
 @sysarg: C{-m, --mediaid}   : CD/DVD media ID, defaults to volume label.
 @sysarg: C{-u, --update}    : Update previous crawl results.
 @sysarg: C{-o, --overviews} : Generate overview (quicklook/thumbnail) images")
+@sysarg: C{-r, --recurse}   : Search directory recursively?
 @sysarg: C{--nogui}         : Don't show the GUI progress dialog")
 @sysarg: C{--debug}         : Turn debug output on
 
@@ -47,7 +48,7 @@ import crawler
 import overviews
 import progresslogger
 
-def main(dir, xls, logger, mediaid=None, update=False, getovs=False):
+def main(dir, xls, logger, mediaid=None, update=False, getovs=False, recurse=True):
     """ Run the Metadata Crawler
 
         @type  dir:    C{str}
@@ -60,6 +61,8 @@ def main(dir, xls, logger, mediaid=None, update=False, getovs=False):
         @param mediaid:CD/DVD media ID
         @type  getovs: C{boolean}
         @param getovs: Generate overview (quicklook/thumbnail) images
+        @type  recurse: C{boolean}
+        @param recurse: Search directory recursively?
         @return:  C{progresslogger.ProgressLogger}
     """
     
@@ -112,7 +115,7 @@ def main(dir, xls, logger, mediaid=None, update=False, getovs=False):
 
     logger.info('Searching for files...')
     now=time.time()
-    Crawler=crawler.Crawler(dir)
+    Crawler=crawler.Crawler(dir,recurse=recurse)
     logger.info('Found %s files...'%Crawler.filecount)
 
     #Loop thru dataset objects returned by Crawler
@@ -307,6 +310,10 @@ if __name__ == '__main__':
     dirarg=getargs.DirArg(opt,initialdir='',enabled=True,icon=icons.dir_img)
     dirarg.tooltip='The directory to start recursively searching for raster imagery.'
 
+    opt=parser.add_option("-r", "--recurse", action="store_true", dest="recurse",default=True,
+                      help="Search directory recursively")
+    recursearg=getargs.BoolArg(opt,tooltip='Do you want to search in sub-directories?')
+
     opt=parser.add_option('-m', dest="med", metavar="media",help='CD/DVD ID')
     medarg=getargs.StringArg(opt,enabled=False,required=False)
     medarg.tooltip='You can enter an ID for a CD/DVD, this defaults to the disc volume label.'
@@ -351,7 +358,7 @@ if __name__ == '__main__':
         keepalive=True
         validate=getargs.Command(writablecallback,xlsarg)
         while keepalive:
-            args=getargs.GetArgs(dirarg,medarg,xlsarg,updatearg,ovarg,kaarg,callback=validate,title=APP,icon=ICON)
+            args=getargs.GetArgs(dirarg,medarg,xlsarg,updatearg,recursearg,ovarg,kaarg,callback=validate,title=APP,icon=ICON)
             if args:#GetArgs returns None if user cancels the GUI/closes the dialog
                 keepalive=args.keepalive
                 args.xls = utilities.checkExt(utilities.encode(args.xls), ['.xls'])
@@ -369,14 +376,14 @@ if __name__ == '__main__':
 ##                    else:keepalive=True #Make sure the GetArgs dialog pops up again
 ##                else:
 ##                    main(args.dir,args.xls,logger,args.med,args.update,args.ovs)
-                main(args.dir,args.xls,logger,args.med,args.update,args.ovs)
+                main(args.dir,args.xls,logger,args.med,args.update,args.ovs,args.recurse)
                 forceexit=False
             else:keepalive=False
     else: #No need for the GUI
         xls = utilities.checkExt(utilities.encode(optvals.xls), ['.xls'])
         log=xls.replace('.xls','.log')
         logger=getlogger(log, name=APP,nogui=optvals.nogui, debug=optvals.debug, icon=ICON)
-        main(optvals.dir,xls,logger,optvals.med,optvals.update,optvals.ovs)
+        main(optvals.dir,xls,logger,optvals.med,optvals.update,optvals.ovs,optvals.recurse)
 
     if logger:
         logger.shutdown()

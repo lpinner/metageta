@@ -43,7 +43,7 @@ import re,os
 
 class Crawler:
     ''' Iterator for metadata crawling'''
-    def __init__(self,dir):
+    def __init__(self,dir, recurse=True):
         ''' Iterator for metadata crawling
 
             @type  dir: C{str}
@@ -54,7 +54,7 @@ class Crawler:
         dir=utilities.uncpath(utilities.realpath(utilities.normcase(utilities.encode(dir))))
         #Build a dict of matching files and regexes then sort according to the priority of the regex formats 
         fileformats={}
-        for f in utilities.rglob(dir,'|'.join(format_regex), True, re.IGNORECASE):
+        for f in utilities.rglob(dir,'|'.join(format_regex), True, re.IGNORECASE, recurse=recurse):
             #Use latin-1 encoding to fix Issue 20
             f=utilities.realpath(utilities.normcase(utilities.encode(f)))
             for r in format_regex: #This is so we always return _default_ format datasets last.

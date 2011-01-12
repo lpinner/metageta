@@ -70,8 +70,7 @@
 <div class="fields">      <strong>Arguments:</strong>
       <ul class="nomargin-top">
         <li>
-        <code>-d [dir]</code>        : Directory to to recursively search 
-        for imagery
+        <code>-d [dir]</code>        : Directory to search for imagery
         </li>
         <li>
         <code>-x [xls]</code>        : MS Excel spreadsheet to write 
@@ -87,6 +86,9 @@
         <li>
         <code>-o, --overviews</code> : Generate overview 
         (quicklook/thumbnail) images&quot;)
+        </li>
+        <li>
+        <code>-r, --recurse</code>   : Search directory recursively?
         </li>
         <li>
         <code>--nogui</code>         : Don't show the GUI progress 
@@ -128,7 +130,8 @@
         <span class="summary-sig-arg">logger</span>,
         <span class="summary-sig-arg">mediaid</span>=<span class="summary-sig-default">None</span>,
         <span class="summary-sig-arg">update</span>=<span class="summary-sig-default">False</span>,
-        <span class="summary-sig-arg">getovs</span>=<span class="summary-sig-default">False</span>)</span><br />
+        <span class="summary-sig-arg">getovs</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">recurse</span>=<span class="summary-sig-default">True</span>)</span><br />
       Run the Metadata Crawler</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="runcrawler-pysrc.html#main">source&nbsp;code</a></span>
@@ -268,7 +271,8 @@
         <span class="sig-arg">logger</span>,
         <span class="sig-arg">mediaid</span>=<span class="sig-default">None</span>,
         <span class="sig-arg">update</span>=<span class="sig-default">False</span>,
-        <span class="sig-arg">getovs</span>=<span class="sig-default">False</span>)</span>
+        <span class="sig-arg">getovs</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">recurse</span>=<span class="sig-default">True</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="runcrawler-pysrc.html#main">source&nbsp;code</a></span>&nbsp;
@@ -284,6 +288,7 @@
         <li><strong class="pname"><code>logger</code></strong> (<code>progresslogger.ProgressLogger</code>) - Use an already instantiated logger</li>
         <li><strong class="pname"><code>mediaid</code></strong> (<code>str</code>) - CD/DVD media ID</li>
         <li><strong class="pname"><code>getovs</code></strong> (<code>boolean</code>) - Generate overview (quicklook/thumbnail) images</li>
+        <li><strong class="pname"><code>recurse</code></strong> (<code>boolean</code>) - Search directory recursively?</li>
     </ul></dd>
     <dt>Returns:</dt>
         <dd><code>progresslogger.ProgressLogger</code></dd>

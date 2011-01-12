@@ -41,9 +41,7 @@ Usage::
       manually added to the Excel spreadsheet and will be included in the output XML/MEF metadata.
       See the L{transforms} module documentation for more information.
  
-@todo: Set up logging & debug properly. Enable selecting if MEF is created regardless of whether overviews exist
-@todo: Fix the splashscreen, it's conflicting with the GetArgs GUI and needs to be sorted out - low priority...
-
+@todo: Set up logging & debug properly.
 '''
 
 #Imports

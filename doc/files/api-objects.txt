@@ -155,8 +155,6 @@ spatialreferences.lon2utmzone	spatialreferences-module.html#lon2utmzone
 spatialreferences.SRS_UNITS_CONV	spatialreferences-module.html#SRS_UNITS_CONV
 spatialreferences.IdentifyAusEPSG	spatialreferences-module.html#IdentifyAusEPSG
 spatialreferences.AUS_PROJCS	spatialreferences-module.html#AUS_PROJCS
-splashscreen	splashscreen-module.html
-splashscreen.__package__	splashscreen-module.html#__package__
 transforms	transforms-module.html
 transforms._file	transforms-module.html#_file
 transforms.Transform	transforms-module.html#Transform
@@ -245,7 +243,7 @@ formats.__dataset__.Dataset.__classproperty__	formats.__dataset__.Dataset-class.
 formats.__dataset__.Dataset.filelist	formats.__dataset__.Dataset-class.html#filelist
 formats.alos.Dataset	formats.alos.Dataset-class.html
 formats.__dataset__.Dataset.__getfilelist__	formats.__dataset__.Dataset-class.html#__getfilelist__
-formats.__dataset__.Dataset.getoverview	formats.__dataset__.Dataset-class.html#getoverview
+formats.alos.Dataset.getoverview	formats.alos.Dataset-class.html#getoverview
 formats.alos.Dataset.__init__	formats.alos.Dataset-class.html#__init__
 formats.__dataset__.Dataset.__setfileinfo__	formats.__dataset__.Dataset-class.html#__setfileinfo__
 formats.__dataset__.Dataset.__new__	formats.__dataset__.Dataset-class.html#__new__
@@ -581,14 +579,6 @@ progresslogger.ProgressLoggerHandler.__init__	progresslogger.ProgressLoggerHandl
 progresslogger.ProgressLoggerServer	progresslogger.ProgressLoggerServer-class.html
 progresslogger.ProgressLoggerServer.startLogging	progresslogger.ProgressLoggerServer-class.html#startLogging
 progresslogger.ProgressLoggerServer.__init__	progresslogger.ProgressLoggerServer-class.html#__init__
-splashscreen.CallBack	splashscreen.CallBack-class.html
-splashscreen.CallBack.check	splashscreen.CallBack-class.html#check
-splashscreen.CallBack.__init__	splashscreen.CallBack-class.html#__init__
-splashscreen.SplashScreen	splashscreen.SplashScreen-class.html
-splashscreen.SplashScreen.__settimeout__	splashscreen.SplashScreen-class.html#__settimeout__
-splashscreen.SplashScreen.__init__	splashscreen.SplashScreen-class.html#__init__
-splashscreen.SplashScreen.run	splashscreen.SplashScreen-class.html#run
-splashscreen.SplashScreen.__poll__	splashscreen.SplashScreen-class.html#__poll__
 utilities.ExcelReader	utilities.ExcelReader-class.html
 utilities.ExcelReader.__init__	utilities.ExcelReader-class.html#__init__
 utilities.ExcelReader.__getitem__	utilities.ExcelReader-class.html#__getitem__

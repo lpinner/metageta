@@ -60,15 +60,17 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class Dataset</h1><p class="nomargin-top"><span class="codelink"><a href="formats.alos-pysrc.html#Dataset">source&nbsp;code</a></span></p>
 <pre class="base-tree">
-         object --+    
-                  |    
-<a href="formats.__dataset__.Dataset-class.html">__dataset__.Dataset</a> --+
-                      |
-                     <strong class="uidshort">Dataset</strong>
+         object --+        
+                  |        
+<a href="formats.__dataset__.Dataset-class.html">__dataset__.Dataset</a> --+    
+                      |    
+    <a href="formats.__default__.Dataset-class.html">__default__.Dataset</a> --+
+                          |
+                         <strong class="uidshort">Dataset</strong>
 </pre>
 
 <hr />
-<p>Subclass of base Dataset class</p>
+<p>Subclass of default Dataset class</p>
 
 <!-- ==================== INSTANCE METHODS ==================== -->
 <a name="section-InstanceMethods"></a>
@@ -117,6 +119,26 @@
       GDAL doesn't</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="formats.alos-pysrc.html#Dataset.__getmetadata__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">str</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="formats.alos.Dataset-class.html#getoverview" class="summary-sig-name">getoverview</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">outfile</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">width</span>=<span class="summary-sig-default">800</span>,
+        <span class="summary-sig-arg">format</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">JPG</code><code class="variable-quote">'</code></span>)</span><br />
+      Generate overviews for ALOS imagery</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="formats.alos-pysrc.html#Dataset.getoverview">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -191,26 +213,6 @@
         <span class="summary-sig-arg">f</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="formats.__dataset__-pysrc.html#Dataset.__setfileinfo__">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="formats.__dataset__.Dataset-class.html#getoverview" class="summary-sig-name">getoverview</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">outfile</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">width</span>=<span class="summary-sig-default">800</span>,
-        <span class="summary-sig-arg">format</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">JPG</code><code class="variable-quote">'</code></span>)</span><br />
-      Generate overviews for generic imagery</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="formats.__dataset__-pysrc.html#Dataset.getoverview">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -399,8 +401,51 @@
   <p>Read Metadata for an ACRES ALOS AVNIR-2/PRISM/PALSAR format image as 
   GDAL doesn't</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>f</code></strong> - a filepath to the dataset or a VRT XML string</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>None</dd>
     <dt>Overrides:
         <a href="formats.__dataset__.Dataset-class.html#__getmetadata__">__dataset__.Dataset.__getmetadata__</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="getoverview"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">getoverview</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">outfile</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">width</span>=<span class="sig-default">800</span>,
+        <span class="sig-arg">format</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">JPG</code><code class="variable-quote">'</code></span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="formats.alos-pysrc.html#Dataset.getoverview">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Generate overviews for ALOS imagery</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>outfile</code></strong> (str) - a filepath to the output overview image. If supplied, format is 
+          determined from the file extension</li>
+        <li><strong class="pname"><code>width</code></strong> (int) - image width</li>
+        <li><strong class="pname"><code>format</code></strong> (str) - format to generate overview image, one of 
+          ['JPG','PNG','GIF','BMP','TIF']. Not required if outfile is 
+          supplied.</li>
+    </ul></dd>
+    <dt>Returns: str</dt>
+        <dd>filepath (if outfile is supplied)/binary image data (if outfile 
+          is not supplied)</dd>
+    <dt>Overrides:
+        <a href="formats.__dataset__.Dataset-class.html#getoverview">__dataset__.Dataset.getoverview</a>
     </dt>
   </dl>
 </td></tr></table>

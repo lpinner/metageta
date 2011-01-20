@@ -1,22 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
-    <defaultcontact>
-      <organisation>Organisation Name</organisation>
-      <position>Position Name</position>
-      <telephone>Telephone</telephone>
-      <facsimile>Fax</facsimile>
-      <address>
-        <deliveryPoint>Street Address</deliveryPoint>
-        <city>City/Suburb/Town</city>
-        <administrativeArea>State/Territory/Jurisdiction</administrativeArea>
-        <postalCode>Post/Zip code</postalCode>
-        <country>Country</country>
-      </address>
-      <emailAddress>email@address.com</emailAddress>
-      <onlineResource>
-        <URL>URL</URL>
-        <description>Description</description>
-      </onlineResource>
-    </defaultcontact>
+  <defaultcontact>
+    <organisation>Organisation Name</organisation>
+    <position>Position Name</position>
+    <telephone>Telephone</telephone>
+    <facsimile>Fax</facsimile>
+    <address>
+      <deliveryPoint>Street Address</deliveryPoint>
+      <city>City/Suburb/Town</city>
+      <administrativeArea>State/Territory/Jurisdiction</administrativeArea>
+      <postalCode>Post/Zip code</postalCode>
+      <country>Country</country>
+    </address>
+    <emailAddress>email@address.com</emailAddress>
+    <onlineResource>
+      <URL>URL</URL>
+      <description>Description</description>
+    </onlineResource>
+  </defaultcontact>
+  <geonetwork>
+    <site>
+      <name></name>
+      <organization></organization>
+      <siteId></siteId>
+    </site>
+    <categories default="datasets">
+      <category name="applications"/>
+      <category name="audioVideo"/>
+      <category name="caseStudies"/>
+      <category name="datasets"/>
+      <category name="directories"/>
+      <category name="interactiveResources"/>
+      <category name="maps"/>
+      <category name="otherResources"/>
+      <category name="photo"/>
+      <category name="proceedings"/>
+    </categories>
+  </geonetwork>
 </config>
 

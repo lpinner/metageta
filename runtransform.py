@@ -46,21 +46,14 @@ Usage::
 
 #Imports
 import os,sys,glob
-#Set up the splash screen. Importing the FT.Xml module takes forever...
-#Commented out as it's conflicting with the GetArgs GUI and needs to be sorted out - low priority...
-#from splashscreen import SplashScreen,CallBack
-#startup=CallBack()
-#if len(sys.argv) == 1:SplashScreen(callback=startup.check)
-#from Tkinter import *
 import Tkinter
 import tkFileDialog
 from Ft.Xml import Domlette as Dom
 import utilities
 import transforms
 import progresslogger
-#Turn off the splashscreen
-#startup.value=True
-def main(xls,xsl,dir,mef=False,log=None,debug=False,gui=False):
+
+def main(xls,xsl,dir,mef=False,cat='',log=None,debug=False,gui=False):
     '''
     Run the Metadata Transform
     @type  xls: C{str}
@@ -71,12 +64,24 @@ def main(xls,xsl,dir,mef=False,log=None,debug=False,gui=False):
     @param dir: The directory to output metadata XML to
     @type  mef: C{boolean}
     @param mef: Create Metadata Exchange Format (MEF) file
+    @type  cat: C{str}
+    @param cat: The GeoNetwork category/ies to apply to the records ('|' separated)
     @type  log: C{boolean}
     @param log: Log file
     @type  debug: C{boolean}
     @param debug: Turn debug output on
     @type  gui: C{boolean}
     @param gui: Show the GUI progress dialog [Not yet implemented]
+
+    @todo - start using the "-m" opt, currently not used at all.
+          - add it to the GetArgs GUI
+          - populate a dropdown list with transforms.categories
+          - add a gui event that show/hides or enables/disables the categ list triggered by the mef opt
+          - if <default> categ is selected, logic is:
+            * check xls for categ column
+            * if so use that,
+            * if categ column is null for a row, of if no column at all then use default from config
+          
     ''' % '|'.join(['"%s"'%s for s in transforms.transforms.keys()])
     if debug:level=progresslogger.DEBUG
     else:level=progresslogger.INFO
@@ -85,13 +90,19 @@ def main(xls,xsl,dir,mef=False,log=None,debug=False,gui=False):
     except:pl = progresslogger.ProgressLogger('Metadata Transforms', logToConsole=True, logToFile=False, logToGUI=False, level=level)
     for rec in utilities.ExcelReader(xls, list):
         try:
+            tmpcat=cat #dummy var as we may overwrite it
             overviews=[]
             deleted=False
-            for val in rec: #We use a list instead of a dict as there can be multiple fields with the same header/name
+            for i,val in enumerate(rec): #We use a list instead of a dict as there can be multiple fields with the same header/name
                 if val[0]=='DELETED' and val[1] == 1:deleted=True
                 elif val[0]=='filename':filename=val[1]
                 elif val[0]=='guid':guid=val[1]
-                elif val[0] in ['quicklook','thumbnail'] and val[1] != '':overviews.append(val[1])
+                elif val[0] in ['quicklook','thumbnail'] and val[1] != '':
+                    overviews.append(val[1])
+                    del rec[i]
+                elif val[0] == 'category' and val[1]:
+                    tmpcat=val[1]
+                    del rec[i]
             xmlfile='%s/%s.%s.xml'%(dir,filename,guid)
             meffile='%s/%s.%s.mef'%(dir,filename,guid)
             if deleted:
@@ -103,7 +114,7 @@ def main(xls,xsl,dir,mef=False,log=None,debug=False,gui=False):
             result = transforms.Transform(strxml, xsl, xmlfile)
             #if overviews:transforms.CreateMEF(dir,xmlfile,guid,overviews)
             #Create MEF even if there are no overviews
-            transforms.CreateMEF(dir,xmlfile,guid,overviews)
+            if mef:transforms.CreateMEF(dir,xmlfile,guid,overviews,tmpcat)
             pl.info('Transformed metadata for ' +filename)
         except Exception,err:
             pl.error('%s\n%s' % (filename, utilities.ExceptionInfo()))
@@ -123,6 +134,11 @@ def main(xls,xsl,dir,mef=False,log=None,debug=False,gui=False):
 
 #========================================================================================================
 if __name__ == '__main__':
+    def mefcallback(mefarg,*args):
+        checked=mefarg.value.get()
+        for arg in args:
+            arg.enabled=checked
+
     #To ensure uri's work...
     if os.path.basename(sys.argv[0])!=sys.argv[0]:os.chdir(os.path.dirname(sys.argv[0]))
     import optparse,icons,getargs
@@ -135,20 +151,30 @@ if __name__ == '__main__':
 
     opt=parser.add_option("-x", dest="xls", metavar="xls", help="Excel spreadsheet")
     xlsarg=getargs.FileArg(opt,filter=[('Excel Spreadsheet','*.xls')],icon=icons.xls_img)
-    xlsarg.tooltip="Excel spreadsheet to read metadata from"
+    xlsarg.tooltip="Excel spreadsheet to read metadata from."
 
     opt=parser.add_option('-d', dest="dir", metavar="dir", help='Output directory')
     opt.icon=icons.dir_img
-    dirarg=getargs.DirArg(opt,initialdir='',enabled=True,icon=icons.dir_img,tooltip='Tooltip!')
-    dirarg.tooltip='The directory to output metadata XML to'
+    dirarg=getargs.DirArg(opt,initialdir='',enabled=True,icon=icons.dir_img)
+    dirarg.tooltip='The directory to output metadata XML to.'
     
     opt=parser.add_option("-t", dest="xsl", metavar="xsl", help="XSL transform")
     xslarg=getargs.ComboBoxArg(opt,icon=icons.xsl_img)
-    xslarg.tooltip="XSL transform {*.xsl|%s}" % '|'.join(['"%s"'%s for s in transforms.transforms.keys()])
+    xslarg.tooltip="XSL transform {*.xsl|%s}." % '|'.join(['"%s"'%s for s in transforms.transforms.keys()])
     xslarg.options=transforms.transforms.keys()
 
-    opt=parser.add_option("-m", action="store_true", dest="mef",default=False,   
+    opt=parser.add_option("-m", action="store_true", dest="mef",default=False,
                      help="Create Metadata Exchange Format (MEF) file")
+    mefarg=getargs.BoolArg(opt,icon=icons.xsl_img)
+    mefarg.tooltip=opt.help+'?'
+
+    opt=parser.add_option("-c", dest="cat", metavar="cat",default=transforms.categories['default'],   
+                     help="Dataset category")
+    catarg=getargs.ComboBoxArg(opt,enabled=False,multiselect=True,icon=icons.xsl_img)
+    catarg.options=transforms.categories['categories']
+    catarg.tooltip='Dataset category for Metadata Exchange Format (MEF) file. Default is "%s". If a "category" column exists in the spreadsheet, values from that column will override any selection here.'%transforms.categories['default']
+    mefarg.callback=getargs.Command(mefcallback,mefarg,catarg)
+    
     opt=parser.add_option("--debug", action="store_true", dest="debug",default=False, help="Turn debug output on")
     opt=parser.add_option("-l", dest="log", metavar="log",                            
                       help=optparse.SUPPRESS_HELP) #help="Log file")                     #Not yet implemented
@@ -163,9 +189,9 @@ if __name__ == '__main__':
         for opt in parser.option_list:
             opt.default=vars(optvals).get(opt.dest,None)
         #Pop up the GUI
-        args=getargs.GetArgs(xlsarg,dirarg,xslarg,title=APP,icon=ICON)
+        args=getargs.GetArgs(xlsarg,dirarg,xslarg,mefarg,catarg,title=APP,icon=ICON)
         if args:#GetArgs returns None if user cancels the GUI
-            main(args.xls,args.xsl,args.dir,optvals.log,optvals.gui,optvals.debug)
+            main(args.xls,args.xsl,args.dir,args.mef,args.cat,optvals.log,optvals.gui,optvals.debug)
     else: #No need for the GUI
-        main(optvals.xls,optvals.xsl,optvals.dir,optvals.log,optvals.gui,optvals.debug)
+        main(optvals.xls,optvals.xsl,optvals.dir,optvals.mef,optvals.cat,optvals.log,optvals.gui,optvals.debug)
         

@@ -321,9 +321,10 @@ class ComboBoxArg(Arg):
         @keyword options:  The options to show in the combo box.
                            ['Some value','Another value']
     '''
-    def __init__(self,opt,options=[],**kwargs):
+    def __init__(self,opt,options=[],multiselect=False,**kwargs):
 
         self.options=options
+        self.multiselect=multiselect
         Arg.__init__(self,opt,**kwargs)
         
     def __build__(self,root,row):
@@ -335,13 +336,19 @@ class ComboBoxArg(Arg):
             @param row:  Grid row to place the file browser in.
         '''
         self.TkPhotoImage = Tix.PhotoImage(format=self.icon.format,data=self.icon.data) # keep a reference! See http://effbot.org/tkinterbook/photoimage.htm
-        self.value = Tix.StringVar()
+        if self.multiselect:
+            self.value = Tix.StringVar()
+            self.dummy = Tix.StringVar()
+            self.TkComboBox=Tix.ComboBox(root, dropdown=1, command=self.__updatemulti__,selectmode='immediate',editable=1,variable=self.dummy,options='listbox.height 6 listbox.background white')
+            self.TkComboBox.subwidget('slistbox').subwidget('listbox').configure(selectmode='extended')
+        else:
+            self.value = Tix.StringVar()
+            self.TkComboBox=Tix.ComboBox(root, dropdown=1, editable=1,variable=self.value,options='listbox.height 6 listbox.background white')
+            self.value.trace('w',self.callback)
 
         self.TkLabel=Tix.Label(root, text=self.opt.help+':')
-        self.TkComboBox=Tix.ComboBox(root, dropdown=1, editable=1, variable=self.value,options='listbox.height 6 listbox.background white')
         for o in self.options:self.TkComboBox.insert(Tix.END, o)
         if self.opt.default is not None:
-            self.value.set(self.opt.default)
             self.TkComboBox.set_silent(self.opt.default)
         else:
             self.TkComboBox.set_silent(self.options[0])
@@ -356,9 +363,13 @@ class ComboBoxArg(Arg):
             self.TkDropListToolTip=_ToolTip(self.TkComboBox, delay=250, follow_mouse=1, text=self.tooltip)
             self.TkImageToolTip=_ToolTip(self.TkImage, delay=250, follow_mouse=1, text=self.tooltip)
         
-        self.value.trace('w',self.callback)
         self.enabled=self.enabled #Force update
-
+    def __updatemulti__(self,*args):
+        try:listbox=self.TkComboBox.subwidget('slistbox').subwidget('listbox')
+        except:return
+        self.value.set('|'.join([listbox.get(i) for i in listbox.curselection()]))
+        self.callback()
+        
 class StringArg(Arg):
     ''' Build a text entry box'''
     def __build__(self,root,row):
@@ -565,6 +576,7 @@ class _ToolTip:
         label = Tix.Label(self._tipwindow, **opts)
         label.pack()
         
+
 if __name__ == '__main__':
     def testcmd(dirarg,filearg):
         print dirarg.value.get()

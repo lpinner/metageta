@@ -160,10 +160,16 @@ transforms._file	transforms-module.html#_file
 transforms.Transform	transforms-module.html#Transform
 transforms.transforms	transforms-module.html#transforms
 transforms._CreateInfo	transforms-module.html#_CreateInfo
+transforms._cat	transforms-module.html#_cat
 transforms._desc	transforms-module.html#_desc
+transforms._xml	transforms-module.html#_xml
 transforms.__package__	transforms-module.html#__package__
 transforms._f	transforms-module.html#_f
+transforms.config	transforms-module.html#config
 transforms.DictToXML	transforms-module.html#DictToXML
+transforms.site	transforms-module.html#site
+transforms.categories	transforms-module.html#categories
+transforms._key	transforms-module.html#_key
 transforms._name	transforms-module.html#_name
 transforms.xslfiles	transforms-module.html#xslfiles
 transforms.CreateMEF	transforms-module.html#CreateMEF
@@ -469,6 +475,7 @@ getargs.Arg.__classproperty__	getargs.Arg-class.html#__classproperty__
 getargs.Arg.enabled	getargs.Arg-class.html#enabled
 getargs.Arg.callback	getargs.Arg-class.html#callback
 getargs.ComboBoxArg.__init__	getargs.ComboBoxArg-class.html#__init__
+getargs.ComboBoxArg.__updatemulti__	getargs.ComboBoxArg-class.html#__updatemulti__
 getargs.Command	getargs.Command-class.html
 getargs.Command.__call__	getargs.Command-class.html#__call__
 getargs.Command.__init__	getargs.Command-class.html#__init__

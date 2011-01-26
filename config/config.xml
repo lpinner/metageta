@@ -20,9 +20,9 @@
   </defaultcontact>
   <geonetwork>
     <site>
-      <name></name>
-      <organization></organization>
-      <siteId></siteId>
+      <name>dummy</name>
+      <organization>dummy</organization>
+      <siteId>dummy</siteId>
     </site>
     <categories default="datasets">
       <category name="applications"/>

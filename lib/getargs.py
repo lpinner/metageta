@@ -343,15 +343,17 @@ class ComboBoxArg(Arg):
             self.TkComboBox.subwidget('slistbox').subwidget('listbox').configure(selectmode='extended')
         else:
             self.value = Tix.StringVar()
-            self.TkComboBox=Tix.ComboBox(root, dropdown=1, editable=1,variable=self.value,options='listbox.height 6 listbox.background white')
-            self.value.trace('w',self.callback)
+            self.TkComboBox=Tix.ComboBox(root, command=self.callback, dropdown=1, editable=1,variable=self.value,options='listbox.height 6 listbox.background white')
 
         self.TkLabel=Tix.Label(root, text=self.opt.help+':')
         for o in self.options:self.TkComboBox.insert(Tix.END, o)
         if self.opt.default is not None:
-            self.TkComboBox.set_silent(self.opt.default)
+            selected=self.opt.default
         else:
-            self.TkComboBox.set_silent(self.options[0])
+            selected=self.options[0]
+        
+        self.TkComboBox.set_silent(selected)
+        self.value.set(selected)
 
         self.TkComboBox.subwidget('entry').bind('<Key>', lambda e: 'break')
         self.TkImage = Tix.Label(root,image=self.TkPhotoImage)
@@ -362,6 +364,8 @@ class ComboBoxArg(Arg):
             self.TkLabelToolTip=_ToolTip(self.TkLabel, delay=250, follow_mouse=1, text=self.tooltip)
             self.TkDropListToolTip=_ToolTip(self.TkComboBox, delay=250, follow_mouse=1, text=self.tooltip)
             self.TkImageToolTip=_ToolTip(self.TkImage, delay=250, follow_mouse=1, text=self.tooltip)
+
+        #self.value.trace('w',self.callback)
         
         self.enabled=self.enabled #Force update
     def __updatemulti__(self,*args):

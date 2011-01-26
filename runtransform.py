@@ -99,7 +99,6 @@ def main(xls,xsl,dir,mef=False,cat='',log=None,debug=False,gui=False):
                 elif val[0]=='guid':guid=val[1]
                 elif val[0] in ['quicklook','thumbnail'] and val[1] != '':
                     overviews.append(val[1])
-                    del rec[i]
                 elif val[0] == 'category' and val[1]:
                     tmpcat=val[1]
                     del rec[i]

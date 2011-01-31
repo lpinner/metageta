@@ -53,7 +53,7 @@ import utilities
 import transforms
 import progresslogger
 
-def main(xls,xsl,dir,mef=False,cat='',log=None,debug=False,gui=False):
+def main(xls,xsl,dir,logger, mef=False,cat=''):
     '''
     Run the Metadata Transform
     @type  xls: C{str}
@@ -62,16 +62,12 @@ def main(xls,xsl,dir,mef=False,cat='',log=None,debug=False,gui=False):
     @param xsl: XSL transform {*.xsl|%s}
     @type  dir: C{str}
     @param dir: The directory to output metadata XML to
+    @type  logger: C{progresslogger.ProgressLogger}
+    @param logger: An instantiated logger
     @type  mef: C{boolean}
     @param mef: Create Metadata Exchange Format (MEF) file
     @type  cat: C{str}
     @param cat: The GeoNetwork category/ies to apply to the records ('|' separated)
-    @type  log: C{boolean}
-    @param log: Log file
-    @type  debug: C{boolean}
-    @param debug: Turn debug output on
-    @type  gui: C{boolean}
-    @param gui: Show the GUI progress dialog [Not yet implemented]
 
     @todo - start using the "-m" opt, currently not used at all.
           - add it to the GetArgs GUI
@@ -83,12 +79,9 @@ def main(xls,xsl,dir,mef=False,cat='',log=None,debug=False,gui=False):
             * if categ column is null for a row, of if no column at all then use default from config
           
     ''' % '|'.join(['"%s"'%s for s in transforms.transforms.keys()])
-    if debug:level=progresslogger.DEBUG
-    else:level=progresslogger.INFO
-    windowicon=os.environ['CURDIR']+'/lib/wm_icon.ico'
-    try:pl = progresslogger.ProgressLogger('Metadata Transforms', logToConsole=True, logToFile=False, logToGUI=False, level=level, windowicon=windowicon)
-    except:pl = progresslogger.ProgressLogger('Metadata Transforms', logToConsole=True, logToFile=False, logToGUI=False, level=level)
-    for rec in utilities.ExcelReader(xls, list):
+
+    xlrdr=utilities.ExcelReader(xls, list)
+    for rec in xlrdr:
         try:
             tmpcat=cat #dummy var as we may overwrite it
             overviews=[]
@@ -105,7 +98,7 @@ def main(xls,xsl,dir,mef=False,cat='',log=None,debug=False,gui=False):
             xmlfile='%s/%s.%s.xml'%(dir,filename,guid)
             meffile='%s/%s.%s.mef'%(dir,filename,guid)
             if deleted:
-                pl.info('%s has been marked as deleted, XSLT processing will be terminated.'%filename)
+                logger.info('%s has been marked as deleted, XSLT processing will be terminated.'%filename)
                 if os.path.exists(xmlfile):os.rename(xmlfile,'%s.deleted'%xmlfile)
                 if os.path.exists(meffile):os.rename(meffile,'%s.deleted'%meffile)
                 continue
@@ -114,22 +107,38 @@ def main(xls,xsl,dir,mef=False,cat='',log=None,debug=False,gui=False):
             #if overviews:transforms.CreateMEF(dir,xmlfile,guid,overviews)
             #Create MEF even if there are no overviews
             if mef:transforms.CreateMEF(dir,xmlfile,guid,overviews,tmpcat)
-            pl.info('Transformed metadata for ' +filename)
+            logger.info('Transformed metadata for ' +filename)
         except Exception,err:
-            pl.error('%s\n%s' % (filename, utilities.ExceptionInfo()))
-            pl.debug(utilities.ExceptionInfo(10))
+            logger.error('%s\n%s' % (filename, utilities.ExceptionInfo()))
+            logger.debug(utilities.ExceptionInfo(10))
             try:os.remove(xmlfile)
             except:pass
-        
-##    for rec in utilities.ExcelReader(xls):
-##        try:
-##            strxml=transforms.DictToXML(rec,'crawlresult')
-##            result = transforms.Transform(strxml, xsl, '%s/%s.%s.xml'%(dir,rec['filename'],rec['guid']))
-##            pl.info('Transformed metadata for ' +rec['filename'])
-##        except Exception,err:
-##            pl.error('%s\n%s' % (rec['filename'], utilities.ExceptionInfo()))
-##            pl.debug(utilities.ExceptionInfo(10))
 
+        logger.updateProgress(xlrdr.records)
+        
+def exit(): 
+    '''Force exit after closure of the ProgressBar GUI'''
+    exe=os.path.splitext(os.path.basename(sys.executable.lower()))[0]
+    if forceexit:   #Issue?
+        if exe not in ['python','pythonw']: #Little kludge to stop killing dev IDEs
+            os._exit(0)
+
+def showmessage(title, msg,type=None):
+    import Tkinter,tkMessageBox
+    tk=Tkinter.Tk()
+    tk.withdraw()
+    val=tkMessageBox.showinfo(title,msg,type=type)
+    tk.destroy()
+    return val
+
+def getlogger(name=None,nogui=False, debug=False, icon=None):
+    if debug:
+        level=progresslogger.DEBUG
+    else:
+        level=progresslogger.INFO
+    try:   logger = progresslogger.ProgressLogger(name=name,logfile=None, logToConsole=True, logToFile=False, logToGUI=not nogui, level=level, icon=icon, callback=exit)
+    except:logger = progresslogger.ProgressLogger(name=name,logfile=logfile, logToConsole=True, logToFile=False, logToGUI=not nogui, level=level, callback=exit)
+    return logger
 
 #========================================================================================================
 if __name__ == '__main__':
@@ -174,23 +183,43 @@ if __name__ == '__main__':
     catarg.tooltip='Dataset category for Metadata Exchange Format (MEF) file. Default is "%s". If a "category" column exists in the spreadsheet, values from that column will override any selection here.'%transforms.categories['default']
     mefarg.callback=getargs.Command(mefcallback,mefarg,catarg)
     
+    opt=parser.add_option("--keep-alive", action="store_true", dest="keepalive", default=False, help="Keep this dialog box open")
+    kaarg=getargs.BoolArg(opt)
+    kaarg.tooltip='Do you want to keep this dialog box open after running the metadata transform so you can run another?'
+
     opt=parser.add_option("--debug", action="store_true", dest="debug",default=False, help="Turn debug output on")
     opt=parser.add_option("-l", dest="log", metavar="log",                            
                       help=optparse.SUPPRESS_HELP) #help="Log file")                     #Not yet implemented
-    opt=parser.add_option("--gui", action="store_true", dest="gui", default=False,
-                      help=optparse.SUPPRESS_HELP) #help="Show the GUI progress dialog") #Not yet implemented
+    opt=parser.add_option("--nogui", action="store_true", dest="nogui", default=False, help="Disable the GUI progress dialog") 
 
     optvals,argvals = parser.parse_args()
 
+    logger=None
+    forceexit=True
     #Do we need to pop up the GUI?
     if not optvals.dir or not optvals.xls or not optvals.xsl:
         #Add existing command line args values to opt default values so they show in the gui
         for opt in parser.option_list:
             opt.default=vars(optvals).get(opt.dest,None)
         #Pop up the GUI
-        args=getargs.GetArgs(xlsarg,dirarg,xslarg,mefarg,catarg,title=APP,icon=ICON)
-        if args:#GetArgs returns None if user cancels the GUI
-            main(args.xls,args.xsl,args.dir,args.mef,args.cat,optvals.log,optvals.gui,optvals.debug)
+        keepalive=True
+        while keepalive:
+            args=getargs.GetArgs(xlsarg,dirarg,xslarg,mefarg,catarg,kaarg,title=APP,icon=ICON)
+            if args:#GetArgs returns None if user cancels the GUI
+                if logger and logger.logging:
+                    logger.resetProgress()
+                else:
+                    logger=getlogger(name=APP,nogui=optvals.nogui, debug=optvals.debug, icon=ICON)
+                keepalive=args.keepalive
+                forceexit=True
+                main(args.xls,args.xsl,args.dir,logger,args.mef,args.cat)
+                forceexit=False
+            else:keepalive=False
     else: #No need for the GUI
-        main(optvals.xls,optvals.xsl,optvals.dir,optvals.mef,optvals.cat,optvals.log,optvals.gui,optvals.debug)
+        logger=getlogger(name=APP,nogui=optvals.nogui, debug=optvals.debug, icon=ICON)
+        main(optvals.xls,optvals.xsl,optvals.dir,logger,optvals.mef,optvals.cat)
+
+    if logger:
+        logger.shutdown()
+        del logger
         

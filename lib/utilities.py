@@ -622,15 +622,20 @@ class ExcelReader:
             @type    returntype: C{type}
             @param   returntype: dict or list
         '''
-        self.wb=xlrd.open_workbook(xls,encoding_override=encoding)
-        self.returntype=returntype
+        self._wb=xlrd.open_workbook(xls,encoding_override=encoding)
+        self._returntype=returntype
+        self._sheets=self._wb.sheets()
+        self.records=0-len(self._sheets)
+        for ws in self._sheets:
+            self.records+=ws.nrows
+
     def __getitem__(self, index):
         i=index/65535
         j=index-i*65535
-        ws=self.wb.sheets()[i]
+        ws=self._sheets[i]
         headers=[encode(c.value) for c in ws.row(0)]
         cells=[encode(c.value) for c in ws.row(j+1)]
-        if self.returntype is dict:
+        if self._returntype is dict:
             return dict(zip(headers,cells))
         else:
             return zip(headers,cells)

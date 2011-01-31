@@ -81,6 +81,7 @@ def main(xls,xsl,dir,logger, mef=False,cat=''):
     ''' % '|'.join(['"%s"'%s for s in transforms.transforms.keys()])
 
     xlrdr=utilities.ExcelReader(xls, list)
+    logger.info('Transforming %s metadata records'%xlrdr.records)
     for rec in xlrdr:
         try:
             tmpcat=cat #dummy var as we may overwrite it

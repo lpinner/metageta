@@ -44,8 +44,10 @@ class Dataset(__default__.Dataset):
         self.__setfileinfo__(f)
         #self.fileinfo['filepath']=f
         #self.fileinfo['filename']=os.path.basename(f)
-        self.filelist=glob.glob(self.fileinfo['filepath']+'.*')
-        self.filelist.extend(glob.glob(self.fileinfo['filepath']+'/*'))
+        filelist=glob.glob(f+'.*')
+        filelist.extend(glob.glob(f+'/*'))
+        self.filelist=filelist #Resolves Issue 41 - self.filelist is a property, we can only get or set it, not extend it.
+        
     def __getmetadata__(self):
         '''Read Metadata for a ESRI GRID dataset'''
         #__default__.Dataset.__getmetadata__(self, self.fileinfo['filepath']) #autopopulate basic metadata

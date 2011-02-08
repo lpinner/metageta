@@ -240,7 +240,7 @@ def exit():
     '''Force exit after closure of the ProgressBar GUI'''
     exe=os.path.splitext(os.path.basename(sys.executable.lower()))[0]
     if forceexit:   #Issue?
-        if exe not in ['python','pythonw']: #Little kludge to stop killing dev IDEs
+        if exe in ['python','pythonw']: #Little kludge to stop killing dev IDEs
             os._exit(0)
 
 def showmessage(title, msg,type=None):

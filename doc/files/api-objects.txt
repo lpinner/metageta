@@ -143,7 +143,10 @@ runcrawler.getlogger	runcrawler-module.html#getlogger
 runcrawler.exit	runcrawler-module.html#exit
 runcrawler.main	runcrawler-module.html#main
 runtransform	runtransform-module.html
+runtransform.showmessage	runtransform-module.html#showmessage
 runtransform.__package__	runtransform-module.html#__package__
+runtransform.getlogger	runtransform-module.html#getlogger
+runtransform.exit	runtransform-module.html#exit
 runtransform.main	runtransform-module.html#main
 spatialreferences	spatialreferences-module.html
 spatialreferences.GetLinearUnitsName	spatialreferences-module.html#GetLinearUnitsName
@@ -170,8 +173,9 @@ transforms.DictToXML	transforms-module.html#DictToXML
 transforms.site	transforms-module.html#site
 transforms.categories	transforms-module.html#categories
 transforms._key	transforms-module.html#_key
-transforms._name	transforms-module.html#_name
 transforms.xslfiles	transforms-module.html#xslfiles
+transforms._name	transforms-module.html#_name
+transforms.s	transforms-module.html#s
 transforms.CreateMEF	transforms-module.html#CreateMEF
 transforms.ListToXML	transforms-module.html#ListToXML
 utilities	utilities-module.html

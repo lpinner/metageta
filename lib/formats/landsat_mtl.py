@@ -60,12 +60,19 @@ class Dataset(__default__.Dataset):
         f=self.fileinfo['filepath']
         d=os.path.dirname(f)
         hdr=parseheader(f)
+
         bands=sorted([i for i in hdr['PRODUCT_METADATA']['BAND_COMBINATION']])
+        if hdr['PRODUCT_METADATA']['SENSOR_ID']=='ETM+': #Landsat 7 has 2 data files for thermal band 6
+            #Format=123456678
+            bands[5]=bands[5].replace('6','61')
+            bands[6]=bands[6].replace('6','62')
+
         bandfiles=[os.path.join(d,hdr['PRODUCT_METADATA']['BAND%s_FILE_NAME'%b]) for b in bands]
+
         __default__.Dataset.__getmetadata__(self, bandfiles[0])
 
         md=self.metadata
-        md['metadata']=open(f).read()
+        md['metadata']=open(f).read().replace('\x00','')
         md['sceneid']=os.path.basename(d)
         md['filetype'] = 'GTIFF/Landsat MTL Geotiff'
 
@@ -75,7 +82,7 @@ class Dataset(__default__.Dataset):
         md['imgdate']='%sT%s'%(hdr['PRODUCT_METADATA']['ACQUISITION_DATE'],hdr['PRODUCT_METADATA']['SCENE_CENTER_SCAN_TIME'][0:8]) #ISO 8601 format, strip off the milliseconds
         md['satellite']=hdr['PRODUCT_METADATA']['SPACECRAFT_ID']
         md['sensor']=hdr['PRODUCT_METADATA']['SENSOR_ID']
-        md['demcorrection']=hdr['PRODUCT_METADATA']['ELEVATION_SOURCE']
+        md['demcorrection']=hdr['PRODUCT_METADATA'].get('ELEVATION_SOURCE','') #Level 1G isn't terrain corrected
         md['resampling']=hdr['PROJECTION_PARAMETERS']['RESAMPLING_OPTION']
         md['sunazimuth']=hdr['PRODUCT_PARAMETERS']['SUN_AZIMUTH']
         md['sunelevation']=hdr['PRODUCT_PARAMETERS']['SUN_ELEVATION']

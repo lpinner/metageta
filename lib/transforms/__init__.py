@@ -1,5 +1,5 @@
 # -*- coding: latin-1 -*-
-# Copyright (c) 2009 Australian Government, Department of Environment, Heritage, Water and the Arts
+# Copyright (c) 2011 Australian Government, Department of Sustainability, Environment, Water, Population and Communities
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -113,6 +113,11 @@ Additional metadata elements
     |----------------------------------|-----------------------------|------------------------
     |NonQuantitativeAttributeAccuracy  |                             |                           
     |----------------------------------|-----------------------------|------------------------
+    |category                          |GeoNetwork category/ies      |datasets|maps
+    |                                  |"|" delimited string         |
+    |                                  |Only shown in MEF, not ISO   |                            
+    |                                  |metadata                     |                            
+    |----------------------------------|-----------------------------|------------------------
     |custodian                         |Format is:                   |organisationName|DEWHA
     |                                  |organisationName|text\n      |positionName|Some Position
     |                                  |positionName|text\n          |voice|0262123456
@@ -131,16 +136,20 @@ Additional metadata elements
     |----------------------------------|-----------------------------|------------------------
     |distributor                       |As per custodian             |                           
     |----------------------------------|-----------------------------|------------------------
-    |originator                        |As per custodian             |                           
-    |----------------------------------|-----------------------------|------------------------
-    |publisher                         |As per custodian             |                           
-    |----------------------------------|-----------------------------|------------------------
-    |resourceProvider                  |As per custodian             |                           
-    |----------------------------------|-----------------------------|------------------------
     |GeographicDescription             |Text describing the          |Kakadu
     |                                  |geographic location of the   |
     |                                  |image. More than one column  |
     |                                  |is permitted.                |
+    |----------------------------------|-----------------------------|------------------------
+    |mediaid                           |An ID code for the offline   |RSA0000001
+    |                                  |media                        |
+    |----------------------------------|-----------------------------|------------------------
+    |mediatype                         |Must be one of:              |digitalLinearTape
+    |                                  | - cdRom                     |
+    |                                  | - dvd                       |
+    |                                  | - digitalLinearTape         |
+    |                                  |Or others listed at:         |
+    |                                  |http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_MediumNameCode
     |----------------------------------|-----------------------------|------------------------
     |OnlineResource                    |More than one                |URL|http://pandora:81/ecwp/ecw_wms.dll?nautical_charts?Request=GetCapabilities
     |                                  |OnlineResource column is     |protocol|OGC:WMS-1.1.1-http-get-map
@@ -155,6 +164,12 @@ Additional metadata elements
     |                                  |description|text\n           |
     |                                  |function|text                |
     |----------------------------------|-----------------------------|------------------------
+    |originator                        |As per custodian             |                           
+    |----------------------------------|-----------------------------|------------------------
+    |publisher                         |As per custodian             |                           
+    |----------------------------------|-----------------------------|------------------------
+    |resourceProvider                  |As per custodian             |                           
+    |----------------------------------|-----------------------------|------------------------
     |scale                             |representative fraction      |25000 (represents 1:25,000)
     |                                  |denominator                  |
     |                                  |(MUST be an integer)         |                            
@@ -167,7 +182,7 @@ Additional metadata elements
        could be documented there instead of above here...
 '''
 from glob import glob as _glob
-import os.path as _path
+from os import path as _path, environ as _env
 import StringIO as _strio
 import time as _time,os as _os,zipfile as _zip,shutil as _sh,sys as _sys
 if __name__ == '__main__':_sys.exit(0)
@@ -188,8 +203,9 @@ xslfiles={}
 '''Pre-defined XSL files'''
 
 #++++++++++++++++++++++++
-#Initialise pub/priv properties - load known XSL transforms
+#Initialise pub/priv properties
 #++++++++++++++++++++++++
+#load known XSL transforms
 for _f in _glob(_path.join(__path__[0],'*.xml')):
     _xml=_Parse('file:%s'%_f)
     _name = str(_xml.xpath('string(/stylesheet/@name)'))
@@ -197,7 +213,18 @@ for _f in _glob(_path.join(__path__[0],'*.xml')):
     _desc = str(_xml.xpath('string(/stylesheet/@description)'))
     xslfiles[_name]=_file
     transforms[_name]=_desc
-    del _xml
+
+#Load config
+config=_Parse('file:%s\\config\\config.xml'%_env['CURDIR'])
+categories={'default':str(config.xpath('string(/config/geonetwork/categories/@default)')),
+             'categories':[str(_cat.value) for _cat in config.xpath('/config/geonetwork/categories/category/@name')]
+             }
+if not categories['default'] and not categories['categories']:categories={'default': 'datasets', 'categories': ['datasets']}
+site={}
+for _key in ['name','organization','siteId']:
+    s=str(config.xpath('string(/config/geonetwork/site/%s)'%_key))
+    if s:site[_key]=s
+    else:site[_key]='dummy'
 
 #++++++++++++++++++++++++
 #Public methods    
@@ -260,7 +287,7 @@ def ListToXML(lst,root):
     _Dom.PrettyPrint(doc,stream=buf)
     return buf.getvalue()
 
-def CreateMEF(outdir,xmlfile,uid,overviews=[]):
+def CreateMEF(outdir,xmlfile,uid,overviews=[],cat=categories['default']):
     '''Generate Geonetwork "Metadata Exchange Format" from an ISO19139 XML record
     
     @see:
@@ -273,6 +300,7 @@ def CreateMEF(outdir,xmlfile,uid,overviews=[]):
     @param xmlfile: XML file to create MEF from.
     @param uid: ID of metadata record (UUID/GUID string).
     @keyword overviews: List of overview image file (e.g quicklooks & thumbnails) OPTIONAL.
+    @keyword cat: List of GeoNetwork categories to include in the MEF OPTIONAL.
 
     @todo: Assumes metadata is ISO19139, need to make generic somehow...
 
@@ -281,23 +309,18 @@ def CreateMEF(outdir,xmlfile,uid,overviews=[]):
     curdir=_path.abspath(_os.curdir)
     mefdir=_path.join(_os.environ['TEMP'],_path.basename(_path.splitext(xmlfile)[0]))
     mefpath='%s.mef'%(_path.join(outdir,_path.basename(_path.splitext(xmlfile)[0])))
-    #mefdir=_path.splitext(xmlfile)[0]) #to get around 260 char filename limit...
-    #mefpath='%s.mef'%(mefdir)
     try:
         if _path.exists(mefpath):_os.remove(mefpath)
         if _path.exists(mefdir):_sh.rmtree(mefdir)
         mef=_zip.ZipFile(mefpath,'w',_zip.ZIP_DEFLATED)
         _os.mkdir(mefdir)
         _os.chdir(mefdir)
-        ##mef=_zip.ZipFile(r'%s.mef'%(uid),'w',_zip.ZIP_DEFLATED)
-        ##_os.mkdir(uid)
-        ##_os.chdir(uid)
         _sh.copy(xmlfile,'metadata.xml')
         if overviews:
             _os.mkdir('public')
             for f in overviews:
                 _sh.copy(f,_path.join('public',_path.basename(f)))
-        _CreateInfo(uid,overviews)
+        _CreateInfo(uid,overviews,cat)
         _sh.copy(xmlfile,'metadata.xml')
         for f in _utilities.rglob('.'):
             if not _path.isdir(f): mef.write(f)
@@ -313,17 +336,23 @@ def CreateMEF(outdir,xmlfile,uid,overviews=[]):
 #++++++++++++++++++++++++
 #Private methods    
 #++++++++++++++++++++++++
-def _CreateInfo(uid,overviews=[]):
+def _CreateInfo(uid,overviews=[],cat=categories['default']):
     '''Create MEF info.xml file'''
     now = _time.strftime('%Y-%m-%dT%H:%M:%S',_time.localtime())
     if overviews:format='partial'
     else:format='simple'
 
-    general={'createDate':now,'changeDate':now,
-             'schema':'iso19139','isTemplate':'false',
-             'format':format,'uuid':uid,
-             'siteId':'dummy','siteName':'dummy',
-             'localId':'','rating':'0','popularity':'2'}
+    #general={'createDate':now,'changeDate':now,
+    #         'schema':'iso19139','isTemplate':'false',
+    #         'format':format,'uuid':uid,
+    #         'siteId':site['siteId'],'siteName':site['name'],
+    #         'localId':'','rating':'0','popularity':'2'}
+
+    general=[('createDate',now),('changeDate',now),
+             ('schema','iso19139'),('isTemplate','false'),
+             ('localId',''),('format',format),
+             ('rating','0'),('popularity','2'),
+             ('uuid',uid),('siteId',site['siteId']),('siteName',site['name'])]
 
     privileges = ['view','editing','dynamic','featured']
 
@@ -334,17 +363,20 @@ def _CreateInfo(uid,overviews=[]):
     #General
     parent=doc.createElementNS(None, 'general')
     for key in general:
-        child=doc.createElementNS(None, key)
-        text=doc.createTextNode(general[key])
+        #child=doc.createElementNS(None, key)
+        #text=doc.createTextNode(general[key])
+        child=doc.createElementNS(None, key[0])
+        text=doc.createTextNode(key[1])
         child.appendChild(text)
         parent.appendChild(child)
     root.appendChild(parent)
 
     #Categories
     parent=doc.createElementNS(None, 'categories')
-    child=doc.createElementNS(None, 'category')
-    child.setAttributeNS(None, 'name','datasets')
-    parent.appendChild(child)
+    for c in cat.split('|'):
+        child=doc.createElementNS(None, 'category')
+        child.setAttributeNS(None, 'name',c)
+        parent.appendChild(child)
     root.appendChild(parent)
 
     parent=doc.createElementNS(None, 'privileges')

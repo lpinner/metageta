@@ -125,8 +125,10 @@ def main(dir, xls, logger, mediaid=None, update=False, getovs=False, recurse=Tru
             fi=ds.fileinfo
             fi['filepath']=utilities.uncpath(fi['filepath'])
             fi['filelist']='|'.join(utilities.uncpath(ds.filelist))
-            qlk=utilities.uncpath(os.path.join(os.path.dirname(xls),'%s.%s.qlk.jpg'%(fi['filename'],fi['guid'])))
-            thm=utilities.uncpath(os.path.join(os.path.dirname(xls),'%s.%s.thm.jpg'%(fi['filename'],fi['guid'])))
+            #qlk=utilities.uncpath(os.path.join(os.path.dirname(xls),'%s.%s.qlk.jpg'%(fi['filename'],fi['guid'])))
+            #thm=utilities.uncpath(os.path.join(os.path.dirname(xls),'%s.%s.thm.jpg'%(fi['filename'],fi['guid'])))
+            qlk=os.path.join(os.path.dirname(xls),'%s.%s.qlk.jpg'%(fi['filename'],fi['guid']))
+            thm=os.path.join(os.path.dirname(xls),'%s.%s.thm.jpg'%(fi['filename'],fi['guid']))
 
             if update and ds.guid in records:
                 row,rec=records[ds.guid]
@@ -142,8 +144,10 @@ def main(dir, xls, logger, mediaid=None, update=False, getovs=False, recurse=Tru
                             #We don't need to regenerate it, just resize it
                             #thm=ds.getoverview(thm, width=150)
                             thm=overviews.resize(qlk,thm,width=150)
-                            md['quicklook']=utilities.uncpath(qlk)
-                            md['thumbnail']=utilities.uncpath(thm)
+                            md['quicklook']=os.path.basename(qlk)
+                            md['thumbnail']=os.path.basename(thm)
+                            #md['quicklook']=utilities.uncpath(qlk)
+                            #md['thumbnail']=utilities.uncpath(thm)
                             logger.info('Updated overviews for %s' % Crawler.file)
                     except Exception,err:
                         logger.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
@@ -174,8 +178,10 @@ def main(dir, xls, logger, mediaid=None, update=False, getovs=False, recurse=Tru
                         #We don't need to regenerate it, just resize it
                         #thm=ds.getoverview(thm, width=150)
                         thm=overviews.resize(qlk,thm,width=150)
-                        md['quicklook']=utilities.uncpath(qlk)
-                        md['thumbnail']=utilities.uncpath(thm)
+                        md['quicklook']=os.path.basename(qlk)
+                        md['thumbnail']=os.path.basename(thm)
+                        #md['quicklook']=utilities.uncpath(qlk)
+                        #md['thumbnail']=utilities.uncpath(thm)
                         logger.info('Generated overviews from %s' % Crawler.file)
                 except Exception,err:
                     logger.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))

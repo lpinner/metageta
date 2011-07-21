@@ -81,6 +81,7 @@ def main(xls,xsl,dir,logger, mef=False,cat=''):
     ''' % '|'.join(['"%s"'%s for s in transforms.transforms.keys()])
 
     xlrdr=utilities.ExcelReader(xls, list)
+    qlkdir=os.path.dirname(xls)
     logger.info('Transforming %s metadata records'%xlrdr.records)
     for rec in xlrdr:
         try:
@@ -92,7 +93,7 @@ def main(xls,xsl,dir,logger, mef=False,cat=''):
                 elif val[0]=='filename':filename=val[1]
                 elif val[0]=='guid':guid=val[1]
                 elif val[0] in ['quicklook','thumbnail'] and val[1] != '':
-                    overviews.append(val[1])
+                    overviews.append(os.path.join(qlkdir,val[1]))
                 elif val[0] == 'category' and val[1]:
                     tmpcat=val[1]
                     del rec[i]

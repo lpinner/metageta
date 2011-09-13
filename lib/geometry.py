@@ -1,4 +1,4 @@
-# -*- coding: latin-1 -*-
+# -*- coding: utf-8 -*-
 # Copyright (c) 2011 Australian Government, Department of Sustainability, Environment, Water, Population and Communities
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -968,7 +968,8 @@ class ShapeWriter:
             lyr=self._shape.GetLayer()
             lyr.SetAttributeFilter(where_clause)
             feat=lyr.GetNextFeature()
-            feat.SetGeometryDirectly(geom)
+            try:feat.SetGeometryDirectly(geom)
+            except:return self.WriteRecord(extent,attributes)
             while feat:
                 for a in attributes:
                     if a in self.fields:feat.SetField(self.fields[a], utilities.encode(attributes[a]))

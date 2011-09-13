@@ -1,4 +1,4 @@
-# -*- coding: latin-1 -*-
+# -*- coding: utf-8 -*-
 
 # Copyright (c) 2011 Australian Government, Department of Sustainability, Environment, Water, Population and Communities
 #
@@ -42,7 +42,7 @@ dateformat='%Y-%m-%d'  #ISO 8601
 timeformat='%H:%M:%S' #ISO 8601
 datetimeformat='%sT%s' % (dateformat,timeformat)
 
-encoding='latin-1'
+encoding='utf-8'
 
 iswin=os.name=='nt'#sys.platform[0:3].lower()=='win'#Are we on Windows
 

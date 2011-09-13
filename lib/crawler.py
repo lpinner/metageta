@@ -1,4 +1,4 @@
-# -*- coding: latin-1 -*-
+# -*- coding: utf-8 -*-
 # Copyright (c) 2011 Australian Government, Department of Sustainability, Environment, Water, Population and Communities
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -55,7 +55,7 @@ class Crawler:
         #Build a dict of matching files and regexes then sort according to the priority of the regex formats 
         fileformats={}
         for f in utilities.rglob(dir,'|'.join(format_regex), True, re.IGNORECASE, recurse=recurse):
-            #Use latin-1 encoding to fix Issue 20
+            #Use utf-8 encoding to fix Issue 20
             f=utilities.realpath(utilities.normcase(utilities.encode(f)))
             for r in format_regex: #This is so we always return _default_ format datasets last.
                 if re.search(r,os.path.basename(f),re.IGNORECASE):

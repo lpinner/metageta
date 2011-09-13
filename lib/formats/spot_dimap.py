@@ -1,4 +1,4 @@
-# -*- coding: latin-1 -*-
+# -*- coding: utf-8 -*-
 # Copyright (c) 2011 Australian Government, Department of Sustainability, Environment, Water, Population and Communities
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy

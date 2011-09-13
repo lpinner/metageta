@@ -319,8 +319,8 @@ def _stretch_STDDEV(vrtcols,vrtrows,ds,bands,std):
         rb=ds.GetRasterBand(band)
         nodata=rb.GetNoDataValue()
         dfScaleSrcMin,dfScaleSrcMax=GetDataTypeRange(rb.DataType)
-        #dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = GetStatistics(rb,0,1)
-        dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = GetStatistics(rb,1,1)
+        try: dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = GetStatistics(rb,1,1)
+        except:dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = GetStatistics(rb,0,1)
         dfScaleDstMin,dfScaleDstMax=0.0,255.0 #Always going to be Byte for output jpegs
         dfScaleSrcMin=max([dfScaleSrcMin, math.floor(dfBandMean-std*dfBandStdDev)])
         dfScaleSrcMax=min([dfScaleSrcMax, math.ceil(dfBandMean+std*dfBandStdDev)])

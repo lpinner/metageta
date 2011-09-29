@@ -44,11 +44,12 @@ class Dataset(__default__.Dataset):
         #certain ECW dataset, not when it was opened, when metadata was extracted nor even when overviews were generated.
         #Got me stumped!
         ers=os.path.splitext(f)[0]+'.ers'
-        if os.path.exists(ers):
+        if os.path.exists(ers) and os.path.basename(f) in open(ers).read():
             try:
                 __default__.Dataset.__getmetadata__(self, ers) #autopopulate basic metadata
                 self.metadata['filetype']='ECW/ERMapper Compressed Wavelets'
                 self.metadata['compressiontype']='ECW'
+                self.metadata['filename']=f
             except:__default__.Dataset.__getmetadata__(self, f)
         else:
             __default__.Dataset.__getmetadata__(self) #autopopulate basic metadata

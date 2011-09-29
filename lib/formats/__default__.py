@@ -150,9 +150,9 @@ class Dataset(__dataset__.Dataset):
                     self.metadata['rotation']=0.0
                 else: self.metadata['orientation']='Path oriented'
                 self.metadata['UL']='%s,%s' % tuple(ext[0])
-                self.metadata['UR']='%s,%s' % tuple(ext[1])
+                self.metadata['LL']='%s,%s' % tuple(ext[1])
                 self.metadata['LR']='%s,%s' % tuple(ext[2])
-                self.metadata['LL']='%s,%s' % tuple(ext[3])
+                self.metadata['UR']='%s,%s' % tuple(ext[3])
 
                 rb=self._gdaldataset.GetRasterBand(1)
                 if rb:

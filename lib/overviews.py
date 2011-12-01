@@ -209,8 +209,8 @@ def _stretch_PERCENT(vrtcols,vrtrows,ds,bands,low,high):
         nodata=rb.GetNoDataValue()
         nbits=gdal.GetDataTypeSize(rb.DataType)
         dfScaleSrcMin,dfScaleSrcMax=GetDataTypeRange(rb.DataType)
-        #dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = GetStatistics(rb,0,1)
-        dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = GetStatistics(rb,1,1)
+        try:dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = GetStatistics(rb,1,1)
+        except:dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = GetStatistics(rb,0,1)
         dfBandRange=dfBandMax-dfBandMin
         if nbits == 8 or dfBandRange<=255:
             nbins=int(math.ceil(dfBandRange))
@@ -280,8 +280,8 @@ def _stretch_MINMAX(vrtcols,vrtrows,ds,bands):
         rb=ds.GetRasterBand(band)
         nodata=rb.GetNoDataValue()
         dfScaleSrcMin,dfScaleSrcMax=GetDataTypeRange(rb.DataType)
-        #dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = GetStatistics(rb,0,1)
-        dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = GetStatistics(rb,1,1)
+        try:dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = GetStatistics(rb,1,1)
+        except:dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = GetStatistics(rb,0,1)
         dfScaleDstMin,dfScaleDstMax=0.0,255.0 #Always going to be Byte for output jpegs
         dfScale = (dfScaleDstMax - dfScaleDstMin) / (dfScaleSrcMax - dfScaleSrcMin)
         dfOffset = -1 * dfScaleSrcMin * dfScale + dfScaleDstMin

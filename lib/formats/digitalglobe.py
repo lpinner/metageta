@@ -71,31 +71,26 @@ class Dataset(__default__.Dataset):
         f=self.fileinfo['filepath']
         imddata=self.__getimddata__(f)
         
-        btif,tif = utilities.exists(os.path.splitext(f)[0]+'.tif',True)
-        bimg,img = utilities.exists(os.path.splitext(f)[0]+'.img',True)
-        bntf,ntf = utilities.exists(os.path.splitext(f)[0]+'.ntf',True)
+        exts={'.tif':'GTiff/GeoTIFF','.img':'HFA/Erdas Imagine Images (.img)','.ntf':'NITF/National Imagery Transmission Format (.ntf)','.pix':'PCI Geomatics Database File (.pix)'}
         btil,til = utilities.exists(os.path.splitext(f)[0]+'.til',True)
-
-        if   btif:
-            __default__.Dataset.__getmetadata__(self, tif)
-        elif bimg:
-            __default__.Dataset.__getmetadata__(self, img)
-        elif bntf:
-            __default__.Dataset.__getmetadata__(self, ntf)
-        elif btil:
+        if btil:
             vrt=self.__gettilevrt__(til,imddata)
             __default__.Dataset.__getmetadata__(self, vrt)
             for tmp in self.filelist:
-                if tmp[-3:].lower()=='tif':
-                    self.metadata['filetype']='GTiff/GeoTIFF'
+                for ext in exts:
+                    if tmp[-4:].lower()==ext:
+                        self.metadata['filetype']=exts[ext]
+                        break
+        else:
+            img=False
+            for ext in exts:
+                bext,ext = utilities.exists(os.path.splitext(f)[0]+ext,True)
+                if bext:
+                    __default__.Dataset.__getmetadata__(self, ext)
+                    img=True
                     break
-                elif tmp[-3:].lower()=='img':
-                    self.metadata['filetype']='HFA/Erdas Imagine Images (.img)'
-                    break
-                elif tmp[-3:].lower()=='ntf':
-                    self.metadata['filetype']='NITF/National Imagery Transmission Format (.ntf)'
-                    break
-        else:raise IOError, 'Matching DigitalGlobe imagery TIFF/IMG/NTF not found:\n'
+
+            if not img:raise IOError, 'Matching DigitalGlobe imagery file not found:\n'
 
         self.metadata['metadata']=open(f).read()
 

@@ -65,14 +65,14 @@ def main(dir, xls, logger, mediaid=None, update=False, getovs=False, recurse=Tru
         @param recurse: Search directory recursively?
         @return:  C{progresslogger.ProgressLogger}
     """
-    
+
     shp=xls.replace('.xls','.shp')
 
     format_regex  = formats.format_regex
     format_fields = formats.fields
-    
+
     logger.debug(' '.join(sys.argv))
-   
+
     try:
         #raise Exception
         ExcelWriter=utilities.ExcelWriter(xls,format_fields.keys(),update=update)
@@ -218,14 +218,14 @@ def main(dir, xls, logger, mediaid=None, update=False, getovs=False, recurse=Tru
     del ExcelWriter
     del ShapeWriter
 
-def ismodified(record,fileinfo): 
+def ismodified(record,fileinfo):
     ''' Check if a record from a previous metadata crawl needs to be updated.
-    
+
         @type  record:   C{dict}
         @param record:   The record from a previous crawl.
         @type  fileinfo: C{dict}
         @param fileinfo: The fileinfo from a dataset located in the current crawl
-        @return:  C{boolean}        
+        @return:  C{boolean}
     '''
     if record['datemodified']!=fileinfo['datemodified']:
         return True
@@ -242,7 +242,7 @@ def ismodified(record,fileinfo):
 
     return False
 
-def exit(): 
+def exit():
     '''Force exit after closure of the ProgressBar GUI'''
     exe=os.path.splitext(os.path.basename(sys.executable.lower()))[0]
     if forceexit:   #Issue?
@@ -264,7 +264,7 @@ def getlogger(logfile,name=None,nogui=False, debug=False, icon=None):
     else:
         level=progresslogger.INFO
         geometry.gdal.PushErrorHandler( 'CPLQuietErrorHandler' )
-    
+
     try:   logger = progresslogger.ProgressLogger(name=name,logfile=logfile, logToConsole=True, logToFile=True, logToGUI=not nogui, level=level, icon=icon, callback=exit)
     except:logger = progresslogger.ProgressLogger(name=name,logfile=logfile, logToConsole=True, logToFile=True, logToGUI=not nogui, level=level, callback=exit)
     return logger
@@ -303,7 +303,7 @@ if __name__ == '__main__':
             arg.value.set('')
             getargs.tkMessageBox.showerror('I/O Error','%s is not writable.'%filepath)
             return False
-      
+
     import optparse,icons,getargs
 
     APP='MetaGETA Crawler'
@@ -336,7 +336,7 @@ if __name__ == '__main__':
                       help="Generate overview images")
     ovarg=getargs.BoolArg(opt)
     ovarg.tooltip='Do you want to generate overview (quicklook and thumbnail) images?'
-        
+
     opt=parser.add_option("--debug", action="store_true", dest="debug",default=False,
                       help="Turn debug output on")
     opt=parser.add_option("--nogui", action="store_true", dest="nogui", default=False,

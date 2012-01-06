@@ -58,7 +58,7 @@
 </table>
 <h1 class="epydoc">Source Code for <a href="formats.alos-module.html">Module formats.alos</a></h1>
 <pre class="py-src">
-<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-comment"># -*- coding: latin-1 -*-</tt> </tt>
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-comment"># -*- coding: utf-8 -*-</tt> </tt>
 <a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-comment"># Copyright (c) 2011 Australian Government, Department of Sustainability, Environment, Water, Population and Communities</tt> </tt>
 <a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-comment">#</tt> </tt>
 <a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-comment"># Permission is hereby granted, free of charge, to any person obtaining a copy</tt> </tt>
@@ -91,7 +91,7 @@
 <a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line"><tt class="py-docstring">    - PALSAR Level 1.1/1.5: U{http://www.eorc.jaxa.jp/ALOS/doc/fdata/PALSAR_x_Format_EK.pdf}</tt> </tt>
 <a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line"><tt class="py-docstring">    - ALOS AVNIR2/PRISM: U{http://www.ga.gov.au/servlet/BigObjFileManager?bigobjid=GA10285}</tt> </tt>
 <a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line"><tt class="py-docstring">'''</tt> </tt>
-<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line"><tt id="link-0" class="py-name" targets="Variable formats.__default__.format_regex=formats.__default__-module.html#format_regex,Variable formats.ali_hyperion.format_regex=formats.ali_hyperion-module.html#format_regex,Variable formats.alos.format_regex=formats.alos-module.html#format_regex,Variable formats.aster.format_regex=formats.aster-module.html#format_regex,Variable formats.ccrs.format_regex=formats.ccrs-module.html#format_regex,Variable formats.digitalglobe.format_regex=formats.digitalglobe-module.html#format_regex,Variable formats.ecw.format_regex=formats.ecw-module.html#format_regex,Variable formats.ecwp.format_regex=formats.ecwp-module.html#format_regex,Variable formats.envi.format_regex=formats.envi-module.html#format_regex,Variable formats.esribil.format_regex=formats.esribil-module.html#format_regex,Variable formats.esrigrid.format_regex=formats.esrigrid-module.html#format_regex,Variable formats.fast_l7a.format_regex=formats.fast_l7a-module.html#format_regex,Variable formats.format_regex=formats-module.html#format_regex,Variable formats.jp2.format_regex=formats.jp2-module.html#format_regex,Variable formats.landsat_mtl.format_regex=formats.landsat_mtl-module.html#format_regex,Variable formats.netcdf.format_regex=formats.netcdf-module.html#format_regex,Variable formats.nitf.format_regex=formats.nitf-module.html#format_regex,Variable formats.spot_cap.format_regex=formats.spot_cap-module.html#format_regex,Variable formats.spot_dimap.format_regex=formats.spot_dimap-module.html#format_regex"><a title="formats.__default__.format_regex
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line"><tt id="link-0" class="py-name" targets="Variable formats.__default__.format_regex=formats.__default__-module.html#format_regex,Variable formats.ali_hyperion.format_regex=formats.ali_hyperion-module.html#format_regex,Variable formats.alos.format_regex=formats.alos-module.html#format_regex,Variable formats.aster.format_regex=formats.aster-module.html#format_regex,Variable formats.ccrs.format_regex=formats.ccrs-module.html#format_regex,Variable formats.digitalglobe.format_regex=formats.digitalglobe-module.html#format_regex,Variable formats.ecw.format_regex=formats.ecw-module.html#format_regex,Variable formats.ecwp.format_regex=formats.ecwp-module.html#format_regex,Variable formats.envi.format_regex=formats.envi-module.html#format_regex,Variable formats.esribil.format_regex=formats.esribil-module.html#format_regex,Variable formats.esrigrid.format_regex=formats.esrigrid-module.html#format_regex,Variable formats.fast_l7a.format_regex=formats.fast_l7a-module.html#format_regex,Variable formats.format_regex=formats-module.html#format_regex,Variable formats.geoeye.format_regex=formats.geoeye-module.html#format_regex,Variable formats.jp2.format_regex=formats.jp2-module.html#format_regex,Variable formats.landsat_mtl.format_regex=formats.landsat_mtl-module.html#format_regex,Variable formats.netcdf.format_regex=formats.netcdf-module.html#format_regex,Variable formats.nitf.format_regex=formats.nitf-module.html#format_regex,Variable formats.spot_cap.format_regex=formats.spot_cap-module.html#format_regex,Variable formats.spot_dimap.format_regex=formats.spot_dimap-module.html#format_regex"><a title="formats.__default__.format_regex
 formats.ali_hyperion.format_regex
 formats.alos.format_regex
 formats.aster.format_regex
@@ -104,6 +104,7 @@ formats.esribil.format_regex
 formats.esrigrid.format_regex
 formats.fast_l7a.format_regex
 formats.format_regex
+formats.geoeye.format_regex
 formats.jp2.format_regex
 formats.landsat_mtl.format_regex
 formats.netcdf.format_regex
@@ -340,7 +341,7 @@ formats.spot_dimap.format_regex" class="py-name" href="#" onclick="return doclin
 <a name="L262"></a><tt class="py-lineno">262</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-string">'.tif'</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">_imgs</tt><tt class="py-op">[</tt><tt class="py-number">0</tt><tt class="py-op">]</tt><tt class="py-op">.</tt><tt class="py-name">lower</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
 <a name="L263"></a><tt class="py-lineno">263</tt>  <tt class="py-line">                <tt class="py-name">tif</tt><tt class="py-op">=</tt><tt class="py-name">True</tt> </tt>
 <a name="L264"></a><tt class="py-lineno">264</tt>  <tt class="py-line">                <tt class="py-name">level</tt><tt class="py-op">=</tt><tt class="py-string">'ORTHOCORRECTED'</tt> </tt>
-<a name="L265"></a><tt class="py-lineno">265</tt>  <tt class="py-line">                <tt id="link-104" class="py-name"><a title="formats.__default__" class="py-name" href="#" onclick="return doclink('link-104', '__default__', 'link-1');">__default__</a></tt><tt class="py-op">.</tt><tt id="link-105" class="py-name" targets="Class formats.__dataset__.Dataset=formats.__dataset__.Dataset-class.html,Class formats.__default__.Dataset=formats.__default__.Dataset-class.html,Class formats.ali_hyperion.Dataset=formats.ali_hyperion.Dataset-class.html,Class formats.alos.Dataset=formats.alos.Dataset-class.html,Class formats.aster.Dataset=formats.aster.Dataset-class.html,Class formats.ccrs.Dataset=formats.ccrs.Dataset-class.html,Class formats.digitalglobe.Dataset=formats.digitalglobe.Dataset-class.html,Class formats.ecw.Dataset=formats.ecw.Dataset-class.html,Class formats.ecwp.Dataset=formats.ecwp.Dataset-class.html,Class formats.envi.Dataset=formats.envi.Dataset-class.html,Class formats.esribil.Dataset=formats.esribil.Dataset-class.html,Class formats.esrigrid.Dataset=formats.esrigrid.Dataset-class.html,Class formats.fast_l7a.Dataset=formats.fast_l7a.Dataset-class.html,Class formats.jp2.Dataset=formats.jp2.Dataset-class.html,Class formats.landsat_mtl.Dataset=formats.landsat_mtl.Dataset-class.html,Class formats.netcdf.Dataset=formats.netcdf.Dataset-class.html,Class formats.nitf.Dataset=formats.nitf.Dataset-class.html,Class formats.spot_cap.Dataset=formats.spot_cap.Dataset-class.html,Class formats.spot_dimap.Dataset=formats.spot_dimap.Dataset-class.html"><a title="formats.__dataset__.Dataset
+<a name="L265"></a><tt class="py-lineno">265</tt>  <tt class="py-line">                <tt id="link-104" class="py-name"><a title="formats.__default__" class="py-name" href="#" onclick="return doclink('link-104', '__default__', 'link-1');">__default__</a></tt><tt class="py-op">.</tt><tt id="link-105" class="py-name" targets="Class formats.__dataset__.Dataset=formats.__dataset__.Dataset-class.html,Class formats.__default__.Dataset=formats.__default__.Dataset-class.html,Class formats.ali_hyperion.Dataset=formats.ali_hyperion.Dataset-class.html,Class formats.alos.Dataset=formats.alos.Dataset-class.html,Class formats.aster.Dataset=formats.aster.Dataset-class.html,Class formats.ccrs.Dataset=formats.ccrs.Dataset-class.html,Class formats.digitalglobe.Dataset=formats.digitalglobe.Dataset-class.html,Class formats.ecw.Dataset=formats.ecw.Dataset-class.html,Class formats.ecwp.Dataset=formats.ecwp.Dataset-class.html,Class formats.envi.Dataset=formats.envi.Dataset-class.html,Class formats.esribil.Dataset=formats.esribil.Dataset-class.html,Class formats.esrigrid.Dataset=formats.esrigrid.Dataset-class.html,Class formats.fast_l7a.Dataset=formats.fast_l7a.Dataset-class.html,Class formats.geoeye.Dataset=formats.geoeye.Dataset-class.html,Class formats.jp2.Dataset=formats.jp2.Dataset-class.html,Class formats.landsat_mtl.Dataset=formats.landsat_mtl.Dataset-class.html,Class formats.netcdf.Dataset=formats.netcdf.Dataset-class.html,Class formats.nitf.Dataset=formats.nitf.Dataset-class.html,Class formats.spot_cap.Dataset=formats.spot_cap.Dataset-class.html,Class formats.spot_dimap.Dataset=formats.spot_dimap.Dataset-class.html"><a title="formats.__dataset__.Dataset
 formats.__default__.Dataset
 formats.ali_hyperion.Dataset
 formats.alos.Dataset
@@ -353,12 +354,13 @@ formats.envi.Dataset
 formats.esribil.Dataset
 formats.esrigrid.Dataset
 formats.fast_l7a.Dataset
+formats.geoeye.Dataset
 formats.jp2.Dataset
 formats.landsat_mtl.Dataset
 formats.netcdf.Dataset
 formats.nitf.Dataset
 formats.spot_cap.Dataset
-formats.spot_dimap.Dataset" class="py-name" href="#" onclick="return doclink('link-105', 'Dataset', 'link-105');">Dataset</a></tt><tt class="py-op">.</tt><tt id="link-106" class="py-name" targets="Method formats.__dataset__.Dataset.__getmetadata__()=formats.__dataset__.Dataset-class.html#__getmetadata__,Method formats.__default__.Dataset.__getmetadata__()=formats.__default__.Dataset-class.html#__getmetadata__,Method formats.ali_hyperion.Dataset.__getmetadata__()=formats.ali_hyperion.Dataset-class.html#__getmetadata__,Method formats.alos.Dataset.__getmetadata__()=formats.alos.Dataset-class.html#__getmetadata__,Method formats.aster.Dataset.__getmetadata__()=formats.aster.Dataset-class.html#__getmetadata__,Method formats.ccrs.Dataset.__getmetadata__()=formats.ccrs.Dataset-class.html#__getmetadata__,Method formats.digitalglobe.Dataset.__getmetadata__()=formats.digitalglobe.Dataset-class.html#__getmetadata__,Method formats.ecw.Dataset.__getmetadata__()=formats.ecw.Dataset-class.html#__getmetadata__,Method formats.ecwp.Dataset.__getmetadata__()=formats.ecwp.Dataset-class.html#__getmetadata__,Method formats.envi.Dataset.__getmetadata__()=formats.envi.Dataset-class.html#__getmetadata__,Method formats.esribil.Dataset.__getmetadata__()=formats.esribil.Dataset-class.html#__getmetadata__,Method formats.esrigrid.Dataset.__getmetadata__()=formats.esrigrid.Dataset-class.html#__getmetadata__,Method formats.fast_l7a.Dataset.__getmetadata__()=formats.fast_l7a.Dataset-class.html#__getmetadata__,Method formats.jp2.Dataset.__getmetadata__()=formats.jp2.Dataset-class.html#__getmetadata__,Method formats.landsat_mtl.Dataset.__getmetadata__()=formats.landsat_mtl.Dataset-class.html#__getmetadata__,Method formats.netcdf.Dataset.__getmetadata__()=formats.netcdf.Dataset-class.html#__getmetadata__,Method formats.nitf.Dataset.__getmetadata__()=formats.nitf.Dataset-class.html#__getmetadata__,Method formats.spot_cap.Dataset.__getmetadata__()=formats.spot_cap.Dataset-class.html#__getmetadata__,Method formats.spot_dimap.Dataset.__getmetadata__()=formats.spot_dimap.Dataset-class.html#__getmetadata__"><a title="formats.__dataset__.Dataset.__getmetadata__
+formats.spot_dimap.Dataset" class="py-name" href="#" onclick="return doclink('link-105', 'Dataset', 'link-105');">Dataset</a></tt><tt class="py-op">.</tt><tt id="link-106" class="py-name" targets="Method formats.__dataset__.Dataset.__getmetadata__()=formats.__dataset__.Dataset-class.html#__getmetadata__,Method formats.__default__.Dataset.__getmetadata__()=formats.__default__.Dataset-class.html#__getmetadata__,Method formats.ali_hyperion.Dataset.__getmetadata__()=formats.ali_hyperion.Dataset-class.html#__getmetadata__,Method formats.alos.Dataset.__getmetadata__()=formats.alos.Dataset-class.html#__getmetadata__,Method formats.aster.Dataset.__getmetadata__()=formats.aster.Dataset-class.html#__getmetadata__,Method formats.ccrs.Dataset.__getmetadata__()=formats.ccrs.Dataset-class.html#__getmetadata__,Method formats.digitalglobe.Dataset.__getmetadata__()=formats.digitalglobe.Dataset-class.html#__getmetadata__,Method formats.ecw.Dataset.__getmetadata__()=formats.ecw.Dataset-class.html#__getmetadata__,Method formats.ecwp.Dataset.__getmetadata__()=formats.ecwp.Dataset-class.html#__getmetadata__,Method formats.envi.Dataset.__getmetadata__()=formats.envi.Dataset-class.html#__getmetadata__,Method formats.esribil.Dataset.__getmetadata__()=formats.esribil.Dataset-class.html#__getmetadata__,Method formats.esrigrid.Dataset.__getmetadata__()=formats.esrigrid.Dataset-class.html#__getmetadata__,Method formats.fast_l7a.Dataset.__getmetadata__()=formats.fast_l7a.Dataset-class.html#__getmetadata__,Method formats.geoeye.Dataset.__getmetadata__()=formats.geoeye.Dataset-class.html#__getmetadata__,Method formats.jp2.Dataset.__getmetadata__()=formats.jp2.Dataset-class.html#__getmetadata__,Method formats.landsat_mtl.Dataset.__getmetadata__()=formats.landsat_mtl.Dataset-class.html#__getmetadata__,Method formats.netcdf.Dataset.__getmetadata__()=formats.netcdf.Dataset-class.html#__getmetadata__,Method formats.nitf.Dataset.__getmetadata__()=formats.nitf.Dataset-class.html#__getmetadata__,Method formats.spot_cap.Dataset.__getmetadata__()=formats.spot_cap.Dataset-class.html#__getmetadata__,Method formats.spot_dimap.Dataset.__getmetadata__()=formats.spot_dimap.Dataset-class.html#__getmetadata__"><a title="formats.__dataset__.Dataset.__getmetadata__
 formats.__default__.Dataset.__getmetadata__
 formats.ali_hyperion.Dataset.__getmetadata__
 formats.alos.Dataset.__getmetadata__
@@ -371,6 +373,7 @@ formats.envi.Dataset.__getmetadata__
 formats.esribil.Dataset.__getmetadata__
 formats.esrigrid.Dataset.__getmetadata__
 formats.fast_l7a.Dataset.__getmetadata__
+formats.geoeye.Dataset.__getmetadata__
 formats.jp2.Dataset.__getmetadata__
 formats.landsat_mtl.Dataset.__getmetadata__
 formats.netcdf.Dataset.__getmetadata__
@@ -637,17 +640,19 @@ formats.envi.Dataset
 formats.esribil.Dataset
 formats.esrigrid.Dataset
 formats.fast_l7a.Dataset
+formats.geoeye.Dataset
 formats.jp2.Dataset
 formats.landsat_mtl.Dataset
 formats.netcdf.Dataset
 formats.nitf.Dataset
 formats.spot_cap.Dataset
-formats.spot_dimap.Dataset" class="py-name" href="#" onclick="return doclink('link-241', 'Dataset', 'link-105');">Dataset</a></tt><tt class="py-op">.</tt><tt id="link-242" class="py-name" targets="Method formats.__dataset__.Dataset.getoverview()=formats.__dataset__.Dataset-class.html#getoverview,Method formats.alos.Dataset.getoverview()=formats.alos.Dataset-class.html#getoverview,Method formats.digitalglobe.Dataset.getoverview()=formats.digitalglobe.Dataset-class.html#getoverview,Method formats.ecw.Dataset.getoverview()=formats.ecw.Dataset-class.html#getoverview,Method formats.esribil.Dataset.getoverview()=formats.esribil.Dataset-class.html#getoverview,Method formats.esrigrid.Dataset.getoverview()=formats.esrigrid.Dataset-class.html#getoverview,Method formats.jp2.Dataset.getoverview()=formats.jp2.Dataset-class.html#getoverview,Method formats.netcdf.Dataset.getoverview()=formats.netcdf.Dataset-class.html#getoverview,Method formats.spot_dimap.Dataset.getoverview()=formats.spot_dimap.Dataset-class.html#getoverview,Function overviews.getoverview()=overviews-module.html#getoverview"><a title="formats.__dataset__.Dataset.getoverview
+formats.spot_dimap.Dataset" class="py-name" href="#" onclick="return doclink('link-241', 'Dataset', 'link-105');">Dataset</a></tt><tt class="py-op">.</tt><tt id="link-242" class="py-name" targets="Method formats.__dataset__.Dataset.getoverview()=formats.__dataset__.Dataset-class.html#getoverview,Method formats.alos.Dataset.getoverview()=formats.alos.Dataset-class.html#getoverview,Method formats.digitalglobe.Dataset.getoverview()=formats.digitalglobe.Dataset-class.html#getoverview,Method formats.ecw.Dataset.getoverview()=formats.ecw.Dataset-class.html#getoverview,Method formats.esribil.Dataset.getoverview()=formats.esribil.Dataset-class.html#getoverview,Method formats.esrigrid.Dataset.getoverview()=formats.esrigrid.Dataset-class.html#getoverview,Method formats.geoeye.Dataset.getoverview()=formats.geoeye.Dataset-class.html#getoverview,Method formats.jp2.Dataset.getoverview()=formats.jp2.Dataset-class.html#getoverview,Method formats.netcdf.Dataset.getoverview()=formats.netcdf.Dataset-class.html#getoverview,Method formats.spot_dimap.Dataset.getoverview()=formats.spot_dimap.Dataset-class.html#getoverview,Function overviews.getoverview()=overviews-module.html#getoverview"><a title="formats.__dataset__.Dataset.getoverview
 formats.alos.Dataset.getoverview
 formats.digitalglobe.Dataset.getoverview
 formats.ecw.Dataset.getoverview
 formats.esribil.Dataset.getoverview
 formats.esrigrid.Dataset.getoverview
+formats.geoeye.Dataset.getoverview
 formats.jp2.Dataset.getoverview
 formats.netcdf.Dataset.getoverview
 formats.spot_dimap.Dataset.getoverview
@@ -670,6 +675,7 @@ formats.envi.Dataset
 formats.esribil.Dataset
 formats.esrigrid.Dataset
 formats.fast_l7a.Dataset
+formats.geoeye.Dataset
 formats.jp2.Dataset
 formats.landsat_mtl.Dataset
 formats.netcdf.Dataset
@@ -681,6 +687,7 @@ formats.digitalglobe.Dataset.getoverview
 formats.ecw.Dataset.getoverview
 formats.esribil.Dataset.getoverview
 formats.esrigrid.Dataset.getoverview
+formats.geoeye.Dataset.getoverview
 formats.jp2.Dataset.getoverview
 formats.netcdf.Dataset.getoverview
 formats.spot_dimap.Dataset.getoverview

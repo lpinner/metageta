@@ -33,7 +33,7 @@ import __dataset__
 import __default__
 
 # import other modules (use "_"  prefix to import privately)
-import sys, os, re, glob, time, math, string
+import sys, os, re, glob, time, math, string, fnmatch
 import utilities,geometry
 
 try:
@@ -82,11 +82,16 @@ class Dataset(__default__.Dataset):
         #  i.e:
         #  +---somedirectory
         #    |   \---123456                  <---Product directory
-        #    |       +---po_123456_0000000   <--- Scene ("component") directory
+        #    |       +---po_123456_0000000   <--- Scene ("component") directory (Doesn't always match this pattern...)
         #    |       +---po_123456_0010000   <--- Scene ("component") directory
         #    |       \---po_123456_0020000   <--- Scene ("component") directory
-        component=os.path.basename(os.path.dirname(f)).split('_') #i.e. ['po','123456','0020000']
-        component_id=component[2]         #i.e. 0020000
+        #component=os.path.basename(os.path.dirname(f)).split('_') #i.e. ['po','123456','0020000']
+        for fl in self.filelist:
+            fl=os.path.basename(fl)
+            if fnmatch.fnmatch(fl,'po_[0-9][0-9][0-9][0-9][0-9][0-9]_*_[0-9][0-9][0-9][0-9][0-9][0-9][0-9]*.*'):
+                component=fl.split('_') #i.e. ['po','123456',pan,'0020000']
+                break
+        component_id=component[3]         #i.e. 0020000
         image_id=component_id.rstrip('0') #i.e. 002
         image_start = self.mdtxt.find(r'Product Image ID: %s'%image_id)
         component_start = self.mdtxt.find(r'Component ID: %s'%component_id,image_start)

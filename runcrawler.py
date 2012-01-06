@@ -100,9 +100,10 @@ def main(dir, xls, logger, mediaid=None, update=False, getovs=False, recurse=Tru
                     #records[rec['guid']]=rec
                     records[utilities.uuid(rec['filepath'])]=(row,rec)
                 else:
-                    rec['DELETED']=1
-                    ExcelWriter.UpdateRecord(rec,row)
-                    logger.info('Marked %s as deleted' % (rec['filepath']))
+                    if rec.get('DELETED',0)!=1:
+                        rec['DELETED']=1
+                        ExcelWriter.UpdateRecord(rec,row)
+                        logger.info('Marked %s as deleted' % (rec['filepath']))
             if row==-1:logger.info('Output spreadsheet is empty, no records to update')
             del ShapeWriter
         ShapeWriter=geometry.ShapeWriter(shp,format_fields,update=update)

@@ -175,8 +175,13 @@ class Dataset(__default__.Dataset):
         ds=geometry.OpenDataset(img)
         rb=ds.GetRasterBand(1)
         DataType=gdal.GetDataTypeName(rb.DataType)
-        GeoTransform=','.join(map(str, ds.GetGeoTransform()))
+        GeoTransform=ds.GetGeoTransform()
         Projection=ds.GetProjection()
+        if GeoTransform==(0.0, 1.0, 0.0, 0.0, 0.0, 1.0):
+            GeoTransform=gdal.GCPsToGeoTransform(ds.GetGCPs())
+        if Projection=='':
+            Projection=ds.GetGCPProjection()
+        GeoTransform=','.join(map(str, GeoTransform))
         numTiles=int(tileinfo['numTiles'])
         BlockXSize,BlockYSize=rb.GetBlockSize()
         

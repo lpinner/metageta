@@ -787,6 +787,20 @@
               </gmd:classification>
             </gmd:MD_SecurityConstraints>
           </gmd:resourceConstraints>
+          <xsl:if test="license">
+            <gmd:resourceConstraints>
+              <gmd:MD_LegalConstraints>
+                <gmd:useLimitation>
+                  <gco:CharacterString>
+                    <xsl:value-of select="normalize-space(license)"/>
+                  </gco:CharacterString>
+                </gmd:useLimitation>
+                <gmd:accessConstraints>
+                  <gmd:MD_RestrictionCode codeList="http://asdd.ga.gov.au/asdd/profileinfo/gmxCodelists.xml#MD_RestrictionCode" codeListValue="license">license</gmd:MD_RestrictionCode>
+                </gmd:accessConstraints>
+              </gmd:MD_LegalConstraints>
+            </gmd:resourceConstraints>
+          </xsl:if>
           <!-- Scale or Resolution -->
           <xsl:choose>
             <xsl:when test="normalize-space(scale)">

@@ -1,0 +1,372 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>metageta.getargs._ToolTip</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >MetaGETA (Metadata Gathering, Extraction and Transformation)</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="metageta-module.html">Package&nbsp;metageta</a> ::
+        <a href="metageta.getargs-module.html">Module&nbsp;getargs</a> ::
+        Class&nbsp;_ToolTip
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="metageta.getargs._ToolTip-class.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class _ToolTip</h1><p class="nomargin-top"><span class="codelink"><a href="metageta.getargs-pysrc.html#_ToolTip">source&nbsp;code</a></span></p>
+<p>From http://Tix.unpythonic.net/wiki/ToolTip Michael Lange 
+  &lt;klappnase at 8ung dot at&gt;</p>
+  <p>The ToolTip class provides a flexible tooltip widget for Tkinter; it 
+  is based on IDLE's ToolTip module which unfortunately seems to be broken 
+  (at least the version I saw).</p>
+  <p>INITIALIZATION OPTIONS:</p>
+<pre class="literalblock">
+   anchor:        where the text should be positioned inside the widget, must be on of &quot;n&quot;, &quot;s&quot;, &quot;e&quot;, &quot;w&quot;, &quot;nw&quot; and so on;
+                  default is &quot;center&quot;
+   bd:            borderwidth of the widget; default is 1 (NOTE: don't use &quot;borderwidth&quot; here)
+   bg:            background color to use for the widget; default is &quot;lightyellow&quot; (NOTE: don't use &quot;background&quot;)
+   delay:         time in ms that it takes for the widget to appear on the screen when the mouse pointer has
+                  entered the parent widget; default is 1500
+   fg:            foreground (i.e. text) color to use; default is &quot;black&quot; (NOTE: don't use &quot;foreground&quot;)
+   follow_mouse:  if set to 1 the tooltip will follow the mouse pointer instead of being displayed
+                  outside of the parent widget; this may be useful if you want to use tooltips for
+                  large widgets like listboxes or canvases; default is 0
+   font:          font to use for the widget; default is system specific
+   justify:       how multiple lines of text will be aligned, must be &quot;left&quot;, &quot;right&quot; or &quot;center&quot;; default is &quot;left&quot;
+   padx:          extra space added to the left and right within the widget; default is 4
+   pady:          extra space above and below the text; default is 2
+   relief:        one of &quot;flat&quot;, &quot;ridge&quot;, &quot;groove&quot;, &quot;raised&quot;, &quot;sunken&quot; or &quot;solid&quot;; default is &quot;solid&quot;
+   state:         must be &quot;normal&quot; or &quot;disabled&quot;; if set to &quot;disabled&quot; the tooltip will not appear; default is &quot;normal&quot;
+   text:          the text that is displayed inside the widget
+   textvariable:  if set to an instance of Tix.StringVar() the variable's value will be used as text for the widget
+   width:         width of the widget; the default is 0, which means that &quot;wraplength&quot; will be used to limit the widgets width
+   wraplength:    limits the number of characters in each line; default is 150
+</pre>
+  <p>WIDGET METHODS:</p>
+<pre class="literalblock">
+   configure(**opts): change one or more of the widget's options as described above; the changes will take effect the
+                      next time the tooltip shows up; NOTE: follow_mouse cannot be changed after widget initialization
+</pre>
+  <p>Other widget methods that might be useful if you want to subclass 
+  ToolTip:</p>
+<pre class="literalblock">
+   enter():           callback when the mouse pointer enters the parent widget
+   leave():           called when the mouse pointer leaves the parent widget
+   motion():          is called when the mouse pointer moves inside the parent widget if follow_mouse is set to 1 and the
+                      tooltip has shown up to continually update the coordinates of the tooltip window
+   coords():          calculates the screen coordinates of the tooltip window
+   create_contents(): creates the contents of the tooltip window (by default a Tix.Label)
+</pre>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Instance Methods</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-InstanceMethods"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__init__"></a><span class="summary-sig-name">__init__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">master</span>,
+        <span class="summary-sig-arg">text</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">Your text here</code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">delay</span>=<span class="summary-sig-default">1500</span>,
+        <span class="summary-sig-arg">**opts</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="metageta.getargs-pysrc.html#_ToolTip.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="configure"></a><span class="summary-sig-name">configure</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">**opts</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="metageta.getargs-pysrc.html#_ToolTip.configure">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="config"></a><span class="summary-sig-name">config</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">**opts</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="metageta.getargs-pysrc.html#_ToolTip.configure">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="enter"></a><span class="summary-sig-name">enter</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">event</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="metageta.getargs-pysrc.html#_ToolTip.enter">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="leave"></a><span class="summary-sig-name">leave</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">event</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="metageta.getargs-pysrc.html#_ToolTip.leave">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="motion"></a><span class="summary-sig-name">motion</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">event</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="metageta.getargs-pysrc.html#_ToolTip.motion">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_schedule"></a><span class="summary-sig-name">_schedule</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="metageta.getargs-pysrc.html#_ToolTip._schedule">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_unschedule"></a><span class="summary-sig-name">_unschedule</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="metageta.getargs-pysrc.html#_ToolTip._unschedule">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_show"></a><span class="summary-sig-name">_show</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="metageta.getargs-pysrc.html#_ToolTip._show">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_hide"></a><span class="summary-sig-name">_hide</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="metageta.getargs-pysrc.html#_ToolTip._hide">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="coords"></a><span class="summary-sig-name">coords</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="metageta.getargs-pysrc.html#_ToolTip.coords">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="create_contents"></a><span class="summary-sig-name">create_contents</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="metageta.getargs-pysrc.html#_ToolTip.create_contents">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >MetaGETA (Metadata Gathering, Extraction and Transformation)</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    &nbsp;
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

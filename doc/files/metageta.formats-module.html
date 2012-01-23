@@ -1,0 +1,597 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>metageta.formats</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >MetaGETA (Metadata Gathering, Extraction and Transformation)</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="metageta-module.html">Package&nbsp;metageta</a> ::
+        Package&nbsp;formats
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+        <tr><td align="right"><span class="options">[<a href="javascript:void(0);" class="privatelink"
+    onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
+        <tr><td align="right"><span class="options"
+            >[<a href="frames.html" target="_top">frames</a
+            >]&nbsp;|&nbsp;<a href="metageta.formats-module.html"
+            target="_top">no&nbsp;frames</a>]</span></td></tr>
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PACKAGE DESCRIPTION ==================== -->
+<h1 class="epydoc">Package formats</h1><p class="nomargin-top"><span class="codelink"><a href="metageta.formats-pysrc.html">source&nbsp;code</a></span></p>
+<h1 class="heading">Image Metadata drivers</h1>
+    <p>Generic and custom image format drivers</p>
+    <p><b>Example</b>:</p>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">import</span> metageta.formats
+<span class="py-prompt">&gt;&gt;&gt; </span>dataset = metageta.formats.open(somefile)
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">print</span> dataset.extent
+<span class="py-output">[[139.214834,-20.155611],[139.28967,-20.170712],[139.403241,-19.311661],[139.47766,-19.326724]]</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">print</span> dataset.metadata[<span class="py-string">'filetype'</span>]
+<span class="py-output">CEOS/Landsat CCRS Format</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">print</span> dataset.metadata[<span class="py-string">'datatype'</span>]
+<span class="py-output">Int16</span></pre>
+    <p><b>Adding support for another format</b>:</p>
+    <ul>
+      <li>
+        Create a new .py file. Name the .py file whatever you want as long 
+        as the filename doesn't begin with an underscore &quot;_&quot;
+      </li>
+      <li>
+        Define one or more &quot;regular expression&quot; strings to match 
+        your formats filename
+      </li>
+      <li>
+        Create a &quot;Dataset&quot; class that inherits either from the 
+        base __dataset__.Dataset class or from the __default__.Dataset 
+        class (See class hierarchy below)
+      </li>
+      <li>
+        The default Dataset class is useful if GDAL can read your format 
+        and you just need to populate some extra fields.
+      </li>
+      <li>
+        Populate appropriate filelist &amp; fileinfo in the __init__ method
+        of your dataset class (if required), do not populate the metadata 
+        dict!
+      </li>
+      <li>
+        Populate appropriate metadata and extent variables in the 
+        __getmetadata__ method of your dataset class
+      </li>
+      <li>
+        Your format will be automatically loaded when the formats module is
+        initialised.
+      </li>
+      <li>
+        Errors should be propagated back up the chain. If you can't handle 
+        a certain file and for some reason you don't want an error to get 
+        raised (eg. the ENVI driver (*.hdr) doesn't handle ESRI bil/flt 
+        headers (*.hdr)) then raise NotImplementedError which will be 
+        ignored in lib.formats.Open()
+      </li>
+      <li>
+        If you want some info to get logged by the application and then 
+        continue processing (e.g the image doesn't have a projection 
+        defined, etc...) then use the warnings.warn(&quot;Some 
+        message&quot;) method - don't forget to import the warnings module!
+      </li>
+      <li>
+        Date/Time formats must follow follow AS ISO 8601-2007 (see: <a 
+        href="http://www.anzlic.org.au/metadata/guidelines/Index.html?date_and_datetime.htm"
+        
+        target="_top">http://www.anzlic.org.au/metadata/guidelines/Index.html?date_and_datetime.htm</a>)
+      </li>
+    </ul>
+    <p><b>Class hierarchy</b>:</p>
+<pre class="literalblock">
+   __dataset__.Dataset()
+       | #Base Dataset class
+       |
+       |----.metadata={} #the metadata dictionary. 
+       |                 #the metadata dictionary. 
+       |                 #You can only populate fields defined in __fields__.py
+       |                 #keys are immutable (values can be changed, but keys can't be
+       |                 #added or deleted)
+       |    
+       |----.filelist=[] #the list of related files
+       |    
+       |----.fileinfo={      #file information
+       |         'size':..., #doesn't included size of related files... TODO?
+       |         'filename':...,
+       |         'filepath':...,
+       |         'guid':...,
+       |         'metadatadate':...,
+       |         'datemodified':...,
+       |         'datecreated':...,
+       |         'dateaccessed':...,
+       |         'ownerid':...,
+       |         'ownername':...
+       |    }
+       |    
+       |----.extent=[[x,y],[x,y],[x,y],[x,y]] 
+       |     #Extent of the four corners in geographic (lon,lat) coordinates.
+       |     #May be rotated (eg. for path oriented images). Coordinate order
+       |     #is irrelevant, as long as it doesn't create a self-intersecting
+       |     #polygon.
+       |
+       |----getoverview(outfile=None,width=800,format='JPG'))
+       |    #generate thumbnails and quicklooks
+       |
+       |----__new__(file)
+       |    #Initialise the class object and populate fileinfo
+       |
+       |----__getfilelist__()
+       |    #populate filelist
+       |
+       |----__default__.Dataset(__dataset__.Dataset)
+       |   | #Default Dataset class
+       |   |
+       |   |----__getmetadata__(file)              
+       |   |     #Populate appropriate fields in the metadata dictionary
+       |   |     #Populate extent list
+       |   |
+       |   |----someformat.Dataset(__default__.Dataset)
+       |       | #Custom format inherits from subclass __default__.Dataset.
+       |       |
+       |       | #Use this when GDAL can read most of the images metadata,
+       |       | #but you need to populate some other stuff as well
+       |       | #If you inherit from this, don't forget to call
+       |       | #__default__.Dataset.__getmetadata__(file) explicitly
+       |       | #as your class will override this method
+       |       |
+       |       |----__init__(file)
+       |           | #Populate/update filelist, fileinfo if required
+       |           |
+       |       |----__getmetadata__(file)
+       |           | #Populate appropriate fields in the metadata dictionary
+       |           | #Populate extent list
+       |           |
+       |           |----__default__.Dataset.__getmetadata__(file)
+       |                #Call superclass init explicitly
+       |    
+       |----anotherformat.Dataset(__dataset__.Dataset)
+           | #Custom format inherits from base class - __dataset__.Dataset
+           |
+           | #You need to populate basic metadata yourself.
+           |
+           |__init__(file)               
+           |  #Populate/update filelist, fileinfo if required
+           |
+           |__getmetadata__(file)                 
+           |  #Populate appropriate fields in the metadata dictionary
+           |  #Populate extent list
+</pre>
+
+<hr />
+<div class="fields">      <strong>To Do:</strong>
+      <ul class="nomargin-top">
+        <li>
+        Need to pass back info about import errors - warnings.warn perhaps?
+        </li>
+        <li>
+        More info re. geometric, radiometric corrections where available 
+    (ccrs,...)
+        </li>
+        <li>
+        __dataset__.__getfilelist__() does not handle different file formats 
+    with the same basename eg. 
+    dir/abc.jp2,dir/abc.j2i,dir/abc.tif,dir/abc.tfw This could be handled 
+    with a bit of kludgery, but should it...? Can we assume that abc.jp2 is
+    the compressed version of abc.tif and should all be lumped together (as
+    currently happens)?
+        </li>
+      </ul>
+</div><!-- ==================== SUBMODULES ==================== -->
+<a name="section-Submodules"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Submodules</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Submodules"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr><td class="summary">
+  <ul class="nomargin">
+    <li> <strong class="uidlink"><a href="metageta.formats.__dataset__-module.html">metageta.formats.__dataset__</a></strong>: <em class="summary">Defines the metadata fields and populates some basic info</em>    </li>
+    <li> <strong class="uidlink"><a href="metageta.formats.__default__-module.html">metageta.formats.__default__</a></strong>: <em class="summary">Metadata driver for generic imagery formats including GDAL Virtual 
+        Rasters (VRT files and xml strings)</em>    </li>
+    <li> <strong class="uidlink"><a href="metageta.formats.__fields__-module.html">metageta.formats.__fields__</a></strong>: <em class="summary">Dictionary of field names and data types.</em>    </li>
+    <li> <strong class="uidlink"><a href="metageta.formats.ali_hyperion-module.html">metageta.formats.ali_hyperion</a></strong>: <em class="summary">Metadata driver for EO1 ALI (L1G &amp; L1R) &amp; Hyperion (L1R) 
+        images</em>    </li>
+    <li> <strong class="uidlink"><a href="metageta.formats.alos-module.html">metageta.formats.alos</a></strong>: <em class="summary">Metadata driver for ACRES ALOS AVNIR-2/PRISM/PALSAR imagery</em>    </li>
+    <li> <strong class="uidlink"><a href="metageta.formats.aster-module.html">metageta.formats.aster</a></strong>: <em class="summary">Metadata driver for ASTER imagery</em>    </li>
+    <li> <strong class="uidlink"><a href="metageta.formats.ccrs-module.html">metageta.formats.ccrs</a></strong>: <em class="summary">Metadata driver for ACRES Landsat CCRS/SPOT 1-4 imagery</em>    </li>
+    <li> <strong class="uidlink"><a href="metageta.formats.digitalglobe-module.html">metageta.formats.digitalglobe</a></strong>: <em class="summary">Metadata driver for Digital Globe imagery</em>    </li>
+    <li> <strong class="uidlink"><a href="metageta.formats.ecw-module.html">metageta.formats.ecw</a></strong>: <em class="summary">Metadata driver for ECW imagery</em>    </li>
+    <li> <strong class="uidlink"><a href="metageta.formats.ecwp-module.html">metageta.formats.ecwp</a></strong>: <em class="summary">Metadata driver for remote ECWP imagery</em>    </li>
+    <li> <strong class="uidlink"><a href="metageta.formats.envi-module.html">metageta.formats.envi</a></strong>: <em class="summary">Metadata driver for ENVI imagery</em>    </li>
+    <li> <strong class="uidlink"><a href="metageta.formats.esribil-module.html">metageta.formats.esribil</a></strong>: <em class="summary">Metadata driver for ESRI Bil imagery</em>    </li>
+    <li> <strong class="uidlink"><a href="metageta.formats.esrigrid-module.html">metageta.formats.esrigrid</a></strong>: <em class="summary">Metadata driver for ESRI GRIDs</em>    </li>
+    <li> <strong class="uidlink"><a href="metageta.formats.fast_l7a-module.html">metageta.formats.fast_l7a</a></strong>: <em class="summary">Metadata driver for ACRES Landsat FastL7A imagery</em>    </li>
+    <li> <strong class="uidlink"><a href="metageta.formats.geoeye-module.html">metageta.formats.geoeye</a></strong>: <em class="summary">Metadata driver for Ikonos and GeoEye (1) imagery</em>    </li>
+    <li> <strong class="uidlink"><a href="metageta.formats.jp2-module.html">metageta.formats.jp2</a></strong>: <em class="summary">Metadata driver for JPEG2000 imagery</em>    </li>
+    <li> <strong class="uidlink"><a href="metageta.formats.landsat_mtl-module.html">metageta.formats.landsat_mtl</a></strong>: <em class="summary">Metadata driver for Landsat geotiff imagery</em>    </li>
+    <li> <strong class="uidlink"><a href="metageta.formats.netcdf-module.html">metageta.formats.netcdf</a></strong>: <em class="summary">Metadata driver for NetCDF imagery</em>    </li>
+    <li> <strong class="uidlink"><a href="metageta.formats.nitf-module.html">metageta.formats.nitf</a></strong>: <em class="summary">Metadata driver for NITF imagery</em>    </li>
+    <li> <strong class="uidlink"><a href="metageta.formats.spot_cap-module.html">metageta.formats.spot_cap</a></strong>: <em class="summary">Metadata driver for SPOT 1-4 imagery</em>    </li>
+    <li> <strong class="uidlink"><a href="metageta.formats.spot_dimap-module.html">metageta.formats.spot_dimap</a></strong>: <em class="summary">Metadata driver for SPOT DIMAP imagery</em>    </li>
+  </ul></td></tr>
+</table>
+
+<br />
+<!-- ==================== FUNCTIONS ==================== -->
+<a name="section-Functions"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Functions</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Functions"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type"><code>formats.Dataset</code></span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="metageta.formats-module.html#Open" class="summary-sig-name">Open</a>(<span class="summary-sig-arg">f</span>)</span><br />
+      Open an image with the appropriate driver.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="metageta.formats-pysrc.html#Open">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== VARIABLES ==================== -->
+<a name="section-Variables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Variables</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Variables"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="metageta.formats-module.html#__formats__" class="summary-name">__formats__</a> = <code title="{'ali_hyperion': &lt;module 'metageta.formats.ali_hyperion' from 'c:\meta\
+geta_development\metageta-trunk\metageta\formats\ali_hyperion.pyc'&gt;,
+ 'alos': &lt;module 'metageta.formats.alos' from 'c:\metageta_development\
+\metageta-trunk\metageta\formats\alos.pyc'&gt;,
+ 'aster': &lt;module 'metageta.formats.aster' from 'c:\metageta_developme\
+nt\metageta-trunk\metageta\formats\aster.pyc'&gt;,
+ 'ccrs': &lt;module 'metageta.formats.ccrs' from 'c:\metageta_development\
+\metageta-trunk\metageta\formats\ccrs.pyc'&gt;,
+..."><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">ali_hyperion</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;module 'metageta.formats.ali_h<code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="metageta.formats-module.html#format_regex" class="summary-name">format_regex</a> = <code title="['eo1.*\\.[lm]1r$',
+ 'eo1.*_hdf\\.l1g$',
+ 'eo1.*_mtl\\.tif$',
+ 'LED-ALAV.*_U$',
+ 'LED-ALAV.*___$',
+ 'LED-ALPSR.*UD$',
+ 'LED-ALPSM.*\\_U[BFNW]$',
+ 'ast_l1[ab].*\\.hdf$',
+..."><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">eo1.*\\.[lm]1r$</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">eo1.*_hdf\\.l1g$</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">eo1.*_</code><code class="variable-ellipsis">...</code></code><br />
+      List of file path regular expressions defined by format drivers
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="metageta.formats-module.html#fields" class="summary-name">fields</a> = <code title="{'DELETED': None,
+ 'LL': None,
+ 'LR': None,
+ 'UL': None,
+ 'UR': None,
+ 'abstract': None,
+ 'bands': ('string', 50),
+ 'cellx': 'float',
+..."><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">DELETED</code><code class="variable-quote">'</code><code class="variable-op">: </code>None<code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">LL</code><code class="variable-quote">'</code><code class="variable-op">: </code>None<code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">LR</code><code class="variable-quote">'</code><code class="variable-op">: </code>None<code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">UL</code><code class="variable-quote">'</code><code class="variable-op">: </code>None<code class="variable-op">,</code><code class="variable-ellipsis">...</code></code><br />
+      List of metadata fields that can be populated
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="debug"></a><span class="summary-name">debug</span> = <code title="False">False</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__package__"></a><span class="summary-name">__package__</span> = <code title="'metageta.formats'"><code class="variable-quote">'</code><code class="variable-string">metageta.formats</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="_lib"></a><span class="summary-name">_lib</span> = <code title="'spot_dimap'"><code class="variable-quote">'</code><code class="variable-string">spot_dimap</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="_r"></a><span class="summary-name">_r</span> = <code title="'.*\\.grc$|.*\\.grd$|.*\\.tab$'"><code class="variable-quote">'</code><code class="variable-string">.*\\.grc$|.*\\.grd$|.*\\.tab$</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="r"></a><span class="summary-name">r</span> = <code title="'metadata\\.dim$'"><code class="variable-quote">'</code><code class="variable-string">metadata\\.dim$</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+</table>
+<!-- ==================== FUNCTION DETAILS ==================== -->
+<a name="section-FunctionDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Function Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-FunctionDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="Open"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">Open</span>(<span class="sig-arg">f</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="metageta.formats-pysrc.html#Open">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Open an image with the appropriate driver.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>f</code></strong> (<code>str</code>) - a filepath to the dataset to open.</li>
+    </ul></dd>
+    <dt>Returns: <code>formats.Dataset</code></dt>
+        <dd><a href="metageta.formats.__dataset__.Dataset-class.html" 
+          class="link">formats.Dataset</a> object</dd>
+  </dl>
+<div class="fields">      <p><strong>To Do:</strong>
+        perhaps log the entire error stack if a file couldn't be opened?
+      </p>
+</div></td></tr></table>
+</div>
+<br />
+<!-- ==================== VARIABLES DETAILS ==================== -->
+<a name="section-VariablesDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Variables Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-VariablesDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="__formats__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">__formats__</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">ali_hyperion</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;module 'metageta.formats.ali_hyperion' from 'c:\meta<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+geta_development\metageta-trunk\metageta\formats\ali_hyperion.pyc'&gt;<code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">alos</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;module 'metageta.formats.alos' from 'c:\metageta_development<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+\metageta-trunk\metageta\formats\alos.pyc'&gt;<code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">aster</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;module 'metageta.formats.aster' from 'c:\metageta_developme<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+nt\metageta-trunk\metageta\formats\aster.pyc'&gt;<code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">ccrs</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;module 'metageta.formats.ccrs' from 'c:\metageta_development<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+\metageta-trunk\metageta\formats\ccrs.pyc'&gt;<code class="variable-op">,</code>
+<code class="variable-ellipsis">...</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="format_regex"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">format_regex</h3>
+  <p>List of file path regular expressions defined by format drivers</p>
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">eo1.*\\.[lm]1r$</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">eo1.*_hdf\\.l1g$</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">eo1.*_mtl\\.tif$</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">LED-ALAV.*_U$</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">LED-ALAV.*___$</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">LED-ALPSR.*UD$</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">LED-ALPSM.*\\_U[BFNW]$</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">ast_l1[ab].*\\.hdf$</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+<code class="variable-ellipsis">...</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="fields"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">fields</h3>
+  <p>List of metadata fields that can be populated</p>
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">DELETED</code><code class="variable-quote">'</code><code class="variable-op">: </code>None<code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">LL</code><code class="variable-quote">'</code><code class="variable-op">: </code>None<code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">LR</code><code class="variable-quote">'</code><code class="variable-op">: </code>None<code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">UL</code><code class="variable-quote">'</code><code class="variable-op">: </code>None<code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">UR</code><code class="variable-quote">'</code><code class="variable-op">: </code>None<code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">abstract</code><code class="variable-quote">'</code><code class="variable-op">: </code>None<code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">bands</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">string</code><code class="variable-quote">'</code><code class="variable-op">, </code>50<code class="variable-group">)</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">cellx</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">float</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+<code class="variable-ellipsis">...</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            >MetaGETA (Metadata Gathering, Extraction and Transformation)</th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    &nbsp;
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

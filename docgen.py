@@ -50,8 +50,9 @@ args.append('%s\\runtransform.py'%os.environ['CURDIR'])
 
 for f in glob.glob('%s\\doc\\files\\*.*'%os.environ['CURDIR']):
     os.unlink(f)
-for py in utilities.rglob('%s\\lib'%os.environ['CURDIR'],'*.py'):
-    args.append(py)
+#for py in utilities.rglob('%s\\lib'%os.environ['CURDIR'],'*.py'):
+#    args.append(py)
+args.append('%s\\metageta'%os.environ['CURDIR'])
 sys.argv.extend(args)
 cli()
 

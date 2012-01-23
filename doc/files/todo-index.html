@@ -54,9 +54,128 @@
 <center><b>[
  <a href="identifier-index.html">Identifiers</a>
 | <a href="todo-index.html">To Do</a>
+| <a href="change-index.html">Changes</a>
 ]</b></center><br />
 <h1 class="epydoc"><a name="todo">To Do List</a></h1>
 <br />
+<div>
+<table width="100%" class="metadata-index" bgcolor="#e0e0e0"><tr><td class="metadata-index"><b>To Do in <a href="metageta.crawler-module.html">metageta.crawler</a></b>    <ul class="nomargin">
+      <li><ul>
+      <li>
+        Make this faster!!! It's verrry slow on large filesystems...
+      </li>
+      <li>
+        Explore removing regular expression and searching using fnmatch 
+        instead
+      </li>
+      <li>
+        Can this be rewritten to yield files as they're found instead of 
+        building a complete list of files first? Probably. However, the 
+        multiple loops are there to ensure certain types of files are dealt
+        with first, but perhaps that logic needs to be handled by the 
+        formats library
+      </li>
+    </ul></li>
+    </ul>
+</table></div>
+<div>
+<table width="100%" class="metadata-index" bgcolor="#e0e0e0"><tr><td class="metadata-index"><b>To Do in <a href="metageta.formats-module.html">metageta.formats</a></b>    <ul class="nomargin">
+      <li>Need to pass back info about import errors - warnings.warn perhaps?</li>
+      <li>More info re. geometric, radiometric corrections where available 
+    (ccrs,...)</li>
+      <li>__dataset__.__getfilelist__() does not handle different file formats 
+    with the same basename eg. 
+    dir/abc.jp2,dir/abc.j2i,dir/abc.tif,dir/abc.tfw This could be handled 
+    with a bit of kludgery, but should it...? Can we assume that abc.jp2 is
+    the compressed version of abc.tif and should all be lumped together (as
+    currently happens)?</li>
+    </ul>
+</table></div>
+<div>
+<table width="100%" class="metadata-index" bgcolor="#e0e0e0"><tr><td class="metadata-index"><b>To Do in <a href="metageta.formats-module.html#Open">metageta.formats.Open</a></b>    <ul class="nomargin">
+      <li>perhaps log the entire error stack if a file couldn't be opened?</li>
+    </ul>
+</table></div>
+<div class="private">
+<table width="100%" class="metadata-index" bgcolor="#e0e0e0"><tr><td class="metadata-index"><b>To Do in <a href="metageta.formats.__dataset__-module.html">metageta.formats.__dataset__</a></b>    <ul class="nomargin">
+      <li>implement ESRI PGDB rasters (depends on GDAL)</li>
+    </ul>
+</table></div>
+<div class="private">
+<table width="100%" class="metadata-index" bgcolor="#e0e0e0"><tr><td class="metadata-index"><b>To Do in <a href="metageta.formats.__default__.Dataset-class.html#__getmetadata__">metageta.formats.__default__.Dataset.__getmetadata__</a></b>    <ul class="nomargin">
+      <li>We force a NoData value. This is not ideal, but it makes for better 
+    overview images.</li>
+    </ul>
+</table></div>
+<div class="private">
+<table width="100%" class="metadata-index" bgcolor="#e0e0e0"><tr><td class="metadata-index"><b>To Do in <a href="metageta.formats.__fields__-module.html">metageta.formats.__fields__</a></b>    <ul class="nomargin">
+      <li>We should probably have separate LLX and LLY etc... fields with 'float'
+    type... This would also need to be changed in the transform XSL</li>
+    </ul>
+</table></div>
+<div>
+<table width="100%" class="metadata-index" bgcolor="#e0e0e0"><tr><td class="metadata-index"><b>To Do in <a href="metageta.formats.ali_hyperion-module.html">metageta.formats.ali_hyperion</a></b>    <ul class="nomargin">
+      <li>extract stuff from FDGC metadata?</li>
+    </ul>
+</table></div>
+<div>
+<table width="100%" class="metadata-index" bgcolor="#e0e0e0"><tr><td class="metadata-index"><b>To Do in <a href="metageta.formats.digitalglobe.Dataset-class.html#__getmetadata__">metageta.formats.digitalglobe.Dataset.__getmetadata__</a></b>    <ul class="nomargin">
+      <li>Fix QB GDA94 Geographic CS &quot;Unknown datum&quot; problem</li>
+    </ul>
+</table></div>
+<div>
+<table width="100%" class="metadata-index" bgcolor="#e0e0e0"><tr><td class="metadata-index"><b>To Do in <a href="metageta.formats.esribil-module.html">metageta.formats.esribil</a></b>    <ul class="nomargin">
+      <li>Generic BIL/BIP/BSQ...?</li>
+    </ul>
+</table></div>
+<div>
+<table width="100%" class="metadata-index" bgcolor="#e0e0e0"><tr><td class="metadata-index"><b>To Do in <a href="metageta.formats.landsat_mtl-module.html#parseheader">metageta.formats.landsat_mtl.parseheader</a></b>    <ul class="nomargin">
+      <li>This function works for both landsat MTL and Digitalglobe IMD metadata 
+    files. Need to fix duplication - digitalglobe driver will need tweaking
+    as it's version of the parser extracts band information.</li>
+    </ul>
+</table></div>
+<div>
+<table width="100%" class="metadata-index" bgcolor="#e0e0e0"><tr><td class="metadata-index"><b>To Do in <a href="metageta.formats.nitf-module.html">metageta.formats.nitf</a></b>    <ul class="nomargin">
+      <li>GDAL upscales non standard bit depths. e.g 11 bit data is treated as 16
+    bit. Currently the NITF driver reports the upscaled bit depth. The 
+    actual bit depth can be extracted using the  NITF_ABPP metadata item. 
+    Should this be reported instead of the upscaled bit depth...?</li>
+      <li>support NITF with subdatasets</li>
+    </ul>
+</table></div>
+<div>
+<table width="100%" class="metadata-index" bgcolor="#e0e0e0"><tr><td class="metadata-index"><b>To Do in <a href="metageta.formats.spot_cap-module.html">metageta.formats.spot_cap</a></b>    <ul class="nomargin">
+      <li>Level 1A - is not geometrically corrected, so cell size isn't really 
+    appropriate, however we calculate it from the geographic corner coords.
+    Perhaps it would be better to just assign default values depending on 
+    whether the imagery is Multispectral, Pan or Merged Multi/Pan...?</li>
+    </ul>
+</table></div>
+<div>
+<table width="100%" class="metadata-index" bgcolor="#e0e0e0"><tr><td class="metadata-index"><b>To Do in <a href="metageta.formats.spot_dimap-module.html">metageta.formats.spot_dimap</a></b>    <ul class="nomargin">
+      <li>GDALINFO is pretty slow (4+ sec), check that this driver is not that 
+    slow...</li>
+    </ul>
+</table></div>
+<div>
+<table width="100%" class="metadata-index" bgcolor="#e0e0e0"><tr><td class="metadata-index"><b>To Do in <a href="metageta.geometry-module.html">metageta.geometry</a></b>    <ul class="nomargin">
+      <li>Does the module name <i>really</i> describe its functions anymore? It 
+    doesn't just do geometry now...</li>
+    </ul>
+</table></div>
+<div>
+<table width="100%" class="metadata-index" bgcolor="#e0e0e0"><tr><td class="metadata-index"><b>To Do in <a href="metageta.transforms-module.html">metageta.transforms</a></b>    <ul class="nomargin">
+      <li>Should XSL files be described by a .py instead of a .xml file? That way
+    they could be imported automatically and additional metadata elements 
+    could be documented there instead of above here...</li>
+    </ul>
+</table></div>
+<div>
+<table width="100%" class="metadata-index" bgcolor="#e0e0e0"><tr><td class="metadata-index"><b>To Do in <a href="metageta.transforms-module.html#CreateMEF">metageta.transforms.CreateMEF</a></b>    <ul class="nomargin">
+      <li>Assumes metadata is ISO19139, need to make generic somehow...</li>
+    </ul>
+</table></div>
 <div>
 <table width="100%" class="metadata-index" bgcolor="#e0e0e0"><tr><td class="metadata-index"><b>To Do in <a href="runtransform-module.html">runtransform</a></b>    <ul class="nomargin">
       <li>Set up logging &amp; debug properly.</li>

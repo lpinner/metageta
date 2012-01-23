@@ -21,7 +21,8 @@
 
 '''Generate documentation for MetaGeta modules'''
 
-import os,utilities,sys,glob,re
+import os,sys,glob,re
+from metageta import utilities
 from epydoc.cli import cli
 from epydoc import docparser
 docparser.IMPORT_STAR_HANDLING='ignore'

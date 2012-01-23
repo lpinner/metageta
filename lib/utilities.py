@@ -32,7 +32,7 @@ except:
     from xlutils import xlrd
     from xlutils import xlwt
 from xlutils import copy as xlcp
-import sys, os.path, os, re, struct, glob, shutil,traceback,time,tempfile
+import sys, os.path, os, re, struct, glob, shutil,traceback,time,tempfile,copy
 import uuid as _uuid
 
 #========================================================================================================
@@ -58,7 +58,7 @@ def encode(string):
     '''
     if type(string) is unicode:return string.encode(encoding)
     else:return string
-    
+
 #========================================================================================================
 #{Filesystem Utilities
 #========================================================================================================
@@ -84,7 +84,7 @@ def runcmd(cmd, format='s'):
 
 def which(name, returnfirst=True, flags=os.F_OK | os.X_OK, path=None):
     ''' Search PATH for executable files with the given name.
-    
+
         On newer versions of MS-Windows, the PATHEXT environment variable will be
         set to the list of file extensions for files considered executable. This
         will normally include things like ".EXE". This fuction will also find files
@@ -92,7 +92,7 @@ def which(name, returnfirst=True, flags=os.F_OK | os.X_OK, path=None):
 
         On MS-Windows the only flag that has any meaning is os.F_OK. Any other
         flags will be ignored.
-        
+
         Derived mostly from U{http://code.google.com/p/waf/issues/detail?id=531} with
         additions from Brian Curtins patch - U{http://bugs.python.org/issue444582}
 
@@ -104,7 +104,7 @@ def which(name, returnfirst=True, flags=os.F_OK | os.X_OK, path=None):
         @param flags: Arguments to U{os.access<http://docs.python.org/library/os.html#os.access>}.
 
         @rtype: C{str}/C{list}
-        @return: Full path to the first matching file found or a list of the full paths to all files found, 
+        @return: Full path to the first matching file found or a list of the full paths to all files found,
                  in the order in which they were found.
     '''
     result = []
@@ -123,9 +123,9 @@ def which(name, returnfirst=True, flags=os.F_OK | os.X_OK, path=None):
                 else:result.append(pext)
     return result
 
-def exists(f,returnpath=False): 
-    ''' A case insensitive file existence checker 
-        
+def exists(f,returnpath=False):
+    ''' A case insensitive file existence checker
+
         @type f: C{str}
         @param f: The filepath to check.
         @type returnpath: C{boolean}
@@ -135,7 +135,7 @@ def exists(f,returnpath=False):
         @return: True/False, optionally full path to the case sensitive path
     '''
     if iswin:#Windows is case insensitive anyways
-        if returnpath:return os.path.exists(f),f 
+        if returnpath:return os.path.exists(f),f
         else:return os.path.exists(f)
     import re
     path,name=os.path.split(os.path.abspath(f))
@@ -339,7 +339,7 @@ def realpath(filepath):
         @rtype:  C{str/list}
         @return: Path to file/s
 
-        @note: os.path.realpath/os.path.abspath returns unexpected results on windows if filepath[-1]==':'        
+        @note: os.path.realpath/os.path.abspath returns unexpected results on windows if filepath[-1]==':'
     '''
     if hasattr(filepath,'__iter__'): #Is iterable
         if iswin:
@@ -402,11 +402,11 @@ def writable(filepath):
         del tmp
         return True
     except:
-        return False          
+        return False
 
 class rglob:
     '''A recursive/regex enhanced glob
-       adapted from os-path-walk-example-3.py - http://effbot.org/librarybook/os-path.htm 
+       adapted from os-path-walk-example-3.py - http://effbot.org/librarybook/os-path.htm
     '''
     def __init__(self, directory, pattern="*", regex=False, regex_flags=0, recurse=True):
         ''' @type    directory: C{str}
@@ -419,7 +419,7 @@ class rglob:
             @type    regex_flags: C{int}
             @param   regex_flags: Flags to pass to the regular expression compiler.
                                   See U{http://docs.python.org/library/re.html}
-            @type    recurse: C{boolean} 
+            @type    recurse: C{boolean}
             @param   recurse: Recurse into the directory?
         '''
         self.stack = [directory]
@@ -437,7 +437,7 @@ class rglob:
                 self.index = self.index + 1
             except IndexError:
                 # pop next directory from stack
-                
+
                 self.directory = self.stack.pop()
                 try:
                     self.files = os.listdir(self.directory)
@@ -500,26 +500,27 @@ def FormatTraceback(trbk, maxTBlevel):
 class ExcelWriter:
     ''' A simple spreadsheet writer'''
 
-    def __init__(self,xls,fields=[],update=False):
+    def __init__(self,xls,fields=[],update=False, sort = True):
         ''' A simple spreadsheet writer.
-        
+
             @type    xls: C{str}
             @param   xls: Path to xls file
             @type    fields: C{list}
             @param   fields: List of column/field headers
         '''
 
-        fields.sort()
+        if sort:fields.sort()
         self._file=xls
         self._fields=fields
         self._sheets=0 #sheet index
         self._rows=0   #row index
-        self._cols={}  #col dictionary
+        self._cols={}  #dict of col indices
+
 
         font = xlwt.Font()
         font.bold = True
         self._heading = xlwt.XFStyle()
-        self._heading.font = font        
+        self._heading.font = font
 
         if update and os.path.exists(xls):
             rb=xlrd.open_workbook(xls,encoding_override=encoding)
@@ -555,7 +556,23 @@ class ExcelWriter:
             self.__addsheet__()
             self._wb.save(self._file)
 
-        self._cols=dict(zip(self._fields,range(len(self._fields))))
+        #fs=set(self._fields) !!! set(list) reorders the list!!!
+        fs=[]
+        for f in self._fields:
+            if f not in fs:fs.append(f)
+
+        self._cols=dict(zip(fs,[self.__getcol__(self._fields,f) for f in fs]))
+
+    def __getcol__(self,lst,val):
+        i = -1
+        cols=[]
+        try:
+            while 1:
+                i = list(lst).index(val, i+1)
+                cols.append(i)
+        except ValueError:
+            pass
+        return cols
 
     def __addsheet__(self):
         self._sheets+=1
@@ -565,30 +582,45 @@ class ExcelWriter:
         for i,field in enumerate(self._fields):
             self._ws.write(0, i, field, self._heading) #[row,col] = 0 based row, col ref
         self._rows = 0
-        
+
     def WriteRecord(self,data):
         ''' Write a record
-        
-            @type    data: C{dict}
+
+            @type    data: C{dict} #Known issue, doesn't handle list of lists (zipped lists)
             @param   data: Dict containing column headers (dict.keys()) and values (dict.values())
         '''
         dirty=False
         if self._rows > 65534:
             self.__addsheet__()
-        for field in data:
-            if field in self._fields and data[field] not in ['',None,False]:#0 is valid
-                if type(data[field]) is str:#Issue 24 - http://code.google.com/p/metageta/issues/detail?id=24
-                    data[field]=data[field].decode(encoding)
-                self._ws.write(self._rows+1, self._cols[field], data[field]) #Issue 24 - http://code.google.com/p/metageta/issues/detail?id=24
-                dirty=True
+
+        cols=copy.deepcopy(self._cols) #make a copy to alter
+        try:
+            fields,values = zip(*data)
+            for i,field in enumerate(fields):
+                value=values[i]
+                if field in self._fields and value not in ['',None,False]:#0 is valid
+                    try:col=cols[field].pop(0)
+                    except:continue
+                    if type(value) is str:value=value.decode(encoding)
+                    self._ws.write(self._rows+1, col, value)
+                    dirty=True
+
+        except:
+            for field in data:
+                if field in self._fields and data[field] not in ['',None,False]:#0 is valid
+                    if type(data[field]) is str:#Issue 24 - http://code.google.com/p/metageta/issues/detail?id=24
+                        data[field]=data[field].decode(encoding)
+                    self._ws.write(self._rows+1, self._cols[field][0], data[field]) #Issue 24 - http://code.google.com/p/metageta/issues/detail?id=24
+                    dirty=True
+
         if dirty:self._rows+=1
         self._wb.save(self._file)
 
     def UpdateRecord(self,data,row):
         ''' Update an existing record
-        
-            @type    data: C{dict}
-            @param   data: Dict containing column headers (dict.keys()) and values (dict.values())
+
+            @type    data: C{dict} or C{list}
+            @param   data: Dict containing column headers (dict.keys()) and values (dict.values()) or zipped list
             @type    row:  C{int}
             @param   row:  Row number of existing record
         '''
@@ -596,27 +628,40 @@ class ExcelWriter:
         s=row/65535
         r=row-s*65535
         ws=self._wb.get_sheet(s)
-        for field in data:
-            if field in self._fields and data[field] not in ['',None,False]:#0 is valid
-                if type(data[field]) is str:#Issue 24 - http://code.google.com/p/metageta/issues/detail?id=24
-                    data[field]=data[field].decode(encoding)
-                ws.write(r+1, self._cols[field], data[field]) 
-                dirty=True
+        cols=copy.deepcopy(self._cols) #make a copy to alter
+        try:
+            fields,values = zip(*data)
+            for i,field in enumerate(fields):
+                if field in self._fields and value not in ['',None,False]:#0 is valid
+                    try:col=cols[field].pop(0)
+                    except:continue
+                    val=values[i]
+                    if type(val) is str:val=val.decode(encoding)
+                    ws.write(r+1, col, val)
+                    dirty=True
+
+        except:
+            for field in data:
+                if field in self._fields and data[field] not in ['',None,False]:#0 is valid
+                    if type(data[field]) is str:#Issue 24 - http://code.google.com/p/metageta/issues/detail?id=24
+                        data[field]=data[field].decode(encoding)
+                    ws.write(r+1, self._cols[field][0], data[field])
+                    dirty=True
         if dirty:self._wb.save(self._file)
-        
+
     def __del__(self):
         try:
             self._wb.save(self._file)
             del self._ws
             del self._wb
         except:pass
-    
+
 
 class ExcelReader:
     '''A simple spreadsheet reader'''
     def __init__(self,xls,returntype=dict):
         ''' A simple spreadsheet reader.
-        
+
             @type    xls: C{str}
             @param   xls: Path to xls file
             @type    returntype: C{type}
@@ -626,6 +671,7 @@ class ExcelReader:
         self._returntype=returntype
         self._sheets=self._wb.sheets()
         self.records=0-len(self._sheets)
+        self.headers=[encode(c.value) for c in self._sheets[0].row(0)]
         for ws in self._sheets:
             self.records+=ws.nrows
 
@@ -641,4 +687,4 @@ class ExcelReader:
             return zip(headers,cells)
 
 #}
- 
+

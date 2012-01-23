@@ -38,8 +38,7 @@ import __default__
 
 # import other modules (use "_"  prefix to import privately)
 import sys, os, re, glob, time, math, string
-import utilities
-import geometry
+from metageta import utilities, geometry
 
 try:
     from osgeo import gdal
@@ -266,7 +265,7 @@ class Dataset(__default__.Dataset):
         @rtype:         str
         @return:        filepath (if outfile is supplied)/binary image data (if outfile is not supplied)
         '''
-        import overviews
+        from metageta import overviews
 
         #First check for a browse graphic, no point re-inventing the wheel...
         f=self.fileinfo['filepath']

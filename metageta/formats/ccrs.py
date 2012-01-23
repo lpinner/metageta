@@ -34,8 +34,7 @@ import __dataset__
 
 # import other modules (use "_"  prefix to import privately)
 import sys, os, re, glob, time, math, string
-import utilities
-import geometry
+from metageta import utilities, geometry
 
 try:
     from osgeo import gdal

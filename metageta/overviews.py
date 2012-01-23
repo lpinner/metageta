@@ -36,7 +36,7 @@ except ImportError:
     import gdalconst
     import osr
     import ogr
-import geometry,utilities
+from metageta import geometry,utilities
 import sys, os.path, os, csv, re, struct, math, glob, string, time,shutil, tempfile
 
 def getoverview(ds,outfile,width,format,bands,stretch_type,*stretch_args):

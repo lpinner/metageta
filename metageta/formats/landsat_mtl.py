@@ -34,9 +34,7 @@ import __default__
 
 # import other modules (use "_"  prefix to import privately)
 import sys, os, re, glob, time, math, string
-import utilities
-import geometry
-import spatialreferences
+from metageta import utilities, geometry, spatialreferences
 
 try:
     from osgeo import gdal

@@ -21,3 +21,4 @@ if %nogui%==1 (
     start "Crawler" /b pythonw.exe "%~DP0runtransform.py" %*
 )
 endlocal
+pause

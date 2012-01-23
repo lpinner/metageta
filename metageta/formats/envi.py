@@ -32,7 +32,7 @@ import __default__
 
 # import other modules
 import sys, os,glob
-from overviews import GetDataTypeRange
+from metageta.overviews import GetDataTypeRange
 from osgeo import gdal
 
 class Dataset(__default__.Dataset): 

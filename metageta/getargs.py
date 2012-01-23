@@ -23,7 +23,7 @@
 Module to generate a GUI dialog to collect arguments
 '''
 import os,sys,Tix,tkFileDialog,tkMessageBox
-import utilities
+from metageta import utilities
 
 class GetArgs(object):
     def __new__(self,*args,**kwargs):#We use __new__ instead of __init__ so we can return None if the user clicks cancel

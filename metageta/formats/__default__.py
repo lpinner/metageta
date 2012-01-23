@@ -63,9 +63,9 @@ format_regex=[
 '''Regular expression list of file formats'''
 
 import sys, os, re, glob, time, math, string
-import utilities
-import geometry
-import spatialreferences
+from metageta import utilities
+from metageta import geometry
+from metageta import spatialreferences
 import __dataset__
 
 import warnings,logging

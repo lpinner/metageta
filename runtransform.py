@@ -37,10 +37,10 @@ Usage::
 
 @note:B{Additional metadata elements}
 
-      The ANZLIC ISO19139 stylesheet can make use of additional metadata elements that may be 
+      The ANZLIC ISO19139 stylesheet can make use of additional metadata elements that may be
       manually added to the Excel spreadsheet and will be included in the output XML/MEF metadata.
       See the L{transforms} module documentation for more information.
- 
+
 @todo: Set up logging & debug properly.
 '''
 
@@ -49,9 +49,9 @@ import os,sys,glob
 import Tkinter
 import tkFileDialog
 from Ft.Xml import Domlette as Dom
-import utilities
-import transforms
-import progresslogger
+from metageta import utilities
+from metageta import transforms
+from metageta import progresslogger
 
 def main(xls,xsl,dir,logger, mef=False,cat=''):
     '''
@@ -77,7 +77,7 @@ def main(xls,xsl,dir,logger, mef=False,cat=''):
             * check xls for categ column
             * if so use that,
             * if categ column is null for a row, of if no column at all then use default from config
-          
+
     ''' % '|'.join(['"%s"'%s for s in transforms.transforms.keys()])
 
     xlrdr=utilities.ExcelReader(xls, list)
@@ -117,8 +117,8 @@ def main(xls,xsl,dir,logger, mef=False,cat=''):
             except:pass
 
         logger.updateProgress(xlrdr.records)
-        
-def exit(): 
+
+def exit():
     '''Force exit after closure of the ProgressBar GUI'''
     exe=os.path.splitext(os.path.basename(sys.executable.lower()))[0]
     if forceexit:   #Issue?
@@ -151,8 +151,9 @@ if __name__ == '__main__':
 
     #To ensure uri's work...
     if os.path.basename(sys.argv[0])!=sys.argv[0]:os.chdir(os.path.dirname(sys.argv[0]))
-    import optparse,icons,getargs
-    
+    import optparse
+    from metageta import icons,getargs
+
     APP='MetaGETA Transforms'
     ICON=icons.app_img
     description='Transform metadata to XML'
@@ -167,7 +168,7 @@ if __name__ == '__main__':
     opt.icon=icons.dir_img
     dirarg=getargs.DirArg(opt,initialdir='',enabled=True,icon=icons.dir_img)
     dirarg.tooltip='The directory to output metadata XML to.'
-    
+
     opt=parser.add_option("-t", dest="xsl", metavar="xsl", help="XSL transform")
     xslarg=getargs.ComboBoxArg(opt,icon=icons.xsl_img)
     xslarg.tooltip="XSL transform {*.xsl|%s}." % '|'.join(['"%s"'%s for s in transforms.transforms.keys()])
@@ -178,21 +179,21 @@ if __name__ == '__main__':
     mefarg=getargs.BoolArg(opt,icon=icons.xsl_img)
     mefarg.tooltip=opt.help+'?'
 
-    opt=parser.add_option("-c", dest="cat", metavar="cat",default=transforms.categories['default'],   
+    opt=parser.add_option("-c", dest="cat", metavar="cat",default=transforms.categories['default'],
                      help="Dataset category")
     catarg=getargs.ComboBoxArg(opt,enabled=False,multiselect=True,icon=icons.xsl_img)
     catarg.options=transforms.categories['categories']
     catarg.tooltip='Dataset category for Metadata Exchange Format (MEF) file. Default is "%s". If a "category" column exists in the spreadsheet, values from that column will override any selection here.'%transforms.categories['default']
     mefarg.callback=getargs.Command(mefcallback,mefarg,catarg)
-    
+
     opt=parser.add_option("--keep-alive", action="store_true", dest="keepalive", default=False, help="Keep this dialog box open")
     kaarg=getargs.BoolArg(opt)
     kaarg.tooltip='Do you want to keep this dialog box open after running the metadata transform so you can run another?'
 
     opt=parser.add_option("--debug", action="store_true", dest="debug",default=False, help="Turn debug output on")
-    opt=parser.add_option("-l", dest="log", metavar="log",                            
+    opt=parser.add_option("-l", dest="log", metavar="log",
                       help=optparse.SUPPRESS_HELP) #help="Log file")                     #Not yet implemented
-    opt=parser.add_option("--nogui", action="store_true", dest="nogui", default=False, help="Disable the GUI progress dialog") 
+    opt=parser.add_option("--nogui", action="store_true", dest="nogui", default=False, help="Disable the GUI progress dialog")
 
     optvals,argvals = parser.parse_args()
 
@@ -224,4 +225,4 @@ if __name__ == '__main__':
     if logger:
         logger.shutdown()
         del logger
-        
+

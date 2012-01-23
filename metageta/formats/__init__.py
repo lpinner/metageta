@@ -25,8 +25,8 @@ Image Metadata drivers
 Generic and custom image format drivers
 
 B{Example}:
-    >>> import formats
-    >>> dataset = formats.open(somefile)
+    >>> import metageta.formats
+    >>> dataset = metageta.formats.open(somefile)
     >>> print dataset.extent
     [[139.214834,-20.155611],[139.28967,-20.170712],[139.403241,-19.311661],[139.47766,-19.326724]]
     >>> print dataset.metadata['filetype']
@@ -137,7 +137,7 @@ B{Class hierarchy}::
 from glob import glob as _glob
 import os.path as _path, re as _re, sys as _sys, imp as _imp, warnings as _warn
 import __fields__
-import utilities
+from metageta import utilities
 
 #Private
 __formats__={}

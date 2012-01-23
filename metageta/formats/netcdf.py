@@ -34,8 +34,7 @@ import __default__
 
 # import other modules
 import sys, os, glob
-import utilities
-import geometry
+from metageta import utilities, geometry
 
 try:
     from osgeo import gdal

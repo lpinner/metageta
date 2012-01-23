@@ -37,8 +37,7 @@ import __default__
 
 # import other modules
 import sys, os, re, glob, time, math, string
-import utilities
-import geometry
+from metageta import utilities, geometry
 #import xml.dom.minidom as _xmldom
 from Ft.Xml import Parse
 
@@ -138,7 +137,7 @@ class Dataset(__default__.Dataset):
         @rtype:         str
         @return:        filepath (if outfile is supplied)/binary image data (if outfile is not supplied)
         '''
-        import overviews
+        from metageta import overviews
 
         #First check for a browse graphic, no point re-inventing the wheel...
         f=self.fileinfo['filepath']

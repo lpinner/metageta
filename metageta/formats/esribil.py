@@ -36,7 +36,8 @@ format_regex=[r'\.hdr$']
 import __default__
 
 # import other modules (use "_"  prefix to import privately)
-import sys, os, glob, geometry
+import sys, os, glob
+from metageta import geometry
 
 class Dataset(__default__.Dataset): 
     '''Subclass of __default__.Dataset class so we get a load of metadata populated automatically'''
@@ -69,7 +70,7 @@ class Dataset(__default__.Dataset):
             else:raise #Something else caused it, reraise the error
     def getoverview(self,outfile=None,width=800,format='JPG'):
         '''Override the default method if there is a .clr file'''
-        import overviews
+        from metageta import overviews
         clr=glob.glob(self.fileinfo['filepath'][:-3]+'[cC][lL][rR]')
         if clr:
             clr=overviews.ParseColourLUT(clr[0])

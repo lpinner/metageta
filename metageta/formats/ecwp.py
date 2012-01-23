@@ -30,7 +30,7 @@ format_regex=[r'\.url$',r'\.ecwp$']
 import __default__
 
 # import other modules (use "_"  prefix to import privately)
-import sys, os, utilities
+import sys, os
 
 class Dataset(__default__.Dataset): 
     '''Subclass of __default__.Dataset class so we get a load of metadata populated automatically'''

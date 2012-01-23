@@ -26,15 +26,15 @@ Utility functions to assist XSL transforms
 
 Adding another stylesheet
 -------------------------
-    - Create a new/add an existing .xsl file that transforms crawler output (schema described below) to your XML schema. 
+    - Create a new/add an existing .xsl file that transforms crawler output (schema described below) to your XML schema.
     - Create an xml file that describes your XML schema (see below)
     - Save the xsl & xml file to the lib/transforms directory, it will be automatically available
 Note: You may also pass the filepath to an external XSL stylesheet to the L{Transform} function.
 
 Metadata schema
 ---------------
-The following schema defines a simple XML format which holds extracted metadata 
-(see L{DictToXML} and L{ListToXML}) to be transformed by an XSL stylesheet to 
+The following schema defines a simple XML format which holds extracted metadata
+(see L{DictToXML} and L{ListToXML}) to be transformed by an XSL stylesheet to
 various XML metadata schemas::
     <?xml version="1.0" encoding="UTF-8" ?>
     <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
@@ -49,9 +49,9 @@ various XML metadata schemas::
         <xs:complexType mixed="true" />
       </xs:element>
     </xs:schema>
-Where: {FIELD} are the fields defined in L{formats.fields}, plus any additional metadata elements you pass in. 
-For example, you can pass additional metadata elements in by adding them to the spreadsheet 
-which is passed to L{runtransform.py<runtransform>}.  
+Where: {FIELD} are the fields defined in L{formats.fields}, plus any additional metadata elements you pass in.
+For example, you can pass additional metadata elements in by adding them to the spreadsheet
+which is passed to L{runtransform.py<runtransform>}.
 Additional metadata elements for existing XSL stylesheets will be documented below.
 
 Stylesheet description schema
@@ -69,34 +69,34 @@ e.g. the ANZLIC Metadata Profile::
         </xs:complexType>
       </xs:element>
     </xs:schema>
-    
+
 Additional metadata elements
 ----------------------------
 - anzlic_iso19139.xsl
-  - Attributes below are not populated automatically, but may be manually added to the spreadsheet and will be included in the output XML/MEF metadata      
-  - NOTE - Some items require specific syntax, see the examples!      
-  - NOTE - item names are cAse SensitiVe      
-  
+  - Attributes below are not populated automatically, but may be manually added to the spreadsheet and will be included in the output XML/MEF metadata
+  - NOTE - Some items require specific syntax, see the examples!
+  - NOTE - item names are cAse SensitiVe
+
   Attributes::
-    |Attribute                         |Note                         |Example                                  
+    |Attribute                         |Note                         |Example
     |----------------------------------|-----------------------------|------------------------
-    |AbsoluteExternalPositionalAccuracy|                             |Some text                  
+    |AbsoluteExternalPositionalAccuracy|                             |Some text
     |----------------------------------|-----------------------------|------------------------
-    |abstract                          |                             |This is the abstract for 
-    |                                  |                             |some dataset             
+    |abstract                          |                             |This is the abstract for
+    |                                  |                             |some dataset
     |----------------------------------|-----------------------------|------------------------
-    |source                            |                             |Where we got the data from                           
+    |source                            |                             |Where we got the data from
     |----------------------------------|-----------------------------|------------------------
     |lineage                           |                             |What has been done to the data
     |----------------------------------|-----------------------------|------------------------
-    |title                             |                             |ALOS pansharpened imagery 
-    |                                  |                             |for Coongie Lakes (2.5m)                           
+    |title                             |                             |ALOS pansharpened imagery
+    |                                  |                             |for Coongie Lakes (2.5m)
     |----------------------------------|-----------------------------|------------------------
     |accessConstraints                 |                             |Data for INTERNAL use only!
     |----------------------------------|-----------------------------|------------------------
-    |useConstraints                    |                             |The following acknowlegement 
-    |                                  |                             |must be incuded with any map 
-    |                                  |                             |that contains these data: 
+    |useConstraints                    |                             |The following acknowlegement
+    |                                  |                             |must be incuded with any map
+    |                                  |                             |that contains these data:
     |                                  |                             |blah blah blah
     |----------------------------------|-----------------------------|------------------------
     |ANZLICKeyword                     |More than one ANZLICKeyword  |WATER-Wetlands
@@ -107,16 +107,16 @@ Additional metadata elements
     |                                  |ANZLICKeyword as column      |
     |                                  |header.                      |
     |----------------------------------|-----------------------------|------------------------
-    |CompletenessOmission              |                             |                           
+    |CompletenessOmission              |                             |
     |----------------------------------|-----------------------------|------------------------
-    |ConceptualConsistency             |                             |                           
+    |ConceptualConsistency             |                             |
     |----------------------------------|-----------------------------|------------------------
-    |NonQuantitativeAttributeAccuracy  |                             |                           
+    |NonQuantitativeAttributeAccuracy  |                             |
     |----------------------------------|-----------------------------|------------------------
     |category                          |GeoNetwork category/ies      |datasets|maps
     |                                  |"|" delimited string         |
-    |                                  |Only shown in MEF, not ISO   |                            
-    |                                  |metadata                     |                            
+    |                                  |Only shown in MEF, not ISO   |
+    |                                  |metadata                     |
     |----------------------------------|-----------------------------|------------------------
     |custodian                         |Format is:                   |organisationName|DEWHA
     |                                  |organisationName|text\n      |positionName|Some Position
@@ -134,7 +134,7 @@ Additional metadata elements
     |                                  |the [Alt] key and pressing   |
     |                                  [Enter]                       |
     |----------------------------------|-----------------------------|------------------------
-    |distributor                       |As per custodian             |                           
+    |distributor                       |As per custodian             |
     |----------------------------------|-----------------------------|------------------------
     |GeographicDescription             |Text describing the          |Kakadu
     |                                  |geographic location of the   |
@@ -164,20 +164,20 @@ Additional metadata elements
     |                                  |description|text\n           |
     |                                  |function|text                |
     |----------------------------------|-----------------------------|------------------------
-    |originator                        |As per custodian             |                           
+    |originator                        |As per custodian             |
     |----------------------------------|-----------------------------|------------------------
-    |publisher                         |As per custodian             |                           
+    |publisher                         |As per custodian             |
     |----------------------------------|-----------------------------|------------------------
-    |resourceProvider                  |As per custodian             |                           
+    |resourceProvider                  |As per custodian             |
     |----------------------------------|-----------------------------|------------------------
     |scale                             |representative fraction      |25000 (represents 1:25,000)
     |                                  |denominator                  |
-    |                                  |(MUST be an integer)         |                            
+    |                                  |(MUST be an integer)         |
     |----------------------------------|-----------------------------|------------------------
   Note: see this U{thread<http://n2.nabble.com/Re-metadata-Official-way-of-representing-OGC-services-in-ISO-19139-metadata-protocol-element-SEC-UNC-td3463929.html>}
   regarding OnlineResource URL protocol syntax
-  
-@todo: Should XSL files be described by a .py instead of a .xml file? 
+
+@todo: Should XSL files be described by a .py instead of a .xml file?
        That way they could be imported automatically and additional metadata elements
        could be documented there instead of above here...
 '''
@@ -191,7 +191,7 @@ from Ft.Xml.Xslt import Transform as _Transform
 from Ft.Xml import Parse as _Parse
 from Ft.Xml import Domlette as _Dom
 
-import utilities  as _utilities
+from metageta import utilities  as _utilities
 
 #++++++++++++++++++++++++
 #Public vars
@@ -227,12 +227,12 @@ for _key in ['name','organization','siteId']:
     else:site[_key]='dummy'
 
 #++++++++++++++++++++++++
-#Public methods    
+#Public methods
 #++++++++++++++++++++++++
 def Transform(inxmlstring,transform,outxmlfile):
     '''
     Transform a metadata record to XML using an XSL stylesheet
-    
+
     @param inxmlstring: metadata record in XML format.
     @param transform: may be one of the pre-defined XSL transforms or a path to a custom XSL file.
     @param outxmlfile: File to write transformed metadata to.
@@ -289,13 +289,13 @@ def ListToXML(lst,root):
 
 def CreateMEF(outdir,xmlfile,uid,overviews=[],cat=categories['default']):
     '''Generate Geonetwork "Metadata Exchange Format" from an ISO19139 XML record
-    
+
     @see:
-        
+
         U{http://www.fao.org/geonetwork/docs/ch17s02.html}
-        
+
         U{http://trac.osgeo.org/geonetwork/wiki/MEF}
-    
+
     @param outdir: Directory to write MEF file to.
     @param xmlfile: XML file to create MEF from.
     @param uid: ID of metadata record (UUID/GUID string).
@@ -326,7 +326,7 @@ def CreateMEF(outdir,xmlfile,uid,overviews=[],cat=categories['default']):
             if not _path.isdir(f): mef.write(f)
     finally:
         try:_os.chdir(curdir)
-        except:pass        
+        except:pass
         try:
             mef.close()
             del mef
@@ -334,7 +334,7 @@ def CreateMEF(outdir,xmlfile,uid,overviews=[],cat=categories['default']):
         try:_sh.rmtree(mefdir)
         except:pass
 #++++++++++++++++++++++++
-#Private methods    
+#Private methods
 #++++++++++++++++++++++++
 def _CreateInfo(uid,overviews=[],cat=categories['default']):
     '''Create MEF info.xml file'''

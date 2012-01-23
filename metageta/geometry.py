@@ -26,7 +26,7 @@
 '''
 
 import os,math,warnings,tempfile,re
-import utilities
+from metageta import utilities
 try:
     from osgeo import gdal
     from osgeo import gdalconst

@@ -27,9 +27,9 @@ Defines the metadata fields and populates some basic info
 @todo: implement ESRI PGDB rasters (depends on GDAL)
 '''
 
-import os,time,sys,glob,time,math
+import os,time,sys,glob,time,math, uuid
 import UserDict 
-import utilities, geometry, uuid, overviews
+from metageta import utilities, geometry, overviews
 
 
 #Import fieldnames

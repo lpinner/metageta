@@ -41,12 +41,12 @@ Usage::
 @note: See U{Issue 22<http://code.google.com/p/metageta/issues/detail?id=22>}
 '''
 import sys, os, re,time,tempfile
-import formats
-import geometry
-import utilities
-import crawler
-import overviews
-import progresslogger
+from metageta import formats
+from metageta import geometry
+from metageta import utilities
+from metageta import crawler
+from metageta import overviews
+from metageta import progresslogger
 
 def main(dir, xls, logger, mediaid=None, update=False, getovs=False, recurse=True):
     """ Run the Metadata Crawler
@@ -305,7 +305,8 @@ if __name__ == '__main__':
             getargs.tkMessageBox.showerror('I/O Error','%s is not writable.'%filepath)
             return False
 
-    import optparse,icons,getargs
+    import optparse
+    from metageta import icons,getargs
 
     APP='MetaGETA Crawler'
     ICON=icons.app_img

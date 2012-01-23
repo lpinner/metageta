@@ -41,7 +41,7 @@ Example:
 import logging,warnings,random,os,sys,socket,cPickle,threading,Queue,time,subprocess
 import Tkinter,tkMessageBox
 import ScrolledText
-import utilities
+from metageta import utilities
 
 #Define some constants
 DEBUG=logging.DEBUG

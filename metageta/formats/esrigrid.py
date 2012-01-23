@@ -33,7 +33,8 @@ format_regex=[r'hdr\.adf$']
 import __default__
 
 # import other modules (use "_"  prefix to import privately)
-import sys, os,glob,geometry,utilities,overviews
+import sys, os,glob
+from metageta import geometry,utilities,overviews
 
 class Dataset(__default__.Dataset): 
     '''Subclass of __default__.Dataset class so we get a load of metadata populated automatically'''

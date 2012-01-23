@@ -29,7 +29,7 @@ Example:
     >>> for dataset in Crawler:
     >>>     metadata=dataset.metadata
 
-@todo:  
+@todo:
     - Make this faster!!! It's verrry slow on large filesystems...
     - Explore removing regular expression and searching using fnmatch instead
     - Can this be rewritten to yield files as they're found instead of building a complete list of files first? Probably.
@@ -37,8 +37,7 @@ Example:
       needs to be handled by the formats library
 '''
 
-import utilities
-import formats
+from metageta import utilities,formats
 import re,os
 
 class Crawler:
@@ -52,7 +51,7 @@ class Crawler:
 
         format_regex  = formats.format_regex
         dir=utilities.uncpath(utilities.realpath(utilities.normcase(utilities.encode(dir))))
-        #Build a dict of matching files and regexes then sort according to the priority of the regex formats 
+        #Build a dict of matching files and regexes then sort according to the priority of the regex formats
         fileformats={}
         for f in utilities.rglob(dir,'|'.join(format_regex), True, re.IGNORECASE, recurse=recurse):
             #Use utf-8 encoding to fix Issue 20
@@ -108,7 +107,7 @@ class Crawler:
             #Exceptions here will keep recursing until we find a
             #file we can open or run out of files.
             return self.next()
-            
+
 
 
 

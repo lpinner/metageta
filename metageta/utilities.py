@@ -594,7 +594,7 @@ class ExcelWriter:
             self.__addsheet__()
 
         cols=copy.deepcopy(self._cols) #make a copy to alter
-        try:
+        if data!=dict(data):
             fields,values = zip(*data)
             for i,field in enumerate(fields):
                 value=values[i]
@@ -605,7 +605,7 @@ class ExcelWriter:
                     self._ws.write(self._rows+1, col, value)
                     dirty=True
 
-        except:
+        else:
             for field in data:
                 if field in self._fields and data[field] not in ['',None,False]:#0 is valid
                     if type(data[field]) is str:#Issue 24 - http://code.google.com/p/metageta/issues/detail?id=24

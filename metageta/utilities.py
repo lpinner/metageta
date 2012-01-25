@@ -47,6 +47,9 @@ encoding='utf-8'
 
 iswin=os.name=='nt'#sys.platform[0:3].lower()=='win'#Are we on Windows
 
+compressedfiles=('.zip','.tar','.tar.gz','.tgz','.tbz', '.tbz2','.tb2','.tar.bz2')
+
+
 #========================================================================================================
 #{String Utilities
 #========================================================================================================
@@ -72,11 +75,39 @@ def archivelist(f):
     '''
     if tarfile.is_tarfile(f):
         #return tarfile.open(f,'r').getnames() #includes subfolders
-        return normpath([ti.name for ti in tarfile.open(f,'r').getmembers() if ti.isfile()])
+        lst=[ti.name for ti in tarfile.open(f,'r').getmembers() if ti.isfile()]
+        return [os.sep.join(['/vsitar',normcase(f),l]) for l in lst]
 
     elif zipfile.is_zipfile(f):
         #return zipfile.ZipFile(f,'r').namelist() #includes subfolders
-        return normpath([zi.filename for zi in zipfile.ZipFile(f,'r').infolist() if zi.file_size> 0])
+        lst=[zi.filename for zi in zipfile.ZipFile(f,'r').infolist() if zi.file_size> 0]
+        return [os.sep.join(['/vsizip',normcase(f),l]) for l in lst]
+    return lst
+
+def archivefileinfo(f,n):
+    ''' List files in a tar (inc gzip or bz2 compressed) or zip archive.
+        @type     f:  C{str}
+        @param    f:  archive filepath
+        @type     n:  C{str}
+        @param    n:  archive member name
+        @rtype:   C{dict}
+        @return:  archive file member info
+    '''
+    archiveinfo={}
+
+    if tarfile.is_tarfile(f):
+        afi = tarfile.open(f,'r').getmember(n)
+        archiveinfo['size']=afi.size
+        archiveinfo['datemodified']=time.strftime(datetimeformat, time.localtime(afi.mtime))
+        archiveinfo['ownerid']=afi.uid
+        archiveinfo['ownername']=afi.uname
+
+    elif zipfile.is_zipfile(f):
+        afi = zipfile.ZipFile(f,'r').getinfo(n)
+        archiveinfo['size']=afi.file_size
+        archiveinfo['datemodified']=time.strftime(datetimeformat, list(afi.date_time)+[0,0,0])
+
+    return archiveinfo
 
 def runcmd(cmd, format='s'):
     ''' Run a command
@@ -262,26 +293,51 @@ def FileInfo(filepath):
         'size':0,
         'datemodified':'',
         'datecreated': '',
-        'dateaccessed':''
+        'dateaccessed':'',
+        'filepath':'',
+        'guid':''
     }
-    if not os.path.exists(filepath): raise IOError,'File not found'
-    try:
-        filepath=normcase(realpath(filepath))
-        filestat = os.stat(filepath)
+    if not os.path.exists(filepath) and filepath[:4].lower()!= '/vsi':
+        raise IOError('File not found')
 
-        fileinfo['filename']=os.path.basename(filepath)
-        fileinfo['filepath']=filepath
-        fileinfo['size']=filestat.st_size
-        fileinfo['datemodified']=time.strftime(datetimeformat, time.localtime(filestat.st_mtime))
-        fileinfo['datecreated']=time.strftime(datetimeformat, time.localtime(filestat.st_ctime))
-        fileinfo['dateaccessed']=time.strftime(datetimeformat, time.localtime(filestat.st_atime))
-        fileinfo['guid']=uuid(filepath)
-        if iswin:
-            ownerid,ownername=_WinFileOwner(filepath)
+    try:
+        if filepath[:4].lower() == '/vsi':
+            f=filepath.replace('/vsitar/','').replace('/vsitar\\','')
+            f=f.replace('/vsizip/','').replace('/vsizip\\','')
+            for ext in compressedfiles:
+                if ext in f:
+                    f=f.split(ext)
+                    archive=f[0]+ext
+                    filename=ext.join(f[1:]).strip('\\/')
+                    fileinfo.update(archivefileinfo(archive,filename))
+                    break
+
+            filestat = os.stat(archive)
+            fileinfo['filename']=os.path.basename(filename)
+            fileinfo['filepath']=filepath
+            filepath=archive
+            fileinfo['datecreated']=time.strftime(datetimeformat, time.localtime(filestat.st_ctime))
+            fileinfo['dateaccessed']=time.strftime(datetimeformat, time.localtime(filestat.st_atime))
         else:
-            ownerid,ownername=_NixFileOwner(filestat.st_uid)
-        fileinfo['ownerid']=ownerid
-        fileinfo['ownername']=ownername
+            filepath=normcase(realpath(filepath))
+            filestat = os.stat(filepath)
+
+            fileinfo['filename']=os.path.basename(filepath)
+            fileinfo['filepath']=filepath
+            fileinfo['size']=filestat.st_size
+            fileinfo['datemodified']=time.strftime(datetimeformat, time.localtime(filestat.st_mtime))
+            fileinfo['datecreated']=time.strftime(datetimeformat, time.localtime(filestat.st_ctime))
+            fileinfo['dateaccessed']=time.strftime(datetimeformat, time.localtime(filestat.st_atime))
+            fileinfo['guid']=uuid(filepath)
+
+        fileinfo['guid']=uuid(filepath)
+        if not fileinfo.get('ownerid'):
+            if iswin:
+                ownerid,ownername=_WinFileOwner(filepath)
+            else:
+                ownerid,ownername=_NixFileOwner(filestat.st_uid)
+            fileinfo['ownerid']=ownerid
+            fileinfo['ownername']=ownername
 
     finally:return fileinfo
 
@@ -423,7 +479,7 @@ class rglob:
     '''A recursive/regex enhanced glob
        adapted from os-path-walk-example-3.py - http://effbot.org/librarybook/os-path.htm
     '''
-    def __init__(self, directory, pattern="*", regex=False, regex_flags=0, recurse=True, listcompressed=False):
+    def __init__(self, directory, pattern="*", regex=False, regex_flags=0, recurse=True, archive=False):
         ''' @type    directory: C{str}
             @param   directory: Path to xls file
             @type    pattern: C{type}
@@ -436,14 +492,14 @@ class rglob:
                                   See U{http://docs.python.org/library/re.html}
             @type    recurse: C{boolean}
             @param   recurse: Recurse into the directory?
-            @type    listcompressed: C{boolean}
-            @param   listcompressed: List files in compressed archives? Archive be supported by the zipfile and tarfile modules. Note: this slows things down considerably....
+            @type    archive: C{boolean}
+            @param   archive: List files in compressed archives? Archive be supported by the zipfile and tarfile modules. Note: this slows things down considerably....
         '''
         self.stack = [directory]
         self.pattern = pattern
         self.regex = regex
         self.recurse = recurse
-        self.listcompressed = listcompressed
+        self.archive = archive
         self.regex_flags = regex_flags
         self.files = []
         self.index = 0
@@ -455,12 +511,12 @@ class rglob:
                 self.index = self.index + 1
             except IndexError:
                 # pop next directory from stack
-                self.directory = self.stack.pop()
+                self.directory = normcase(self.stack.pop())
                 try:
-                    self.files = os.listdir(self.directory)
+                    self.files = normcase(os.listdir(self.directory))
                     self.index = 0
                 except:
-                    if self.listcompressed:
+                    if self.archive:
                         try:
                             self.files = archivelist(self.directory)
                             self.index = 0
@@ -468,19 +524,21 @@ class rglob:
             else:
                 # got a filename
                 fullname = os.path.join(self.directory, file)
+
                 if os.path.isdir(fullname) and not os.path.islink(fullname) and self.recurse:
                     self.stack.append(fullname)
-                elif self.listcompressed and os.path.exists(fullname):
+                elif self.archive and os.path.exists(fullname):
                     if tarfile.is_tarfile(fullname) or zipfile.is_zipfile(fullname):
                         self.stack.append(fullname)
+
                 if self.regex:
                     import re
                     if re.search(self.pattern,file,self.regex_flags):
-                        return normcase(fullname)
+                        return fullname
                 else:
                     import fnmatch
                     if fnmatch.fnmatch(file, self.pattern):
-                        return normcase(fullname)
+                        return fullname
 
 
 #========================================================================================================

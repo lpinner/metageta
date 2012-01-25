@@ -17,6 +17,7 @@ for %%a in (%*) do (
 )
 if %nogui%==1 (
     call python.exe "%~DP0runcrawler.py" %*
+    pause
 ) else (
     start "Crawler" /b pythonw.exe "%~DP0runcrawler.py" %*
 )

@@ -33,6 +33,7 @@ except:
     from xlutils import xlwt
 from xlutils import copy as xlcp
 import sys, os.path, os, re, struct, glob, shutil,traceback,time,tempfile,copy
+import tarfile,zipfile
 import uuid as _uuid
 
 #========================================================================================================
@@ -62,6 +63,21 @@ def encode(string):
 #========================================================================================================
 #{Filesystem Utilities
 #========================================================================================================
+def archivelist(f):
+    ''' List files in a tar (inc gzip or bz2 compressed) or zip archive.
+        @type     f:  C{str}
+        @param    f:  archive filepath
+        @rtype:   C{list}
+        @return:  archive filelisting
+    '''
+    if tarfile.is_tarfile(f):
+        #return tarfile.open(f,'r').getnames() #includes subfolders
+        return normpath([ti.name for ti in tarfile.open(f,'r').getmembers() if ti.isfile()])
+
+    elif zipfile.is_zipfile(f):
+        #return zipfile.ZipFile(f,'r').namelist() #includes subfolders
+        return normpath([zi.filename for zi in zipfile.ZipFile(f,'r').infolist() if zi.file_size> 0])
+
 def runcmd(cmd, format='s'):
     ''' Run a command
         @type     cmd:  C{str}
@@ -260,7 +276,6 @@ def FileInfo(filepath):
         fileinfo['datecreated']=time.strftime(datetimeformat, time.localtime(filestat.st_ctime))
         fileinfo['dateaccessed']=time.strftime(datetimeformat, time.localtime(filestat.st_atime))
         fileinfo['guid']=uuid(filepath)
-        #if sys.platform[0:3].lower()=='win':
         if iswin:
             ownerid,ownername=_WinFileOwner(filepath)
         else:
@@ -408,7 +423,7 @@ class rglob:
     '''A recursive/regex enhanced glob
        adapted from os-path-walk-example-3.py - http://effbot.org/librarybook/os-path.htm
     '''
-    def __init__(self, directory, pattern="*", regex=False, regex_flags=0, recurse=True):
+    def __init__(self, directory, pattern="*", regex=False, regex_flags=0, recurse=True, listcompressed=False):
         ''' @type    directory: C{str}
             @param   directory: Path to xls file
             @type    pattern: C{type}
@@ -421,11 +436,14 @@ class rglob:
                                   See U{http://docs.python.org/library/re.html}
             @type    recurse: C{boolean}
             @param   recurse: Recurse into the directory?
+            @type    listcompressed: C{boolean}
+            @param   listcompressed: List files in compressed archives? Archive be supported by the zipfile and tarfile modules. Note: this slows things down considerably....
         '''
         self.stack = [directory]
         self.pattern = pattern
         self.regex = regex
         self.recurse = recurse
+        self.listcompressed = listcompressed
         self.regex_flags = regex_flags
         self.files = []
         self.index = 0
@@ -437,17 +455,24 @@ class rglob:
                 self.index = self.index + 1
             except IndexError:
                 # pop next directory from stack
-
                 self.directory = self.stack.pop()
                 try:
                     self.files = os.listdir(self.directory)
                     self.index = 0
-                except:pass
+                except:
+                    if self.listcompressed:
+                        try:
+                            self.files = archivelist(self.directory)
+                            self.index = 0
+                        except:pass
             else:
                 # got a filename
                 fullname = os.path.join(self.directory, file)
                 if os.path.isdir(fullname) and not os.path.islink(fullname) and self.recurse:
                     self.stack.append(fullname)
+                elif self.listcompressed and os.path.exists(fullname):
+                    if tarfile.is_tarfile(fullname) or zipfile.is_zipfile(fullname):
+                        self.stack.append(fullname)
                 if self.regex:
                     import re
                     if re.search(self.pattern,file,self.regex_flags):

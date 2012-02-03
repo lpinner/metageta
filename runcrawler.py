@@ -326,7 +326,7 @@ if __name__ == '__main__':
 
     opt=parser.add_option("-a", "--archive", action="store_true", dest="archive",default=False,
                       help="Search compressed archives (tar/zip)?")
-    archivearg=getargs.BoolArg(opt,tooltip='Do you want to search compressed archives (tar/zip)??')
+    archivearg=getargs.BoolArg(opt,tooltip='Do you want to search compressed archives (tar/zip)?\nNote that this will slow the crawler down considerably.')
 
     opt=parser.add_option('-m', dest="med", metavar="media",help='CD/DVD ID')
     medarg=getargs.StringArg(opt,enabled=False,required=False)

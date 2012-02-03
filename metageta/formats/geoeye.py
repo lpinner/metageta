@@ -87,8 +87,10 @@ class Dataset(__default__.Dataset):
         #    |       \---po_123456_0020000   <--- Scene ("component") directory
         #component=os.path.basename(os.path.dirname(f)).split('_') #i.e. ['po','123456','0020000']
         for fl in self.filelist:
-            fl=os.path.basename(fl)
-            if fnmatch.fnmatch(fl,'po_[0-9][0-9][0-9][0-9][0-9][0-9]_*_[0-9][0-9][0-9][0-9][0-9][0-9][0-9]*.*'):
+            while os.path.basename(fl)!=os.path.splitext(os.path.basename(fl))[0]:
+                fl=os.path.splitext(os.path.basename(fl))[0]
+
+            if fnmatch.fnmatch(fl,'po_[0-9][0-9][0-9][0-9][0-9][0-9]_*_[0-9][0-9][0-9][0-9][0-9][0-9][0-9]*'):
                 component=fl.split('_') #i.e. ['po','123456',pan,'0020000']
                 break
         component_id=component[3]         #i.e. 0020000

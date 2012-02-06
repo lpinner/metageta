@@ -90,7 +90,8 @@
         <span class="summary-sig-arg">pattern</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">*</code><code class="variable-quote">'</code></span>,
         <span class="summary-sig-arg">regex</span>=<span class="summary-sig-default">False</span>,
         <span class="summary-sig-arg">regex_flags</span>=<span class="summary-sig-default">0</span>,
-        <span class="summary-sig-arg">recurse</span>=<span class="summary-sig-default">True</span>)</span></td>
+        <span class="summary-sig-arg">recurse</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">archive</span>=<span class="summary-sig-default">False</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="metageta.utilities-pysrc.html#rglob.__init__">source&nbsp;code</a></span>
             
@@ -148,7 +149,8 @@
         <span class="sig-arg">pattern</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">*</code><code class="variable-quote">'</code></span>,
         <span class="sig-arg">regex</span>=<span class="sig-default">False</span>,
         <span class="sig-arg">regex_flags</span>=<span class="sig-default">0</span>,
-        <span class="sig-arg">recurse</span>=<span class="sig-default">True</span>)</span>
+        <span class="sig-arg">recurse</span>=<span class="sig-default">True</span>,
+        <span class="sig-arg">archive</span>=<span class="sig-default">False</span>)</span>
     <br /><em class="fname">(Constructor)</em>
   </h3>
   </td><td align="right" valign="top"
@@ -169,6 +171,9 @@
           href="http://docs.python.org/library/re.html" 
           target="_top">http://docs.python.org/library/re.html</a></li>
         <li><strong class="pname"><code>recurse</code></strong> (<code>boolean</code>) - Recurse into the directory?</li>
+        <li><strong class="pname"><code>archive</code></strong> (<code>boolean</code>) - List files in compressed archives? Archive be supported by the 
+          zipfile and tarfile modules. Note: this slows things down 
+          considerably....</li>
     </ul></dd>
   </dl>
 </td></tr></table>

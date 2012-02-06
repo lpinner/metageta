@@ -152,6 +152,41 @@
     >&nbsp;&nbsp;&nbsp;&nbsp;Filesystem Utilities</th></tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type"><code>list</code></span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="metageta.utilities-module.html#archivelist" class="summary-sig-name">archivelist</a>(<span class="summary-sig-arg">f</span>)</span><br />
+      List files in a tar (inc gzip or bz2 compressed) or zip archive.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="metageta.utilities-pysrc.html#archivelist">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type"><code>dict</code></span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="metageta.utilities-module.html#archivefileinfo" class="summary-sig-name">archivefileinfo</a>(<span class="summary-sig-arg">f</span>,
+        <span class="summary-sig-arg">n</span>)</span><br />
+      List files in a tar (inc gzip or bz2 compressed) or zip archive.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="metageta.utilities-pysrc.html#archivefileinfo">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type"><code>tuple</code></span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -563,6 +598,20 @@
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
+        <a href="metageta.utilities-module.html#compressedfiles" class="summary-name">compressedfiles</a> = <code title="('.zip',
+ '.tar',
+ '.tar.gz',
+ '.tgz',
+ '.tbz',
+ '.tbz2',
+ '.tb2',
+ '.tar.bz2')"><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">.zip</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">.tar</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">.tar.gz</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">.tgz</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">.tbz</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
         <a name="__package__"></a><span class="summary-name">__package__</span> = <code title="'metageta'"><code class="variable-quote">'</code><code class="variable-string">metageta</code><code class="variable-quote">'</code></code>
     </td>
   </tr>
@@ -607,6 +656,58 @@
     </ul></dd>
     <dt>Returns: <code>str</code></dt>
         <dd>Encoded string</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="archivelist"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">archivelist</span>(<span class="sig-arg">f</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="metageta.utilities-pysrc.html#archivelist">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>List files in a tar (inc gzip or bz2 compressed) or zip archive.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>f</code></strong> (<code>str</code>) - archive filepath</li>
+    </ul></dd>
+    <dt>Returns: <code>list</code></dt>
+        <dd>archive filelisting</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="archivefileinfo"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">archivefileinfo</span>(<span class="sig-arg">f</span>,
+        <span class="sig-arg">n</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="metageta.utilities-pysrc.html#archivefileinfo">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>List files in a tar (inc gzip or bz2 compressed) or zip archive.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>f</code></strong> (<code>str</code>) - archive filepath</li>
+        <li><strong class="pname"><code>n</code></strong> (<code>str</code>) - archive member name</li>
+    </ul></dd>
+    <dt>Returns: <code>dict</code></dt>
+        <dd>archive file member info</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -999,6 +1100,50 @@
     </ul></dd>
     <dt>Returns: <code>str</code></dt>
         <dd>Volume label</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== VARIABLES DETAILS ==================== -->
+<a name="section-VariablesDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Variables Details</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-VariablesDetails"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+</table>
+<a name="compressedfiles"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">compressedfiles</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">.zip</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">.tar</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">.tar.gz</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">.tgz</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">.tbz</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">.tbz2</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">.tb2</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">.tar.bz2</code><code class="variable-quote">'</code><code class="variable-group">)</code>
+</pre></td></tr></table>
+</dd>
   </dl>
 </td></tr></table>
 </div>

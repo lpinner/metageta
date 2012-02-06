@@ -35,6 +35,7 @@ Usage::
 @sysarg: C{-u, --update}    : Update previous crawl results.
 @sysarg: C{-o, --overviews} : Generate overview (quicklook/thumbnail) images")
 @sysarg: C{-r, --recurse}   : Search directory recursively?
+@sysarg: C{-a, --archive}   : Search compressed archives?
 @sysarg: C{--nogui}         : Don't show the GUI progress dialog")
 @sysarg: C{--debug}         : Turn debug output on
 

@@ -487,8 +487,8 @@ def _stretch_COLOURTABLELUT(vrtcols,vrtrows,ds,bands,clr):
     nodata=rb.GetNoDataValue()
     lut=ColourLUT(clr,rb)
     for iclr,clr in enumerate(['Red','Green','Blue']):
-        #vrt.append('  <VRTRasterBand dataType="Byte" band="%s">' % str(iclr+1))
-        if nodata is not None:vrt.append('    <NoDataValue>%s</NoDataValue>'%nodata)
+        vrt.append('  <VRTRasterBand dataType="Byte" band="%s">' % str(iclr+1))
+        #if nodata is not None:vrt.append('    <NoDataValue>%s</NoDataValue>'%nodata)
         vrt.append('    <ColorInterp>%s</ColorInterp>' % clr)
         vrt.append('    <ComplexSource>')
         vrt.append('      <SourceFilename relativeToVRT="0">%s</SourceFilename>' % ds.GetDescription())

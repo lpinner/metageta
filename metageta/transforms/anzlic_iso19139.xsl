@@ -907,6 +907,7 @@
               </gmd:geographicElement>
             </gmd:EX_Extent>
           </gmd:extent>
+          <!--
           <gmd:extent>
             <gmd:EX_Extent>
               <gmd:geographicElement>
@@ -932,7 +933,7 @@
                           <gmd:date>
                             <gmd:CI_Date>
                               <gmd:date>
-                                <gco:Date>2003-12-10</gco:Date>
+                                <gco:Date>2011-10-25</gco:Date>
                               </gmd:date>
                               <gmd:dateType>
                                 <gmd:CI_DateTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode"
@@ -966,6 +967,7 @@
               </gmd:geographicElement>
             </gmd:EX_Extent>
           </gmd:extent>
+          -->
           <xsl:for-each select="*[starts-with(name(),'GeographicDescription')]">
             <xsl:if test="normalize-space(.)">
               <gmd:extent>
@@ -974,6 +976,35 @@
                     <gmd:EX_GeographicDescription>
                       <gmd:geographicIdentifier>
                         <gmd:MD_Identifier>
+                          <gmd:authority>
+                            <gmd:CI_Citation>
+                              <gmd:title>
+                                <gco:CharacterString>ANZLIC Geographic Extent Name Register</gco:CharacterString>
+                              </gmd:title>
+                              <gmd:date>
+                                <gmd:CI_Date>
+                                  <gmd:date>
+                                    <gco:Date>2011-10-25</gco:Date>
+                                  </gmd:date>
+                                  <gmd:dateType>
+                                    <gmd:CI_DateTypeCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_DateTypeCode"
+                                                         codeListValue="revision"/>
+                                  </gmd:dateType>
+                                </gmd:CI_Date>
+                              </gmd:date>
+                              <gmd:identifier>
+                                <gmd:MD_Identifier>
+                                   <gmd:code>
+                                      <gco:CharacterString>http://www.ga.gov.au/anzmeta/gen/anzlic-algens.xml</gco:CharacterString>
+                                   </gmd:code>
+                                </gmd:MD_Identifier>
+                              </gmd:identifier>
+                              <gmd:presentationForm>
+                                <gmd:CI_PresentationFormCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#CI_PresentationFormCode"
+                                                             codeListValue="documentDigital"/>
+                              </gmd:presentationForm>
+                            </gmd:CI_Citation>
+                          </gmd:authority>
                           <gmd:code>
                             <gco:CharacterString><xsl:value-of select="."/></gco:CharacterString>
                           </gmd:code>

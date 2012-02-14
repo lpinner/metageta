@@ -23,7 +23,7 @@
 Metadata driver for Digital Globe imagery
 
 B{Format specification}:
-    - U{http://www.digitalglobe.com/digitalglobe2/file.php/646/QuickBird_Imagery_Products-Product_Guide.pdf}
+    - U{http://www.digitalglobe.com/downloads/Imagery_Support_Data_Documentation.pdf}
 '''
 
 format_regex=[r'[0-9][0-9][A-Z]{3,3}.*\.imd$',

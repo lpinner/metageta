@@ -151,6 +151,7 @@ metageta.spatialreferences.SRS_UNITS_CONV	metageta.spatialreferences-module.html
 metageta.spatialreferences.IdentifyAusEPSG	metageta.spatialreferences-module.html#IdentifyAusEPSG
 metageta.spatialreferences.AUS_PROJCS	metageta.spatialreferences-module.html#AUS_PROJCS
 metageta.transforms	metageta.transforms-module.html
+metageta.transforms.operations	metageta.transforms-module.html#operations
 metageta.transforms._file	metageta.transforms-module.html#_file
 metageta.transforms.Transform	metageta.transforms-module.html#Transform
 metageta.transforms.transforms	metageta.transforms-module.html#transforms
@@ -164,6 +165,7 @@ metageta.transforms.config	metageta.transforms-module.html#config
 metageta.transforms.DictToXML	metageta.transforms-module.html#DictToXML
 metageta.transforms.site	metageta.transforms-module.html#site
 metageta.transforms.categories	metageta.transforms-module.html#categories
+metageta.transforms._op	metageta.transforms-module.html#_op
 metageta.transforms._key	metageta.transforms-module.html#_key
 metageta.transforms.xslfiles	metageta.transforms-module.html#xslfiles
 metageta.transforms._name	metageta.transforms-module.html#_name

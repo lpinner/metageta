@@ -127,14 +127,14 @@
    __dataset__.Dataset()
        | #Base Dataset class
        |
-       |----.metadata={} #the metadata dictionary. 
-       |                 #the metadata dictionary. 
+       |----.metadata={} #the metadata dictionary.
+       |                 #the metadata dictionary.
        |                 #You can only populate fields defined in __fields__.py
        |                 #keys are immutable (values can be changed, but keys can't be
        |                 #added or deleted)
-       |    
+       |
        |----.filelist=[] #the list of related files
-       |    
+       |
        |----.fileinfo={      #file information
        |         'size':..., #doesn't included size of related files... TODO?
        |         'filename':...,
@@ -147,8 +147,8 @@
        |         'ownerid':...,
        |         'ownername':...
        |    }
-       |    
-       |----.extent=[[x,y],[x,y],[x,y],[x,y]] 
+       |
+       |----.extent=[[x,y],[x,y],[x,y],[x,y]]
        |     #Extent of the four corners in geographic (lon,lat) coordinates.
        |     #May be rotated (eg. for path oriented images). Coordinate order
        |     #is irrelevant, as long as it doesn't create a self-intersecting
@@ -166,7 +166,7 @@
        |----__default__.Dataset(__dataset__.Dataset)
        |   | #Default Dataset class
        |   |
-       |   |----__getmetadata__(file)              
+       |   |----__getmetadata__(file)
        |   |     #Populate appropriate fields in the metadata dictionary
        |   |     #Populate extent list
        |   |
@@ -188,16 +188,16 @@
        |           |
        |           |----__default__.Dataset.__getmetadata__(file)
        |                #Call superclass init explicitly
-       |    
+       |
        |----anotherformat.Dataset(__dataset__.Dataset)
            | #Custom format inherits from base class - __dataset__.Dataset
            |
            | #You need to populate basic metadata yourself.
            |
-           |__init__(file)               
+           |__init__(file)
            |  #Populate/update filelist, fileinfo if required
            |
-           |__getmetadata__(file)                 
+           |__getmetadata__(file)
            |  #Populate appropriate fields in the metadata dictionary
            |  #Populate extent list
 </pre>
@@ -326,7 +326,7 @@
         <a href="metageta.formats-module.html#__formats__" class="summary-name">__formats__</a> = <code title="{'ali_hyperion': &lt;module 'metageta.formats.ali_hyperion' from 'c:\meta\
 geta_development\metageta-trunk\metageta\formats\ali_hyperion.pyc'&gt;,
  'alos': &lt;module 'metageta.formats.alos' from 'c:\metageta_development\
-\metageta-trunk\metageta\formats\alos.pyc'&gt;,
+\metageta-trunk\metageta\formats\alos.py'&gt;,
  'aster': &lt;module 'metageta.formats.aster' from 'c:\metageta_developme\
 nt\metageta-trunk\metageta\formats\aster.pyc'&gt;,
  'ccrs': &lt;module 'metageta.formats.ccrs' from 'c:\metageta_development\
@@ -483,7 +483,7 @@ nt\metageta-trunk\metageta\formats\aster.pyc'&gt;,
 <code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">ali_hyperion</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;module 'metageta.formats.ali_hyperion' from 'c:\meta<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
 geta_development\metageta-trunk\metageta\formats\ali_hyperion.pyc'&gt;<code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">alos</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;module 'metageta.formats.alos' from 'c:\metageta_development<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
-\metageta-trunk\metageta\formats\alos.pyc'&gt;<code class="variable-op">,</code>
+\metageta-trunk\metageta\formats\alos.py'&gt;<code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">aster</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;module 'metageta.formats.aster' from 'c:\metageta_developme<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
 nt\metageta-trunk\metageta\formats\aster.pyc'&gt;<code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">ccrs</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;module 'metageta.formats.ccrs' from 'c:\metageta_development<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>

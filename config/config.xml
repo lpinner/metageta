@@ -36,6 +36,12 @@
       <category name="photo"/>
       <category name="proceedings"/>
     </categories>
+    <operations default="view">
+      <operation name="view"/>
+      <operation name="editing"/>
+      <operation name="dynamic"/>
+      <operation name="featured"/>
+    </operations>
   </geonetwork>
 </config>
 

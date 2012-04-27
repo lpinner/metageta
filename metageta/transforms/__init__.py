@@ -164,6 +164,11 @@ Additional metadata elements
     |                                  |description|text\n           |
     |                                  |function|text                |
     |----------------------------------|-----------------------------|------------------------
+    |operations                        |GeoNetwork operation/s       |view|edit|featured
+    |                                  |"|" delimited string         |
+    |                                  |Only shown in MEF, not ISO   |
+    |                                  |metadata                     |
+    |----------------------------------|-----------------------------|------------------------
     |originator                        |As per custodian             |
     |----------------------------------|-----------------------------|------------------------
     |publisher                         |As per custodian             |
@@ -220,6 +225,12 @@ categories={'default':str(config.xpath('string(/config/geonetwork/categories/@de
              'categories':[str(_cat.value) for _cat in config.xpath('/config/geonetwork/categories/category/@name')]
              }
 if not categories['default'] and not categories['categories']:categories={'default': 'datasets', 'categories': ['datasets']}
+
+operations={'default':str(config.xpath('string(/config/geonetwork/operations/@default)')),
+             'operations':[str(_op.value) for _op in config.xpath('/config/geonetwork/operations/operation/@name')]
+             }
+if not operations['default'] and not operations['operations']:operations={'default': 'view', 'operations': ['view','editing','dynamic','featured']}
+
 site={}
 for _key in ['name','organization','siteId']:
     s=str(config.xpath('string(/config/geonetwork/site/%s)'%_key))
@@ -287,7 +298,7 @@ def ListToXML(lst,root):
     _Dom.PrettyPrint(doc,stream=buf)
     return buf.getvalue()
 
-def CreateMEF(outdir,xmlfile,uid,overviews=[],cat=categories['default']):
+def CreateMEF(outdir,xmlfile,uid,overviews=[],cat=categories['default'],ops=operations['default']):
     '''Generate Geonetwork "Metadata Exchange Format" from an ISO19139 XML record
 
     @see:
@@ -320,7 +331,7 @@ def CreateMEF(outdir,xmlfile,uid,overviews=[],cat=categories['default']):
             _os.mkdir('public')
             for f in overviews:
                 _sh.copy(f,_path.join('public',_path.basename(f)))
-        _CreateInfo(uid,overviews,cat)
+        _CreateInfo(uid,overviews,cat,ops)
         _sh.copy(xmlfile,'metadata.xml')
         for f in _utilities.rglob('.'):
             if not _path.isdir(f): mef.write(f)
@@ -336,7 +347,7 @@ def CreateMEF(outdir,xmlfile,uid,overviews=[],cat=categories['default']):
 #++++++++++++++++++++++++
 #Private methods
 #++++++++++++++++++++++++
-def _CreateInfo(uid,overviews=[],cat=categories['default']):
+def _CreateInfo(uid,overviews=[],cat=categories['default'],ops=operations['default']):
     '''Create MEF info.xml file'''
     now = _time.strftime('%Y-%m-%dT%H:%M:%S',_time.localtime())
     if overviews:format='partial'
@@ -353,8 +364,6 @@ def _CreateInfo(uid,overviews=[],cat=categories['default']):
              ('localId',''),('format',format),
              ('rating','0'),('popularity','2'),
              ('uuid',uid),('siteId',site['siteId']),('siteName',site['name'])]
-
-    privileges = ['view','editing','dynamic','featured']
 
     doc=_Dom.implementation.createRootNode('file:///info.xml')
     root = doc.createElementNS(None, 'info')
@@ -379,10 +388,12 @@ def _CreateInfo(uid,overviews=[],cat=categories['default']):
         parent.appendChild(child)
     root.appendChild(parent)
 
+    #Operations
+    #privileges = ['view','editing','dynamic','featured']
     parent=doc.createElementNS(None, 'privileges')
     child=doc.createElementNS(None, 'group')
     child.setAttributeNS(None, 'name','all')
-    for op in privileges:
+    for op in ops.split('|'):
         sub=doc.createElementNS(None, 'operation')
         sub.setAttributeNS(None, 'name',op)
         child.appendChild(sub)

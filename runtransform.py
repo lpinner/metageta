@@ -53,7 +53,7 @@ from metageta import utilities
 from metageta import transforms
 from metageta import progresslogger
 
-def main(xls,xsl,dir,logger, mef=False,cat=''):
+def main(xls,xsl,dir,logger, mef=False,cat='',ops=''):
     '''
     Run the Metadata Transform
     @type  xls: C{str}
@@ -68,6 +68,8 @@ def main(xls,xsl,dir,logger, mef=False,cat=''):
     @param mef: Create Metadata Exchange Format (MEF) file
     @type  cat: C{str}
     @param cat: The GeoNetwork category/ies to apply to the records ('|' separated)
+    @type  ops: C{str}
+    @param ops: The GeoNetwork operations privileges to apply to the records ('|' separated)
 
     @todo - start using the "-m" opt, currently not used at all.
           - add it to the GetArgs GUI
@@ -86,6 +88,7 @@ def main(xls,xsl,dir,logger, mef=False,cat=''):
     for rec in xlrdr:
         try:
             tmpcat=cat #dummy var as we may overwrite it
+            tmpops=ops
             overviews=[]
             deleted=False
             for i,val in enumerate(rec): #We use a list instead of a dict as there can be multiple fields with the same header/name
@@ -96,6 +99,9 @@ def main(xls,xsl,dir,logger, mef=False,cat=''):
                     overviews.append(os.path.join(qlkdir,val[1]))
                 elif val[0] == 'category' and val[1]:
                     tmpcat=val[1]
+                    del rec[i]
+                elif val[0] == 'operations' and val[1]:
+                    tmpops=val[1]
                     del rec[i]
             xmlfile='%s/%s.%s.xml'%(dir,filename,guid)
             meffile='%s/%s.%s.mef'%(dir,filename,guid)
@@ -108,7 +114,7 @@ def main(xls,xsl,dir,logger, mef=False,cat=''):
             result = transforms.Transform(strxml, xsl, xmlfile)
             #if overviews:transforms.CreateMEF(dir,xmlfile,guid,overviews)
             #Create MEF even if there are no overviews
-            if mef:transforms.CreateMEF(dir,xmlfile,guid,overviews,tmpcat)
+            if mef:transforms.CreateMEF(dir,xmlfile,guid,overviews,tmpcat,tmpops)
             logger.info('Transformed metadata for ' +filename)
         except Exception,err:
             logger.error('%s\n%s' % (filename, utilities.ExceptionInfo()))
@@ -184,7 +190,14 @@ if __name__ == '__main__':
     catarg=getargs.ComboBoxArg(opt,enabled=False,multiselect=True,icon=icons.xsl_img)
     catarg.options=transforms.categories['categories']
     catarg.tooltip='Dataset category for Metadata Exchange Format (MEF) file. Default is "%s". If a "category" column exists in the spreadsheet, values from that column will override any selection here.'%transforms.categories['default']
-    mefarg.callback=getargs.Command(mefcallback,mefarg,catarg)
+
+    opt=parser.add_option("-o", dest="ops", metavar="ops",default=transforms.operations['default'],
+                     help="Allowed operations for all users")
+    opsarg=getargs.ComboBoxArg(opt,enabled=False,multiselect=True,icon=icons.xsl_img)
+    opsarg.options=transforms.operations['operations']
+    opsarg.tooltip='Allowed operations for all users for Metadata Exchange Format (MEF) file. Default is "%s". If a "operations" column exists in the spreadsheet, values from that column will override any selection here.'%transforms.operations['default']
+
+    mefarg.callback=getargs.Command(mefcallback,mefarg,catarg,opsarg)
 
     opt=parser.add_option("--keep-alive", action="store_true", dest="keepalive", default=False, help="Keep this dialog box open")
     kaarg=getargs.BoolArg(opt)
@@ -207,7 +220,7 @@ if __name__ == '__main__':
         #Pop up the GUI
         keepalive=True
         while keepalive:
-            args=getargs.GetArgs(xlsarg,dirarg,xslarg,mefarg,catarg,kaarg,title=APP,icon=ICON)
+            args=getargs.GetArgs(xlsarg,dirarg,xslarg,mefarg,catarg,opsarg,kaarg,title=APP,icon=ICON)
             if args:#GetArgs returns None if user cancels the GUI
                 if logger and logger.logging:
                     logger.resetProgress()
@@ -215,12 +228,12 @@ if __name__ == '__main__':
                     logger=getlogger(name=APP,nogui=optvals.nogui, debug=optvals.debug, icon=ICON)
                 keepalive=args.keepalive
                 forceexit=True
-                main(args.xls,args.xsl,args.dir,logger,args.mef,args.cat)
+                main(args.xls,args.xsl,args.dir,logger,args.mef,args.cat,args.ops)
                 forceexit=False
             else:keepalive=False
     else: #No need for the GUI
         logger=getlogger(name=APP,nogui=optvals.nogui, debug=optvals.debug, icon=ICON)
-        main(optvals.xls,optvals.xsl,optvals.dir,logger,optvals.mef,optvals.cat)
+        main(optvals.xls,optvals.xsl,optvals.dir,logger,optvals.mef,optvals.cat,optvals.ops)
 
     if logger:
         logger.shutdown()

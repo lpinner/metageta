@@ -39,7 +39,7 @@ B{Adding support for another format}:
     - Create a new .py file. Name the .py file whatever you want as long as the filename doesn't begin with an underscore "_"
     - Define one or more "regular expression" strings to match your formats filename
     - Create a "Dataset" class that inherits either from the base __dataset__.Dataset class or from the __default__.Dataset class (See class hierarchy below)
-    - The default Dataset class is useful if GDAL can read your format and you just need to populate some extra fields. 
+    - The default Dataset class is useful if GDAL can read your format and you just need to populate some extra fields.
     - Populate appropriate filelist & fileinfo in the __init__ method of your dataset class (if required), do not populate the metadata dict!
     - Populate appropriate metadata and extent variables in the __getmetadata__ method of your dataset class
     - Your format will be automatically loaded when the formats module is initialised.
@@ -52,14 +52,14 @@ B{Class hierarchy}::
     __dataset__.Dataset()
         | #Base Dataset class
         |
-        |----.metadata={} #the metadata dictionary. 
-        |                 #the metadata dictionary. 
+        |----.metadata={} #the metadata dictionary.
+        |                 #the metadata dictionary.
         |                 #You can only populate fields defined in __fields__.py
         |                 #keys are immutable (values can be changed, but keys can't be
         |                 #added or deleted)
-        |    
+        |
         |----.filelist=[] #the list of related files
-        |    
+        |
         |----.fileinfo={      #file information
         |         'size':..., #doesn't included size of related files... TODO?
         |         'filename':...,
@@ -72,8 +72,8 @@ B{Class hierarchy}::
         |         'ownerid':...,
         |         'ownername':...
         |    }
-        |    
-        |----.extent=[[x,y],[x,y],[x,y],[x,y]] 
+        |
+        |----.extent=[[x,y],[x,y],[x,y],[x,y]]
         |     #Extent of the four corners in geographic (lon,lat) coordinates.
         |     #May be rotated (eg. for path oriented images). Coordinate order
         |     #is irrelevant, as long as it doesn't create a self-intersecting
@@ -91,7 +91,7 @@ B{Class hierarchy}::
         |----__default__.Dataset(__dataset__.Dataset)
         |   | #Default Dataset class
         |   |
-        |   |----__getmetadata__(file)              
+        |   |----__getmetadata__(file)
         |   |     #Populate appropriate fields in the metadata dictionary
         |   |     #Populate extent list
         |   |
@@ -113,16 +113,16 @@ B{Class hierarchy}::
         |           |
         |           |----__default__.Dataset.__getmetadata__(file)
         |                #Call superclass init explicitly
-        |    
+        |
         |----anotherformat.Dataset(__dataset__.Dataset)
             | #Custom format inherits from base class - __dataset__.Dataset
             |
             | #You need to populate basic metadata yourself.
             |
-            |__init__(file)               
+            |__init__(file)
             |  #Populate/update filelist, fileinfo if required
             |
-            |__getmetadata__(file)                 
+            |__getmetadata__(file)
             |  #Populate appropriate fields in the metadata dictionary
             |  #Populate extent list
 
@@ -155,13 +155,14 @@ for _lib in _glob(_path.join(__path__[0],'[a-z]*.py')):
     try:
         #import custom format and add to the list of formats
         __formats__[_lib]=__import__('%s.%s'%(__name__,_lib), fromlist=[__name__])
-        
+
         #append module _format_regex & fields to lists
         format_regex.extend([r for r in __formats__[_lib].format_regex if not r in format_regex])
-    #except:pass 
+    #except:pass
     except:
+        _warn.showwarning=_warn._show_warning #Fix Ft overwrite
         _warn.warn('Unable to import %s\n%s' % (_lib, utilities.ExceptionInfo()))
- 
+
 #import generic formats (eg. GeoTiff, JP2, etc...)
 import __default__
 #append module _format_regex to list of format regexes
@@ -169,18 +170,18 @@ format_regex.extend([_r for _r in __default__.format_regex if not _r in format_r
 
 def Open(f):
     ''' Open an image with the appropriate driver.
-        
+
         @type  f: C{str}
         @param f: a filepath to the dataset to open.
 
         @rtype:   C{formats.Dataset}
         @return:  L{formats.Dataset<formats.__dataset__.Dataset>} object
-        
+
         @todo: perhaps log the entire error stack if a file couldn't be opened?
     '''
     errors=[] #error stack
     f=utilities.encode(f) #Issue 20
-    #f=utilities.normcase(utilities.uncpath(utilities.realpath(f))) 
+    #f=utilities.normcase(utilities.uncpath(utilities.realpath(f)))
 
     #Try custom formats
     for lib in __formats__:

@@ -1300,29 +1300,47 @@
                     </gmd:onLine>                            
                   </xsl:if>
                 </xsl:for-each>
-                <xsl:if test="normalize-space(mediaid)">
-                  <gmd:offLine>
-                    <gmd:MD_Medium>
-                      <gmd:name>
-                        <xsl:choose>
-                          <xsl:when test="normalize-space(mediatype)">
-                              <gmd:MD_MediumNameCode>
-                                <xsl:attribute name="codeList">http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_MediumNameCode</xsl:attribute>
-                                <xsl:attribute name="codeListValue"><xsl:value-of select="normalize-space(mediatype)"/></xsl:attribute>
-                              </gmd:MD_MediumNameCode>
-                          </xsl:when>
-                          <xsl:otherwise>
-                              <gmd:MD_MediumNameCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_MediumNameCode"
-                                                     codeListValue="dvd"/>
-                          </xsl:otherwise>
-                        </xsl:choose>
-                      </gmd:name>
-                      <gmd:mediumNote>
-                        <gco:CharacterString><xsl:value-of select="normalize-space(mediaid)"/></gco:CharacterString>
-                      </gmd:mediumNote>
-                    </gmd:MD_Medium>
-                  </gmd:offLine>
-                </xsl:if>
+                <xsl:choose>
+                  <xsl:when test="normalize-space(mediaid)">
+                    <gmd:offLine>
+                      <gmd:MD_Medium>
+                        <gmd:name>
+                          <xsl:choose>
+                            <xsl:when test="normalize-space(mediatype)">
+                                <gmd:MD_MediumNameCode>
+                                  <xsl:attribute name="codeList">http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_MediumNameCode</xsl:attribute>
+                                  <xsl:attribute name="codeListValue"><xsl:value-of select="normalize-space(mediatype)"/></xsl:attribute>
+                                </gmd:MD_MediumNameCode>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <gmd:MD_MediumNameCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_MediumNameCode"
+                                                       codeListValue="dvd"/>
+                            </xsl:otherwise>
+                          </xsl:choose>
+                        </gmd:name>
+                        <gmd:mediumNote>
+                          <gco:CharacterString><xsl:value-of select="normalize-space(mediaid)"/></gco:CharacterString>
+                        </gmd:mediumNote>
+                      </gmd:MD_Medium>
+                    </gmd:offLine>
+                  </xsl:when>
+                  <xsl:otherwise>
+                    <gmd:onLine>
+                      <gmd:CI_OnlineResource>
+                        <gmd:linkage>
+                          <gmd:URL><xsl:value-of select="normalize-space(filepath)"/></gmd:URL>
+                        </gmd:linkage>
+                        <gmd:protocol>
+                          <gco:CharacterString>WWW:LINK-1.0-http--download</gco:CharacterString>
+                        </gmd:protocol>
+                        <gmd:name>
+                          <gco:CharacterString><xsl:value-of select="normalize-space(filename)"/></gco:CharacterString>
+                        </gmd:name>
+                        <gmd:description>Link to file</gmd:description>
+                      </gmd:CI_OnlineResource>
+                    </gmd:onLine>                            
+                  </xsl:otherwise>
+                </xsl:choose>
             </gmd:MD_DigitalTransferOptions>
         </gmd:transferOptions>
       </gmd:MD_Distribution>

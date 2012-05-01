@@ -1325,20 +1325,17 @@
                     </gmd:offLine>
                   </xsl:when>
                   <xsl:otherwise>
-                    <gmd:onLine>
-                      <gmd:CI_OnlineResource>
-                        <gmd:linkage>
-                          <gmd:URL><xsl:value-of select="normalize-space(filepath)"/></gmd:URL>
-                        </gmd:linkage>
-                        <gmd:protocol>
-                          <gco:CharacterString>WWW:LINK-1.0-http--download</gco:CharacterString>
-                        </gmd:protocol>
+                    <gmd:offLine>
+                      <gmd:MD_Medium>
                         <gmd:name>
-                          <gco:CharacterString><xsl:value-of select="normalize-space(filename)"/></gco:CharacterString>
+                            <gmd:MD_MediumNameCode codeList="http://www.isotc211.org/2005/resources/Codelist/gmxCodelists.xml#MD_MediumNameCode"
+                                                   codeListValue="onLine"/>
                         </gmd:name>
-                        <gmd:description>Link to file</gmd:description>
-                      </gmd:CI_OnlineResource>
-                    </gmd:onLine>                            
+                        <gmd:mediumNote>
+                          <gco:CharacterString>File path:<xsl:value-of select="normalize-space(filepath)"/></gco:CharacterString>
+                        </gmd:mediumNote>
+                      </gmd:MD_Medium>
+                    </gmd:offLine>
                   </xsl:otherwise>
                 </xsl:choose>
             </gmd:MD_DigitalTransferOptions>

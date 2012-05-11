@@ -192,10 +192,7 @@ import StringIO as _strio
 import time as _time,os as _os,zipfile as _zip,shutil as _sh,sys as _sys
 if __name__ == '__main__':_sys.exit(0)
 
-from Ft.Xml.Xslt import Transform as _Transform
-from Ft.Xml import Parse as _Parse
-from Ft.Xml import Domlette as _Dom
-
+from lxml import etree as _etree
 from metageta import utilities  as _utilities
 
 #++++++++++++++++++++++++
@@ -212,7 +209,8 @@ xslfiles={}
 #++++++++++++++++++++++++
 #load known XSL transforms
 for _f in _glob(_path.join(__path__[0],'*.xml')):
-    _xml=_Parse('file:%s'%_f)
+    #_xml=_Parse('file:%s'%_f)
+    _xml=_etree.parse(_f)
     _name = str(_xml.xpath('string(/stylesheet/@name)'))
     _file = str(_xml.xpath('string(/stylesheet/@file)'))
     _desc = str(_xml.xpath('string(/stylesheet/@description)'))
@@ -220,20 +218,20 @@ for _f in _glob(_path.join(__path__[0],'*.xml')):
     transforms[_name]=_desc
 
 #Load config
-config=_Parse('file:%s\\config\\config.xml'%_env['CURDIR'])
-categories={'default':str(config.xpath('string(/config/geonetwork/categories/@default)')),
-             'categories':[str(_cat.value) for _cat in config.xpath('/config/geonetwork/categories/category/@name')]
+config=_etree.parse('%s/config/config.xml'%_env['CURDIR'])
+categories={'default':config.xpath('string(/config/geonetwork/categories/@default)'),
+             'categories':config.xpath('/config/geonetwork/categories/category/@name')
              }
 if not categories['default'] and not categories['categories']:categories={'default': 'datasets', 'categories': ['datasets']}
 
-operations={'default':str(config.xpath('string(/config/geonetwork/operations/@default)')),
-             'operations':[str(_op.value) for _op in config.xpath('/config/geonetwork/operations/operation/@name')]
+operations={'default':config.xpath('string(/config/geonetwork/operations/@default)'),
+             'operations':config.xpath('/config/geonetwork/operations/operation/@name')
              }
 if not operations['default'] and not operations['operations']:operations={'default': 'view', 'operations': ['view','editing','dynamic','featured']}
 
 site={}
 for _key in ['name','organization','siteId']:
-    s=str(config.xpath('string(/config/geonetwork/site/%s)'%_key))
+    s=config.xpath('string(/config/geonetwork/site/%s)'%_key)
     if s:site[_key]=s
     else:site[_key]='dummy'
 
@@ -253,12 +251,38 @@ def Transform(inxmlstring,transform,outxmlfile):
     elif _path.exists(transform):    #Have we been passed an XSL file path...?
         xslfile=_path.abspath(transform).replace('\\','/') #Xslt.Transform doesn't like backslashes in absolute paths...
     else: raise ValueError, 'Can not transform using %s!' % transform
-    result = _Transform(inxmlstring, 'file:///'+xslfile, output=open(outxmlfile, 'w'))
-
-def DictToXML(dic,root):
+    xsl = _etree.parse(xslfile)
+    xml = _etree.fromstring(inxmlstring)
+    xslt = _etree.XSLT(xsl)
+    result = xslt(xml)
+    open(outxmlfile, 'w').write(str(result))
+    
+def ListToXML(lst,root,asstring=True):
     '''Transform a metadata record to a flat XML string'''
-    doc=_Dom.implementation.createRootNode('file:///%s.xml'%root)
-    docelement = doc.createElementNS(None, root)
+
+    root = _etree.Element(root)
+
+    for fld in lst:
+        col=fld[0]
+        dat=fld[1]
+
+        if type(dat) is unicode:
+            dat=dat.encode('ascii','xmlcharrefreplace')
+        elif type(dat) is str:
+            dat=dat.decode(_utilities.encoding).encode('ascii','xmlcharrefreplace')
+        else:dat=str(dat)
+
+        child=_etree.SubElement(root,col)
+        child.text=dat
+
+    if asstring:return _etree.tostring(root)
+    else:return root
+
+def DictToXML(dic,root,asstring=True):
+    '''Transform a metadata record to a flat XML string'''
+
+    root = _etree.Element(root)
+
     for col in dic:
         dat=dic[col]
         if type(dat) is unicode:
@@ -266,37 +290,13 @@ def DictToXML(dic,root):
         elif type(dat) is str:
             dat=dat.decode(_utilities.encoding).encode('ascii','xmlcharrefreplace')
         else:dat=str(dat)
-        child=doc.createElementNS(None, col)
-        text=doc.createTextNode(dat)
-        child.appendChild(text)
-        docelement.appendChild(child)
 
-    doc.appendChild(docelement)
-    buf=_strio.StringIO()
-    _Dom.PrettyPrint(doc,stream=buf)
-    return buf.getvalue()
+        child=_etree.SubElement(root,col)
+        child.text=dat
 
-def ListToXML(lst,root):
-    '''Transform a metadata record to a flat XML string'''
-    doc=_Dom.implementation.createRootNode('file:///%s.xml'%root)
-    docelement = doc.createElementNS(None, root)
-    for fld in lst:
-        col=fld[0]
-        dat=fld[1]
-        if type(dat) is unicode:
-            dat=dat.encode('ascii','xmlcharrefreplace')
-        elif type(dat) is str:
-            dat=dat.decode(_utilities.encoding).encode('ascii','xmlcharrefreplace')
-        else:dat=str(dat)
-        child=doc.createElementNS(None, col)
-        text=doc.createTextNode(dat)
-        child.appendChild(text)
-        docelement.appendChild(child)
+    if asstring:return _etree.tostring(root)
+    else:return root
 
-    doc.appendChild(docelement)
-    buf=_strio.StringIO()
-    _Dom.PrettyPrint(doc,stream=buf)
-    return buf.getvalue()
 
 def CreateMEF(outdir,xmlfile,uid,overviews=[],cat=categories['default'],ops=operations['default']):
     '''Generate Geonetwork "Metadata Exchange Format" from an ISO19139 XML record
@@ -353,65 +353,44 @@ def _CreateInfo(uid,overviews=[],cat=categories['default'],ops=operations['defau
     if overviews:format='partial'
     else:format='simple'
 
-    #general={'createDate':now,'changeDate':now,
-    #         'schema':'iso19139','isTemplate':'false',
-    #         'format':format,'uuid':uid,
-    #         'siteId':site['siteId'],'siteName':site['name'],
-    #         'localId':'','rating':'0','popularity':'2'}
-
     general=[('createDate',now),('changeDate',now),
              ('schema','iso19139'),('isTemplate','false'),
              ('localId',''),('format',format),
              ('rating','0'),('popularity','2'),
              ('uuid',uid),('siteId',site['siteId']),('siteName',site['name'])]
 
-    doc=_Dom.implementation.createRootNode('file:///info.xml')
-    root = doc.createElementNS(None, 'info')
-    root.setAttributeNS(None, 'version','1.1')
+    root = _etree.Element('info')
+    root.set('version','1.1')
 
     #General
-    parent=doc.createElementNS(None, 'general')
+    parent=_etree.SubElement(root,'general')
     for key in general:
-        #child=doc.createElementNS(None, key)
-        #text=doc.createTextNode(general[key])
-        child=doc.createElementNS(None, key[0])
-        text=doc.createTextNode(key[1])
-        child.appendChild(text)
-        parent.appendChild(child)
-    root.appendChild(parent)
+        child=_etree.SubElement(parent,key[0])
+        child.text=key[1]
 
     #Categories
-    parent=doc.createElementNS(None, 'categories')
+    parent=_etree.SubElement(root,'categories')
     for c in cat.split('|'):
-        child=doc.createElementNS(None, 'category')
-        child.setAttributeNS(None, 'name',c)
-        parent.appendChild(child)
-    root.appendChild(parent)
+        child=_etree.SubElement(parent,'category')
+        child.set('name',c)
 
     #Operations
-    #privileges = ['view','editing','dynamic','featured']
-    parent=doc.createElementNS(None, 'privileges')
-    child=doc.createElementNS(None, 'group')
-    child.setAttributeNS(None, 'name','all')
+    parent=_etree.SubElement(root,'privileges')
+    child=_etree.SubElement(parent,'group')
+    child.set('name','all')
     for op in ops.split('|'):
-        sub=doc.createElementNS(None, 'operation')
-        sub.setAttributeNS(None, 'name',op)
-        child.appendChild(sub)
-    parent.appendChild(child)
-    root.appendChild(parent)
+        sub=_etree.SubElement(child, 'operation')
+        sub.set('name',op)
 
     #Public
     if overviews:
-        parent=doc.createElementNS(None, 'public')
+        parent=_etree.SubElement(root,'public')
         for f in overviews:
-            child=doc.createElementNS(None, 'file')
-            child.setAttributeNS(None, 'name',_path.basename(f))
-            child.setAttributeNS(None, 'changeDate',_time.strftime('%Y-%m-%dT%H:%M:%S', _time.localtime(_path.getmtime(f))))
-            parent.appendChild(child)
-        root.appendChild(parent)
+            child=_etree.SubElement(parent,'file')
+            child.set('name',_path.basename(f))
+            child.set('changeDate',_time.strftime('%Y-%m-%dT%H:%M:%S', _time.localtime(_path.getmtime(f))))
 
-        parent=doc.createElementNS(None, 'private')
-        root.appendChild(parent)
+        parent=_etree.SubElement(root,'private')
 
-    doc.appendChild(root)
-    _Dom.PrettyPrint(doc,open('info.xml','w'))
+    #_Dom.PrettyPrint(doc,open('info.xml','w'))
+    open('info.xml', 'w').write(_etree.tostring(root))

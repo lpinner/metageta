@@ -20,6 +20,8 @@
   xmlns:math="http://exslt.org/math"
   extension-element-prefixes="str func exsl date math">
 
+  <xsl:import href="date.format-date.function.xsl" />
+  
   <xsl:output method="xml" version="1.0" encoding="UTF-8" indent="yes"/>
   <xsl:param name="hierarchyLevel" select="'dataset'"/>
   <xsl:param name="themesListLocation" select="'http://asdd.ga.gov.au/asdd/profileinfo/anzlic-theme.xml'"/><!-- Change this to canonical location when available -->
@@ -210,10 +212,8 @@
     </xsl:variable-->
     <xsl:variable 
       name="defaultcontact"
-      select="document('../../config/config.xml')/config/defaultcontact"
-    >
+      select="document('../../config/config.xml')/config/defaultcontact"/>
         
-    </xsl:variable>
     <gmd:CI_ResponsibleParty>
       <gmd:individualName gco:nilReason="withheld">
         <gco:CharacterString>

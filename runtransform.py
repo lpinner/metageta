@@ -48,7 +48,6 @@ Usage::
 import os,sys,glob
 import Tkinter
 import tkFileDialog
-from Ft.Xml import Domlette as Dom
 from metageta import utilities
 from metageta import transforms
 from metageta import progresslogger

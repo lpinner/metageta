@@ -253,14 +253,6 @@ def exit():
         if exe in ['python','pythonw']: #Little kludge to stop killing dev IDEs
             os._exit(0)
 
-def showmessage(title, msg,type=None):
-    import Tkinter,tkMessageBox
-    tk=Tkinter.Tk()
-    tk.withdraw()
-    val=tkMessageBox.showinfo(title,msg,type=type)
-    tk.destroy()
-    return val
-
 def getlogger(logfile,name=None,nogui=False, debug=False, icon=None):
     geometry.debug=debug
     if debug:
@@ -305,7 +297,10 @@ if __name__ == '__main__':
             return True
         else:
             arg.value.set('')
-            getargs.tkMessageBox.showerror('I/O Error','%s is not writable.'%filepath)
+            err='I/O Error','%s is not writable.'%filepath
+            logger.error('%s' % utilities.ExceptionInfo())
+            try:getargs.tkMessageBox.showerror()
+            except:pass
             return False
 
     import optparse
@@ -385,12 +380,6 @@ if __name__ == '__main__':
                     logger=getlogger(log,name=APP,nogui=optvals.nogui, debug=optvals.debug, icon=ICON)
                 keepalive=args.keepalive
                 forceexit=True
-##                if utilities.exists(args.xls) and not args.update and not optvals.nogui:
-##                    if showmessage('Overwrite XLS?','Are you sure you want to overwrite %s'%args.xls,type='okcancel')=='ok':
-##                        main(args.dir,args.xls,logger,args.med,args.update,args.ovs)
-##                    else:keepalive=True #Make sure the GetArgs dialog pops up again
-##                else:
-##                    main(args.dir,args.xls,logger,args.med,args.update,args.ovs)
                 main(args.dir,args.xls,logger,args.med,args.update,args.ovs,args.recurse,args.archive)
                 forceexit=False
             else:keepalive=False

@@ -140,7 +140,7 @@ class Dataset(__dataset__.Dataset):
                 tgt_srs=osr.SpatialReference()
                 tgt_srs.ImportFromEPSG(4326)
                 geom=geometry.ReprojectGeom(geom,src_srs,tgt_srs)
-                points=geom.GetBoundary()
+                points=geom.GetGeometryRef(0) #geom.GetBoundary()
                 ext=[[points.GetX(i),points.GetY(i)] for i in range(0,points.GetPointCount())]
 
                 self.metadata['cellx'],self.metadata['celly']=geometry.CellSize(geotransform)

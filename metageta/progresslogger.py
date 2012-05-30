@@ -36,7 +36,7 @@ Example:
 
 '''
 
-#Workaround for Issue 34: 
+#Workaround for Issue 34:
 #pickle doesn't like unicode, so use cPickle instead
 import logging,warnings,random,os,sys,socket,cPickle,threading,Queue,time,subprocess
 import Tkinter,tkMessageBox
@@ -51,7 +51,7 @@ ERROR=logging.ERROR
 CRITICAL=logging.CRITICAL
 FATAL=logging.FATAL
 
-class ProgressLogger(object,logging.Logger):
+class ProgressLogger(logging.Logger):
     '''Provide logger interface'''
 
     def __init__(self,
@@ -79,12 +79,12 @@ class ProgressLogger(object,logging.Logger):
         self.updateProgress=lambda *a,**k:None
         self.resetProgress=lambda *a,**k:None
 
-        ##Cos we've overwritten the class __init__ method        
+        ##Cos we've overwritten the class __init__ method
         logging.Logger.__init__(self,name,level=level-1)#To handle the PROGRESS log records without them going to the console or file
 
         #Set up the handlers
         self.format = logging.Formatter(format, dateformat)
-        
+
         if logToConsole:
            #create console handler and set level
             ch = logging.StreamHandler()
@@ -107,15 +107,15 @@ class ProgressLogger(object,logging.Logger):
 
                 #To handle the PROGRESS & END events without them going to the console or file
                 logging.PROGRESS = level - 1
-                logging.addLevelName(logging.PROGRESS, "PROGRESS") 
-                self.ProgressLoggerHandler.setLevel(logging.PROGRESS) 
+                logging.addLevelName(logging.PROGRESS, "PROGRESS")
+                self.ProgressLoggerHandler.setLevel(logging.PROGRESS)
                 self.ProgressLoggerHandler.setFormatter(self.format)
                 self.addHandler(self.ProgressLoggerHandler)
 
                 #Update the dummy methods
                 self.updateProgress=self.ProgressLoggerHandler.updateProgress
                 self.resetProgress=self.ProgressLoggerHandler.resetProgress
-            
+
             except:
                 if logToFile:
                     msg='The Progress Logger GUI failed.\nLog messages will be output to %s'%logfile
@@ -137,7 +137,7 @@ class ProgressLogger(object,logging.Logger):
         tk.withdraw()
         tkMessageBox.showinfo(title,msg,type=type)
         tk.destroy()
-    
+
     def showwarning(self, msg, cat, fname, lno, file=None, line=None):
         self.warn(msg)
 
@@ -155,7 +155,7 @@ class ProgressLogger(object,logging.Logger):
                 h.flush()
                 h.close()
             except:pass
-        
+
 
     # ================ #
     # Class Properties
@@ -186,7 +186,7 @@ class ProgressLogger(object,logging.Logger):
                     break
 
         def fdel(self):pass
-        return locals()   
+        return locals()
 
 class ProgressLoggerHandler(logging.Handler):
     ''' Provide a Progress Bar Logging handler '''
@@ -198,14 +198,14 @@ class ProgressLoggerHandler(logging.Handler):
         self.parent=parent
         self.callback=callback
 
-        ##Cos we've overwritten the class __init__ method        
+        ##Cos we've overwritten the class __init__ method
         logging.Handler.__init__(self)
 
         #Message queue to handle ansychronous gui
         self.msgs = []
-        
+
         ##Create the GUI
-        ##Run as a separate process as even multithreading will block on long IO operations 
+        ##Run as a separate process as even multithreading will block on long IO operations
         ##as only a single thread will run at a time.
         self.host='localhost'
         self.inport= random.randint(1024, 10000)
@@ -224,7 +224,7 @@ class ProgressLoggerHandler(logging.Handler):
         while not pc.ready: #Fixes Issue 29
             if pc.failed:raise
             else:time.sleep(0.1)
-        
+
     def sendmsgs(self, host=None,port=None):
         if host is None:host=self.host
         if port is None:port=self.inport
@@ -272,7 +272,7 @@ class ProgressLoggerChecker(threading.Thread):
 
         threading.Thread.__init__ (self)
         self.start()
-    
+
     def run(self):
         #Start listening on the given host:port
         self.server=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -325,7 +325,7 @@ class ProgressLoggerServer:
 
         ##Create the log message queue & shutdown
         self.queue  = Queue.Queue()
-        
+
         ##Create the GUI
         #self.gui=ProgressLoggerGUI(self.queue, self.host,self.inport,self.outport, name=name, maxprogress=maxprogress, icon=icon)
         #self.gui.start()
@@ -352,11 +352,11 @@ class ProgressLoggerServer:
 
         #Stop listening
         self.server.close()
-        
+
 class ProgressLoggerGUI(object):#(threading.Thread): #Don't subclass threading.Thread
     ''' Provide a Progress Bar Logging GUI '''
     def __init__(self, queue, host, inport, outport, name=None, maxprogress=100, icon=None):
-        
+
         ##Cos we've overwritten the class __init__ method
         #threading.Thread.__init__(self)
         self.queue = queue
@@ -405,7 +405,7 @@ class ProgressLoggerGUI(object):#(threading.Thread): #Don't subclass threading.T
                 self.master.tk.call('wm', 'iconphoto', self.master._w, self.icon)
             except:
                 pass
-        
+
         ''' Pack text message '''
         Tkinter.Label(self.master, text='Progress', anchor=Tkinter.NW, justify=Tkinter.LEFT).pack(fill=Tkinter.X)
 
@@ -475,7 +475,7 @@ class ProgressLoggerGUI(object):#(threading.Thread): #Don't subclass threading.T
         w.insert(Tkinter.END, "\n")
         w.see(Tkinter.END)
         w.configure(state=Tkinter.DISABLED)
-        
+
     def onStartup(self):
         try:
             client = socket.socket (socket.AF_INET, socket.SOCK_STREAM )
@@ -496,10 +496,10 @@ class ProgressLoggerGUI(object):#(threading.Thread): #Don't subclass threading.T
                 del client
         except:pass
         self.master.destroy()
-   
-class ProgressBarView: 
+
+class ProgressBarView:
     '''A progress bar widget
-       
+
        Modified from U{http://www.faqts.com/knowledge_base/view.phtml/aid/2718/fid/264} and U{http://www.sarfrosh.com/URDU/teachings/HP/BIN/BlockTracker.py}
     '''
     def __init__(self, master=None, orientation='horizontal',

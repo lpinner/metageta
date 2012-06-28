@@ -712,7 +712,7 @@ class ExcelWriter:
         r=row-s*65535
         ws=self._wb.get_sheet(s)
         cols=copy.deepcopy(self._cols) #make a copy to alter
-        try:
+        if data!=dict(data):
             fields,values = zip(*data)
             for i,field in enumerate(fields):
                 if field in self._fields and value not in ['',None,False]:#0 is valid
@@ -723,7 +723,7 @@ class ExcelWriter:
                     ws.write(r+1, col, val)
                     dirty=True
 
-        except:
+        else:
             for field in data:
                 if field in self._fields and data[field] not in ['',None,False]:#0 is valid
                     if type(data[field]) is str:#Issue 24 - http://code.google.com/p/metageta/issues/detail?id=24

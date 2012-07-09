@@ -136,7 +136,8 @@ def main(dir, xls, logger, mediaid=None, update=False, getovs=False, recurse=Tru
 
             if update and ds.guid in records:
                 row,rec=records[ds.guid]
-                if ismodified(rec,fi) or (not rec['quicklook'] and getovs): #Issue 35: if it's not modified, but we've asked for overview images and it doesn't already have them....
+                #Issue 35: if it's not modified, but we've asked for overview images and it doesn't already have them....
+                if ismodified(rec,fi,os.path.dirname(xls)) or (not rec['quicklook'] and getovs):
                     md=ds.metadata
                     geom=ds.extent
                     md.update(fi)
@@ -222,21 +223,27 @@ def main(dir, xls, logger, mediaid=None, update=False, getovs=False, recurse=Tru
     del ExcelWriter
     del ShapeWriter
 
-def ismodified(record,fileinfo):
+def ismodified(record,fileinfo,xlspath):
     ''' Check if a record from a previous metadata crawl needs to be updated.
 
         @type  record:   C{dict}
         @param record:   The record from a previous crawl.
         @type  fileinfo: C{dict}
         @param fileinfo: The fileinfo from a dataset located in the current crawl
+        @type  xlspath: C{str}
+        @param xlspath:  The path to the XLS that holds the record from the previous crawl
         @return:  C{boolean}
     '''
     if record['datemodified']!=fileinfo['datemodified']:
         return True
     elif record['filelist']!=fileinfo['filelist']:
         return True
-    elif record['quicklook'] and not os.path.exists(record['quicklook']):
-        return True
+    elif record['quicklook']:
+        if os.path.basename(record['quicklook'])==record['quicklook']:
+            qlk=os.path.join(xlspath,record['quicklook'])
+        else:qlk=record['quicklook']
+        if not os.path.exists(qlk):
+            return True
     else:
         try:md=time.mktime(time.strptime(record['metadatadate'],utilities.datetimeformat))
         except:md=time.mktime(time.strptime(record['metadatadate'],utilities.dateformat)) + (60*60*24-1) #Mainain backwards compatibility with spreadsheets created using MetaGETA <=1.3.3

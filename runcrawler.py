@@ -323,7 +323,7 @@ if __name__ == '__main__':
     dirarg=getargs.DirArg(opt,initialdir='',enabled=True,icon=icons.dir_img)
     dirarg.tooltip='The directory to start recursively searching for raster imagery.'
 
-    opt=parser.add_option("-r", "--recurse", action="store_true", dest="recurse",default=True,
+    opt=parser.add_option("-r", "--recurse", action="store_true", dest="recurse",default=False,
                       help="Search directory recursively")
     recursearg=getargs.BoolArg(opt,tooltip='Do you want to search in sub-directories?')
 

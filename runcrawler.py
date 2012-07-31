@@ -49,7 +49,7 @@ from metageta import crawler
 from metageta import overviews
 from metageta import progresslogger
 
-def main(dir, xls, logger, mediaid=None, update=False, getovs=False, recurse=True, archive=False):
+def main(dir, xls, logger, mediaid=None, update=False, getovs=False, recurse=False, archive=False):
     """ Run the Metadata Crawler
 
         @type  dir:    C{str}

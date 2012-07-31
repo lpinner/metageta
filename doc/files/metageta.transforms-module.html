@@ -301,11 +301,12 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="DictToXML"></a><span class="summary-sig-name">DictToXML</span>(<span class="summary-sig-arg">dic</span>,
-        <span class="summary-sig-arg">root</span>)</span><br />
+          <td><span class="summary-sig"><a name="ListToXML"></a><span class="summary-sig-name">ListToXML</span>(<span class="summary-sig-arg">lst</span>,
+        <span class="summary-sig-arg">root</span>,
+        <span class="summary-sig-arg">asstring</span>=<span class="summary-sig-default">True</span>)</span><br />
       Transform a metadata record to a flat XML string</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="metageta.transforms-pysrc.html#DictToXML">source&nbsp;code</a></span>
+            <span class="codelink"><a href="metageta.transforms-pysrc.html#ListToXML">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -319,11 +320,12 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="ListToXML"></a><span class="summary-sig-name">ListToXML</span>(<span class="summary-sig-arg">lst</span>,
-        <span class="summary-sig-arg">root</span>)</span><br />
+          <td><span class="summary-sig"><a name="DictToXML"></a><span class="summary-sig-name">DictToXML</span>(<span class="summary-sig-arg">dic</span>,
+        <span class="summary-sig-arg">root</span>,
+        <span class="summary-sig-arg">asstring</span>=<span class="summary-sig-default">True</span>)</span><br />
       Transform a metadata record to a flat XML string</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="metageta.transforms-pysrc.html#ListToXML">source&nbsp;code</a></span>
+            <span class="codelink"><a href="metageta.transforms-pysrc.html#DictToXML">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -341,8 +343,8 @@
         <span class="summary-sig-arg">xmlfile</span>,
         <span class="summary-sig-arg">uid</span>,
         <span class="summary-sig-arg">overviews</span>=<span class="summary-sig-default"><code class="variable-group">[</code><code class="variable-group">]</code></span>,
-        <span class="summary-sig-arg">cat</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">datasets</code><code class="variable-quote">'</code></span>,
-        <span class="summary-sig-arg">ops</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">view</code><code class="variable-quote">'</code></span>)</span><br />
+        <span class="summary-sig-arg">cat</span>=<span class="summary-sig-default">'datasets'</span>,
+        <span class="summary-sig-arg">ops</span>=<span class="summary-sig-default">'view'</span>)</span><br />
       Generate Geonetwork &quot;Metadata Exchange Format&quot; from an 
       ISO19139 XML record</td>
           <td align="right" valign="top">
@@ -362,8 +364,8 @@
         <tr>
           <td><span class="summary-sig"><a name="_CreateInfo"></a><span class="summary-sig-name">_CreateInfo</span>(<span class="summary-sig-arg">uid</span>,
         <span class="summary-sig-arg">overviews</span>=<span class="summary-sig-default"><code class="variable-group">[</code><code class="variable-group">]</code></span>,
-        <span class="summary-sig-arg">cat</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">datasets</code><code class="variable-quote">'</code></span>,
-        <span class="summary-sig-arg">ops</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">view</code><code class="variable-quote">'</code></span>)</span><br />
+        <span class="summary-sig-arg">cat</span>=<span class="summary-sig-default">'datasets'</span>,
+        <span class="summary-sig-arg">ops</span>=<span class="summary-sig-default">'view'</span>)</span><br />
       Create MEF info.xml file</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="metageta.transforms-pysrc.html#_CreateInfo">source&nbsp;code</a></span>
@@ -397,8 +399,7 @@
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
         <a href="metageta.transforms-module.html#transforms" class="summary-name">transforms</a> = <code title="{'ANZLIC Profile': 'ANZLIC Metadata Profile (AS/NZS ISO 19115:2005 Geo\
-graphic information - Metadata)',
- 'EODS': 'EODS Metadata'}"><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">ANZLIC Profile</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">ANZLIC Metadata Profile (AS/N</code><code class="variable-ellipsis">...</code></code><br />
+graphic information - Metadata)'}"><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">ANZLIC Profile</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">ANZLIC Metadata Profile (AS/N</code><code class="variable-ellipsis">...</code></code><br />
       Pre-defined XSL transforms
     </td>
   </tr>
@@ -406,7 +407,7 @@ graphic information - Metadata)',
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="metageta.transforms-module.html#xslfiles" class="summary-name">xslfiles</a> = <code title="{'ANZLIC Profile': 'anzlic_iso19139.xsl', 'EODS': 'eods_metadata.xsl'}"><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">ANZLIC Profile</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">anzlic_iso19139.xsl</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">EODS</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-ellipsis">...</code></code><br />
+        <a name="xslfiles"></a><span class="summary-name">xslfiles</span> = <code title="{'ANZLIC Profile': 'anzlic_iso19139.xsl'}"><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">ANZLIC Profile</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">anzlic_iso19139.xsl</code><code class="variable-quote">'</code><code class="variable-group">}</code></code><br />
       Pre-defined XSL files
     </td>
   </tr>
@@ -414,7 +415,7 @@ graphic information - Metadata)',
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a name="config"></a><span class="summary-name">config</span> = <code title="&lt;Document at 0x03591660: 1 children&gt;">&lt;Document at 0x03591660: 1 children&gt;</code>
+        <a name="config"></a><span class="summary-name">config</span> = <code title="_etree.parse('%s/config/config.xml' % _env ['CURDIR'])">_etree.parse('%s/config/config.xml' % _env ['CURDIR'])</code>
     </td>
   </tr>
 <tr>
@@ -429,7 +430,7 @@ graphic information - Metadata)',
                 'interactiveResources',
                 'maps',
                 'otherResources',
-..."><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">categories</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">applications</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">audioVideo</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">ca</code><code class="variable-ellipsis">...</code></code>
+..."><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">categories</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">[</code>'applications'<code class="variable-op">, </code>'audioVideo'<code class="variable-op">, </code>'ca<code class="variable-ellipsis">...</code></code>
     </td>
   </tr>
 <tr>
@@ -437,14 +438,14 @@ graphic information - Metadata)',
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
         <a href="metageta.transforms-module.html#operations" class="summary-name">operations</a> = <code title="{'default': 'view',
- 'operations': ['view', 'editing', 'dynamic', 'featured']}"><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">default</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">view</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">operations</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">view</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">editi</code><code class="variable-ellipsis">...</code></code>
+ 'operations': ['view', 'editing', 'dynamic', 'featured']}"><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">default</code><code class="variable-quote">'</code><code class="variable-op">: </code>'view'<code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">operations</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">[</code>'view'<code class="variable-op">, </code>'editi<code class="variable-ellipsis">...</code></code>
     </td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="metageta.transforms-module.html#site" class="summary-name">site</a> = <code title="{'name': 'dummy', 'organization': 'dummy', 'siteId': 'dummy'}"><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">name</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">dummy</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">organization</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">dummy</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">siteId</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">d</code><code class="variable-ellipsis">...</code></code>
+        <a href="metageta.transforms-module.html#site" class="summary-name">site</a> = <code title="{'name': 'dummy', 'organization': 'dummy', 'siteId': 'dummy'}"><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">name</code><code class="variable-quote">'</code><code class="variable-op">: </code>'dummy'<code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">organization</code><code class="variable-quote">'</code><code class="variable-op">: </code>'dummy'<code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">siteId</code><code class="variable-quote">'</code><code class="variable-op">: </code>'d<code class="variable-ellipsis">...</code></code>
     </td>
   </tr>
 <tr>
@@ -458,29 +459,23 @@ graphic information - Metadata)',
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a name="_cat"></a><span class="summary-name">_cat</span> = <code title="&lt;Attr at 0x03603AB0: name u'name', value u'proceedings'&gt;">&lt;Attr at 0x03603AB0: name u'name', value u'proceedings'&gt;</code>
+        <a href="metageta.transforms-module.html#_desc" class="summary-name" onclick="show_private();">_desc</a> = <code title="'ANZLIC Metadata Profile (AS/NZS ISO 19115:2005 Geographic information\
+ - Metadata)'"><code class="variable-quote">'</code><code class="variable-string">ANZLIC Metadata Profile (AS/NZS ISO 19115:2005 Geogra</code><code class="variable-ellipsis">...</code></code>
     </td>
   </tr>
 <tr class="private">
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a name="_desc"></a><span class="summary-name">_desc</span> = <code title="'EODS Metadata'"><code class="variable-quote">'</code><code class="variable-string">EODS Metadata</code><code class="variable-quote">'</code></code>
+        <a href="metageta.transforms-module.html#_f" class="summary-name" onclick="show_private();">_f</a> = <code title="'c:\\metageta_development\\metageta-trunk\\metageta\\transforms\\anzli\
+c_iso19139.xml'"><code class="variable-quote">'</code><code class="variable-string">c:\\metageta_development\\metageta-trunk\\metageta\\tran</code><code class="variable-ellipsis">...</code></code>
     </td>
   </tr>
 <tr class="private">
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="metageta.transforms-module.html#_f" class="summary-name" onclick="show_private();">_f</a> = <code title="'c:\\metageta_development\\metageta-trunk\\metageta\\transforms\\eods_\
-metadata.xml'"><code class="variable-quote">'</code><code class="variable-string">c:\\metageta_development\\metageta-trunk\\metageta\\tran</code><code class="variable-ellipsis">...</code></code>
-    </td>
-  </tr>
-<tr class="private">
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a name="_file"></a><span class="summary-name">_file</span> = <code title="'eods_metadata.xsl'"><code class="variable-quote">'</code><code class="variable-string">eods_metadata.xsl</code><code class="variable-quote">'</code></code>
+        <a name="_file"></a><span class="summary-name">_file</span> = <code title="'anzlic_iso19139.xsl'"><code class="variable-quote">'</code><code class="variable-string">anzlic_iso19139.xsl</code><code class="variable-quote">'</code></code>
     </td>
   </tr>
 <tr class="private">
@@ -494,28 +489,21 @@ metadata.xml'"><code class="variable-quote">'</code><code class="variable-string
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a name="_name"></a><span class="summary-name">_name</span> = <code title="'EODS'"><code class="variable-quote">'</code><code class="variable-string">EODS</code><code class="variable-quote">'</code></code>
+        <a name="_name"></a><span class="summary-name">_name</span> = <code title="'ANZLIC Profile'"><code class="variable-quote">'</code><code class="variable-string">ANZLIC Profile</code><code class="variable-quote">'</code></code>
     </td>
   </tr>
 <tr class="private">
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a name="_op"></a><span class="summary-name">_op</span> = <code title="&lt;Attr at 0x03603BC8: name u'name', value u'featured'&gt;">&lt;Attr at 0x03603BC8: name u'name', value u'featured'&gt;</code>
-    </td>
-  </tr>
-<tr class="private">
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a name="_xml"></a><span class="summary-name">_xml</span> = <code title="&lt;Document at 0x03591540: 1 children&gt;">&lt;Document at 0x03591540: 1 children&gt;</code>
+        <a name="_xml"></a><span class="summary-name">_xml</span> = <code title="&lt;lxml.etree._ElementTree object at 0x04F4F328&gt;">&lt;lxml.etree._ElementTree object at 0x04F4F328&gt;</code>
     </td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a name="s"></a><span class="summary-name">s</span> = <code title="'dummy'"><code class="variable-quote">'</code><code class="variable-string">dummy</code><code class="variable-quote">'</code></code>
+        <a name="s"></a><span class="summary-name">s</span> = <code title="'dummy'">'dummy'</code>
     </td>
   </tr>
 </table>
@@ -576,8 +564,8 @@ metadata.xml'"><code class="variable-quote">'</code><code class="variable-string
         <span class="sig-arg">xmlfile</span>,
         <span class="sig-arg">uid</span>,
         <span class="sig-arg">overviews</span>=<span class="sig-default"><code class="variable-group">[</code><code class="variable-group">]</code></span>,
-        <span class="sig-arg">cat</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">datasets</code><code class="variable-quote">'</code></span>,
-        <span class="sig-arg">ops</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">view</code><code class="variable-quote">'</code></span>)</span>
+        <span class="sig-arg">cat</span>=<span class="sig-default">'datasets'</span>,
+        <span class="sig-arg">ops</span>=<span class="sig-default">'view'</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="metageta.transforms-pysrc.html#CreateMEF">source&nbsp;code</a></span>&nbsp;
@@ -640,26 +628,7 @@ metadata.xml'"><code class="variable-quote">'</code><code class="variable-string
     <dt>Value:</dt>
       <dd><table><tr><td><pre class="variable">
 <code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">ANZLIC Profile</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">ANZLIC Metadata Profile (AS/NZS ISO 19115:2005 Geo</code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
-<code class="variable-string">graphic information - Metadata)</code><code class="variable-quote">'</code><code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">EODS</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">EODS Metadata</code><code class="variable-quote">'</code><code class="variable-group">}</code>
-</pre></td></tr></table>
-</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="xslfiles"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <h3 class="epydoc">xslfiles</h3>
-  <p>Pre-defined XSL files</p>
-  <dl class="fields">
-  </dl>
-  <dl class="fields">
-    <dt>Value:</dt>
-      <dd><table><tr><td><pre class="variable">
-<code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">ANZLIC Profile</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">anzlic_iso19139.xsl</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">EODS</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">eods_metadata.xsl</code><code class="variable-quote">'</code><code class="variable-group">}</code>
+<code class="variable-string">graphic information - Metadata)</code><code class="variable-quote">'</code><code class="variable-group">}</code>
 </pre></td></tr></table>
 </dd>
   </dl>
@@ -677,14 +646,14 @@ metadata.xml'"><code class="variable-quote">'</code><code class="variable-string
   <dl class="fields">
     <dt>Value:</dt>
       <dd><table><tr><td><pre class="variable">
-<code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">categories</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">applications</code><code class="variable-quote">'</code><code class="variable-op">,</code>
-                <code class="variable-quote">'</code><code class="variable-string">audioVideo</code><code class="variable-quote">'</code><code class="variable-op">,</code>
-                <code class="variable-quote">'</code><code class="variable-string">caseStudies</code><code class="variable-quote">'</code><code class="variable-op">,</code>
-                <code class="variable-quote">'</code><code class="variable-string">datasets</code><code class="variable-quote">'</code><code class="variable-op">,</code>
-                <code class="variable-quote">'</code><code class="variable-string">directories</code><code class="variable-quote">'</code><code class="variable-op">,</code>
-                <code class="variable-quote">'</code><code class="variable-string">interactiveResources</code><code class="variable-quote">'</code><code class="variable-op">,</code>
-                <code class="variable-quote">'</code><code class="variable-string">maps</code><code class="variable-quote">'</code><code class="variable-op">,</code>
-                <code class="variable-quote">'</code><code class="variable-string">otherResources</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+<code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">categories</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">[</code>'applications'<code class="variable-op">,</code>
+                'audioVideo'<code class="variable-op">,</code>
+                'caseStudies'<code class="variable-op">,</code>
+                'datasets'<code class="variable-op">,</code>
+                'directories'<code class="variable-op">,</code>
+                'interactiveResources'<code class="variable-op">,</code>
+                'maps'<code class="variable-op">,</code>
+                'otherResources'<code class="variable-op">,</code>
 <code class="variable-ellipsis">...</code>
 </pre></td></tr></table>
 </dd>
@@ -703,8 +672,8 @@ metadata.xml'"><code class="variable-quote">'</code><code class="variable-string
   <dl class="fields">
     <dt>Value:</dt>
       <dd><table><tr><td><pre class="variable">
-<code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">default</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">view</code><code class="variable-quote">'</code><code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">operations</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">view</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">editing</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">dynamic</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">featured</code><code class="variable-quote">'</code><code class="variable-group">]</code><code class="variable-group">}</code>
+<code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">default</code><code class="variable-quote">'</code><code class="variable-op">: </code>'view'<code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">operations</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">[</code>'view'<code class="variable-op">, </code>'editing'<code class="variable-op">, </code>'dynamic'<code class="variable-op">, </code>'featured'<code class="variable-group">]</code><code class="variable-group">}</code>
 </pre></td></tr></table>
 </dd>
   </dl>
@@ -722,7 +691,26 @@ metadata.xml'"><code class="variable-quote">'</code><code class="variable-string
   <dl class="fields">
     <dt>Value:</dt>
       <dd><table><tr><td><pre class="variable">
-<code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">name</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">dummy</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">organization</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">dummy</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">siteId</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">dummy</code><code class="variable-quote">'</code><code class="variable-group">}</code>
+<code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">name</code><code class="variable-quote">'</code><code class="variable-op">: </code>'dummy'<code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">organization</code><code class="variable-quote">'</code><code class="variable-op">: </code>'dummy'<code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">siteId</code><code class="variable-quote">'</code><code class="variable-op">: </code>'dummy'<code class="variable-group">}</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_desc"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">_desc</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-quote">'</code><code class="variable-string">ANZLIC Metadata Profile (AS/NZS ISO 19115:2005 Geographic information</code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+<code class="variable-string"> - Metadata)</code><code class="variable-quote">'</code>
 </pre></td></tr></table>
 </dd>
   </dl>
@@ -740,8 +728,8 @@ metadata.xml'"><code class="variable-quote">'</code><code class="variable-string
   <dl class="fields">
     <dt>Value:</dt>
       <dd><table><tr><td><pre class="variable">
-<code class="variable-quote">'</code><code class="variable-string">c:\\metageta_development\\metageta-trunk\\metageta\\transforms\\eods_</code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
-<code class="variable-string">metadata.xml</code><code class="variable-quote">'</code>
+<code class="variable-quote">'</code><code class="variable-string">c:\\metageta_development\\metageta-trunk\\metageta\\transforms\\anzli</code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+<code class="variable-string">c_iso19139.xml</code><code class="variable-quote">'</code>
 </pre></td></tr></table>
 </dd>
   </dl>

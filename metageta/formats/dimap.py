@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2011 Australian Government, Department of Sustainability, Environment, Water, Population and Communities
+# Copyright (c) 2012 Australian Government, Department of Sustainability, Environment, Water, Population and Communities
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +20,7 @@
 # THE SOFTWARE.
 
 '''
-Metadata driver for SPOT DIMAP imagery
+Metadata driver for DIMAP imagery
 
 B{Format specification}:
     - U{http://www.spotimage.fr/dimap/spec/documentation/refdoc.htm}
@@ -28,7 +28,8 @@ B{Format specification}:
 @todo: GDALINFO is pretty slow (4+ sec), check that this driver is not that slow...
 '''
 
-format_regex=[r'metadata\.dim$'] #SPOT DIMAP
+#format_regex=[r'metadata\.dim$'] #DIMAP
+format_regex=[r'\.dim$'] #DIMAP
 '''Regular expression list of file formats'''
 
 #import base dataset modules
@@ -58,8 +59,9 @@ class Dataset(__default__.Dataset):
         '''Open the dataset'''
         if not f:f=self.fileinfo['filepath']
         self.filelist=[r for r in glob.glob('%s/*'%os.path.dirname(f))]
+
     def __getmetadata__(self,f=None):
-        '''Read Metadata for a SPOT DIMAP image as GDAL doesn't quite get it all...'''
+        '''Read Metadata for a DIMAP image as GDAL doesn't quite get it all...'''
         if not f:f=self.fileinfo['filepath']
         #dom=etree.parse(f) #Takes tooo long to parse the whole file, so just read as far as we need...
         strxml=''
@@ -68,9 +70,6 @@ class Dataset(__default__.Dataset):
             else: strxml+=line
         if not '</Dimap_Document>' in strxml:strxml+='</Dimap_Document>'
         dom=etree.fromstring(strxml)
-        #self.metadata['sceneid'] = dom.documentElement.getElementsByTagName('DATASET_NAME')[0].childNodes[0].data
-        #bands=dom.documentElement.getElementsByTagName('BAND_DESCRIPTION')
-        #self.metadata['bands']=','.join([band.childNodes[0].data for band in bands])
         self.metadata['sceneid'] = dom.xpath('string(/Dimap_Document/Dataset_Id/DATASET_NAME)')
         bands=dom.xpath('/Dimap_Document/Spectral_Band_Info/BAND_DESCRIPTION')
         self.metadata['bands']=','.join([band.xpath('string(.)') for band in bands])
@@ -109,10 +108,12 @@ class Dataset(__default__.Dataset):
             dates[dts]=datetime
 
         self.metadata['imgdate']='%s/%s'%(dates[min(dates.keys())],dates[max(dates.keys())])
+        self.metadata['filetype']='DIMAP / %s'%dom.find('Metadata_Id/METADATA_PROFILE').text
 
         gdalmd=self._gdaldataset.GetMetadata()
         self.metadata['satellite']='%s %s' % (gdalmd['MISSION'],gdalmd['MISSION_INDEX'])
-        self.metadata['sensor']='%s %s' % (gdalmd['INSTRUMENT'],gdalmd['INSTRUMENT_INDEX'])
+        try:self.metadata['sensor']='%s %s' % (gdalmd['INSTRUMENT'],gdalmd['INSTRUMENT_INDEX'])
+        except:self.metadata['sensor']='%s' % gdalmd['INSTRUMENT']
         try:self.metadata['sunelevation'] = float(gdalmd['SUN_ELEVATION'])
         except:pass
         try:self.metadata['sunazimuth'] = float(gdalmd['SUN_AZIMUTH'])
@@ -121,9 +122,21 @@ class Dataset(__default__.Dataset):
         except:pass
         self.metadata['viewangle'] = gdalmd.get('VIEWING_ANGLE',gdalmd.get('INCIDENCE_ANGLE',''))
 
+        #Processing, store in lineage field
+        lineage=[]
+        for step in dom.find('Data_Processing').getchildren():
+            lineage.append('%s: %s' % (step.tag.replace('_',' '), step.text.replace('_',' ')))
+        self.metadata['lineage']='\n'.join(lineage)
+
+        #Level
+        if dom.find('Metadata_Id/METADATA_PROFILE').text=='DMCII':
+            self.metadata['level']=dom.find('Production/PRODUCT_TYPE').text
+
+        self._dom=dom
+
     def getoverview(self,outfile=None,width=800,format='JPG'):
         '''
-        Generate overviews for SPOT imagery
+        Generate overviews for DIMAP imagery
 
         @type  outfile: str
         @param outfile: a filepath to the output overview image. If supplied, format is determined from the file extension
@@ -133,13 +146,24 @@ class Dataset(__default__.Dataset):
         @param format:  format to generate overview image, one of ['JPG','PNG','GIF','BMP','TIF']. Not required if outfile is supplied.
         @rtype:         str
         @return:        filepath (if outfile is supplied)/binary image data (if outfile is not supplied)
+
+        @todo: Should we do something with the band display order metadata?
+            <Band_Display_Order>
+                <RED_CHANNEL>1</RED_CHANNEL>
+                <GREEN_CHANNEL>2</GREEN_CHANNEL>
+                <BLUE_CHANNEL>3</BLUE_CHANNEL>
+            </Band_Display_Order>
         '''
         from metageta import overviews
 
         #First check for a browse graphic, no point re-inventing the wheel...
         f=self.fileinfo['filepath']
-        browse=os.path.join(os.path.dirname(f),'PREVIEW.JPG')
-        if os.path.exists(browse):
+        #browse=os.path.join(os.path.dirname(f),'PREVIEW.JPG')
+        fp=self._dom.xpath('/Dimap_Document/Dataset_Id/DATASET_QL_PATH')[0]
+        fn=utilities.encode(fp.xpath('string(@href)')) #XML is unicode, gdal.Open doesn't like unicode
+        browse=os.path.join(os.path.dirname(f),fn)
+
+        if os.path.exists(browse) and gdal.Open(browse).RasterXSize >= width:
 
             try:return overviews.resize(browse,outfile,width)
             except:return __default__.Dataset.getoverview(self,outfile,width,format) #Try it the slow way...

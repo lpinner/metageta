@@ -29,7 +29,8 @@ B{Format specification}:
 '''
 
 #format_regex=[r'metadata\.dim$'] #DIMAP
-format_regex=[r'\.dim$'] #DIMAP
+#format_regex=[r'\.dim$'] #DIMAP any *.dim
+format_regex=[r'(?<!vol_list)\.dim$']#DIMAP - any *.dim (excluding vol_list.dim)
 '''Regular expression list of file formats'''
 
 #import base dataset modules
@@ -57,6 +58,8 @@ class Dataset(__default__.Dataset):
     '''Subclass of __default__.Dataset class so we get a load of metadata populated automatically'''
     def __init__(self,f):
         '''Open the dataset'''
+        if '<METADATA_PROFILE>VOLUME</METADATA_PROFILE>' in open(f).read(512).upper():
+            raise NotImplementedError
         if not f:f=self.fileinfo['filepath']
         self.filelist=[r for r in glob.glob('%s/*'%os.path.dirname(f))]
 

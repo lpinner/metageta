@@ -39,9 +39,11 @@ Example:
 #Workaround for Issue 34:
 #pickle doesn't like unicode, so use cPickle instead
 import logging,warnings,random,os,sys,socket,cPickle,threading,Queue,time,subprocess
-import Tkinter,tkMessageBox
-import ScrolledText
 from metageta import utilities
+try:
+    import Tkinter,tkMessageBox,ScrolledText
+except:
+    warnings.warn('Unable to import Tkinter, tkMessageBox and/or ScrolledText')
 
 #Define some constants
 DEBUG=logging.DEBUG
@@ -128,15 +130,16 @@ class ProgressLogger(logging.Logger):
         warnings.simplefilter('always')
         warnings.showwarning = self.showwarning
 
-
     # ================ #
     # Class Methods
     # ================ #
     def showmessage(self, title, msg,type=None):
-        tk=Tkinter.Tk()
-        tk.withdraw()
-        tkMessageBox.showinfo(title,msg,type=type)
-        tk.destroy()
+        try:
+            tk=Tkinter.Tk()
+            tk.withdraw()
+            tkMessageBox.showinfo(title,msg,type=type)
+            tk.destroy()
+        except:print msg
 
     def showwarning(self, msg, cat, fname, lno, file=None, line=None):
         self.warn(msg)
@@ -155,7 +158,6 @@ class ProgressLogger(logging.Logger):
                 h.flush()
                 h.close()
             except:pass
-
 
     # ================ #
     # Class Properties

@@ -376,7 +376,7 @@ if __name__ == '__main__':
         validate=getargs.Command(writablecallback,xlsarg)
         while keepalive:
             args=getargs.GetArgs(dirarg,medarg,xlsarg,updatearg,recursearg,archivearg,ovarg,kaarg,callback=validate,title=APP,icon=ICON)
-            if args:#GetArgs returns None if user cancels the GUI/closes the dialog
+            if args:#GetArgs returns None if user cancels the GUI/closes the dialog (or Tkinter can not be imported)
                 keepalive=args.keepalive
                 args.xls = utilities.checkExt(utilities.encode(args.xls), ['.xls'])
                 log=args.xls.replace('.xls','.log')
@@ -389,7 +389,9 @@ if __name__ == '__main__':
                 forceexit=True
                 main(args.dir,args.xls,logger,args.med,args.update,args.ovs,args.recurse,args.archive)
                 forceexit=False
-            else:keepalive=False
+            else:
+                parser.print_help()
+                keepalive=False
     else: #No need for the GUI
         xls = utilities.checkExt(utilities.encode(optvals.xls), ['.xls'])
         log=xls.replace('.xls','.log')

@@ -22,8 +22,14 @@
 '''
 Module to generate a GUI dialog to collect arguments
 '''
-import os,sys,Tix,tkFileDialog,tkMessageBox
+import os,sys
 from metageta import utilities
+
+try:
+    import Tix,tkFileDialog,tkMessageBox
+except ImportError:
+    import warnings
+    warnings.warn('Unable to import Tix, tkFileDialog and/or tkMessageBox')
 
 class GetArgs(object):
     def __new__(self,*args,**kwargs):#We use __new__ instead of __init__ so we can return None if the user clicks cancel
@@ -31,20 +37,23 @@ class GetArgs(object):
             @type  args:        C{list of L{Arg}s}
             @param args:        One or more C{L{Arg}s}.
             @type    title:     C{str}
-            @keyword title:     Window title. 
+            @keyword title:     Window title.
             @type    icon:      C{L{icons}}
             @keyword icon:      An icon class from the L{icons} module.
             @type    callback:  C{U{callable<http://docs.python.org/library/functions.html#callable>} object}
-            @keyword callback:  A function/class that is called when the OK button is clicked. 
+            @keyword callback:  A function/class that is called when the OK button is clicked.
                                 No positional/keyword arguments are supported (unless the L{Command} class is used).
-            
+
             @rtype:  C{GetArgs}
             @return:  C{GetArgs}
 
-            @see: L{runcrawler} for an example.                  
+            @see: L{runcrawler} for an example.
         '''
+        try:import Tix
+        except:return None
+
         self=object.__new__(self)
-        
+
         title=kwargs.get('title','Arguments')
         icon=kwargs.get('icon',None)
 
@@ -79,7 +88,7 @@ class GetArgs(object):
                 arg.lastdir=self._lastdir
             arg.__build__(self._root,i)
             self._args[argname]=arg
-                
+
         nargs=len(self._args)
         self._root.bind("<Return>", self._cmdok)
         self._root.protocol("WM_DELETE_WINDOW", self._cmdcancel)
@@ -93,7 +102,7 @@ class GetArgs(object):
         bCancel.grid(row=0, column=2,sticky=Tix.E, padx=5,pady=5)
 
         self._cancelled = False
-        
+
         self._root.deiconify()
         self._root.mainloop()
         if self._cancelled:return None
@@ -102,7 +111,7 @@ class GetArgs(object):
     def _cmdok(self,*args,**kwargs):
         for arg in self._args:
             try:vars(self)[arg]=self._args[arg].value.get()
-            except:pass            
+            except:pass
             #Every required arg (except disabled ones) must have a value
             if vars(self)[arg]=='' and self._args[arg].enabled and self._args[arg].required:
                 return None
@@ -212,7 +221,7 @@ class Arg(object):
         return locals()
 
 class DirArg(Arg):
-    ''' Build a directory browser 
+    ''' Build a directory browser
 
         @type    initialdir:   C{str}
         @keyword initialdir:   The folder to open the browser at initially.
@@ -221,7 +230,7 @@ class DirArg(Arg):
         self.initialdir=initialdir
         self.lastdir=None
         Arg.__init__(self,opt,**kwargs)
-        
+
     def __build__(self,root,row):
         self.TkPhotoImage = Tix.PhotoImage(format=self.icon.format,data=self.icon.data) # keep a reference! See http://effbot.org/tkinterbook/photoimage.htm
         self.value = Tix.StringVar(root)
@@ -230,7 +239,7 @@ class DirArg(Arg):
         if self.opt.default is not None:self.value.set(self.opt.default)
         self.TkLabel=Tix.Label(root, text=self.opt.help+':')
         self.TkEntry=Tix.Entry(root, textvariable=self.value)
-        
+
         self.TkButton = Tix.Button(root,image=self.TkPhotoImage, command=Command(self.cmd,root,self.opt.help,self.lastdir,self.value))
         self.TkLabel.grid(row=row, column=0,sticky=Tix.W, padx=2)
         self.TkEntry.grid(row=row, column=1,sticky=Tix.E+Tix.W, padx=2)
@@ -249,9 +258,9 @@ class DirArg(Arg):
             ad=utilities.encode(os.path.normpath(ad))
             dir.set(ad)
             var.set(ad)
-            
+
 class FileArg(Arg):
-    ''' Build a file browser 
+    ''' Build a file browser
 
         @type    initialdir:   C{list/tuple of strings}
         @keyword initialdir:   The folder to open the browser at initially.
@@ -265,7 +274,7 @@ class FileArg(Arg):
         self.lastdir=None
         self.saveas=saveas
         Arg.__init__(self,opt,**kwargs)
-        
+
     def __build__(self,root,row):
         self.TkPhotoImage = Tix.PhotoImage(format=self.icon.format,data=self.icon.data) # keep a reference! See http://effbot.org/tkinterbook/photoimage.htm
         self.value = Tix.StringVar()
@@ -315,7 +324,7 @@ class FileArg(Arg):
             var.set(fd)
 
 class ComboBoxArg(Arg):
-    ''' Build a combobox 
+    ''' Build a combobox
 
         @type    options:  C{list of strings}
         @keyword options:  The options to show in the combo box.
@@ -326,9 +335,9 @@ class ComboBoxArg(Arg):
         self.options=options
         self.multiselect=multiselect
         Arg.__init__(self,opt,**kwargs)
-        
+
     def __build__(self,root,row):
-        ''' Build a combobox 
+        ''' Build a combobox
 
             @type  root: C{Tix.Tk}
             @param root: Root Tk instance.
@@ -351,7 +360,7 @@ class ComboBoxArg(Arg):
             selected=self.opt.default
         else:
             selected=self.options[0]
-        
+
         self.TkComboBox.set_silent(selected)
         self.value.set(selected)
 
@@ -366,14 +375,14 @@ class ComboBoxArg(Arg):
             self.TkImageToolTip=_ToolTip(self.TkImage, delay=250, follow_mouse=1, text=self.tooltip)
 
         #self.value.trace('w',self.callback)
-        
+
         self.enabled=self.enabled #Force update
     def __updatemulti__(self,*args):
         try:listbox=self.TkComboBox.subwidget('slistbox').subwidget('listbox')
         except:return
         self.value.set('|'.join([listbox.get(i) for i in listbox.curselection()]))
         self.callback()
-        
+
 class StringArg(Arg):
     ''' Build a text entry box'''
     def __build__(self,root,row):
@@ -419,7 +428,7 @@ class Command(object):
 
     def __call__(self, *args, **kwargs):
         return apply(self.func, self.args, self.kwargs)
-        
+
 
 class _ToolTip:
     '''
@@ -428,7 +437,7 @@ class _ToolTip:
 
     The ToolTip class provides a flexible tooltip widget for Tkinter; it is based on IDLE's ToolTip
     module which unfortunately seems to be broken (at least the version I saw).
-    
+
     INITIALIZATION OPTIONS::
         anchor:        where the text should be positioned inside the widget, must be on of "n", "s", "e", "w", "nw" and so on;
                        default is "center"
@@ -579,7 +588,7 @@ class _ToolTip:
             del opts[opt]
         label = Tix.Label(self._tipwindow, **opts)
         label.pack()
-        
+
 
 if __name__ == '__main__':
     def testcmd(dirarg,filearg):
@@ -592,7 +601,7 @@ if __name__ == '__main__':
     def onupdate(*args,**kwargs):
         print args
         print 'Something has been updated...'
-        
+
     import optparse,icons,getargs
     reload(getargs)
     description='Run the getargs test'
@@ -608,11 +617,11 @@ if __name__ == '__main__':
 
     #Add a callback
     dirarg.callback=Command(testcmd,dirarg,filearg)
-    
+
     opt=parser.add_option('-s', dest="str", metavar="str",help='string test')
     strarg=getargs.StringArg(opt,callback=onupdate,enabled=True)
     strarg.tooltip='Testing string entry 123'
-    
+
 
     opt=parser.add_option("-n", action="store_true", dest="no",default=False,
                       help="A boolean arg")
@@ -623,7 +632,7 @@ if __name__ == '__main__':
     comboboxarg.options=['aaaa','bbbb','cccc','dddd']
     comboboxarg.tooltip='Tooltip!'
     comboboxarg.enabled=False
-    
+
     optvals,argvals = parser.parse_args()
     callback=lambda *a,**kw:False
     for opt in parser.option_list:

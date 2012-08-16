@@ -610,7 +610,7 @@ def RATtoLUT(rat):
         @return:     List of cell values and R,G,B,A values e.g ((12,0,0,0,255), (25,255,255,255,0))
     '''
     rgbcols={}
-    for iCol in range(0,rat.GetColumnCount()+1):
+    for iCol in range(0,rat.GetColumnCount()):#+1):
         sCol=rat.GetNameOfCol(iCol)
         if sCol.upper() == 'VALUE':
             rgbcols['VALUE']=iCol
@@ -622,7 +622,7 @@ def RATtoLUT(rat):
             rgbcols['B']=iCol
     if sorted(rgbcols.keys()) == ['B', 'G', 'R','VALUE']:
         clr,vals=[],[]
-        for iRow in range(0,rat.GetRowCount()+1):
+        for iRow in range(0,rat.GetRowCount()):#+1):
             val=rat.GetValueAsInt(iRow,rgbcols['VALUE'])
             if not val in vals: #Have been getting VALUE=0,COUNT=0 as the last row
                                 #in the ESRI grids I've tested on, even if 0 is already in the VAT

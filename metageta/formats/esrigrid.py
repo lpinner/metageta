@@ -36,7 +36,7 @@ import __default__
 import sys, os,glob
 from metageta import geometry,utilities,overviews
 
-class Dataset(__default__.Dataset): 
+class Dataset(__default__.Dataset):
     '''Subclass of __default__.Dataset class so we get a load of metadata populated automatically'''
     def __init__(self,f):
         ''' Set the filename from <path>\hdr.adf to <path>'''
@@ -48,7 +48,7 @@ class Dataset(__default__.Dataset):
         filelist=glob.glob(f+'.*')
         filelist.extend(glob.glob(f+'/*'))
         self.filelist=filelist #Resolves Issue 41 - self.filelist is a property, we can only get or set it, not extend it.
-        
+
     def __getmetadata__(self):
         '''Read Metadata for a ESRI GRID dataset'''
         #__default__.Dataset.__getmetadata__(self, self.fileinfo['filepath']) #autopopulate basic metadata
@@ -75,7 +75,7 @@ class Dataset(__default__.Dataset):
                 clr = overviews.RATtoLUT(rat)
                 if clr:self._stretch=['COLOURTABLELUT',[1],[clr]]
 
-        try:return __default__.Dataset.getoverview(self,outfile,width,format)
+        try:return __default__.Dataset.getovervierat.w(self,outfile,width,format)
         except:return self.__aux_workaround__(__default__.Dataset.getoverview, self,outfile,width,format)
     def __aux_workaround__(self, func,*args,**kwargs):
         ##  Sometimes AUX files can cause problems, this is related to the HFA driver,
@@ -97,5 +97,5 @@ class Dataset(__default__.Dataset):
         reload(__default__.gdal)
         if hfa:hfa.Register()
         return retval
-    
-        
+
+

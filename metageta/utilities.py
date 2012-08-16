@@ -524,21 +524,24 @@ class rglob:
             else:
                 # got a filename
                 fullname = os.path.join(self.directory, file)
+                islink=os.path.islink(fullname)
+                isdir=os.path.isdir(fullname) and not islink
+                isarchive=(not islink and not isdir) and (tarfile.is_tarfile(fullname) or zipfile.is_zipfile(fullname))
+                isfile=(not isdir and not isarchive and not islink) and os.path.isfile(fullname)
 
-                if os.path.isdir(fullname) and not os.path.islink(fullname) and self.recurse:
+                if isdir and self.recurse:
                     self.stack.append(fullname)
-                elif self.archive and os.path.exists(fullname):
-                    if tarfile.is_tarfile(fullname) or zipfile.is_zipfile(fullname):
-                        self.stack.append(fullname)
-
-                if self.regex:
-                    import re
-                    if re.search(self.pattern,file,self.regex_flags):
-                        return fullname
-                else:
-                    import fnmatch
-                    if fnmatch.fnmatch(file, self.pattern):
-                        return fullname
+                elif isarchive and self.archive and os.path.exists(fullname):
+                    self.stack.append(fullname)
+                elif isfile:
+                    if self.regex:
+                        import re
+                        if re.search(self.pattern,file,self.regex_flags):
+                            return fullname
+                    else:
+                        import fnmatch
+                        if fnmatch.fnmatch(file, self.pattern):
+                            return fullname
 
 
 #========================================================================================================

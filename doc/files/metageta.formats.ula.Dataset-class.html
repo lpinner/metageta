@@ -3,7 +3,7 @@
           "DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-  <title>metageta.formats.spot_dimap.Dataset</title>
+  <title>metageta.formats.ula.Dataset</title>
   <link rel="stylesheet" href="epydoc.css" type="text/css" />
   <script type="text/javascript" src="epydoc.js"></script>
 </head>
@@ -41,7 +41,7 @@
       <span class="breadcrumbs">
         <a href="metageta-module.html">Package&nbsp;metageta</a> ::
         <a href="metageta.formats-module.html">Package&nbsp;formats</a> ::
-        <a href="metageta.formats.spot_dimap-module.html">Module&nbsp;spot_dimap</a> ::
+        <a href="metageta.formats.ula-module.html">Module&nbsp;ula</a> ::
         Class&nbsp;Dataset
       </span>
     </td>
@@ -52,14 +52,14 @@
     onclick="toggle_private();">hide&nbsp;private</a>]</span></td></tr>
         <tr><td align="right"><span class="options"
             >[<a href="frames.html" target="_top">frames</a
-            >]&nbsp;|&nbsp;<a href="metageta.formats.spot_dimap.Dataset-class.html"
+            >]&nbsp;|&nbsp;<a href="metageta.formats.ula.Dataset-class.html"
             target="_top">no&nbsp;frames</a>]</span></td></tr>
       </table>
     </td>
   </tr>
 </table>
 <!-- ==================== CLASS DESCRIPTION ==================== -->
-<h1 class="epydoc">Class Dataset</h1><p class="nomargin-top"><span class="codelink"><a href="metageta.formats.spot_dimap-pysrc.html#Dataset">source&nbsp;code</a></span></p>
+<h1 class="epydoc">Class Dataset</h1><p class="nomargin-top"><span class="codelink"><a href="metageta.formats.ula-pysrc.html#Dataset">source&nbsp;code</a></span></p>
 <pre class="base-tree">
          object --+        
                   |        
@@ -71,8 +71,7 @@
 </pre>
 
 <hr />
-<p>Subclass of __default__.Dataset class so we get a load of metadata 
-  populated automatically</p>
+<p>Subclass of base Dataset class</p>
 
 <!-- ==================== INSTANCE METHODS ==================== -->
 <a name="section-InstanceMethods"></a>
@@ -97,11 +96,11 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="metageta.formats.spot_dimap.Dataset-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="metageta.formats.ula.Dataset-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">f</span>)</span><br />
-      Open the dataset</td>
+      In case subclasses don't override...</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="metageta.formats.spot_dimap-pysrc.html#Dataset.__init__">source&nbsp;code</a></span>
+            <span class="codelink"><a href="metageta.formats.ula-pysrc.html#Dataset.__init__">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -115,32 +114,11 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="metageta.formats.spot_dimap.Dataset-class.html#__getmetadata__" class="summary-sig-name">__getmetadata__</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">f</span>=<span class="summary-sig-default">None</span>)</span><br />
-      Read Metadata for a SPOT DIMAP image as GDAL doesn't quite get it 
-      all...</td>
+          <td><span class="summary-sig"><a href="metageta.formats.ula.Dataset-class.html#__getmetadata__" class="summary-sig-name">__getmetadata__</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Read Metadata for a &quot;scene01/*.tif&quot; (possibly) multiband 
+      image</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="metageta.formats.spot_dimap-pysrc.html#Dataset.__getmetadata__">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">str</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="metageta.formats.spot_dimap.Dataset-class.html#getoverview" class="summary-sig-name">getoverview</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">outfile</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">width</span>=<span class="summary-sig-default">800</span>,
-        <span class="summary-sig-arg">format</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">JPG</code><code class="variable-quote">'</code></span>)</span><br />
-      Generate overviews for SPOT imagery</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="metageta.formats.spot_dimap-pysrc.html#Dataset.getoverview">source&nbsp;code</a></span>
+            <span class="codelink"><a href="metageta.formats.ula-pysrc.html#Dataset.__getmetadata__">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -215,6 +193,26 @@
         <span class="summary-sig-arg">f</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="metageta.formats.__dataset__-pysrc.html#Dataset.__setfileinfo__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="metageta.formats.__dataset__.Dataset-class.html#getoverview" class="summary-sig-name">getoverview</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">outfile</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">width</span>=<span class="summary-sig-default">800</span>,
+        <span class="summary-sig-arg">format</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">JPG</code><code class="variable-quote">'</code></span>)</span><br />
+      Generate overviews for generic imagery</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="metageta.formats.__dataset__-pysrc.html#Dataset.getoverview">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -372,14 +370,15 @@
     <br /><em class="fname">(Constructor)</em>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="metageta.formats.spot_dimap-pysrc.html#Dataset.__init__">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="metageta.formats.ula-pysrc.html#Dataset.__init__">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>Open the dataset</p>
+  <p>In case subclasses don't override...</p>
   <dl class="fields">
     <dt>Overrides:
         object.__init__
+        <dd><em class="note">(inherited documentation)</em></dd>
     </dt>
   </dl>
 </td></tr></table>
@@ -391,16 +390,15 @@
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">__getmetadata__</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">f</span>=<span class="sig-default">None</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__getmetadata__</span>(<span class="sig-arg">self</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="metageta.formats.spot_dimap-pysrc.html#Dataset.__getmetadata__">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="metageta.formats.ula-pysrc.html#Dataset.__getmetadata__">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>Read Metadata for a SPOT DIMAP image as GDAL doesn't quite get it 
-  all...</p>
+  <p>Read Metadata for a &quot;scene01/*.tif&quot; (possibly) multiband 
+  image</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
@@ -410,43 +408,6 @@
         <dd>None</dd>
     <dt>Overrides:
         <a href="metageta.formats.__dataset__.Dataset-class.html#__getmetadata__">__dataset__.Dataset.__getmetadata__</a>
-    </dt>
-  </dl>
-</td></tr></table>
-</div>
-<a name="getoverview"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">getoverview</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">outfile</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">width</span>=<span class="sig-default">800</span>,
-        <span class="sig-arg">format</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">JPG</code><code class="variable-quote">'</code></span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="metageta.formats.spot_dimap-pysrc.html#Dataset.getoverview">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Generate overviews for SPOT imagery</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>outfile</code></strong> (str) - a filepath to the output overview image. If supplied, format is 
-          determined from the file extension</li>
-        <li><strong class="pname"><code>width</code></strong> (int) - image width</li>
-        <li><strong class="pname"><code>format</code></strong> (str) - format to generate overview image, one of 
-          ['JPG','PNG','GIF','BMP','TIF']. Not required if outfile is 
-          supplied.</li>
-    </ul></dd>
-    <dt>Returns: str</dt>
-        <dd>filepath (if outfile is supplied)/binary image data (if outfile 
-          is not supplied)</dd>
-    <dt>Overrides:
-        <a href="metageta.formats.__dataset__.Dataset-class.html#getoverview">__dataset__.Dataset.getoverview</a>
     </dt>
   </dl>
 </td></tr></table>

@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # -*- coding: utf-8 -*-
 # Copyright (c) 2011 Australian Government, Department of Sustainability, Environment, Water, Population and Communities
 #

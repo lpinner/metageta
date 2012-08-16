@@ -524,9 +524,12 @@ class rglob:
             else:
                 # got a filename
                 fullname = os.path.join(self.directory, file)
-                islink=os.path.islink(fullname)
-                isdir=os.path.isdir(fullname) and not islink
-                isarchive=(not islink and not isdir) and (tarfile.is_tarfile(fullname) or zipfile.is_zipfile(fullname))
+                try:islink=os.path.islink(fullname)
+                except:islink=False
+                try:isdir=os.path.isdir(fullname) and not islink
+                except:isdir=False
+                try:isarchive=(not islink and not isdir) and (tarfile.is_tarfile(fullname) or zipfile.is_zipfile(fullname))
+                except:isarchive=False
                 isfile=(not isdir and not isarchive and not islink) and os.path.isfile(fullname)
 
                 if isdir and self.recurse:

@@ -17,8 +17,8 @@ for %%a in (%*) do (
 )
 if %nogui%==1 (
     call python.exe "%~DP0runtransform.py" %*
+    pause
 ) else (
     start "Crawler" /b pythonw.exe "%~DP0runtransform.py" %*
 )
 endlocal
-pause

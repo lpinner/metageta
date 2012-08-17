@@ -208,11 +208,11 @@
   <xsl:template name="default_contact">
     <xsl:param name="contact">custodian</xsl:param> <!--default-->
     <!--xsl:variable name="defaultcontact">
-        <xsl:copy-of select="exsl:node-set(document('../../config/config.xml'))/config/defaultcontact"/>
+        <xsl:copy-of select="exsl:node-set(document('../config/config.xml'))/config/defaultcontact"/>
     </xsl:variable-->
     <xsl:variable 
       name="defaultcontact"
-      select="document('../../config/config.xml')/config/defaultcontact"/>
+      select="document('../config/config.xml')/config/defaultcontact"/>
         
     <gmd:CI_ResponsibleParty>
       <gmd:individualName gco:nilReason="withheld">

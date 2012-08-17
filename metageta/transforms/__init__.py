@@ -193,7 +193,8 @@ import time as _time,os as _os,zipfile as _zip,shutil as _sh,sys as _sys
 if __name__ == '__main__':_sys.exit(0)
 
 from lxml import etree as _etree
-from metageta import utilities  as _utilities
+from metageta import utilities  as _utilities, __path__ as _mpath
+#from metageta import
 
 #++++++++++++++++++++++++
 #Public vars
@@ -218,7 +219,7 @@ for _f in _glob(_path.join(__path__[0],'*.xml')):
     transforms[_name]=_desc
 
 #Load config
-config=_etree.parse('%s/config/config.xml'%_env['CURDIR'])
+config=_etree.parse('%s/config/config.xml'%_mpath[0])
 categories={'default':config.xpath('string(/config/geonetwork/categories/@default)'),
              'categories':config.xpath('/config/geonetwork/categories/category/@name')
              }
@@ -231,8 +232,8 @@ if not operations['default'] and not operations['operations']:operations={'defau
 
 site={}
 for _key in ['name','organization','siteId']:
-    s=config.xpath('string(/config/geonetwork/site/%s)'%_key)
-    if s:site[_key]=s
+    _s=config.xpath('string(/config/geonetwork/site/%s)'%_key)
+    if _s:site[_key]=_s
     else:site[_key]='dummy'
 
 #++++++++++++++++++++++++
@@ -256,7 +257,7 @@ def Transform(inxmlstring,transform,outxmlfile):
     xslt = _etree.XSLT(xsl)
     result = xslt(xml)
     open(outxmlfile, 'w').write(str(result))
-    
+
 def ListToXML(lst,root,asstring=True):
     '''Transform a metadata record to a flat XML string'''
 

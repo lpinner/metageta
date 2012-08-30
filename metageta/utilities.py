@@ -721,6 +721,7 @@ class ExcelWriter:
         if data!=dict(data):
             fields,values = zip(*data)
             for i,field in enumerate(fields):
+                value=values[i]
                 if field in self._fields and value not in ['',None,False]:#0 is valid
                     try:col=cols[field].pop(0)
                     except:continue

@@ -189,7 +189,7 @@ Additional metadata elements
 from glob import glob as _glob
 from os import path as _path, environ as _env
 import StringIO as _strio
-import time as _time,os as _os,zipfile as _zip,shutil as _sh,sys as _sys
+import time as _time,os as _os,zipfile as _zip,shutil as _sh,sys as _sys,tempfile as _tmp
 if __name__ == '__main__':_sys.exit(0)
 
 from lxml import etree as _etree
@@ -317,15 +317,17 @@ def CreateMEF(outdir,xmlfile,uid,overviews=[],cat=categories['default'],ops=oper
     @todo: Assumes metadata is ISO19139, need to make generic somehow...
 
     '''
+
     xmldir=_path.dirname(xmlfile)
     curdir=_path.abspath(_os.curdir)
-    mefdir=_path.join(_os.environ['TEMP'],_path.basename(_path.splitext(xmlfile)[0]))
+    #mefdir=_path.join(_os.environ['TEMP'],_path.basename(_path.splitext(xmlfile)[0]))
+    mefdir=mefdir=_tmp.mkdtemp()
     mefpath='%s.mef'%(_path.join(outdir,_path.basename(_path.splitext(xmlfile)[0])))
-    try:
+    try: #
         if _path.exists(mefpath):_os.remove(mefpath)
-        if _path.exists(mefdir):_sh.rmtree(mefdir)
+        #if _path.exists(mefdir):_sh.rmtree(mefdir)
         mef=_zip.ZipFile(mefpath,'w',_zip.ZIP_DEFLATED)
-        _os.mkdir(mefdir)
+        #_os.mkdir(mefdir)
         _os.chdir(mefdir)
         _sh.copy(xmlfile,'metadata.xml')
         if overviews:
@@ -333,7 +335,7 @@ def CreateMEF(outdir,xmlfile,uid,overviews=[],cat=categories['default'],ops=oper
             for f in overviews:
                 _sh.copy(f,_path.join('public',_path.basename(f)))
         _CreateInfo(uid,overviews,cat,ops)
-        _sh.copy(xmlfile,'metadata.xml')
+        #_sh.copy(xmlfile,'metadata.xml')
         for f in _utilities.rglob('.'):
             if not _path.isdir(f): mef.write(f)
     finally:

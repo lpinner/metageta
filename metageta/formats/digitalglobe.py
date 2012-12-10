@@ -29,7 +29,7 @@ B{Format specification}:
 format_regex=[r'[0-9][0-9][A-Z]{3,3}.*\.imd$',
               r'[0-9][0-9][A-Z]{3,3}.*\.tif$',
               r'[0-9][0-9][A-Z]{3,3}.*\.img$',
-              r'[0-9][0-9][A-Z]{3,3}.*\.ntf$']#Digital Globe 
+              r'[0-9][0-9][A-Z]{3,3}.*\.ntf$']#Digital Globe
 '''Regular expression list of file formats'''
 
 #import base dataset modules
@@ -52,7 +52,7 @@ except ImportError:
     import ogr
 gdal.AllRegister()
 
-class Dataset(__default__.Dataset): 
+class Dataset(__default__.Dataset):
     '''Subclass of __default__.Dataset class so we get a load of metadata populated automatically'''
     def __init__(self,f):
         self.filelist=glob.glob(os.path.dirname(f)+'/*')
@@ -60,7 +60,21 @@ class Dataset(__default__.Dataset):
             imd=glob.glob(os.path.splitext(f)[0]+'.[Ii][Mm][Dd]')
             if imd:
                 self.__setfileinfo__(imd[0])
-            else:raise Exception, 'No matching IMD file'
+            else:raise NotImplementedError, 'No matching IMD file'
+
+        self.exts={'.tif':'GTiff/GeoTIFF','.img':'HFA/Erdas Imagine Images (.img)','.ntf':'NITF/National Imagery Transmission Format (.ntf)','.pix':'PCI Geomatics Database File (.pix)'}
+        self.til=False
+        self.img=False
+
+        btil,self.til = utilities.exists(os.path.splitext(f)[0]+'.til',True)
+        if not btil:
+            for ext in self.exts:
+                bext,ext = utilities.exists(os.path.splitext(f)[0]+ext,True)
+                if bext:
+                    self.img=ext
+                    break
+
+            if not self.img:raise NotImplementedError, 'Matching DigitalGlobe imagery file not found:\n'
 
     def __getmetadata__(self):
         '''Read Metadata for an Digital Globe format image as GDAL doesn't quite get it all...
@@ -69,27 +83,17 @@ class Dataset(__default__.Dataset):
         '''
         f=self.fileinfo['filepath']
         imddata=self.__getimddata__(f)
-        
-        exts={'.tif':'GTiff/GeoTIFF','.img':'HFA/Erdas Imagine Images (.img)','.ntf':'NITF/National Imagery Transmission Format (.ntf)','.pix':'PCI Geomatics Database File (.pix)'}
-        btil,til = utilities.exists(os.path.splitext(f)[0]+'.til',True)
-        if btil:
-            vrt=self.__gettilevrt__(til,imddata)
+
+        if self.til:
+            vrt=self.__gettilevrt__(self.til,imddata)
             __default__.Dataset.__getmetadata__(self, vrt)
             for tmp in self.filelist:
-                for ext in exts:
+                for ext in self.exts:
                     if tmp[-4:].lower()==ext:
-                        self.metadata['filetype']=exts[ext]
+                        self.metadata['filetype']=self.exts[ext]
                         break
         else:
-            img=False
-            for ext in exts:
-                bext,ext = utilities.exists(os.path.splitext(f)[0]+ext,True)
-                if bext:
-                    __default__.Dataset.__getmetadata__(self, ext)
-                    img=True
-                    break
-
-            if not img:raise IOError, 'Matching DigitalGlobe imagery file not found:\n'
+            __default__.Dataset.__getmetadata__(self, self.img)
 
         self.metadata['metadata']=open(f).read()
 
@@ -183,7 +187,7 @@ class Dataset(__default__.Dataset):
         GeoTransform=','.join(map(str, GeoTransform))
         numTiles=int(tileinfo['numTiles'])
         BlockXSize,BlockYSize=rb.GetBlockSize()
-        
+
         vrtXML = []
         vrtXML.append('<VRTDataset rasterXSize="%s" rasterYSize="%s">' % (imddata['numColumns'],imddata['numRows']))
         vrtXML.append('<SRS>%s</SRS>' % Projection)
@@ -210,7 +214,7 @@ class Dataset(__default__.Dataset):
         vrtXML.append('</VRTDataset>')
         vrtXML='\n'.join(vrtXML)
         return vrtXML
-        
+
     def __getimddata__(self,f):
         #Loop thru and parse the IMD file.
         #would be easier to walk the nodes in the XML files, but not all of our QB imagery has this
@@ -252,7 +256,7 @@ class Dataset(__default__.Dataset):
         imddata['nbands']=len(bands)
         return imddata
 
-    def getoverview(self,outfile=None,width=800,format='JPG'): 
+    def getoverview(self,outfile=None,width=800,format='JPG'):
         '''
         Generate overviews for Digital Globe imagery
 
@@ -276,4 +280,4 @@ class Dataset(__default__.Dataset):
             except:return __default__.Dataset.getoverview(self,outfile,width,format) #Try it the slow way...
 
         else: return __default__.Dataset.getoverview(self,outfile,width,format)#Do it the slow way...
-        
+

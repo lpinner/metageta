@@ -200,7 +200,8 @@ def _stretch_PERCENT(vrtcols,vrtrows,ds,bands,low,high):
         @rtype:       C{xml}
         @return:      VRT XML string
     '''
-    if low >=1:
+    #if low >=1:
+    if high > 1:
         low=low/100.0
         high=high/100.0
     vrt=[]
@@ -245,6 +246,7 @@ def _stretch_PERCENT(vrtcols,vrtrows,ds,bands,low,high):
             dfScaleDstMin,dfScaleDstMax=0.0,255.0 #Always going to be Byte for output jpegs
             dfScale = (dfScaleDstMax - dfScaleDstMin) / (dfScaleSrcMax - dfScaleSrcMin)
             dfOffset = -1 * dfScaleSrcMin * dfScale + dfScaleDstMin
+            print dfScaleSrcMin,dfScaleSrcMax
         except:
             dfOffset=0
             dfScale=1

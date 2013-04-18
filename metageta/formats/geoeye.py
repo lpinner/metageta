@@ -52,7 +52,7 @@ class Dataset(__default__.Dataset):
     '''Subclass of __default__.Dataset class so we get a load of metadata populated automatically'''
     def __init__(self,f):
         self.mdtxt=open(f).read()
-        if 'GeoEye' not in self.mdtxt:raise NotImplementedError
+        if 'Source Image Metadata' not in self.mdtxt:raise NotImplementedError
 
         self.filelist=glob.glob(os.path.join(os.path.dirname(f),'*'))
 
@@ -85,16 +85,17 @@ class Dataset(__default__.Dataset):
         #    |       +---po_123456_0000000   <--- Scene ("component") directory (Doesn't always match this pattern...)
         #    |       +---po_123456_0010000   <--- Scene ("component") directory
         #    |       \---po_123456_0020000   <--- Scene ("component") directory
-        #component=os.path.basename(os.path.dirname(f)).split('_') #i.e. ['po','123456','0020000']
+
         for fl in self.filelist:
             while os.path.basename(fl)!=os.path.splitext(os.path.basename(fl))[0]:
                 fl=os.path.splitext(os.path.basename(fl))[0]
 
-            if fnmatch.fnmatch(fl,'po_[0-9][0-9][0-9][0-9][0-9][0-9]_*_[0-9][0-9][0-9][0-9][0-9][0-9][0-9]*'):
+            if fnmatch.fnmatch(fl,'po_[0-9]*_*_[0-9]*'):
                 component=fl.split('_') #i.e. ['po','123456',pan,'0020000']
                 break
         component_id=component[3]         #i.e. 0020000
         image_id=component_id.rstrip('0') #i.e. 002
+        if not image_id:image_id='000'
         image_start = self.mdtxt.find(r'Product Image ID: %s'%image_id)
         component_start = self.mdtxt.find(r'Component ID: %s'%component_id,image_start)
 
@@ -106,6 +107,10 @@ class Dataset(__default__.Dataset):
         except:pass
         try:
             mat=re.search(r'^\s*Sensor Name:\s*(?P<md>.+$)',self.mdtxt, re.I+re.M)
+            md['satellite']=mat.groupdict()['md']
+        except:pass
+        try:
+            mat=re.search(r'^\s*Sensor:\s*(?P<md>.+$)',self.mdtxt, re.I+re.M)
             md['satellite']=mat.groupdict()['md']
         except:pass
         try:

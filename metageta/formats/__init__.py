@@ -150,7 +150,7 @@ fields=__fields__.fields
 
 debug=False
 #Dynamically load all formats
-for _lib in _glob(_path.join(__path__[0],'[a-z]*.py')):
+for _lib in sorted(_glob(_path.join(__path__[0],'[a-z]*.py'))):
     _lib=_path.splitext(_path.basename(_lib))[0]
     try:
         #import custom format and add to the list of formats

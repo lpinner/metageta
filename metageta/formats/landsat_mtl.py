@@ -54,20 +54,55 @@ class Dataset(__default__.Dataset):
         self.filelist = glob.glob(os.path.dirname(f)+'/*')
     def __getmetadata__(self):
         '''Read Metadata for a Landsat Geotiff with Level 1 Metadata format image as GDAL doesn't get it all.'''
-        
         f=self.fileinfo['filepath']
         d=os.path.dirname(f)
         hdr=parseheader(f)
+        
+        if hdr['L1_METADATA_FILE'].get('LANDSAT_SCENE_ID'):self.__getnewmetadata__(f,d,hdr)
+        else:self.__getoldmetadata__(f,d,hdr)
 
+        md=self.metadata
+        vrtxml=geometry.CreateSimpleVRT(self.bandfiles,md['cols'],md['rows'], md['datatype'])
+        self._gdaldataset = geometry.OpenDataset(vrtxml)
+        self._stretch=['PERCENT',[3,2,1], [2,98]]
+
+    def __getnewmetadata__(self,f,d,hdr):
+        '''Read Metadata for a Landsat Geotiff with new (>2012) Level 1 Metadata.'''
+
+        bands=[''.join(fnb.split('_')[3:]).replace('VCID','') for fnb in sorted(hdr['PRODUCT_METADATA'].keys()) if fnb.startswith('FILE_NAME_BAND')]
+        self.bandfiles=[os.path.join(d,hdr['PRODUCT_METADATA'][fnb]) for fnb in sorted(hdr['PRODUCT_METADATA'].keys()) if fnb.startswith('FILE_NAME_BAND')]
+
+        __default__.Dataset.__getmetadata__(self, self.bandfiles[0])
+
+        md=self.metadata
+        md['metadata']=open(f).read().replace('\x00','')
+        md['sceneid']=hdr['L1_METADATA_FILE']['LANDSAT_SCENE_ID']
+        md['filetype'] = 'GTIFF/Landsat MTL Geotiff'
+
+        md['bands']=','.join(bands)
+        md['nbands']=len(bands)
+        md['level']=hdr['PRODUCT_METADATA']['DATA_TYPE']
+        md['imgdate']='%sT%s'%(hdr['PRODUCT_METADATA']['DATE_ACQUIRED'],hdr['PRODUCT_METADATA']['SCENE_CENTER_TIME'][0:8]) #ISO 8601 format, strip off the milliseconds
+        md['satellite']=hdr['PRODUCT_METADATA']['SPACECRAFT_ID']
+        md['sensor']=hdr['PRODUCT_METADATA']['SENSOR_ID']
+        md['demcorrection']=hdr['PRODUCT_METADATA'].get('ELEVATION_SOURCE','') #Level 1G isn't terrain corrected
+        md['resampling']=hdr['PROJECTION_PARAMETERS']['RESAMPLING_OPTION']
+        md['sunazimuth']=hdr['IMAGE_ATTRIBUTES']['SUN_AZIMUTH']
+        md['sunelevation']=hdr['IMAGE_ATTRIBUTES']['SUN_ELEVATION']
+        md['cloudcover']=hdr['IMAGE_ATTRIBUTES']['CLOUD_COVER']
+
+    def __getoldmetadata__(self,f,d,hdr):
+        '''Read Metadata for a Landsat Geotiff with ol (pre 2012) Level 1 Metadata.'''
+        
         bands=sorted([i for i in hdr['PRODUCT_METADATA']['BAND_COMBINATION']])
         if hdr['PRODUCT_METADATA']['SENSOR_ID']=='ETM+': #Landsat 7 has 2 data files for thermal band 6
             #Format=123456678
             bands[5]=bands[5].replace('6','61')
             bands[6]=bands[6].replace('6','62')
 
-        bandfiles=[os.path.join(d,hdr['PRODUCT_METADATA']['BAND%s_FILE_NAME'%b]) for b in bands]
+        self.bandfiles=[os.path.join(d,hdr['PRODUCT_METADATA']['BAND%s_FILE_NAME'%b]) for b in bands]
 
-        __default__.Dataset.__getmetadata__(self, bandfiles[0])
+        __default__.Dataset.__getmetadata__(self, self.bandfiles[0])
 
         md=self.metadata
         md['metadata']=open(f).read().replace('\x00','')
@@ -84,9 +119,6 @@ class Dataset(__default__.Dataset):
         md['resampling']=hdr['PROJECTION_PARAMETERS']['RESAMPLING_OPTION']
         md['sunazimuth']=hdr['PRODUCT_PARAMETERS']['SUN_AZIMUTH']
         md['sunelevation']=hdr['PRODUCT_PARAMETERS']['SUN_ELEVATION']
-        vrtxml=geometry.CreateSimpleVRT(bandfiles,md['cols'],md['rows'], md['datatype'])
-        self._gdaldataset = geometry.OpenDataset(vrtxml)
-        self._stretch=['PERCENT',[3,2,1], [2,98]]
 
 def parseheader(f):
     ''' A simple header parser.

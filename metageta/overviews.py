@@ -246,7 +246,6 @@ def _stretch_PERCENT(vrtcols,vrtrows,ds,bands,low,high):
             dfScaleDstMin,dfScaleDstMax=0.0,255.0 #Always going to be Byte for output jpegs
             dfScale = (dfScaleDstMax - dfScaleDstMin) / (dfScaleSrcMax - dfScaleSrcMin)
             dfOffset = -1 * dfScaleSrcMin * dfScale + dfScaleDstMin
-            print dfScaleSrcMin,dfScaleSrcMax
         except:
             dfOffset=0
             dfScale=1

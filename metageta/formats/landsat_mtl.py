@@ -37,6 +37,11 @@ import sys, os, re, glob, time, math, string
 from metageta import utilities, geometry, spatialreferences
 
 try:
+    from collections import OrderedDict
+except:
+    from metageta.ordereddict import OrderedDict
+
+try:
     from osgeo import gdal
     from osgeo import gdalconst
     from osgeo import osr
@@ -48,7 +53,7 @@ except ImportError:
     import ogr
 gdal.AllRegister()
 
-class Dataset(__default__.Dataset): 
+class Dataset(__default__.Dataset):
     '''Subclass of __default__.Dataset class so we get a load of metadata populated automatically'''
     def __init__(self,f):
         self.filelist = glob.glob(os.path.dirname(f)+'/*')
@@ -57,20 +62,29 @@ class Dataset(__default__.Dataset):
         f=self.fileinfo['filepath']
         d=os.path.dirname(f)
         hdr=parseheader(f)
-        
+
         if hdr['L1_METADATA_FILE'].get('LANDSAT_SCENE_ID'):self.__getnewmetadata__(f,d,hdr)
         else:self.__getoldmetadata__(f,d,hdr)
 
         md=self.metadata
         vrtxml=geometry.CreateSimpleVRT(self.bandfiles,md['cols'],md['rows'], md['datatype'])
         self._gdaldataset = geometry.OpenDataset(vrtxml)
-        self._stretch=['PERCENT',[3,2,1], [2,98]]
+        for i in range(self._gdaldataset.RasterCount):
+            self._gdaldataset.GetRasterBand(i+1).SetNoDataValue(0)
+
+        #Fix quicklook stretch for Landsat 8 data
+        if md['satellite']=='LANDSAT_8':
+            self._stretch=['PERCENT',[4,3,2],[1,99]]
+        else:
+            self._stretch=['PERCENT',[3,2,1], [2,98]]
 
     def __getnewmetadata__(self,f,d,hdr):
         '''Read Metadata for a Landsat Geotiff with new (>2012) Level 1 Metadata.'''
 
-        bands=[''.join(fnb.split('_')[3:]).replace('VCID','') for fnb in sorted(hdr['PRODUCT_METADATA'].keys()) if fnb.startswith('FILE_NAME_BAND')]
-        self.bandfiles=[os.path.join(d,hdr['PRODUCT_METADATA'][fnb]) for fnb in sorted(hdr['PRODUCT_METADATA'].keys()) if fnb.startswith('FILE_NAME_BAND')]
+        #bands=[''.join(fnb.split('_')[3:]).replace('VCID','') for fnb in sorted(hdr['PRODUCT_METADATA'].keys()) if fnb.startswith('FILE_NAME_BAND')]
+        #self.bandfiles=[os.path.join(d,hdr['PRODUCT_METADATA'][fnb]) for fnb in sorted(hdr['PRODUCT_METADATA'].keys()) if fnb.startswith('FILE_NAME_BAND')]
+        bands=[''.join(fnb.split('_')[3:]).replace('VCID','') for fnb in hdr['PRODUCT_METADATA'].keys() if fnb.startswith('FILE_NAME_BAND')]
+        self.bandfiles=[os.path.join(d,hdr['PRODUCT_METADATA'][fnb]) for fnb in hdr['PRODUCT_METADATA'].keys() if fnb.startswith('FILE_NAME_BAND')]
 
         __default__.Dataset.__getmetadata__(self, self.bandfiles[0])
 
@@ -93,7 +107,7 @@ class Dataset(__default__.Dataset):
 
     def __getoldmetadata__(self,f,d,hdr):
         '''Read Metadata for a Landsat Geotiff with ol (pre 2012) Level 1 Metadata.'''
-        
+
         bands=sorted([i for i in hdr['PRODUCT_METADATA']['BAND_COMBINATION']])
         if hdr['PRODUCT_METADATA']['SENSOR_ID']=='ETM+': #Landsat 7 has 2 data files for thermal band 6
             #Format=123456678
@@ -122,7 +136,7 @@ class Dataset(__default__.Dataset):
 
 def parseheader(f):
     ''' A simple header parser.
-    
+
         @type    f: C{str}
         @param   f: Path to header file
         @rtype:   C{dict}
@@ -133,7 +147,8 @@ def parseheader(f):
               as it's version of the parser extracts band information.
     '''
     lines=iter(open(f).readlines())
-    hdrdata={}
+
+    hdrdata=OrderedDict({})
     line=lines.next()
     while line:
         line=[item.strip() for item in line.replace('"','').split('=')]
@@ -143,7 +158,7 @@ def parseheader(f):
         if group in ['END_GROUP']:pass
         elif group in ['BEGIN_GROUP','GROUP']:
             group=value
-            subdata={}
+            subdata=OrderedDict({})
             while line:
                 line=lines.next()
                 line = [l.replace('"','').strip() for l in line.split('=')]

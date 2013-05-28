@@ -44,6 +44,7 @@ Usage::
 
 @todo: Set up logging & debug properly.
 '''
+#@sysarg: C{--nogui}         : Don't show the GUI progress dialog")
 
 #Imports
 import os,sys,glob

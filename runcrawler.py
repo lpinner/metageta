@@ -37,11 +37,12 @@ Usage::
 @sysarg: C{-o, --overviews} : Generate overview (quicklook/thumbnail) images")
 @sysarg: C{-r, --recurse}   : Search directory recursively?
 @sysarg: C{-a, --archive}   : Search compressed archives?
-@sysarg: C{--nogui}         : Don't show the GUI progress dialog")
 @sysarg: C{--debug}         : Turn debug output on
 
 @note: See U{Issue 22<http://code.google.com/p/metageta/issues/detail?id=22>}
 '''
+#@sysarg: C{--nogui}         : Don't show the GUI progress dialog")
+
 import sys, os, re,time,tempfile
 from metageta import formats
 from metageta import geometry

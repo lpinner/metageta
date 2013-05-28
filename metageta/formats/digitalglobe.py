@@ -26,10 +26,10 @@ B{Format specification}:
     - U{http://www.digitalglobe.com/downloads/Imagery_Support_Data_Documentation.pdf}
 '''
 
-format_regex=[r'[0-9][0-9][A-Z]{3,3}.*\.imd$',
-              r'[0-9][0-9][A-Z]{3,3}.*\.tif$',
-              r'[0-9][0-9][A-Z]{3,3}.*\.img$',
-              r'[0-9][0-9][A-Z]{3,3}.*\.ntf$']#Digital Globe
+format_regex=[r'-[0-9]*_[0-9]{2,2}_[A-Z][0-9]{3,3}.*\.imd$',
+              r'-[0-9]*_[0-9]{2,2}_[A-Z][0-9]{3,3}.*\.tif$',
+              r'-[0-9]*_[0-9]{2,2}_[A-Z][0-9]{3,3}.*\.img$',
+              r'-[0-9]*_[0-9]{2,2}_[A-Z][0-9]{3,3}.*\.ntf$']#Digital Globe
 '''Regular expression list of file formats'''
 
 #import base dataset modules

@@ -34,7 +34,7 @@ format_regex=[
     r'\.img$',
     r'\.tiff$',
     r'\.tif$',        #Completely untested with following formats...
-    r'.*\.asc$',      #Arc/Info ASCII Grid 
+    r'.*\.asc$',      #Arc/Info ASCII Grid
     r'.*\.bag$',      #Bathymetry Attributed Grid
     r'.*\.kap$',      #BSB Nautical Chart Format
     r'.*\.bt$',       #VTP Binary Terrain Format
@@ -42,11 +42,11 @@ format_regex=[
     r'.*\.n1$',       #Envisat Image Product
     r'.*\.fits$',     #FITS
     r'.*\.grb$',      #WMO GRIB1/GRIB2
-    r'.*\.mem$',      #Japanese DEM (.mem) 
+    r'.*\.mem$',      #Japanese DEM (.mem)
     r'.*\.nat$',      #EUMETSAT Archive native
     r'.*\.rik$',      #Swedish Grid RIK
     r'a\.toc$',       #Raster Product Format/RPF
-    r'product\.xml$', #RadarSat2 XML 
+    r'product\.xml$', #RadarSat2 XML
     r'.*CATD\.DDF$',  #USGS SDTS DEM
     r'.*\.ter$',      #Terragen Heightfield
     r'.*\.dem$',      #USGS ASCII DEM
@@ -54,7 +54,7 @@ format_regex=[
     r'.*\.gen$|.*\.thf$', #ADRG/ARC Digitilized Raster Graphics
     r'.*\.blx$|.*\.xlb$', #Magellan BLX Topo
     r'.*\.mpr$|.*\.mpl$', #ILWIS Raster Map
-    r'.*\.LAN$|.*\.GIS$', #Erdas 7.x .LAN and .GIS 
+    r'.*\.LAN$|.*\.GIS$', #Erdas 7.x .LAN and .GIS
     r'.*\.ppm$|.*\.pgm$', #Netpbm
     r'.*\.rsw$|.*\.mtw$',#Raster Matrix Format
     r'.*\.dt0$|.*\.dt1$|.*\.dt2$', #Military Elevation Data
@@ -88,7 +88,7 @@ class Dataset(__dataset__.Dataset):
     For generic imagery formats that gdal can read.'''
     def __init__(self,f):
         pass
-    def __getmetadata__(self,f=None): 
+    def __getmetadata__(self,f=None):
         '''
         Generate metadata for generic imagery
 
@@ -96,7 +96,7 @@ class Dataset(__dataset__.Dataset):
         @param f: a filepath to the dataset or a VRT XML string
         @return:  None
 
-        @todo: We force a NoData value. This is not ideal, but it makes for better overview images. 
+        @todo: We force a NoData value. This is not ideal, but it makes for better overview images.
         '''
         if not f:f=self.fileinfo['filepath']
         try:
@@ -104,7 +104,7 @@ class Dataset(__dataset__.Dataset):
             if os.path.exists(f) and os.path.dirname(f):
                 p=os.path.split(f)[0]
                 os.chdir(p)
-            self._gdaldataset= geometry.OpenDataset(f)
+            if not self._gdaldataset:self._gdaldataset= geometry.OpenDataset(f) #in case we're subclassed and there's already a dataset open
             if self._gdaldataset:
                 driver=self._gdaldataset.GetDriver().ShortName
                 if driver[0:3]=='HDF':raise NotImplementedError, 'HDF files are not yet implemented except by custom formats'
@@ -118,7 +118,7 @@ class Dataset(__dataset__.Dataset):
                     self.metadata['srs'] = self._gdaldataset.GetGCPProjection()
                 self.metadata['epsg'] = spatialreferences.IdentifyAusEPSG(self.metadata['srs'])
                 self.metadata['units'] = spatialreferences.GetLinearUnitsName(self.metadata['srs'])
-                
+
                 geotransform = self._gdaldataset.GetGeoTransform()
                 if geotransform == (0, 1, 0, 0, 0, 1):
                     if self._gdaldataset.GetGCPCount() > 0:

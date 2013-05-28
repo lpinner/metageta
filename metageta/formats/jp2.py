@@ -32,28 +32,65 @@ import __default__
 
 # import other modules (use "_"  prefix to import privately)
 import sys, os
+from osgeo import gdal
 
-class Dataset(__default__.Dataset): 
+class Dataset(__default__.Dataset):
     '''Subclass of __default__.Dataset class so we get a load of metadata populated automatically'''
     def __getmetadata__(self,f=None):
         '''Read Metadata for a JP2 image'''
-        gdal=__default__.gdal
-        jp2mrsid=gdal.GetDriverByName('JP2MrSID')
-        if jp2mrsid:jp2mrsid.Deregister()
         if not f:f=self.fileinfo['filepath']
         ers=os.path.splitext(f)[0]+'.ers'
         if os.path.exists(ers):
             try:
+                self._gdaldataset= self.open_exec(ers)
                 __default__.Dataset.__getmetadata__(self, ers) #autopopulate basic metadata
-                self.metadata['filetype']='JP2ECW/ERMapper JPEG2000'
+                self.metadata['filetype']='JP2/JPEG2000'
                 self.metadata['compressiontype']='JPEG2000'
-            except:__default__.Dataset.__getmetadata__(self, f)
+                self._gdaldataset= self.open_exec(f)
+            except:
+                self._gdaldataset= self.open_exec(f)
+                __default__.Dataset.__getmetadata__(self, f)
         else:
             __default__.Dataset.__getmetadata__(self, f) #autopopulate basic metadata
-        if jp2mrsid:jp2mrsid.Register()
 
     def getoverview(self,*args,**kwargs):
         '''Check for possibly corrupt files that can crash GDAL and therefore python...'''
         if self.metadata['compressionratio'] > 10000:
-            raise IOError, 'Unable to generate overview image from %s\nFile may be corrupt' % self.fileinfo['filepath']
-        else:return __default__.Dataset.getoverview(self,*args,**kwargs)
+            raise RuntimeError, 'Unable to generate overview image from %s\nFile may be corrupt' % self.fileinfo['filepath']
+        else:
+            try:
+                return __default__.Dataset.getoverview(self,*args,**kwargs)
+            except:
+                do=self._gdaldataset.GetDriver()
+                skip=os.environ.get('GDAL_SKIP','').split()
+                os.environ['GDAL_SKIP']=' '.join([do.GetDescription()]+skip)
+                do.Deregister()
+                ov=self.open_exec(self.fileinfo['filepath'],__default__.Dataset.getoverview, self,*args,**kwargs)
+                do.Register()
+                os.environ['GDAL_SKIP']=' '.join(skip)
+                if ov:return ov
+                else:raise RuntimeError, 'Unable to generate overview image from %s\nFile may be corrupt' % self.fileinfo['filepath']
+
+    def open_exec(self,f,func=None,*args,**kwargs):
+        self._gdaldataset=None
+        result=None
+        skip=os.environ.get('GDAL_SKIP','').split()
+        drivers=filter(None,[gdal.GetDriverByName(d) for d in ['JP2MrSID','JP2ECW','JP2KAK'] if not d  in skip])
+        drivers=zip([d.ShortName for d in drivers]+[''],drivers+[None]) #Filter the list to only installed drivers
+        for dn,do in drivers:
+            try:
+                self._gdaldataset=gdal.Open(f) #Some jp2s crash on open
+                if func:result=func(*args,**kwargs)
+                break
+            except:
+                if do:
+                    os.environ['GDAL_SKIP']=' '.join([dn]+skip)
+                    do.Deregister()
+
+        for dn,do in drivers:
+            if do:do.Register()
+
+        #gdal.AllRegister()
+        os.environ['GDAL_SKIP']=' '.join(skip)
+        if func:return result
+        else:return self._gdaldataset

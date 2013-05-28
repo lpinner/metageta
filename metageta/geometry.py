@@ -50,6 +50,8 @@ class GDALError(Exception):
             @type msg: C{str}
             @param msg: Initial message to include with GDAL the error message
             @return None
+
+            @todo GDAL now has a UseExceptions method, should this class go away?
         '''
         errtype={
             gdal.CE_None:'None',

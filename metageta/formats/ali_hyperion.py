@@ -152,9 +152,9 @@ class Dataset(__dataset__.Dataset):
             sd,sz = hdf_sd[0]
             sd=geometry.OpenDataset(sd)
             sd_md=sd.GetMetadata()
-            nbands=sd.RasterCount
-            ncols=str(sd.RasterXSize*4-30) #Account for the four SCA strips and the overlap between SCA strips
-            nrows=sd_md['Number of along track pixels'] #sd.RasterYSize is incorrect
+            self.nbands=sd.RasterCount
+            self.ncols=str(sd.RasterXSize*4-30) #Account for the four SCA strips and the overlap between SCA strips
+            self.nrows=sd_md['Number of along track pixels'] #sd.RasterYSize is incorrect
             if len(hdf_sd) == 6:#Includes pan band (3 sds each)
                 sd,sz = hdf_sd[3]
                 sd=geometry.OpenDataset(sd)
@@ -163,34 +163,34 @@ class Dataset(__dataset__.Dataset):
                 rows=sd_md['Number of along track pixels']
 
                 #set up to create multispectral only self._gdaldatset for overview generation
-                if nbands==1:
+                if self.nbands==1:
                     multi=3
                     multibands=sd_md['Number of bands']
                     multicols=cols
                     multirows=rows
                 else:
                     multi=0
-                    multibands=nbands
-                    multicols=ncols
-                    multirows=nrows
+                    multibands=self.nbands
+                    multicols=self.ncols
+                    multirows=self.nrows
                 multibands=range(1,int(multibands)+1)
 
                 #Make a csv list of cols, bands
-                ncols=[ncols for i in range(0,nbands)]
-                nrows=[nrows for i in range(0,nbands)]
-                ncols.extend([cols for i in range(0,sd.RasterCount)])
-                nrows.extend([rows for i in range(0,sd.RasterCount)])
+                self.ncols=[ncols for i in range(0,self.nbands)]
+                self.nrows=[nrows for i in range(0,self.nbands)]
+                self.ncols.extend([cols for i in range(0,sd.RasterCount)])
+                self.nrows.extend([rows for i in range(0,sd.RasterCount)])
                 #nbands='%s,%s' % (nbands, sd_md['Number of bands'])
-                nbands=nbands+int(sd_md['Number of bands'])
-                ncols=','.join(ncols)
-                nrows=','.join(nrows)
+                self.nbands=self.nbands+int(sd_md['Number of bands'])
+                self.ncols=','.join(self.ncols)
+                self.nrows=','.join(self.nrows)
 
             else:
                 #set up to create multispectral only _gdaldatset for overview generation
                 multi=0
-                multibands=range(1,nbands+1)
-                multicols=ncols
-                multirows=nrows
+                multibands=range(1,self.nbands+1)
+                multicols=self.ncols
+                multirows=self.nrows
 
             #create multispectral only _gdaldatset for overview generation
             #Get all the data files and mosaic the strips
@@ -304,10 +304,10 @@ class Dataset(__dataset__.Dataset):
         #srcrect=[0, int(nrows/2-vrtrows/2),ncols,vrtrows]
         #dstrect=[0, 0,ncols,vrtrows]
         ##Or we can fill out the ncols with nodata
-        vrtcols=int(nrows/1.5)
-        vrtrows=nrows
-        srcrect=[0, 0,ncols,nrows]
-        dstrect=[int(nrows/2.5-ncols), 0,ncols,nrows]
+        vrtcols=int(self.nrows/1.5)
+        vrtrows=self.nrows
+        srcrect=[0, 0,self.ncols,self.nrows]
+        dstrect=[int(self.nrows/2.5-self.ncols), 0,self.ncols,self.nrows]
         vrt=geometry.CreateMosaicedVRT([sd.GetDescription()],[43,30,21],[srcrect],[dstrect],vrtcols,vrtrows,self.metadata['datatype'])
         self._gdaldataset=geometry.OpenDataset(vrt)
         self._gdaldataset.GetRasterBand(3).SetNoDataValue(0)
@@ -336,24 +336,24 @@ class Dataset(__dataset__.Dataset):
             sd,sz = hdf_sd[0]
             sd=geometry.OpenDataset(sd)
             sd_md=sd.GetMetadata()
-            ncols=[]
-            nrows=[]
-            nbands=0
+            self.ncols=[]
+            self.nrows=[]
+            self.nbands=0
             bands=[]
             for sd,sz in hdf_sd:
                 bands.append(sd)
                 ds=geometry.OpenDataset(sd)
-                ncols.append(str(ds.RasterXSize))
-                nrows.append(str(ds.RasterYSize))
-                nbands+=1
+                self.ncols.append(str(ds.RasterXSize))
+                self.nrows.append(str(ds.RasterYSize))
+                self.nbands+=1
 
             #get all multi bands for use in overview generation
-            pancols = max(ncols)
+            pancols = max(self.ncols)
             panindex = ncols.index(pancols)
             multibands=bands
-            multincols=ncols
-            multinrows=nrows
-            if pancols > min(ncols):#there is a pan band
+            multincols=self.ncols
+            multinrows=self.nrows
+            if pancols > min(self.ncols):#there is a pan band
                 multibands.pop(panindex)
                 multincols.pop(panindex)
                 multinrows.pop(panindex)
@@ -364,8 +364,8 @@ class Dataset(__dataset__.Dataset):
             self._gdaldataset.GetRasterBand(4).SetNoDataValue(0)
             self._stretch=('STDDEV',(4,3,2),[2])
 
-            ncols=','.join(ncols)
-            nrows=','.join(nrows)
+            self.ncols=','.join(self.ncols)
+            self.nrows=','.join(self.nrows)
 
             met=f.lower().replace('_hdf.l1g','_mtl.l1g')
             md={}
@@ -449,8 +449,8 @@ class Dataset(__dataset__.Dataset):
             self._stretch=('STDDEV',(4,3,2),[2])
 
 
-            ncols=','.join(ncols)
-            nrows=','.join(nrows)
+            self.ncols=','.join(ncols)
+            self.nrows=','.join(nrows)
             met=f
             md={}
             for line in open(met, 'r'):

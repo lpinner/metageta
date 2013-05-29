@@ -25,12 +25,16 @@ Metadata driver for DIMAP imagery
 B{Format specification}:
     - U{http://www.spotimage.fr/dimap/spec/documentation/refdoc.htm}
 
-@todo: GDALINFO is pretty slow (4+ sec), check that this driver is not that slow...
+@todo: Implement pleiades (dimap v2.0) once gdal fixes dimap driver, http://trac.osgeo.org/gdal/ticket/5018 and http://trac.osgeo.org/gdal/ticket/4826
 '''
 
 #format_regex=[r'metadata\.dim$'] #DIMAP
 #format_regex=[r'\.dim$'] #DIMAP any *.dim
-format_regex=[r'(?<!vol_list)\.dim$']#DIMAP - any *.dim (excluding vol_list.dim)
+format_regex=[r'(?<!vol_list)\.dim$',       #DIMAP - any *.dim (excluding vol_list.dim)
+              r'dim_phr.*\.xml']          #Pleiades image metadata not yet implemented, see
+                                          #http://trac.osgeo.org/gdal/ticket/5018 and
+                                          #http://trac.osgeo.org/gdal/ticket/4826
+
 '''Regular expression list of file formats'''
 
 #import base dataset modules
@@ -58,21 +62,33 @@ class Dataset(__default__.Dataset):
     '''Subclass of __default__.Dataset class so we get a load of metadata populated automatically'''
     def __init__(self,f):
         '''Open the dataset'''
-        if '<METADATA_PROFILE>VOLUME</METADATA_PROFILE>' in open(f).read(512).upper():
-            raise NotImplementedError
         if not f:f=self.fileinfo['filepath']
         self.filelist=[r for r in glob.glob('%s/*'%os.path.dirname(f))]
 
-    def __getmetadata__(self,f=None):
-        '''Read Metadata for a DIMAP image as GDAL doesn't quite get it all...'''
-        if not f:f=self.fileinfo['filepath']
         #dom=etree.parse(f) #Takes tooo long to parse the whole file, so just read as far as we need...
         strxml=''
         for line in open(f, 'r'):
             if line.upper().strip()=='<DATA_STRIP>':break
             else: strxml+=line
         if not '</Dimap_Document>' in strxml:strxml+='</Dimap_Document>'
-        dom=etree.fromstring(strxml)
+        self._dom=etree.fromstring(strxml)
+
+        self.dimap_version=map(int, self._dom.xpath('string(//*/METADATA_FORMAT/@version)').split('.'))
+        if self.dimap_version[0]>2:
+            raise NotImplementedError
+
+    def __getmetadata__(self,f=None):
+        '''Read Metadata for a DIMAP image as GDAL doesn't quite get it all...'''
+        if not f:f=self.fileinfo['filepath']
+
+        self.metadata['filetype']='DIMAP / %s'%'.'.join(map(str,self.dimap_version))
+        if self.dimap_version[0]==1:
+            self.v1(f)
+        elif self.dimap_version[0]==2:
+            self.v2(f)
+
+    def v1(self,f=None):
+        dom = self._dom
         self.metadata['sceneid'] = dom.xpath('string(/Dimap_Document/Dataset_Id/DATASET_NAME)')
         bands=dom.xpath('/Dimap_Document/Spectral_Band_Info/BAND_DESCRIPTION')
         self.metadata['bands']=','.join([band.xpath('string(.)') for band in bands])
@@ -111,7 +127,6 @@ class Dataset(__default__.Dataset):
             dates[dts]=datetime
 
         self.metadata['imgdate']='%s/%s'%(dates[min(dates.keys())],dates[max(dates.keys())])
-        self.metadata['filetype']='DIMAP / %s'%dom.find('Metadata_Id/METADATA_PROFILE').text
 
         gdalmd=self._gdaldataset.GetMetadata()
         self.metadata['satellite']='%s %s' % (gdalmd['MISSION'],gdalmd['MISSION_INDEX'])
@@ -122,7 +137,7 @@ class Dataset(__default__.Dataset):
         try:self.metadata['sunazimuth'] = float(gdalmd['SUN_AZIMUTH'])
         except:pass
         try:self.metadata['level'] = gdalmd['PROCESSING_LEVEL']
-        except:pass
+        except:self.metadata['level'] = gdalmd['PRODUCT_TYPE']
         self.metadata['viewangle'] = gdalmd.get('VIEWING_ANGLE',gdalmd.get('INCIDENCE_ANGLE',''))
 
         #Processing, store in lineage field
@@ -131,11 +146,92 @@ class Dataset(__default__.Dataset):
             lineage.append('%s: %s' % (step.tag.replace('_',' '), step.text.replace('_',' ')))
         self.metadata['lineage']='\n'.join(lineage)
 
-        #Level
-        if dom.find('Metadata_Id/METADATA_PROFILE').text=='DMCII':
-            self.metadata['level']=dom.find('Production/PRODUCT_TYPE').text
+    def v2(self,f=None):
+        dom = self._dom
+        self.metadata['sceneid'] = dom.xpath('string(/Dimap_Document/Dataset_Identification/DATASET_NAME)')
+        ncols=dom.xpath('number(//*/NCOLS)')
+        nrows=dom.xpath('number(//*/NROWS)')
+        nbands=dom.xpath('number(//*/NBANDS)')
+        nbits=dom.xpath('number(//*/NBITS)')
+        if nbits==16:datatype='UInt16'
+        else:datatype='Byte'
+        if nbands==1:
+            bands=[1]
+        else:
+            bands=[int(b[1:]) for b in [dom.xpath('string(//*/RED_CHANNEL)'),
+                                    dom.xpath('string(//*/GREEN_CHANNEL)'),
+                                    dom.xpath('string(//*/BLUE_CHANNEL)')]]
+        self.metadata['bands']=','.join(map(str,bands))
 
-        self._dom=dom
+        if dom.xpath('string(//*/DATA_FILE_TILES)')=='true':
+            import math
+            ntiles=dom.xpath('number(//*/NTILES)')
+            ntiles_x=dom.xpath('number(//*/NTILES_COUNT/@ntiles_x)')
+            ntiles_y=dom.xpath('number(//*/NTILES_COUNT/@ntiles_y)')
+            tile_cols=math.ceil(ncols/ntiles_x)
+            last_tile_cols=tile_cols-(ntiles_x*tile_cols-ncols)
+            tile_rows=math.ceil(ncols/ntiles_x)
+            last_tile_rows=tile_rows-(ntiles_y*tile_row-nrows)
+            srcrects,dstrects=[],[]
+            files=[]
+            for df in dom.xpath('//*/Data_File'):
+                col=df.xpath('number(@tile_C)')
+                row=df.xpath('number(@tile_R)')
+                datafile=os.path.join(os.path.dirname(f),df.xpath('string(DATA_FILE_PATH/@href)'))
+                exists,datafile=utilities.exists(datafile,True) #Work around reading images with lowercase filenames when the DATA_FILE_PATH is uppercase
+                                                                # - eg samba filesystems which get converted to lowercase
+
+                srcrect=[0,0,tile_cols,tile_rows]
+                dstrect=[(ntiles_x-1)*tile_cols,(ntiles_y-1)*tile_rows,tile_cols,tile_rows]
+                if col==ntiles_x:#last col
+                    srcrect[2]=last_tile_cols
+                    dstrect[2]=last_tile_cols
+                if row==ntiles_y:#last row
+                    srcrect[3]=last_tile_rows
+                    dstrect[3]=last_tile_rows
+
+                files.append(datafile)
+                srcrects.append(srcrect)
+                dstrects.append(dstrect)
+
+            self._gdaldataset=geometry.OpenDataset(geometry.CreateMosaicedVRT(files,bands,srcrects,dstrects,ncols,nrows,datatype))
+
+        else:
+            datafile=os.path.join(os.path.dirname(f),dom.xpath('string(//*/DATA_FILE_PATH/@href)'))
+            exists,datafile=utilities.exists(datafile,True)
+            self._gdaldataset=geometry.OpenDataset(datafile)
+
+        __default__.Dataset.__getmetadata__(self)
+
+        dates={}
+        for src in dom.xpath('//Source_Identification'):
+            datetime='%sT%s'%(src.xpath('string(//*/IMAGING_DATE)'),src.xpath('string(//*/IMAGING_TIME)')[:8])
+            dts=time.mktime(time.strptime(datetime,utilities.datetimeformat))#ISO 8601
+            dates[dts]=datetime
+        if len(dates)==1:
+             self.metadata['imgdate']=datetime
+        else:
+            self.metadata['imgdate']='%s/%s'%(dates[min(dates.keys())],dates[max(dates.keys())])
+
+        self.metadata['satellite']='%s %s' % (src.xpath('string(//*/MISSION)'),src.xpath('string(//*/MISSION_INDEX)'))
+        try:self.metadata['sensor']='%s %s' % (src.xpath('string(//*/INSTRUMENT)'),src.xpath('string(//*/INSTRUMENT_INDEX)'))
+        except:self.metadata['sensor']='%s' % src.xpath('string(//*/INSTRUMENT)')
+        try:
+            sunangles=dom.xpath('//*/Located_Geometric_Values[LOCATION_TYPE="Center"]/Solar_Incidences')[0]
+            self.metadata['sunelevation'] = sunangles.xpath('number(SUN_ELEVATION)')
+            self.metadata['sunazimuth'] = sunangles.xpath('number(SUN_AZIMUTH)')
+        except:pass
+        try:self.metadata['viewangle'] = dom.xpath('number(//*/Located_Geometric_Values[LOCATION_TYPE="Center"]/Acquisition_Angles/VIEWING_ANGLE)')
+        except:pass
+
+        try:self.metadata['level'] = dom.xpath('string(//*/Processing_Information/Product_Settings/PROCESSING_LEVEL)')
+        except:pass
+        try:self.metadata['resampling'] = dom.xpath('string(//*/Processing_Information/Product_Settings/Sampling_Settings/RESAMPLING_KERNEL)')
+        except:pass
+
+        self.metadata['metadata']=etree.tostring(dom, pretty_print=True)
+        #Get cloud cover from MASKS/CLD_*_MSK.GML???
+
 
     def getoverview(self,outfile=None,width=800,format='JPG'):
         '''
@@ -150,25 +246,30 @@ class Dataset(__default__.Dataset):
         @rtype:         str
         @return:        filepath (if outfile is supplied)/binary image data (if outfile is not supplied)
 
-        @todo: Should we do something with the band display order metadata?
-            <Band_Display_Order>
-                <RED_CHANNEL>1</RED_CHANNEL>
-                <GREEN_CHANNEL>2</GREEN_CHANNEL>
-                <BLUE_CHANNEL>3</BLUE_CHANNEL>
-            </Band_Display_Order>
+        @todo:
+             - Should we do something with the band display order metadata?
+
+                 <Band_Display_Order>
+                 <RED_CHANNEL>1</RED_CHANNEL>
+                 <GREEN_CHANNEL>2</GREEN_CHANNEL>
+                 <BLUE_CHANNEL>3</BLUE_CHANNEL>
+                 </Band_Display_Order>
         '''
         from metageta import overviews
 
-        #First check for a browse graphic, no point re-inventing the wheel...
-        f=self.fileinfo['filepath']
-        #browse=os.path.join(os.path.dirname(f),'PREVIEW.JPG')
-        fp=self._dom.xpath('/Dimap_Document/Dataset_Id/DATASET_QL_PATH')[0]
-        fn=utilities.encode(fp.xpath('string(@href)')) #XML is unicode, gdal.Open doesn't like unicode
-        browse=os.path.join(os.path.dirname(f),fn)
+        try:
+            #First check for a browse graphic, no point re-inventing the wheel...
+            f=self.fileinfo['filepath']
+            #if self.dimap_version[0]==1:
+            #    fp=self._dom.xpath('/Dimap_Document/Dataset_Id/DATASET_QL_PATH')[0]
+            #else:
+            #    fp=self._dom.xpath('/Dimap_Document/Dataset_Identification/DATASET_QL_PATH')[0]
+            fp=self._dom.xpath('string(//*/DATASET_QL_PATH/@href)')
+            fn=utilities.encode(fp) #XML is unicode, gdal.Open doesn't like unicode
+            browse=os.path.join(os.path.dirname(f),fn)
 
-        if os.path.exists(browse) and gdal.Open(browse).RasterXSize >= width:
+            if os.path.exists(browse) and gdal.Open(browse).RasterXSize >= width:
+                return overviews.resize(browse,outfile,width)
 
-            try:return overviews.resize(browse,outfile,width)
-            except:return __default__.Dataset.getoverview(self,outfile,width,format) #Try it the slow way...
-
-        else: return __default__.Dataset.getoverview(self,outfile,width,format)#Do it the slow way...
+        except:pass
+        return __default__.Dataset.getoverview(self,outfile,width,format)#Do it the slow way...

@@ -57,11 +57,11 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
     def __init__(self,f=None):
         if not f:f=self.fileinfo['filepath']
         self.filelist=glob.glob(os.path.splitext(f)[0]+'.*')
-        self._gdaldataset = geometry.OpenDataset(f) 
+        self._gdaldataset = geometry.OpenDataset(f)
         self._hdf_md=self._gdaldataset.GetMetadata()
         if not self._hdf_md.get('INSTRUMENTSHORTNAME')=='ASTER':
             raise NotImplementedError #This error gets ignored in __init__.Open()
-        
+
     def __getmetadata__(self,f=None):
         '''Read Metadata for ASTER HDF images as GDAL doesn't.'''
         if not f:f=self.fileinfo['filepath']
@@ -105,12 +105,12 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
         bands=','.join(bands)
         datatypes=','.join(datatypes)
         cellxy=','.join(cellxy)
-        
-        
-        uly,ulx=[float(xy) for xy in hdf_md['UPPERLEFT'].split(',')] 
+
+
+        uly,ulx=[float(xy) for xy in hdf_md['UPPERLEFT'].split(',')]
         ury,urx=[float(xy) for xy in hdf_md['UPPERRIGHT'].split(',')]
         lry,lrx=[float(xy) for xy in hdf_md['LOWERRIGHT'].split(',')]
-        lly,llx=[float(xy) for xy in hdf_md['LOWERLEFT'].split(',')] 
+        lly,llx=[float(xy) for xy in hdf_md['LOWERLEFT'].split(',')]
         ext=[[ulx,uly],[urx,ury],[lrx,lry],[llx,lly],[ulx,uly]]
 
         #SRS reported by GDAL is slightly dodgy, GDA94 is not recognised and doesn't set the North/South properly
@@ -122,7 +122,7 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
         if src_srs.GetAttrValue('SPHEROID') == 'GRS 1980':geogcs.ImportFromEPSG(4283) #Assume 'GDA94'
         else:geogcs.ImportFromEPSG(4326)                                              #Assume 'WGS84'
         tgt_srs.CopyGeogCSFrom(geogcs)
-        
+
         if hdf_md['PROCESSINGLEVELID'].upper()=='1A':
             units='deg'
         else:
@@ -138,7 +138,7 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
             #    #dfCenterLon = ? GTCP projection params don't list cenlon/lat for PS
             #    dfCenterLat = ?
             #    dfScale = ?
-            #    tgt_srs.SetPS(dfCenterLat,dfCenterLon,dfScale,0.0,0.0) 	
+            #    tgt_srs.SetPS(dfCenterLat,dfCenterLon,dfScale,0.0,0.0)
             #elif hdf_md['MPMETHOD1'] == 'LAMCC':#Lambert Conformal Conic
             #    dfCenterLon = ?
             #    dfCenterLat = ?
@@ -162,7 +162,7 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
         self.metadata['UR']='%s,%s' % tuple(ext[1])
         self.metadata['LR']='%s,%s' % tuple(ext[2])
         self.metadata['LL']='%s,%s' % tuple(ext[3])
-        
+
         self.metadata['metadata']='\n'.join(['%s: %s' %(m,hdf_md[m]) for m in hdf_md])
 
         self.metadata['satellite']='Terra'
@@ -173,9 +173,9 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
         if '-' in hdf_md['CALENDARDATE']:imgdate = hdf_md['CALENDARDATE']
         else:imgdate = time.strftime(utilities.dateformat,time.strptime(hdf_md['CALENDARDATE'],'%Y%m%d')) #ISO 8601
         imgtime = hdf_md.get('TIMEOFDAY')
-        if imgtime:self.metadata['imgdate'] = time.strftime(utilities.datetimeformat,time.strptime(imgdate+imgtime[0:6],'%Y-%m-%d%H%M%S')) #ISO 8601 
+        if imgtime:self.metadata['imgdate'] = time.strftime(utilities.datetimeformat,time.strptime(imgdate+imgtime[0:6],'%Y-%m-%d%H%M%S')) #ISO 8601
         else:self.metadata['imgdate'] = imgdate
-        #self.metadata['imgdate'] = hdf_md['CALENDARDATE'] 
+        #self.metadata['imgdate'] = hdf_md['CALENDARDATE']
         self.metadata['cloudcover'] = float(hdf_md['SCENECLOUDCOVERAGE'])
         if hdf_md['FLYINGDIRECTION']=='DE':self.metadata['orbit'] = 'Descending'
         else:self.metadata['orbit'] = 'Ascending'
@@ -218,19 +218,19 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
             x,y=geometry.CellSize(geotransform)
             cellx.append(str(x))
             celly.append(str(abs(y)))
-        
+
         self.metadata['cellx']=','.join(cellx)
         self.metadata['celly']=','.join(celly)
 
         srs=osr.SpatialReference()
         srs.ImportFromEPSG(4326)
         self.metadata['srs']= srs.ExportToWkt()
-        
+
         self.metadata['UL']='%s,%s' % tuple(ext[0])
         self.metadata['UR']='%s,%s' % tuple(ext[1])
         self.metadata['LR']='%s,%s' % tuple(ext[2])
         self.metadata['LL']='%s,%s' % tuple(ext[3])
-        
+
         self.metadata['metadata']='\n'.join(['%s: %s' %(m,hdf_md[m]) for m in hdf_md])
 
         self.metadata['filesize']=sum([os.path.getsize(file) for file in self.filelist])
@@ -243,7 +243,7 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
         vrtrows=nrows[0]
         #vrtbands=[sd for sd,sn in hdf_sd[0:4]]#The 4 VNIR bands
         vrtbands=hdf_sd[0:4]#The 4 VNIR bands
-        vrt=geometry.CreateSimpleVRT(vrtbands,vrtrows,vrtcols,datatypes.split(',')[0])
-        self._gdaldataset=geometry.OpenDataset(vrt)    
+        vrt=geometry.CreateSimpleVRT(vrtbands,vrtcols,vrtrows,datatypes.split(',')[0])
+        self._gdaldataset=geometry.OpenDataset(vrt)
         for i in range(1,5):
             self._gdaldataset.GetRasterBand(i).SetNoDataValue(0)

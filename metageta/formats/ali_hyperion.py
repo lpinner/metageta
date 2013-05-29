@@ -176,8 +176,8 @@ class Dataset(__dataset__.Dataset):
                 multibands=range(1,int(multibands)+1)
 
                 #Make a csv list of cols, bands
-                self.ncols=[ncols for i in range(0,self.nbands)]
-                self.nrows=[nrows for i in range(0,self.nbands)]
+                self.ncols=[self.ncols for i in range(0,self.nbands)]
+                self.nrows=[self.nrows for i in range(0,self.nbands)]
                 self.ncols.extend([cols for i in range(0,sd.RasterCount)])
                 self.nrows.extend([rows for i in range(0,sd.RasterCount)])
                 #nbands='%s,%s' % (nbands, sd_md['Number of bands'])

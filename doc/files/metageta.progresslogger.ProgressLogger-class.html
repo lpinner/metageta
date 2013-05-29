@@ -60,6 +60,8 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class ProgressLogger</h1><p class="nomargin-top"><span class="codelink"><a href="metageta.progresslogger-pysrc.html#ProgressLogger">source&nbsp;code</a></span></p>
 <pre class="base-tree">
+      object --+        
+               |        
 logging.Filterer --+    
                    |    
       logging.Logger --+
@@ -105,7 +107,7 @@ logging.Filterer --+
         <span class="summary-sig-arg">logfile</span>=<span class="summary-sig-default">None</span>,
         <span class="summary-sig-arg">mode</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">w</code><code class="variable-quote">'</code></span>,
         <span class="summary-sig-arg">icon</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">callback</span>=<span class="summary-sig-default">&lt;function &lt;lambda&gt; at 0x04E5CDF0&gt;</span>)</span><br />
+        <span class="summary-sig-arg">callback</span>=<span class="summary-sig-default">&lt;function &lt;lambda&gt; at 0x054D3D70&gt;</span>)</span><br />
       Initialize the logger with a name and an optional level.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="metageta.progresslogger-pysrc.html#ProgressLogger.__init__">source&nbsp;code</a></span>
@@ -202,6 +204,7 @@ logging.Filterer --+
       <code>exception</code>,
       <code>fatal</code>,
       <code>findCaller</code>,
+      <code>getChild</code>,
       <code>getEffectiveLevel</code>,
       <code>handle</code>,
       <code>info</code>,
@@ -220,6 +223,20 @@ logging.Filterer --+
       <code>addFilter</code>,
       <code>filter</code>,
       <code>removeFilter</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__new__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__repr__</code>,
+      <code>__setattr__</code>,
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
       </p>
     </td>
   </tr>
@@ -274,6 +291,13 @@ logging.Filterer --+
         <a href="metageta.progresslogger.ProgressLogger-class.html#logfile" class="summary-name">logfile</a>
     </td>
   </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
 </table>
 <!-- ==================== METHOD DETAILS ==================== -->
 <a name="section-MethodDetails"></a>
@@ -312,7 +336,7 @@ logging.Filterer --+
         <span class="sig-arg">logfile</span>=<span class="sig-default">None</span>,
         <span class="sig-arg">mode</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">w</code><code class="variable-quote">'</code></span>,
         <span class="sig-arg">icon</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">callback</span>=<span class="sig-default">&lt;function &lt;lambda&gt; at 0x04E5CDF0&gt;</span>)</span>
+        <span class="sig-arg">callback</span>=<span class="sig-default">&lt;function &lt;lambda&gt; at 0x054D3D70&gt;</span>)</span>
     <br /><em class="fname">(Constructor)</em>
   </h3>
   </td><td align="right" valign="top"
@@ -323,7 +347,7 @@ logging.Filterer --+
   <p>Initialize the logger with a name and an optional level.</p>
   <dl class="fields">
     <dt>Overrides:
-        logging.Filterer.__init__
+        object.__init__
         <dd><em class="note">(inherited documentation)</em></dd>
     </dt>
   </dl>

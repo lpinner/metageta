@@ -125,8 +125,23 @@
 </table></div>
 <div>
 <table width="100%" class="metadata-index" bgcolor="#e0e0e0"><tr><td class="metadata-index"><b>To Do in <a href="metageta.formats.dimap-module.html">metageta.formats.dimap</a></b>    <ul class="nomargin">
-      <li>GDALINFO is pretty slow (4+ sec), check that this driver is not that 
-    slow...</li>
+      <li>Implement pleiades (dimap v2.0) once gdal fixes dimap driver, 
+    http://trac.osgeo.org/gdal/ticket/5018 and 
+    http://trac.osgeo.org/gdal/ticket/4826</li>
+    </ul>
+</table></div>
+<div>
+<table width="100%" class="metadata-index" bgcolor="#e0e0e0"><tr><td class="metadata-index"><b>To Do in <a href="metageta.formats.dimap.Dataset-class.html#getoverview">metageta.formats.dimap.Dataset.getoverview</a></b>    <ul class="nomargin">
+      <li><ul>
+      <li>
+        Should we do something with the band display order metadata?
+        <p>&lt;Band_Display_Order&gt; 
+        &lt;RED_CHANNEL&gt;1&lt;/RED_CHANNEL&gt; 
+        &lt;GREEN_CHANNEL&gt;2&lt;/GREEN_CHANNEL&gt; 
+        &lt;BLUE_CHANNEL&gt;3&lt;/BLUE_CHANNEL&gt; 
+        &lt;/Band_Display_Order&gt;</p>
+      </li>
+    </ul></li>
     </ul>
 </table></div>
 <div>
@@ -162,6 +177,11 @@
 <table width="100%" class="metadata-index" bgcolor="#e0e0e0"><tr><td class="metadata-index"><b>To Do in <a href="metageta.geometry-module.html">metageta.geometry</a></b>    <ul class="nomargin">
       <li>Does the module name <i>really</i> describe its functions anymore? It 
     doesn't just do geometry now...</li>
+    </ul>
+</table></div>
+<div>
+<table width="100%" class="metadata-index" bgcolor="#e0e0e0"><tr><td class="metadata-index"><b>To Do in <a href="metageta.geometry.GDALError-class.html#__init__">metageta.geometry.GDALError.__init__</a></b>    <ul class="nomargin">
+      <li>GDAL now has a UseExceptions method, should this class go away?</li>
     </ul>
 </table></div>
 <div>

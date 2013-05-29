@@ -60,6 +60,8 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class ProgressLoggerHandler</h1><p class="nomargin-top"><span class="codelink"><a href="metageta.progresslogger-pysrc.html#ProgressLoggerHandler">source&nbsp;code</a></span></p>
 <pre class="base-tree">
+      object --+        
+               |        
 logging.Filterer --+    
                    |    
      logging.Handler --+
@@ -99,7 +101,7 @@ logging.Filterer --+
         <span class="summary-sig-arg">level</span>=<span class="summary-sig-default">20</span>,
         <span class="summary-sig-arg">maxprogress</span>=<span class="summary-sig-default">100</span>,
         <span class="summary-sig-arg">icon</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">callback</span>=<span class="summary-sig-default">&lt;function &lt;lambda&gt; at 0x04E5CF70&gt;</span>)</span><br />
+        <span class="summary-sig-arg">callback</span>=<span class="summary-sig-default">&lt;function &lt;lambda&gt; at 0x054D3EF0&gt;</span>)</span><br />
       Initializes the instance - set up the Tkinter GUI and log output.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="metageta.progresslogger-pysrc.html#ProgressLoggerHandler.__init__">source&nbsp;code</a></span>
@@ -203,16 +205,60 @@ logging.Filterer --+
       <code>createLock</code>,
       <code>flush</code>,
       <code>format</code>,
+      <code>get_name</code>,
       <code>handle</code>,
       <code>handleError</code>,
       <code>release</code>,
       <code>setFormatter</code>,
-      <code>setLevel</code>
+      <code>setLevel</code>,
+      <code>set_name</code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>logging.Filterer</code></b>:
       <code>addFilter</code>,
       <code>filter</code>,
       <code>removeFilter</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__new__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__repr__</code>,
+      <code>__setattr__</code>,
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td colspan="2" class="table-header">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr valign="top">
+        <td align="left"><span class="table-header">Properties</span></td>
+        <td align="right" valign="top"
+         ><span class="options">[<a href="#section-Properties"
+         class="privatelink" onclick="toggle_private();"
+         >hide private</a>]</span></td>
+      </tr>
+    </table>
+  </td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>logging.Handler</code></b>:
+      <code>name</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
       </p>
     </td>
   </tr>
@@ -248,7 +294,7 @@ logging.Filterer --+
         <span class="sig-arg">level</span>=<span class="sig-default">20</span>,
         <span class="sig-arg">maxprogress</span>=<span class="sig-default">100</span>,
         <span class="sig-arg">icon</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">callback</span>=<span class="sig-default">&lt;function &lt;lambda&gt; at 0x04E5CF70&gt;</span>)</span>
+        <span class="sig-arg">callback</span>=<span class="sig-default">&lt;function &lt;lambda&gt; at 0x054D3EF0&gt;</span>)</span>
     <br /><em class="fname">(Constructor)</em>
   </h3>
   </td><td align="right" valign="top"
@@ -259,7 +305,7 @@ logging.Filterer --+
   <p>Initializes the instance - set up the Tkinter GUI and log output.</p>
   <dl class="fields">
     <dt>Overrides:
-        logging.Filterer.__init__
+        object.__init__
     </dt>
   </dl>
 </td></tr></table>

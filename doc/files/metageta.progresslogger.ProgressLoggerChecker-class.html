@@ -98,7 +98,7 @@ threading._Verbose --+
         <span class="summary-sig-arg">host</span>,
         <span class="summary-sig-arg">port</span>,
         <span class="summary-sig-arg">pid</span>)</span><br />
-      x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
+      This constructor should always be called with keyword arguments.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="metageta.progresslogger-pysrc.html#ProgressLoggerChecker.__init__">source&nbsp;code</a></span>
             
@@ -114,7 +114,8 @@ threading._Verbose --+
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="metageta.progresslogger.ProgressLoggerChecker-class.html#run" class="summary-sig-name">run</a>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td><span class="summary-sig"><a href="metageta.progresslogger.ProgressLoggerChecker-class.html#run" class="summary-sig-name">run</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Method representing the thread's activity.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="metageta.progresslogger-pysrc.html#ProgressLoggerChecker.run">source&nbsp;code</a></span>
             
@@ -154,6 +155,7 @@ threading._Verbose --+
       <code>start</code>
       </p>
     <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code>threading.Thread</code></b> (private):
+      <code>_reset_internal_locks</code>,
       <code>_set_daemon</code>,
       <code>_set_ident</code>
       </p></div>
@@ -200,6 +202,9 @@ threading._Verbose --+
       <code>ident</code>,
       <code>name</code>
       </p>
+    <div class="private">    <p class="indent-wrapped-lines"><b>Inherited from <code>threading.Thread</code></b> (private):
+      <code>_block</code>
+      </p></div>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__class__</code>
       </p>
@@ -243,8 +248,21 @@ threading._Verbose --+
     </td>
   </tr></table>
   
-  <p>x.__init__(...) initializes x; see x.__class__.__doc__ for 
-  signature</p>
+  <p>This constructor should always be called with keyword arguments. 
+  Arguments are:</p>
+  <p>*group* should be None; reserved for future extension when a 
+  ThreadGroup class is implemented.</p>
+  <p>*target* is the callable object to be invoked by the run() method. 
+  Defaults to None, meaning nothing is called.</p>
+  <p>*name* is the thread name. By default, a unique name is constructed of
+  the form &quot;Thread-N&quot; where N is a small decimal number.</p>
+  <p>*args* is the argument tuple for the target invocation. Defaults to 
+  ().</p>
+  <p>*kwargs* is a dictionary of keyword arguments for the target 
+  invocation. Defaults to {}.</p>
+  <p>If a subclass overrides the constructor, it must make sure to invoke 
+  the base class constructor (Thread.__init__()) before doing anything else
+  to the thread.</p>
   <dl class="fields">
     <dt>Overrides:
         object.__init__
@@ -267,10 +285,15 @@ threading._Verbose --+
     </td>
   </tr></table>
   
-  
+  <p>Method representing the thread's activity.</p>
+  <p>You may override this method in a subclass. The standard run() method 
+  invokes the callable object passed to the object's constructor as the 
+  target argument, if any, with sequential and keyword arguments taken from
+  the args and kwargs arguments, respectively.</p>
   <dl class="fields">
     <dt>Overrides:
         threading.Thread.run
+        <dd><em class="note">(inherited documentation)</em></dd>
     </dt>
   </dl>
 </td></tr></table>

@@ -133,6 +133,40 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
+          <td><span class="summary-sig"><a name="v1"></a><span class="summary-sig-name">v1</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">f</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="metageta.formats.dimap-pysrc.html#Dataset.v1">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="v2"></a><span class="summary-sig-name">v2</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">f</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="metageta.formats.dimap-pysrc.html#Dataset.v2">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">str</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
           <td><span class="summary-sig"><a href="metageta.formats.dimap.Dataset-class.html#getoverview" class="summary-sig-name">getoverview</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">outfile</span>=<span class="summary-sig-default">None</span>,
         <span class="summary-sig-arg">width</span>=<span class="summary-sig-default">800</span>,
@@ -430,51 +464,37 @@
     </td>
   </tr></table>
   
-  <pre class="literalblock">
-
-Generate overviews for DIMAP imagery
-
-@type  outfile: str
-@param outfile: a filepath to the output overview image. If supplied, format is determined from the file extension
-@type  width:   int
-@param width:   image width
-@type  format:  str
-@param format:  format to generate overview image, one of ['JPG','PNG','GIF','BMP','TIF']. Not required if outfile is supplied.
-@rtype:         str
-@return:        filepath (if outfile is supplied)/binary image data (if outfile is not supplied)
-
-@todo: Should we do something with the band display order metadata?
-    &lt;Band_Display_Order&gt;
-        &lt;RED_CHANNEL&gt;1&lt;/RED_CHANNEL&gt;
-        &lt;GREEN_CHANNEL&gt;2&lt;/GREEN_CHANNEL&gt;
-        &lt;BLUE_CHANNEL&gt;3&lt;/BLUE_CHANNEL&gt;
-    &lt;/Band_Display_Order&gt;
-
-</pre>
+  <p>Generate overviews for DIMAP imagery</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>outfile</code></strong> - a filepath to the output overview image. If supplied, format is 
+        <li><strong class="pname"><code>outfile</code></strong> (str) - a filepath to the output overview image. If supplied, format is 
           determined from the file extension</li>
-        <li><strong class="pname"><code>width</code></strong> - image width</li>
-        <li><strong class="pname"><code>format</code></strong> - format to generate overview image, one of 
+        <li><strong class="pname"><code>width</code></strong> (int) - image width</li>
+        <li><strong class="pname"><code>format</code></strong> (str) - format to generate overview image, one of 
           ['JPG','PNG','GIF','BMP','TIF']. Not required if outfile is 
           supplied.</li>
     </ul></dd>
-    <dt>Returns:</dt>
-        <dd><ul>
-            <li>
-              <b>filepath</b> (if outfile is supplied) <b>OR</b>
-            </li>
-            <li>
-              <b>binary image data</b> (if outfile is not supplied)
-            </li>
-          </ul></dd>
+    <dt>Returns: str</dt>
+        <dd>filepath (if outfile is supplied)/binary image data (if outfile 
+          is not supplied)</dd>
     <dt>Overrides:
         <a href="metageta.formats.__dataset__.Dataset-class.html#getoverview">__dataset__.Dataset.getoverview</a>
     </dt>
   </dl>
-</td></tr></table>
+<div class="fields">      <p><strong>To Do:</strong>
+        <ul>
+      <li>
+        Should we do something with the band display order metadata?
+        <p>&lt;Band_Display_Order&gt; 
+        &lt;RED_CHANNEL&gt;1&lt;/RED_CHANNEL&gt; 
+        &lt;GREEN_CHANNEL&gt;2&lt;/GREEN_CHANNEL&gt; 
+        &lt;BLUE_CHANNEL&gt;3&lt;/BLUE_CHANNEL&gt; 
+        &lt;/Band_Display_Order&gt;</p>
+      </li>
+    </ul>
+      </p>
+</div></td></tr></table>
 </div>
 <br />
 <!-- ==================== NAVIGATION BAR ==================== -->

@@ -531,6 +531,7 @@ metageta.getargs.Arg	metageta.getargs.Arg-class.html
 metageta.getargs.Arg._callback	metageta.getargs.Arg-class.html#_callback
 metageta.getargs.Arg.__classproperty__	metageta.getargs.Arg-class.html#__classproperty__
 metageta.getargs.Arg.enabled	metageta.getargs.Arg-class.html#enabled
+metageta.getargs.Arg.value	metageta.getargs.Arg-class.html#value
 metageta.getargs.Arg.callback	metageta.getargs.Arg-class.html#callback
 metageta.getargs.Arg.__init__	metageta.getargs.Arg-class.html#__init__
 metageta.getargs.BoolArg	metageta.getargs.BoolArg-class.html
@@ -538,6 +539,7 @@ metageta.getargs.Arg._callback	metageta.getargs.Arg-class.html#_callback
 metageta.getargs.BoolArg.__build__	metageta.getargs.BoolArg-class.html#__build__
 metageta.getargs.Arg.__classproperty__	metageta.getargs.Arg-class.html#__classproperty__
 metageta.getargs.Arg.enabled	metageta.getargs.Arg-class.html#enabled
+metageta.getargs.Arg.value	metageta.getargs.Arg-class.html#value
 metageta.getargs.Arg.callback	metageta.getargs.Arg-class.html#callback
 metageta.getargs.Arg.__init__	metageta.getargs.Arg-class.html#__init__
 metageta.getargs.ComboBoxArg	metageta.getargs.ComboBoxArg-class.html
@@ -545,6 +547,7 @@ metageta.getargs.Arg._callback	metageta.getargs.Arg-class.html#_callback
 metageta.getargs.ComboBoxArg.__build__	metageta.getargs.ComboBoxArg-class.html#__build__
 metageta.getargs.Arg.__classproperty__	metageta.getargs.Arg-class.html#__classproperty__
 metageta.getargs.Arg.enabled	metageta.getargs.Arg-class.html#enabled
+metageta.getargs.Arg.value	metageta.getargs.Arg-class.html#value
 metageta.getargs.Arg.callback	metageta.getargs.Arg-class.html#callback
 metageta.getargs.ComboBoxArg.__init__	metageta.getargs.ComboBoxArg-class.html#__init__
 metageta.getargs.ComboBoxArg.__updatemulti__	metageta.getargs.ComboBoxArg-class.html#__updatemulti__
@@ -557,6 +560,7 @@ metageta.getargs.DirArg.__build__	metageta.getargs.DirArg-class.html#__build__
 metageta.getargs.Arg.__classproperty__	metageta.getargs.Arg-class.html#__classproperty__
 metageta.getargs.DirArg.cmd	metageta.getargs.DirArg-class.html#cmd
 metageta.getargs.Arg.enabled	metageta.getargs.Arg-class.html#enabled
+metageta.getargs.Arg.value	metageta.getargs.Arg-class.html#value
 metageta.getargs.Arg.callback	metageta.getargs.Arg-class.html#callback
 metageta.getargs.DirArg.__init__	metageta.getargs.DirArg-class.html#__init__
 metageta.getargs.FileArg	metageta.getargs.FileArg-class.html
@@ -565,6 +569,7 @@ metageta.getargs.FileArg.__build__	metageta.getargs.FileArg-class.html#__build__
 metageta.getargs.Arg.__classproperty__	metageta.getargs.Arg-class.html#__classproperty__
 metageta.getargs.FileArg.cmd	metageta.getargs.FileArg-class.html#cmd
 metageta.getargs.Arg.enabled	metageta.getargs.Arg-class.html#enabled
+metageta.getargs.Arg.value	metageta.getargs.Arg-class.html#value
 metageta.getargs.Arg.callback	metageta.getargs.Arg-class.html#callback
 metageta.getargs.FileArg.__init__	metageta.getargs.FileArg-class.html#__init__
 metageta.getargs.GetArgs	metageta.getargs.GetArgs-class.html
@@ -578,6 +583,7 @@ metageta.getargs.Arg._callback	metageta.getargs.Arg-class.html#_callback
 metageta.getargs.StringArg.__build__	metageta.getargs.StringArg-class.html#__build__
 metageta.getargs.Arg.__classproperty__	metageta.getargs.Arg-class.html#__classproperty__
 metageta.getargs.Arg.enabled	metageta.getargs.Arg-class.html#enabled
+metageta.getargs.Arg.value	metageta.getargs.Arg-class.html#value
 metageta.getargs.Arg.callback	metageta.getargs.Arg-class.html#callback
 metageta.getargs.Arg.__init__	metageta.getargs.Arg-class.html#__init__
 metageta.getargs._ToolTip	metageta.getargs._ToolTip-class.html

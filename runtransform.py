@@ -152,7 +152,8 @@ def getlogger(name=None,nogui=False, debug=False, icon=None):
 #========================================================================================================
 if __name__ == '__main__':
     def mefcallback(mefarg,*args):
-        checked=mefarg.value.get()
+        #checked=mefarg.value.get()
+        checked=mefarg.value
         for arg in args:
             arg.enabled=checked
 

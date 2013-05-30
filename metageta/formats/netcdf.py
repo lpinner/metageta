@@ -28,7 +28,7 @@ B{Format specification}:
 
 format_regex=[r'.*\.nc$'] #NITF
 '''Regular expression list of file formats'''
-    
+
 #import base dataset modules
 import __default__
 
@@ -48,7 +48,7 @@ except ImportError:
     import ogr
 gdal.AllRegister()
 
-class Dataset(__default__.Dataset): 
+class Dataset(__default__.Dataset):
     '''Subclass of __default__.Dataset class so we get a load of metadata populated automatically'''
     def __getmetadata__(self):
         '''Read Metadata for a NetCDF image (1st subdataset)'''
@@ -68,14 +68,14 @@ class Dataset(__default__.Dataset):
             sd,sd_name,sd_desc=sdo[xy.index(max(xy))]
             try:__default__.Dataset.__getmetadata__(self, sd_name) #autopopulate basic metadata
             except NotImplementedError:
-                if float(geometry.gdal.__version__[0:3]) < 1.8:
+                if map(int,geometry.gdal.__version__.split('.')) < [1,8,0]:
                     raise NotImplementedError('You are using GDAL %s, versions < 1.8 do not read georeferencing information for certain NetCDF files.'%geometry.gdal.__version__)
                 else:raise
             sdmd=sd.GetMetadata()
         else:
             try:__default__.Dataset.__getmetadata__(self, f) #autopopulate basic metadata
             except NotImplementedError:
-                if float(geometry.gdal.__version__[0:3]) < 1.8:
+                if map(int,geometry.gdal.__version__.split('.')) < [1,8,0]:
                     raise NotImplementedError('You are using GDAL %s, versions < 1.8 do not read georeferencing information for certain NetCDF files.'%geometry.gdal.__version__)
                 else:raise
 
@@ -113,4 +113,4 @@ class Dataset(__default__.Dataset):
         if b==0:raise geometry.GDALError,'Unable to generate overview.'
         self._stretch=['PERCENT',[b], [2,98]]
         return __default__.Dataset.getoverview(self,outfile,width,format)
-    
+

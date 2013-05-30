@@ -32,8 +32,9 @@ import __default__
 
 # import other modules (use "_"  prefix to import privately)
 import sys, os
+from metageta import geometry
 
-class Dataset(__default__.Dataset): 
+class Dataset(__default__.Dataset):
     '''Subclass of __default__.Dataset class so we get a load of metadata populated automatically'''
     def __getmetadata__(self,f=None):
         '''Read Metadata for a ECW image as GDAL doesn't quite get it all...'''
@@ -49,13 +50,16 @@ class Dataset(__default__.Dataset):
                 __default__.Dataset.__getmetadata__(self, ers) #autopopulate basic metadata
                 self.metadata['filetype']='ECW/ERMapper Compressed Wavelets'
                 self.metadata['compressiontype']='ECW'
-                self.metadata['filename']=f
+                self.metadata['filepath']=f
+                self.metadata['filename']=os.path.basename(f)
+                self._gdaldataset=geometry.OpenDataset(f) #ERS may not get handed off to gdal proxy and segfault
             except:__default__.Dataset.__getmetadata__(self, f)
         else:
             __default__.Dataset.__getmetadata__(self) #autopopulate basic metadata
         #Leave the ECW driver in place even though all it does is call the default class.
         #This is so ECWs get processed before any ERSs (which could cause a segfault)
         ##__default__.Dataset.__getmetadata__(self) #autopopulate basic metadata
+
 
     def getoverview(self,*args,**kwargs):
         '''Check for possibly corrupt files that can crash GDAL and therefore python...'''

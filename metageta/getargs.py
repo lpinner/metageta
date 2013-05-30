@@ -110,7 +110,8 @@ class GetArgs(object):
 
     def _cmdok(self,*args,**kwargs):
         for arg in self._args:
-            try:vars(self)[arg]=self._args[arg].value.get()
+            #try:vars(self)[arg]=self._args[arg].value.get()
+            try:vars(self)[arg]=self._args[arg].value
             except:pass
             #Every required arg (except disabled ones) must have a value
             if vars(self)[arg]=='' and self._args[arg].enabled and self._args[arg].required:
@@ -165,6 +166,7 @@ class Arg(object):
         self.opt=opt
         self._enabled=True #default
         self._callback=lambda *a,**kw:'break' #default
+        self._value = opt.default
         self.enabled=enabled
         self.required=required
         self.icon=icon
@@ -175,6 +177,15 @@ class Arg(object):
             self.callback=callback
         else:
             self.callback=self._callback
+
+    @property
+    def value(self):
+        try:return self._value.get()
+        except:return self._value
+    @value.setter
+    def value(self, val):
+        try:self._value.set(val)
+        except:self._value=val
 
     def __classproperty__(fcn):
         '''The class property decorator function'''
@@ -233,14 +244,14 @@ class DirArg(Arg):
 
     def __build__(self,root,row):
         self.TkPhotoImage = Tix.PhotoImage(format=self.icon.format,data=self.icon.data) # keep a reference! See http://effbot.org/tkinterbook/photoimage.htm
-        self.value = Tix.StringVar(root)
+        self._value = Tix.StringVar(root)
         if not self.lastdir:self.lastdir=Tix.StringVar(root,self.initialdir)
 
-        if self.opt.default is not None:self.value.set(self.opt.default)
+        if self.opt.default is not None:self._value.set(self.opt.default)
         self.TkLabel=Tix.Label(root, text=self.opt.help+':')
-        self.TkEntry=Tix.Entry(root, textvariable=self.value)
+        self.TkEntry=Tix.Entry(root, textvariable=self._value)
 
-        self.TkButton = Tix.Button(root,image=self.TkPhotoImage, command=Command(self.cmd,root,self.opt.help,self.lastdir,self.value))
+        self.TkButton = Tix.Button(root,image=self.TkPhotoImage, command=Command(self.cmd,root,self.opt.help,self.lastdir,self._value))
         self.TkLabel.grid(row=row, column=0,sticky=Tix.W, padx=2)
         self.TkEntry.grid(row=row, column=1,sticky=Tix.E+Tix.W, padx=2)
         self.TkButton.grid(row=row, column=2,sticky=Tix.E, padx=2)
@@ -249,7 +260,7 @@ class DirArg(Arg):
             self.TkEntryToolTip=_ToolTip(self.TkEntry, delay=250, follow_mouse=1, text=self.tooltip)
             self.TkButtonToolTip=_ToolTip(self.TkButton, delay=250, follow_mouse=1, text=self.tooltip)
 
-        self.value.trace('w',self.callback)
+        self._value.trace('w',self.callback)
         self.enabled=self.enabled #Force update
 
     def cmd(self,root,label,dir,var):
@@ -277,13 +288,13 @@ class FileArg(Arg):
 
     def __build__(self,root,row):
         self.TkPhotoImage = Tix.PhotoImage(format=self.icon.format,data=self.icon.data) # keep a reference! See http://effbot.org/tkinterbook/photoimage.htm
-        self.value = Tix.StringVar()
+        self._value = Tix.StringVar(root)
 
         if not self.lastdir:self.lastdir=Tix.StringVar(root,self.initialdir)
-        if self.opt.default is not None:self.value.set(self.opt.default)
+        if self.opt.default is not None:self._value.set(self.opt.default)
         self.TkLabel=Tix.Label(root, text=self.opt.help+':')
-        self.TkEntry=Tix.Entry(root, textvariable=self.value)
-        self.TkButton = Tix.Button(root,image=self.TkPhotoImage,command=Command(self.cmd,root,self.opt.help,self.filter,self.lastdir,self.value))
+        self.TkEntry=Tix.Entry(root, textvariable=self._value)
+        self.TkButton = Tix.Button(root,image=self.TkPhotoImage,command=Command(self.cmd,root,self.opt.help,self.filter,self.lastdir,self._value))
         self.TkLabel.grid(row=row, column=0,sticky=Tix.W, padx=2)
         self.TkEntry.grid(row=row, column=1,sticky=Tix.E+Tix.W, padx=2)
         self.TkButton.grid(row=row, column=2,sticky=Tix.E, padx=2)
@@ -292,7 +303,7 @@ class FileArg(Arg):
             self.TkEntryToolTip=_ToolTip(self.TkEntry, delay=250, follow_mouse=1, text=self.tooltip)
             self.TkButtonToolTip=_ToolTip(self.TkButton, delay=250, follow_mouse=1, text=self.tooltip)
 
-        self.value.trace('w',self.callback)
+        self._value.trace('w',self.callback)
         self.enabled=self.enabled #Force update
 
     def cmd(self,root,label,filter,dir,var):
@@ -346,13 +357,13 @@ class ComboBoxArg(Arg):
         '''
         self.TkPhotoImage = Tix.PhotoImage(format=self.icon.format,data=self.icon.data) # keep a reference! See http://effbot.org/tkinterbook/photoimage.htm
         if self.multiselect:
-            self.value = Tix.StringVar()
-            self.dummy = Tix.StringVar()
+            self._value = Tix.StringVar(root)
+            self.dummy = Tix.StringVar(root)
             self.TkComboBox=Tix.ComboBox(root, dropdown=1, command=self.__updatemulti__,selectmode='immediate',editable=1,variable=self.dummy,options='listbox.height 6 listbox.background white')
             self.TkComboBox.subwidget('slistbox').subwidget('listbox').configure(selectmode='extended')
         else:
-            self.value = Tix.StringVar()
-            self.TkComboBox=Tix.ComboBox(root, command=self.callback, dropdown=1, editable=1,variable=self.value,options='listbox.height 6 listbox.background white')
+            self._value = Tix.StringVar(root)
+            self.TkComboBox=Tix.ComboBox(root, command=self.callback, dropdown=1, editable=1,variable=self._value,options='listbox.height 6 listbox.background white')
 
         self.TkLabel=Tix.Label(root, text=self.opt.help+':')
         for o in self.options:self.TkComboBox.insert(Tix.END, o)
@@ -362,7 +373,7 @@ class ComboBoxArg(Arg):
             selected=self.options[0]
 
         self.TkComboBox.set_silent(selected)
-        self.value.set(selected)
+        self._value.set(selected)
 
         self.TkComboBox.subwidget('entry').bind('<Key>', lambda e: 'break')
         self.TkImage = Tix.Label(root,image=self.TkPhotoImage)
@@ -374,23 +385,23 @@ class ComboBoxArg(Arg):
             self.TkDropListToolTip=_ToolTip(self.TkComboBox, delay=250, follow_mouse=1, text=self.tooltip)
             self.TkImageToolTip=_ToolTip(self.TkImage, delay=250, follow_mouse=1, text=self.tooltip)
 
-        #self.value.trace('w',self.callback)
+        #self._value.trace('w',self.callback)
 
         self.enabled=self.enabled #Force update
     def __updatemulti__(self,*args):
         try:listbox=self.TkComboBox.subwidget('slistbox').subwidget('listbox')
         except:return
-        self.value.set('|'.join([listbox.get(i) for i in listbox.curselection()]))
+        self._value.set('|'.join([listbox.get(i) for i in listbox.curselection()]))
         self.callback()
 
 class StringArg(Arg):
     ''' Build a text entry box'''
     def __build__(self,root,row):
-        self.value = Tix.StringVar()
-        if self.opt.default is not None:self.value.set(self.opt.default)
+        self._value = Tix.StringVar(root)
+        if self.opt.default is not None:self._value.set(self.opt.default)
 
         self.TkLabel=Tix.Label(root, text=self.opt.help+':')
-        self.TkEntry=Tix.Entry(root, textvariable=self.value)
+        self.TkEntry=Tix.Entry(root, textvariable=self._value)
         #self.TkEntry.bind('<Key>', self.keypress)
         self.TkLabel.grid(row=row, column=0,sticky=Tix.W)
         self.TkEntry.grid(row=row, column=1,sticky=Tix.E+Tix.W, padx=2)
@@ -398,24 +409,24 @@ class StringArg(Arg):
             self.TkLabelToolTip=_ToolTip(self.TkLabel, delay=250, follow_mouse=1, text=self.tooltip)
             self.TkEntryToolTip=_ToolTip(self.TkEntry, delay=250, follow_mouse=1, text=self.tooltip)
 
-        self.value.trace('w',self.callback)
+        self._value.trace('w',self.callback)
         self.enabled=self.enabled #Force update
 
 class BoolArg(Arg):
     ''' Build a boolean checkbox '''
 
     def __build__(self,root,row):
-        self.value = Tix.BooleanVar()
-        self.value.set(self.opt.default)
+        self._value = Tix.BooleanVar(root)
+        self._value.set(self.opt.default)
         self.TkLabel=Tix.Label(root, text=self.opt.help+':')
-        self.TkCheckbutton=Tix.Checkbutton(root, variable=self.value)
+        self.TkCheckbutton=Tix.Checkbutton(root, variable=self._value)
         self.TkLabel.grid(row=row, column=0,sticky=Tix.W)
         self.TkCheckbutton.grid(row=row, column=1,sticky=Tix.W)
         if self.tooltip:
             self.TkLabelToolTip=_ToolTip(self.TkLabel, delay=250, follow_mouse=1, text=self.tooltip)
             self.TkCheckbuttonToolTip=_ToolTip(self.TkCheckbutton, delay=250, follow_mouse=1, text=self.tooltip)
 
-        self.value.trace('w',self.callback)
+        self._value.trace('w',self.callback)
         self.enabled=self.enabled #Force update
 
 class Command(object):

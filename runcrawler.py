@@ -278,34 +278,43 @@ def getlogger(logfile,name=None,nogui=False, debug=False, icon=None):
 if __name__ == '__main__':
 
     def mediacallback(dirarg,medarg):
-        dir=dirarg.value.get()
-        if os.path.exists(dir):
-            volname=utilities.volname(dir)
+        #dirname=dirarg.value.get()
+        dirname=dirarg.value
+        if os.path.exists(dirname):
+            volname=utilities.volname(dirname)
             if volname: #Is it a CD/DVD
-                if not medarg.value.get():#If it hasn't already been set
+                #if not medarg.value.get():#If it hasn't already been set
+                if not medarg.value:#If it hasn't already been set
                         medarg.enabled=True
-                        medarg.value.set(volname)
+                        #medarg.value.set(volname)
+                        medarg.value=volname
             else:
                 medarg.enabled=False
-                medarg.value.set('')
+                #medarg.value.set('')
+                medarg.value=''
 
     #This is an extra check so existing spreadsheets don't get overwritten unless
     #the update arg is explicitly unchecked
     def xlscallback(xlsarg,updatearg):
-        xls=xlsarg.value.get()
+        #xls=xlsarg.value.get()
+        xls=xlsarg.value
         if utilities.exists(xls):
             updatearg.enabled=True
-            updatearg.value.set(True)
+            #updatearg.value.set(True)
+            updatearg.value=True
         else:
             updatearg.enabled=False
-            updatearg.value.set(False)
+            #updatearg.value.set(False)
+            updatearg.value=False
 
     def writablecallback(arg):
-        filepath=arg.value.get()
+        #filepath=arg.value.get()
+        filepath=arg.value
         if utilities.writable(filepath):
             return True
         else:
-            arg.value.set('')
+            #arg.value.set('')
+            arg.value
             err='I/O Error','%s is not writable.'%filepath
             logger.error('%s' % utilities.ExceptionInfo())
             try:getargs.tkMessageBox.showerror()
@@ -376,11 +385,16 @@ if __name__ == '__main__':
         #Pop up the GUI
         keepalive=True
         validate=getargs.Command(writablecallback,xlsarg)
+        if optvals.xls:
+            optvals.xls=utilities.checkExt(utilities.encode(optvals.xls), ['.xls'])
+            xlsarg.value=optvals.xls
+            xlsarg.callback()
         while keepalive:
             args=getargs.GetArgs(dirarg,medarg,xlsarg,updatearg,recursearg,archivearg,ovarg,kaarg,callback=validate,title=APP,icon=ICON)
             if args:#GetArgs returns None if user cancels the GUI/closes the dialog (or Tkinter can not be imported)
                 keepalive=args.keepalive
                 args.xls = utilities.checkExt(utilities.encode(args.xls), ['.xls'])
+
                 log=args.xls.replace('.xls','.log')
                 if logger and logger.logging:
                     logger.resetProgress()

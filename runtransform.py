@@ -221,6 +221,7 @@ if __name__ == '__main__':
             opt.default=vars(optvals).get(opt.dest,None)
         #Pop up the GUI
         keepalive=True
+        hasrun=False
         while keepalive:
             args=getargs.GetArgs(xlsarg,dirarg,xslarg,mefarg,catarg,opsarg,kaarg,title=APP,icon=ICON)
             if args:#GetArgs returns None if user cancels the GUI
@@ -232,7 +233,10 @@ if __name__ == '__main__':
                 forceexit=True
                 main(args.xls,args.xsl,args.dir,logger,args.mef,args.cat,args.ops)
                 forceexit=False
-            else:keepalive=False
+                hasrun=True
+            else:
+                if not hasrun:parser.print_help()
+                keepalive=False
     else: #No need for the GUI
         logger=getlogger(name=APP,nogui=optvals.nogui, debug=optvals.debug, icon=ICON)
         main(optvals.xls,optvals.xsl,optvals.dir,logger,optvals.mef,optvals.cat,optvals.ops)

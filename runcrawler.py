@@ -382,14 +382,15 @@ if __name__ == '__main__':
         #Add existing command line args values to opt default values so they show in the gui
         for opt in parser.option_list:
             opt.default=vars(optvals).get(opt.dest,None)
-        #Pop up the GUI
         keepalive=True
+        hasrun=False
         validate=getargs.Command(writablecallback,xlsarg)
         if optvals.xls:
             optvals.xls=utilities.checkExt(utilities.encode(optvals.xls), ['.xls'])
             xlsarg.value=optvals.xls
             xlsarg.callback()
         while keepalive:
+            #Pop up the GUI
             args=getargs.GetArgs(dirarg,medarg,xlsarg,updatearg,recursearg,archivearg,ovarg,kaarg,callback=validate,title=APP,icon=ICON)
             if args:#GetArgs returns None if user cancels the GUI/closes the dialog (or Tkinter can not be imported)
                 keepalive=args.keepalive
@@ -405,8 +406,9 @@ if __name__ == '__main__':
                 forceexit=True
                 main(args.dir,args.xls,logger,args.med,args.update,args.ovs,args.recurse,args.archive)
                 forceexit=False
+                hasrun=True
             else:
-                parser.print_help()
+                if not hasrun:parser.print_help()
                 keepalive=False
     else: #No need for the GUI
         xls = utilities.checkExt(utilities.encode(optvals.xls), ['.xls'])

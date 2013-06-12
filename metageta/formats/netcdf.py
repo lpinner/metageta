@@ -53,6 +53,8 @@ class Dataset(__default__.Dataset):
     def __getmetadata__(self):
         '''Read Metadata for a NetCDF image (1st subdataset)'''
         f=self.fileinfo['filepath']
+        if f[:4]=='/vsi':raise NotImplementedError
+
         nc=geometry.OpenDataset(f)
         ncmd=nc.GetMetadata()
 

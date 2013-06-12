@@ -44,6 +44,7 @@ class Dataset(__default__.Dataset):
 
     def __init__(self,f):
         if not f:f=self.fileinfo['filepath']
+        if f[:4]=='/vsi':raise NotImplementedError
         lin=open(f).readline().strip() #read first line
         if lin == 'ENVI':raise NotImplementedError, '%s is not an ESRI bil file.' % f
 

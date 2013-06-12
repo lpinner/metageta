@@ -75,7 +75,7 @@ class Dataset(__default__.Dataset):
                 clr = overviews.RATtoLUT(rat)
                 if clr:self._stretch=['COLOURTABLELUT',[1],[clr]]
 
-        try:return __default__.Dataset.getovervierat.w(self,outfile,width,format)
+        try:return __default__.Dataset.getoverview(self,outfile,width,format)
         except:return self.__aux_workaround__(__default__.Dataset.getoverview, self,outfile,width,format)
     def __aux_workaround__(self, func,*args,**kwargs):
         ##  Sometimes AUX files can cause problems, this is related to the HFA driver,

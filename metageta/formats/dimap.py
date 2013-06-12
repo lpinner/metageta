@@ -61,6 +61,7 @@ gdal.AllRegister()
 class Dataset(__default__.Dataset):
     '''Subclass of __default__.Dataset class so we get a load of metadata populated automatically'''
     def __init__(self,f):
+        if f[:4]=='/vsi':raise NotImplementedError
         '''Open the dataset'''
         if not f:f=self.fileinfo['filepath']
         self.filelist=[r for r in glob.glob('%s/*'%os.path.dirname(f))]

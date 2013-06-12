@@ -56,6 +56,7 @@ gdal.AllRegister()
 class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
     def __init__(self,f=None):
         if not f:f=self.fileinfo['filepath']
+        if f[:4]=='/vsi':raise NotImplementedError
         self.filelist=glob.glob(os.path.splitext(f)[0]+'.*')
         self._gdaldataset = geometry.OpenDataset(f)
         self._hdf_md=self._gdaldataset.GetMetadata()

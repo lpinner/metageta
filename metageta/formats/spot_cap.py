@@ -57,6 +57,7 @@ class Dataset(__dataset__.Dataset): #Subclass of base Dataset class
     def __init__(self,f=None):
         '''Open the dataset'''
         if not f:f=self.fileinfo['filepath']
+        if f[:4]=='/vsi':raise NotImplementedError
 
         led=glob.glob(os.path.dirname(f) + '/[Ll][Ee][Aa][Dd]*')[0] #volume file
         meta = open(led,'rb').read()

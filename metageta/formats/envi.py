@@ -39,6 +39,7 @@ class Dataset(__default__.Dataset):
     '''Subclass of __default__.Dataset class so we get a load of metadata populated automatically'''
     def __init__(self,f=None):
         if not f:f=self.fileinfo['filepath']
+        if f[:4]=='/vsi':raise NotImplementedError
         
         lin=open(f).readline().strip() #read first line, is it an ENVI format hdr...?
         if lin != 'ENVI':raise NotImplementedError

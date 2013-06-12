@@ -61,6 +61,7 @@ gdal.AllRegister()
 class Dataset(__dataset__.Dataset):
     '''Subclass of base Dataset class'''
     def __init__(self,f):
+        if f[:4]=='/vsi':raise NotImplementedError
         self.filelist=glob.glob(os.path.dirname(f)+'/*') #Assume raw data - all files in current dir belong to this dataset.
         #filelist=glob.glob(os.path.splitext(f)[0]+'.*')
         #filelist.extend(glob.glob('%s\\%s_%s_*.hdf' % (os.path.dirname(f),os.path.basename(f)[10:14],os.path.basename(f)[14:17])))

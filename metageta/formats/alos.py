@@ -63,6 +63,7 @@ class Dataset(__default__.Dataset):
 
     def __init__(self,f=None):
         if not f:f=self.fileinfo['filepath']
+        if f[:4]=='/vsi':raise NotImplementedError
         self.filelist=[r for r in utilities.rglob(os.path.dirname(f))]
         self._led=f
         try:self._vol=glob.glob(os.path.dirname(f) + '/[Vv][Oo][Ll]*')[0] #volume file

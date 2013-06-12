@@ -58,8 +58,9 @@ gdal.AllRegister()
 class Dataset(__default__.Dataset): 
     '''Subclass of __default__.Dataset class so we get a load of metadata populated automatically'''
     def __init__(self,f):
+        if f[:4]=='/vsi':raise NotImplementedError
         if glob.glob(os.path.splitext(f)[0]+'.[iI][mM][dD]'): #if an imd file exists
-            raise NotImplementedError #Let the quickbird driver handle it, this error gets ignored in __init__.Open()
+            raise NotImplementedError #Let the Digitalglobe driver handle it, this error gets ignored in __init__.Open()
     def __getmetadata__(self):
         '''Read Metadata for a NITF image'''
         f=self.fileinfo['filepath']

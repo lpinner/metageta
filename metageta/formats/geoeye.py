@@ -51,6 +51,7 @@ gdal.AllRegister()
 class Dataset(__default__.Dataset):
     '''Subclass of __default__.Dataset class so we get a load of metadata populated automatically'''
     def __init__(self,f):
+        if f[:4]=='/vsi':raise NotImplementedError
         self.mdtxt=open(f).read()
         if 'Source Image Metadata' not in self.mdtxt:raise NotImplementedError
 

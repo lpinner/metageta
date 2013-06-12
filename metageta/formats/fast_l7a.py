@@ -58,6 +58,7 @@ class Dataset(__dataset__.Dataset):
     '''Subclass of base Dataset class'''
     def __init__(self,f):
         if not f:f=self.fileinfo['filepath']
+        if f[:4]=='/vsi':raise NotImplementedError
         d=os.path.dirname(f)
 
         if open(f).read(1024).strip()[0]=='<':#HTML file, ignore it.

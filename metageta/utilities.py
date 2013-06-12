@@ -47,7 +47,7 @@ encoding='utf-8'
 
 iswin=os.name=='nt'#sys.platform[0:3].lower()=='win'#Are we on Windows
 
-compressedfiles=('.zip','.tar','.tar.gz','.tgz','.tbz', '.tbz2','.tb2','.tar.bz2')
+compressedfiles=('.zip','.tar.gz','.tgz','.tbz', '.tbz2','.tb2','.tar.bz2','.tar')
 
 
 #========================================================================================================
@@ -99,8 +99,8 @@ def archivefileinfo(f,n):
         afi = tarfile.open(f,'r').getmember(n)
         archiveinfo['size']=afi.size
         archiveinfo['datemodified']=time.strftime(datetimeformat, time.localtime(afi.mtime))
-        archiveinfo['ownerid']=afi.uid
-        archiveinfo['ownername']=afi.uname
+        #archiveinfo['ownerid']=afi.uid  #Use the owner of the archive instead
+        #archiveinfo['ownername']=afi.uname
 
     elif zipfile.is_zipfile(f):
         afi = zipfile.ZipFile(f,'r').getinfo(n)
@@ -245,14 +245,17 @@ def _WinFileOwner(filepath):
     import win32net
     import win32netcon
 
-    OWNERID=8
+    OWNERID=(8,10) # seems to be 8 on XP, 10 on Win7
     try:
         d=os.path.split(filepath)
         oShell = win32com.client.Dispatch("Shell.Application")
         oFolder = oShell.NameSpace(d[0])
-        ownerid=str(oFolder.GetDetailsOf(oFolder.parsename(d[1]), OWNERID))
-        ownerid=ownerid.split('\\')[-1]
-    except: ownerid='0'
+        for oid in OWNERID:
+            ownerid=str(oFolder.GetDetailsOf(oFolder.parsename(d[1]), oid))
+            if ownerid:break
+        try:domain,ownerid=ownerid.split('\\')
+        except:domain,ownerid=None,ownerid.split('\\')[-1]
+    except: domain,ownerid=None,''
     #Too slow...
     ##oWMI = win32com.client.GetObject(r"winmgmts:\\.\root\cimv2")
     ##qry = "Select * from Win32_UserAccount where NAME = '%s'" % ownerid
@@ -264,11 +267,15 @@ def _WinFileOwner(filepath):
     ##else: ownername='No user match'
     #Much quicker...
     try:
-       dc=win32net.NetServerEnum(None,100,win32netcon.SV_TYPE_DOMAIN_CTRL)
-       if dc[0]:
-           dcname=dc[0][0]['name']
-           ownername=win32net.NetUserGetInfo(r"\\"+dcname,ownerid,2)['full_name']
-       else:
+        dc=win32net.NetServerEnum(None,100,win32netcon.SV_TYPE_DOMAIN_CTRL)
+        dcname=r'\\'+dc[0][0]['name']
+    except:
+        try:dcname=win32net.NetGetDCName()
+        except:dcname=None
+    try:
+        if dcname:
+            ownername=win32net.NetUserGetInfo(dcname,ownerid,2)['full_name']
+        else:
            ownername=win32net.NetUserGetInfo(None,ownerid,2)['full_name']
     except: ownername='No user match'
 
@@ -315,9 +322,10 @@ def FileInfo(filepath):
             filestat = os.stat(archive)
             fileinfo['filename']=os.path.basename(filename)
             fileinfo['filepath']=filepath
-            filepath=archive
             fileinfo['datecreated']=time.strftime(datetimeformat, time.localtime(filestat.st_ctime))
             fileinfo['dateaccessed']=time.strftime(datetimeformat, time.localtime(filestat.st_atime))
+            fileinfo['guid']=uuid(filepath)
+            filepath=archive
         else:
             filepath=normcase(realpath(filepath))
             filestat = os.stat(filepath)
@@ -330,7 +338,6 @@ def FileInfo(filepath):
             fileinfo['dateaccessed']=time.strftime(datetimeformat, time.localtime(filestat.st_atime))
             fileinfo['guid']=uuid(filepath)
 
-        fileinfo['guid']=uuid(filepath)
         if not fileinfo.get('ownerid'):
             if iswin:
                 ownerid,ownername=_WinFileOwner(filepath)

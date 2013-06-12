@@ -530,7 +530,8 @@ class rglob:
                 except:isdir=False
                 try:isarchive=(not islink and not isdir) and (tarfile.is_tarfile(fullname) or zipfile.is_zipfile(fullname))
                 except:isarchive=False
-                isfile=(not isdir and not isarchive and not islink) and os.path.isfile(fullname)
+                try:isfile=((not isdir and not isarchive and not islink) and os.path.isfile(fullname)) or (tarfile.is_tarfile(self.directory) or zipfile.is_zipfile(self.directory))
+                except:isfile=False
 
                 if isdir and self.recurse:
                     self.stack.append(fullname)

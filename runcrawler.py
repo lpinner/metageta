@@ -414,7 +414,7 @@ if __name__ == '__main__':
         xls = utilities.checkExt(utilities.encode(optvals.xls), ['.xls'])
         log=xls.replace('.xls','.log')
         logger=getlogger(log, name=APP,nogui=optvals.nogui, debug=optvals.debug, icon=ICON)
-        main(optvals.dir,xls,logger,optvals.med,optvals.update,optvals.ovs,optvals.recurse)
+        main(optvals.dir,xls,logger,optvals.med,optvals.update,optvals.ovs,optvals.recurse,optvals.archive)
 
     if logger:
         logger.shutdown()

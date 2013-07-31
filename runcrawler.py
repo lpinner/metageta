@@ -97,7 +97,9 @@ def main(dir, xls, logger, mediaid=None, update=False, getovs=False, recurse=Fal
             row=-1
             for row,rec in enumerate(utilities.ExcelReader(xls)):
                 #Check if the dataset still exists, mark it DELETED if it doesn't
-                if os.path.exists(rec['filepath']) or rec['mediaid'] !='':
+
+                if os.path.exists(rec['filepath']) or rec['mediaid'] !='' or \
+                   (rec['filepath'][0:4]=='/vsi' and utilities.compressed_file_exists(rec['filepath'],False)):
                     if ShapeWriter:
                         ext=[rec['UL'].split(','),rec['UR'].split(','),rec['LR'].split(','),rec['LL'].split(',')]
                         ShapeWriter.WriteRecord(ext,rec)

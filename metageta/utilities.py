@@ -73,6 +73,7 @@ def archivelist(f):
         @rtype:   C{list}
         @return:  archive filelisting
     '''
+    lst=[]
     if tarfile.is_tarfile(f):
         #return tarfile.open(f,'r').getnames() #includes subfolders
         lst=[ti.name for ti in tarfile.open(f,'r').getmembers() if ti.isfile()]
@@ -108,6 +109,28 @@ def archivefileinfo(f,n):
         archiveinfo['datemodified']=time.strftime(datetimeformat, list(afi.date_time)+[0,0,0])
 
     return archiveinfo
+
+def compressed_file_exists(path,testfile=True):
+    ''' Check check whether /vsi...\path_to_archive\folder\file exists.
+        Alternatively, only check if the archive exists on the file system.
+        @type     path:      C{str}
+        @param    path:      VSI filepath (/vsi...\path_to_archive\folder\file)
+        @type     testfile:  C{bool}
+        @param    testfile:  If True, check if file exists in archive. If False, only check if the archive exists on the file system.
+        @rtype:   C{bool}
+        @return:  Returns True or False
+    '''
+    p=os.path.split(path[8:])[0]
+    while p:
+        if os.path.exists(p) and tarfile.is_tarfile(p) or zipfile.is_zipfile(p):
+            if testfile:
+                if path in archivelist(p):return True
+                else:return False
+            else:return True
+
+        p=os.path.split(p)[0]
+
+    return False
 
 def runcmd(cmd, format='s'):
     ''' Run a command

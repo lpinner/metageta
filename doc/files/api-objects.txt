@@ -211,6 +211,7 @@ metageta.utilities.checkExt	metageta.utilities-module.html#checkExt
 metageta.utilities.readascii	metageta.utilities-module.html#readascii
 metageta.utilities.uuid	metageta.utilities-module.html#uuid
 metageta.utilities.normpath	metageta.utilities-module.html#normpath
+metageta.utilities.compressed_file_exists	metageta.utilities-module.html#compressed_file_exists
 metageta.utilities.timeformat	metageta.utilities-module.html#timeformat
 metageta.utilities.volname	metageta.utilities-module.html#volname
 runcrawler	runcrawler-module.html

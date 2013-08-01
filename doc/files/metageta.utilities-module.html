@@ -187,6 +187,24 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type"><code>bool</code></span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="metageta.utilities-module.html#compressed_file_exists" class="summary-sig-name">compressed_file_exists</a>(<span class="summary-sig-arg">path</span>,
+        <span class="summary-sig-arg">testfile</span>=<span class="summary-sig-default">True</span>)</span><br />
+      Check check whether /vsi...\path_to_archiveolderile exists.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="metageta.utilities-pysrc.html#compressed_file_exists">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type"><code>tuple</code></span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -709,6 +727,35 @@
     </ul></dd>
     <dt>Returns: <code>dict</code></dt>
         <dd>archive file member info</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="compressed_file_exists"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">compressed_file_exists</span>(<span class="sig-arg">path</span>,
+        <span class="sig-arg">testfile</span>=<span class="sig-default">True</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="metageta.utilities-pysrc.html#compressed_file_exists">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Check check whether /vsi...\path_to_archiveolderile exists. 
+  Alternatively, only check if the archive exists on the file system.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>path</code></strong> (<code>str</code>) - VSI filepath (/vsi...\path_to_archiveolderile)</li>
+        <li><strong class="pname"><code>testfile</code></strong> (<code>bool</code>) - If True, check if file exists in archive. If False, only check if
+          the archive exists on the file system.</li>
+    </ul></dd>
+    <dt>Returns: <code>bool</code></dt>
+        <dd>Returns True or False</dd>
   </dl>
 </td></tr></table>
 </div>

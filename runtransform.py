@@ -238,7 +238,8 @@ if __name__ == '__main__':
                 if not hasrun:parser.print_help()
                 keepalive=False
     else: #No need for the GUI
-        logger=getlogger(name=APP,nogui=optvals.nogui, debug=optvals.debug, icon=ICON)
+        #logger=getlogger(name=APP,nogui=optvals.nogui, debug=optvals.debug, icon=ICON)
+        logger=getlogger(name=APP,nogui=True, debug=optvals.debug, icon=ICON)
         main(optvals.xls,optvals.xsl,optvals.dir,logger,optvals.mef,optvals.cat,optvals.ops)
 
     if logger:

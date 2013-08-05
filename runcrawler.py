@@ -415,7 +415,8 @@ if __name__ == '__main__':
     else: #No need for the GUI
         xls = utilities.checkExt(utilities.encode(optvals.xls), ['.xls'])
         log=xls.replace('.xls','.log')
-        logger=getlogger(log, name=APP,nogui=optvals.nogui, debug=optvals.debug, icon=ICON)
+        #logger=getlogger(log, name=APP,nogui=optvals.nogui, debug=optvals.debug, icon=ICON)
+        logger=getlogger(log, name=APP,nogui=True, debug=optvals.debug, icon=ICON)
         main(optvals.dir,xls,logger,optvals.med,optvals.update,optvals.ovs,optvals.recurse,optvals.archive)
 
     if logger:

@@ -95,7 +95,8 @@ class Dataset(__default__.Dataset):
                 component=fl.split('_') #i.e. ['po','123456',pan,'0020000']
                 break
         component_id=component[3]         #i.e. 0020000
-        image_id=component_id.rstrip('0') #i.e. 002
+        #image_id=component_id.rstrip('0') #i.e. 002
+        image_id=component_id[:3]
         if not image_id:image_id='000'
         image_start = self.mdtxt.find(r'Product Image ID: %s'%image_id)
         component_start = self.mdtxt.find(r'Component ID: %s'%component_id,image_start)

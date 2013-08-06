@@ -73,7 +73,6 @@ class Dataset(__default__.Dataset):
 
     def __parsemetadata__(self):
         md={}
-        md['metadata']=self.mdtxt
         f=self.fileinfo['filepath']
 
         #The GeoEye metadata file can contain info for more than one scene if there are
@@ -100,6 +99,11 @@ class Dataset(__default__.Dataset):
         if not image_id:image_id='000'
         image_start = self.mdtxt.find(r'Product Image ID: %s'%image_id)
         component_start = self.mdtxt.find(r'Component ID: %s'%component_id,image_start)
+
+        #Fix "string longer than 32767 characters" exception
+        metadata_start = self.mdtxt.find(r'Source Image Metadata')
+        metadata_end = self.mdtxt.find(r'Product Space Metadata')
+        md['metadata']=self.mdtxt[metadata_start:metadata_end]
 
         try:
             mat=re.search(r'^\s*License Type:\s*(?P<license>.+$)',self.mdtxt, re.I+re.M)

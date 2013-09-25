@@ -496,9 +496,9 @@ def volname(path):
         return volname
 
 def writable(filepath):
-    if not os.path.isdir(filepath):
-        filepath=os.path.dirname(filepath)
     try:
+        if not os.path.isdir(filepath):
+            filepath=os.path.dirname(filepath)
         tmp=tempfile.TemporaryFile(dir=filepath) #Can we write a temp file there...?
         del tmp
         return True

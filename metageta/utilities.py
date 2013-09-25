@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2013 Australian Government, Department of Sustainability, Environment, Water, Population and Communities
+# Copyright (c) 2013 Australian Government, Department of the Environment
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -496,9 +496,9 @@ def volname(path):
         return volname
 
 def writable(filepath):
+    if not os.path.isdir(filepath):
+        filepath=os.path.dirname(filepath)
     try:
-        if not os.path.isdir(filepath):
-            filepath=os.path.dirname(filepath)
         tmp=tempfile.TemporaryFile(dir=filepath) #Can we write a temp file there...?
         del tmp
         return True

@@ -69,6 +69,12 @@ def getoverview(ds,outfile,width,format,bands,stretch_type,*stretch_args):
                   'BMP':'BMP',  #Microsoft Windows Device Independent Bitmap (.bmp)
                   'TIF':'GTiff' #Tagged Image File Format/GeoTIFF (.tif)
                  }
+    worldfileexts={'JPG':'.jgw', #JPEG JFIF (.jpg)
+                   'PNG':'.pgw',  #Portable Network Graphics (.png)
+                   'GIF':'.gfw',  #Graphics Interchange Format (.gif)
+                   'BMP':'.bpw',  #Microsoft Windows Device Independent Bitmap (.bmp)
+                   'TIF':'.tfw' #Tagged Image File Format/GeoTIFF (.tif)
+                 }
     if outfile:
         outfile=utilities.encode(outfile)
         format=os.path.splitext(outfile)[1].replace('.','')                  #overrides "format" arg if supplied
@@ -78,6 +84,10 @@ def getoverview(ds,outfile,width,format,bands,stretch_type,*stretch_args):
     rows=ds.RasterYSize
     vrtcols=width
     vrtrows=int(math.ceil(width*float(rows)/cols))
+    gt=ds.GetGeoTransform()
+    vrtpx=cols/float(vrtcols)*gt[1]
+    vrtpy=rows/float(vrtrows)*gt[5]
+    vrtgt=(gt[0],vrtpx,gt[2],gt[3],gt[4],vrtpy)
 
     vrtdrv=gdal.GetDriverByName('VRT')
     tempvrts={} #dict with keys=file descriptor and values=[filename,GDALDataset]
@@ -99,8 +109,18 @@ def getoverview(ds,outfile,width,format,bands,stretch_type,*stretch_args):
 
     vrtxml=stretch(stretch_type,vrtcols,vrtrows,ds,bands,*stretch_args)
     vrtds=geometry.OpenDataset(vrtxml)
+    vrtds.SetGeoTransform(vrtgt)
     if outfile:
         cpds=ovdriver.CreateCopy(outfile, vrtds)
+        wf_ext=worldfileexts.get(format.upper(), '.jgw')
+        open(outfile[:-4]+wf_ext,'w').write('\n'.join([
+            str(vrtgt[1]),
+            str(vrtgt[4]),
+            str(vrtgt[2]),
+            str(vrtgt[5]),
+            str(vrtgt[0] + 0.5 * vrtgt[1] + 0.5 * vrtgt[2]),
+            str(vrtgt[3] + 0.5 * vrtgt[4] + 0.5 * vrtgt[5])]))
+
         if not cpds:raise geometry.GDALError, 'Unable to generate overview image.'
     else:
         fd,fn=tempfile.mkstemp(suffix='.'+format.lower(), prefix='getoverviewtempimage')
@@ -118,7 +138,7 @@ def getoverview(ds,outfile,width,format,bands,stretch_type,*stretch_args):
 #========================================================================================================
 #Stretch algorithms
 #========================================================================================================
-def stretch(stretchType,vrtcols,vrtrows,*args):
+def stretch(stretchType,vrtcols,vrtrows,ds,*args):
     '''Calls the requested stretch function.
 
         For further info on VRT's, see the U{GDAL VRT Tutorial<http://www.gdal.org/gdal_vrttut.html>}
@@ -135,7 +155,7 @@ def stretch(stretchType,vrtcols,vrtrows,*args):
         @return:            VRT XML string
     '''
     stretch=globals()['_stretch_'+stretchType.upper()]
-    vrt=stretch(vrtcols,vrtrows,*args)
+    vrt=stretch(vrtcols,vrtrows,ds,*args)
     return geometry.CreateCustomVRT(vrt,vrtcols,vrtrows)
 
 def _stretch_NONE(vrtcols,vrtrows,ds,bands):

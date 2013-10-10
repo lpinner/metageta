@@ -207,6 +207,9 @@ def main(dir, xls, logger, mediaid=None, update=False, getovs=False, recurse=Fal
                     logger.debug(utilities.ExceptionInfo(10))
 
             logger.updateProgress(newMax=Crawler.filecount)
+        except NotImplementedError,err:
+            logger.warn('%s: %s' % (Crawler.file, err.message))
+            logger.debug(utilities.ExceptionInfo(10))
         except Exception,err:
             logger.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
             logger.debug(utilities.ExceptionInfo(10))

@@ -139,8 +139,11 @@ class Dataset(__default__.Dataset):
             md['sceneid']=mat.groupdict()['md']
         except:pass
         try:
+            mat=re.search(r'^\s*Nominal Collection Azimuth:\s*(?P<md>[+-]?((\d+(\.\d*)?)|\.\d+)([eE][+-]?[0-9]+)?)',self.mdtxt[image_start:], re.I+re.M)
+            md['satazimuth']=float(mat.groupdict()['md'])
             mat=re.search(r'^\s*Nominal Collection Elevation:\s*(?P<md>[+-]?((\d+(\.\d*)?)|\.\d+)([eE][+-]?[0-9]+)?)',self.mdtxt[image_start:], re.I+re.M)
-            md['viewangle']=float(mat.groupdict()['md'])
+            md['satelevation']=float(mat.groupdict()['md'])
+            md['viewangle']=90-md['satelevation']
         except:pass
         try:
             mat=re.search(r'^\s*Sun Angle Azimuth:\s*(?P<md>[+-]?((\d+(\.\d*)?)|\.\d+)([eE][+-]?[0-9]+)?)',self.mdtxt[image_start:], re.I+re.M)

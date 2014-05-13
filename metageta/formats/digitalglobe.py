@@ -125,6 +125,12 @@ class Dataset(__default__.Dataset):
         #else: #'BGRN','RGB','P'
         #    self.metadata['bands'] = ','.join([l for l in imddata['bandId']])
         self.metadata['bands'] = ','.join([b.split('_')[1] for b in imddata.keys() if b[0:5]=='BAND_'])
+        if imddata[imgkey].has_key('meanSatEl'):
+            self.metadata['satelevation'] = imddata[imgkey]['meanSatEl']
+            self.metadata['satazimuth'] = imddata[imgkey]['meanSatAz']
+        elif imddata[imgkey].has_key('sunEl'):
+            self.metadata['satelevation'] = imddata[imgkey]['satEl']
+            self.metadata['satazimuth'] = imddata[imgkey]['satAz']
         if imddata[imgkey].has_key('meanSunEl'):
             self.metadata['sunelevation'] = imddata[imgkey]['meanSunEl']
             self.metadata['sunazimuth'] = imddata[imgkey]['meanSunAz']

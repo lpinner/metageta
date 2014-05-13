@@ -222,7 +222,10 @@ class Dataset(__default__.Dataset):
             self.metadata['sunelevation'] = sunangles.xpath('number(SUN_ELEVATION)')
             self.metadata['sunazimuth'] = sunangles.xpath('number(SUN_AZIMUTH)')
         except:pass
-        try:self.metadata['viewangle'] = dom.xpath('number(//*/Located_Geometric_Values[LOCATION_TYPE="Center"]/Acquisition_Angles/VIEWING_ANGLE)')
+        try:
+            self.metadata['viewangle'] = dom.xpath('number(//*/Located_Geometric_Values[LOCATION_TYPE="Center"]/Acquisition_Angles/VIEWING_ANGLE)')
+            self.metadata['satelevation'] = dom.xpath('number(//*/Located_Geometric_Values[LOCATION_TYPE="Center"]/Acquisition_Angles/INCIDENCE_ANGLE)')
+            self.metadata['satazimuth'] = dom.xpath('number(//*/Located_Geometric_Values[LOCATION_TYPE="Center"]/Acquisition_Angles/AZIMUTH_ANGLE)')
         except:pass
 
         try:self.metadata['level'] = dom.xpath('string(//*/Processing_Information/Product_Settings/PROCESSING_LEVEL)')

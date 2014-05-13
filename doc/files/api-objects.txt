@@ -160,8 +160,6 @@ metageta.spatialreferences.lon2utmzone	metageta.spatialreferences-module.html#lo
 metageta.spatialreferences.SRS_UNITS_CONV	metageta.spatialreferences-module.html#SRS_UNITS_CONV
 metageta.spatialreferences.IdentifyAusEPSG	metageta.spatialreferences-module.html#IdentifyAusEPSG
 metageta.spatialreferences.AUS_PROJCS	metageta.spatialreferences-module.html#AUS_PROJCS
-metageta.testerr	metageta.testerr-module.html
-metageta.testerr.__package__	metageta.testerr-module.html#__package__
 metageta.transforms	metageta.transforms-module.html
 metageta.transforms.operations	metageta.transforms-module.html#operations
 metageta.transforms._file	metageta.transforms-module.html#_file

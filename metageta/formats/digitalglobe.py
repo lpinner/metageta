@@ -128,7 +128,7 @@ class Dataset(__default__.Dataset):
         if imddata[imgkey].has_key('meanSatEl'):
             self.metadata['satelevation'] = imddata[imgkey]['meanSatEl']
             self.metadata['satazimuth'] = imddata[imgkey]['meanSatAz']
-        elif imddata[imgkey].has_key('sunEl'):
+        elif imddata[imgkey].has_key('satEl'):
             self.metadata['satelevation'] = imddata[imgkey]['satEl']
             self.metadata['satazimuth'] = imddata[imgkey]['satAz']
         if imddata[imgkey].has_key('meanSunEl'):

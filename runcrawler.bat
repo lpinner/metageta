@@ -1,7 +1,7 @@
 @echo off
 setlocal ENABLEDELAYEDEXPANSION
 call "%~DP0setenv.bat"
-call python.exe "%~DP0runcrawler.py" %* --nogui
+call python.exe "%~DP0runcrawler.py" --nogui %*
 pause
 
 REM Check if the progress bar GUI will be used.

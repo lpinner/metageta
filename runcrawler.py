@@ -379,6 +379,8 @@ if __name__ == '__main__':
 
     #Parse existing command line args
     optvals,argvals = parser.parse_args()
+    if optvals.dir and optvals.dir[-1]=='"': #Fix C:" issue when called from Explorer context menu
+            optvals.dir=optvals.dir[:-1]+'\\'
 
     logger=None
     forceexit=True

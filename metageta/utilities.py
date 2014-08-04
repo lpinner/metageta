@@ -77,12 +77,14 @@ def archivelist(f):
     if tarfile.is_tarfile(f):
         #return tarfile.open(f,'r').getnames() #includes subfolders
         lst=[ti.name for ti in tarfile.open(f,'r').getmembers() if ti.isfile()]
-        return [os.sep.join(['/vsitar',normcase(f),l]) for l in lst]
+        #return [os.sep.join(['/vsitar',normcase(f),l]) for l in lst]
+        return [os.sep.join(['/vsitar',f,l]) for l in lst]
 
     elif zipfile.is_zipfile(f):
         #return zipfile.ZipFile(f,'r').namelist() #includes subfolders
         lst=[zi.filename for zi in zipfile.ZipFile(f,'r').infolist() if zi.file_size> 0]
-        return [os.sep.join(['/vsizip',normcase(f),l]) for l in lst]
+        #return [os.sep.join(['/vsizip',normcase(f),l]) for l in lst]
+        return [os.sep.join(['/vsizip',f,l]) for l in lst]
     return lst
 
 def archivefileinfo(f,n):
@@ -350,7 +352,8 @@ def FileInfo(filepath):
             fileinfo['guid']=uuid(filepath)
             filepath=archive
         else:
-            filepath=normcase(realpath(filepath))
+            #filepath=normcase(realpath(filepath))
+            filepath=realpath(filepath)
             filestat = os.stat(filepath)
 
             fileinfo['filename']=os.path.basename(filepath)
@@ -380,7 +383,8 @@ def uuid(filepath):
         @rtype:  C{str}
         @return: uuid
     '''
-    filepath=normcase(uncpath(realpath(filepath)))
+    #filepath=normcase(uncpath(realpath(filepath)))
+    filepath=uncpath(realpath(filepath))
     return str(_uuid.uuid3(_uuid.NAMESPACE_DNS,filepath))
 
 def uncpath(filepath):
@@ -394,12 +398,16 @@ def uncpath(filepath):
     #if sys.platform[0:3].lower()=='win':
     if iswin:
         import win32wnet
-        if type(filepath) in [list,tuple]:
+        if hasattr(filepath,'__iter__'): #Is iterable
             uncpath=[]
             for path in filepath:
-                try:    uncpath.append(normcase(win32wnet.WNetGetUniversalName(path)))
-                except: uncpath.append(normcase(path)) #Local path
+                #try:    uncpath.append(normcase(win32wnet.WNetGetUniversalName(path)))
+                #except: uncpath.append(normcase(path)) #Local path
+                try:    uncpath.append(win32wnet.WNetGetUniversalName(path))
+                except: uncpath.append(path) #Local path
         else:
+            #try:    uncpath=win32wnet.WNetGetUniversalName(filepath)
+            #except: uncpath=filepath #Local path
             try:    uncpath=win32wnet.WNetGetUniversalName(filepath)
             except: uncpath=filepath #Local path
     else:uncpath=filepath
@@ -541,9 +549,10 @@ class rglob:
                 self.index = self.index + 1
             except IndexError:
                 # pop next directory from stack
-                self.directory = normcase(self.stack.pop())
+                #self.directory = normcase(self.stack.pop())
+                self.directory = self.stack.pop()
                 try:
-                    self.files = normcase(os.listdir(self.directory))
+                    self.files = os.listdir(self.directory)
                     self.index = 0
                 except:
                     if self.archive:

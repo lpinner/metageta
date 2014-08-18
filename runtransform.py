@@ -44,7 +44,6 @@ Usage::
 
 @todo: Set up logging & debug properly.
 '''
-#@sysarg: C{--nogui}         : Don't show the GUI progress dialog")
 
 #Imports
 import os,sys,glob
@@ -123,8 +122,6 @@ def main(xls,xsl,dir,logger, mef=False,cat='',ops=''):
             try:os.remove(xmlfile)
             except:pass
 
-        logger.updateProgress(xlrdr.records)
-
 def exit():
     '''Force exit after closure of the ProgressBar GUI'''
     exe=os.path.splitext(os.path.basename(sys.executable.lower()))[0]
@@ -140,14 +137,13 @@ def showmessage(title, msg,type=None):
     tk.destroy()
     return val
 
-def getlogger(name=None,nogui=False, debug=False, icon=None):
+def getlogger(name=None, debug=False, icon=None):
     if debug:
         level=progresslogger.DEBUG
     else:
         level=progresslogger.INFO
-    try:   logger = progresslogger.ProgressLogger(name=name,logfile=None, logToConsole=True, logToFile=False, logToGUI=not nogui, level=level, icon=icon, callback=exit)
-    except:logger = progresslogger.ProgressLogger(name=name,logfile=logfile, logToConsole=True, logToFile=False, logToGUI=not nogui, level=level, callback=exit)
-    return logger
+
+    return progresslogger.ProgressLogger(name=name, logToConsole=True, logToFile=False, level=level, callback=exit)
 
 #========================================================================================================
 if __name__ == '__main__':
@@ -208,7 +204,6 @@ if __name__ == '__main__':
     opt=parser.add_option("--debug", action="store_true", dest="debug",default=False, help="Turn debug output on")
     opt=parser.add_option("-l", dest="log", metavar="log",
                       help=optparse.SUPPRESS_HELP) #help="Log file")                     #Not yet implemented
-    opt=parser.add_option("--nogui", action="store_true", dest="nogui", default=False, help="Disable the GUI progress dialog")
 
     optvals,argvals = parser.parse_args()
 
@@ -228,7 +223,7 @@ if __name__ == '__main__':
                 if logger and logger.logging:
                     logger.resetProgress()
                 else:
-                    logger=getlogger(name=APP,nogui=optvals.nogui, debug=optvals.debug, icon=ICON)
+                    logger=getlogger(name=APP, debug=optvals.debug, icon=ICON)
                 keepalive=args.keepalive
                 forceexit=True
                 main(args.xls,args.xsl,args.dir,logger,args.mef,args.cat,args.ops)
@@ -238,8 +233,7 @@ if __name__ == '__main__':
                 if not hasrun:parser.print_help()
                 keepalive=False
     else: #No need for the GUI
-        #logger=getlogger(name=APP,nogui=optvals.nogui, debug=optvals.debug, icon=ICON)
-        logger=getlogger(name=APP,nogui=True, debug=optvals.debug, icon=ICON)
+        logger=getlogger(name=APP, debug=optvals.debug, icon=ICON)
         main(optvals.xls,optvals.xsl,optvals.dir,logger,optvals.mef,optvals.cat,optvals.ops)
 
     if logger:

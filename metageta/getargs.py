@@ -63,7 +63,8 @@ class GetArgs(object):
 
         if icon is not None:
             self.icon=Tix.PhotoImage(data=icon.data,format=icon.format)
-            self._root.tk.call('wm', 'iconphoto', self._root._w, self.icon)
+            try:self._root.tk.call('wm', 'iconphoto', self._root._w, self.icon)
+            except:pass
 
         #On Ok callback
         self._callback=lambda *a,**kw:True #default

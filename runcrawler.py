@@ -27,7 +27,7 @@ Contains code to show GUI to gather input arguments when none are provided
 To run, call the eponymous batch file/shell script which sets the required environment variables
 
 Usage::
-    runcrawler.bat/sh -d dir -x xls {-o} {--nogui} {--debug}
+    runcrawler.bat/sh -d dir -x xls {-o} {--debug}
 
 @newfield sysarg: Argument, Arguments
 @sysarg: C{-d [dir]}        : Directory to search for imagery
@@ -41,7 +41,6 @@ Usage::
 
 @note: See U{Issue 22<http://code.google.com/p/metageta/issues/detail?id=22>}
 '''
-#@sysarg: C{--nogui}         : Don't show the GUI progress dialog")
 
 import sys, os, re,time,tempfile
 from metageta import formats
@@ -173,7 +172,6 @@ def main(dir, xls, logger, mediaid=None, update=False, getovs=False, recurse=Fal
                         logger.debug(utilities.ExceptionInfo(10))
                 else:
                     logger.info('Metadata did not need updating for %s, %s files remaining' % (Crawler.file,len(Crawler.files)))
-                    logger.updateProgress(newMax=Crawler.filecount)
                     continue
             else:
                 md=ds.metadata
@@ -206,7 +204,6 @@ def main(dir, xls, logger, mediaid=None, update=False, getovs=False, recurse=Fal
                     logger.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
                     logger.debug(utilities.ExceptionInfo(10))
 
-            logger.updateProgress(newMax=Crawler.filecount)
         except NotImplementedError,err:
             logger.warn('%s: %s' % (Crawler.file, err.message))
             logger.debug(utilities.ExceptionInfo(10))
@@ -224,8 +221,6 @@ def main(dir, xls, logger, mediaid=None, update=False, getovs=False, recurse=Fal
         logger.info("No data found")
     else:
         logger.info("Metadata extraction complete!")
-
-    logger.updateProgress(newMax=1) #Just so the progress meter hits 100%
 
     del ExcelWriter
     del ShapeWriter
@@ -261,13 +256,13 @@ def ismodified(record,fileinfo,xlspath):
     return False
 
 def exit():
-    '''Force exit after closure of the ProgressBar GUI'''
+    '''Force exit after closure'''
     exe=os.path.splitext(os.path.basename(sys.executable.lower()))[0]
     if forceexit:   #Issue?
         if exe in ['python','pythonw']: #Little kludge to stop killing dev IDEs
             os._exit(0)
 
-def getlogger(logfile,name=None,nogui=False, debug=False, icon=None):
+def getlogger(logfile,name=None, debug=False):
     geometry.debug=debug
     if debug:
         level=progresslogger.DEBUG
@@ -275,9 +270,8 @@ def getlogger(logfile,name=None,nogui=False, debug=False, icon=None):
         level=progresslogger.INFO
         geometry.gdal.PushErrorHandler( 'CPLQuietErrorHandler' )
 
-    try:   logger = progresslogger.ProgressLogger(name=name,logfile=logfile, logToConsole=True, logToFile=True, logToGUI=not nogui, level=level, icon=icon, callback=exit)
-    except:logger = progresslogger.ProgressLogger(name=name,logfile=logfile, logToConsole=True, logToFile=True, logToGUI=not nogui, level=level, callback=exit)
-    return logger
+    return progresslogger.ProgressLogger(name=name,logfile=logfile, logToConsole=True, logToFile=True, level=level, callback=exit)
+
 #========================================================================================================
 #========================================================================================================
 if __name__ == '__main__':
@@ -366,8 +360,7 @@ if __name__ == '__main__':
 
     opt=parser.add_option("--debug", action="store_true", dest="debug",default=False,
                       help="Turn debug output on")
-    opt=parser.add_option("--nogui", action="store_true", dest="nogui", default=False,
-                      help="Don't show the GUI progress dialog")
+
     opt=parser.add_option("--keep-alive", action="store_true", dest="keepalive", default=False, help="Keep this dialog box open")
     kaarg=getargs.BoolArg(opt)
     kaarg.tooltip='Do you want to keep this dialog box open after running the metadata crawl so you can run another?'
@@ -405,10 +398,9 @@ if __name__ == '__main__':
 
                 log=args.xls.replace('.xls','.log')
                 if logger and logger.logging:
-                    logger.resetProgress()
                     logger.logfile=log
                 else:
-                    logger=getlogger(log,name=APP,nogui=optvals.nogui, debug=optvals.debug, icon=ICON)
+                    logger=getlogger(log,name=APP,debug=optvals.debug)
                 keepalive=args.keepalive
                 forceexit=True
                 main(args.dir,args.xls,logger,args.med,args.update,args.ovs,args.recurse,args.archive)
@@ -420,8 +412,8 @@ if __name__ == '__main__':
     else: #No need for the GUI
         xls = utilities.checkExt(utilities.encode(optvals.xls), ['.xls'])
         log=xls.replace('.xls','.log')
-        #logger=getlogger(log, name=APP,nogui=optvals.nogui, debug=optvals.debug, icon=ICON)
-        logger=getlogger(log, name=APP,nogui=True, debug=optvals.debug, icon=ICON)
+        #logger=getlogger(log, name=APP, debug=optvals.debug, icon=ICON)
+        logger=getlogger(log, name=APP, debug=optvals.debug, icon=ICON)
         main(optvals.dir,xls,logger,optvals.med,optvals.update,optvals.ovs,optvals.recurse,optvals.archive)
 
     if logger:

@@ -263,9 +263,13 @@ class Dataset(__dataset__.Dataset):
 
         hdf_sd=gdalDataset.GetSubDatasets()
         hdf_md=gdalDataset.GetMetadata()
-        sd,sz = hdf_sd[0]
-        sd=geometry.OpenDataset(sd)
-        sd_md=sd.GetMetadata()
+        if hdf_sd: #gdal <=1.10.x
+            sd,sz = hdf_sd[0]
+            sd=geometry.OpenDataset(sd)
+            sd_md=sd.GetMetadata()
+        else: #gdal >=1.11.0
+            sd=gdalDataset
+            sd_md=hdf_md
         self.nbands=sd.RasterCount
         self.ncols=sd.RasterXSize
         self.nrows=sd.RasterYSize

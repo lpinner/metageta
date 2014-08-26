@@ -190,24 +190,24 @@ def main(dir, xls, logger, mediaid=None, update=False, getovs=False, recurse=Fal
                         #md['quicklook']=utilities.uncpath(qlk)
                         #md['thumbnail']=utilities.uncpath(thm)
                         logger.info('Generated overviews from %s' % Crawler.file)
-                except Exception,err:
+                except Exception as err:
                     logger.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
                     logger.debug(utilities.ExceptionInfo(10))
                 try:
                     ExcelWriter.WriteRecord(md)
-                except Exception,err:
+                except Exception as err:
                     logger.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
                     logger.debug(utilities.ExceptionInfo(10))
                 try:
                     ShapeWriter.WriteRecord(geom,md)
-                except Exception,err:
+                except Exception as err:
                     logger.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
                     logger.debug(utilities.ExceptionInfo(10))
 
-        except NotImplementedError,err:
-            logger.warn('%s: %s' % (Crawler.file, err.message))
+        except NotImplementedError as err:
+            logger.warn('%s: %s' % (Crawler.file, str(err)))
             logger.debug(utilities.ExceptionInfo(10))
-        except Exception,err:
+        except Exception as err:
             logger.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
             logger.debug(utilities.ExceptionInfo(10))
     then=time.time()

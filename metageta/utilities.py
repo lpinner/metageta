@@ -33,6 +33,7 @@ except:
     from xlutils import xlwt
 from xlutils import copy as xlcp
 import sys, os.path, os, re, struct, glob, shutil,traceback,time,tempfile,copy
+import warnings
 import tarfile,zipfile
 import uuid as _uuid
 
@@ -730,15 +731,21 @@ class ExcelWriter:
                 if field in self._fields and value not in ['',None,False]:#0 is valid
                     try:col=cols[field].pop(0)
                     except:continue
-                    if type(value) is str:value=value.decode(encoding)
+                    if isinstance(value,str):value=value.decode(encoding)
+                    if isinstance(value,basestring) and  len(value) > 32767:
+                        value=value[:32767]
+                        warnings.warn('The "%s" field is longer than 32767 characters and has been truncated.'%field)
                     self._ws.write(self._rows+1, col, value)
                     dirty=True
 
         else:
             for field in data:
                 if field in self._fields and data[field] not in ['',None,False]:#0 is valid
-                    if type(data[field]) is str:#Issue 24 - http://code.google.com/p/metageta/issues/detail?id=24
+                    if isinstance(data[field],str):#Issue 24 - http://code.google.com/p/metageta/issues/detail?id=24
                         data[field]=data[field].decode(encoding)
+                    if isinstance(data[field],basestring) and len(data[field]) > 32767:
+                        data[field]=data[field][:32767]
+                        warnings.warn('The "%s" field is longer than 32767 characters and has been truncated.'%field)
                     self._ws.write(self._rows+1, self._cols[field][0], data[field]) #Issue 24 - http://code.google.com/p/metageta/issues/detail?id=24
                     dirty=True
 

@@ -39,9 +39,11 @@ except ImportError:
     import ogr
 
 debug=False
+
 #========================================================================================================
 #{Custom error class
 #========================================================================================================
+gdal.UseExceptions()
 class GDALError(Exception):
     ''' For raising GDAL related errors '''
     def __init__(self,msg=None):
@@ -54,18 +56,19 @@ class GDALError(Exception):
             @todo: GDAL now has a UseExceptions method, should this class go away?
         '''
         errtype={
-            gdal.CE_None:'None',
-            gdal.CE_Debug:'Debug',
-            gdal.CE_Warning:'Warning',
-            gdal.CE_Failure:'Failure',
-            gdal.CE_Fatal:'Fatal'
+            gdal.CE_None:'gdal.CE_None',
+            gdal.CE_Debug:'gdal.CE_Debug',
+            gdal.CE_Warning:'gdal.CE_Warning',
+            gdal.CE_Failure:'gdal.CE_Failure',
+            gdal.CE_Fatal:'gdal.CE_Fatal'
         }
         self.errmsg=gdal.GetLastErrorMsg().replace('\n',' ')
         self.errnum=gdal.GetLastErrorNo()
         self.errtyp=errtype.get(gdal.GetLastErrorType(), 'None')
         gdal.ErrorReset()
         if msg:self.errmsg='\n'.join([msg,self.errmsg])
-        Exception.__init__(self,self.errmsg,self.errnum,self.errtyp)
+        Exception.__init__(self,(self.errmsg,self.errnum,self.errtyp))
+
     def __str__(self):
         ''' For printing GDAL related errors
 
@@ -73,7 +76,9 @@ class GDALError(Exception):
             @return: String representation of the exception
         '''
 
-        return '%s\nError Message:%s'%(self.errtyp,self.errmsg)
+        return '%s (%s)'%(self.errmsg, self.errtyp)
+
+
 #========================================================================================================
 #{Dataset Utilities
 #========================================================================================================
@@ -86,11 +91,8 @@ def OpenDataset(filepath,mode=gdalconst.GA_ReadOnly):
         @return: GDAL Dataset
     '''
 
-    gdal.ErrorReset()
-    gdal.PushErrorHandler( 'CPLQuietErrorHandler' )
-    gdalDataset = gdal.Open(filepath, mode)
-    if not gdalDataset:raise GDALError, 'Unable to open %s'%filepath
-    gdal.PopErrorHandler()
+    try:gdalDataset = gdal.Open(filepath, mode)
+    except:raise GDALError('Unable to open %s'%filepath)
     return gdalDataset
 
 def ParseGDALinfo(filepath):
@@ -855,7 +857,7 @@ class ShapeWriter:
         self.__del__()
         errmsg = str(err)
         if gdalerr:errmsg += '\n%s' % gdalerr
-        raise err.__class__, errmsg
+        raise err.__class__(errmsg)
 
     def __createshapefile__(self):
         '''Open the shapefile for writing'''
@@ -897,7 +899,7 @@ class ShapeWriter:
         '''Open the shapefile for updating/appending'''
         fieldnames=sorted(self._fields.keys())
         shp=self._driver.Open(self._filename,update=1)
-        if not shp:raise GDALError, 'Unable to open %s'%self._filename
+        if not shp:raise GDALError('Unable to open %s'%self._filename)
         lyr=shp.GetLayer(0)
         lyrdef=lyr.GetLayerDefn()
         if lyrdef.GetFieldCount()==0:

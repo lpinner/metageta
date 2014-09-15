@@ -193,7 +193,7 @@ def Open(f):
                 return ds
             except NotImplementedError:
                 pass #Used when a format driver can't open a file, but doesn't want to raise an error
-            except Exception,err:
+            except Exception as err:
                 if debug:
                     errinfo=utilities.FormatTraceback(_sys.exc_info()[2],10)
                     errargs=[arg for arg in err.args]
@@ -210,7 +210,7 @@ def Open(f):
             return ds
     except NotImplementedError:
         pass #Used when a format driver can't open a file, but doesn't want to raise an error
-    except Exception,err:
+    except Exception as err:
         if debug:
             errinfo=utilities.FormatTraceback(_sys.exc_info()[2],10)
             errargs=[arg for arg in err.args]
@@ -221,5 +221,5 @@ def Open(f):
     #Couldn't open file, raise the last error in the stack
     #if len(errors) > 0: raise errors[-1].__class__,'\n'.join(errors[-1].args) #Updated for Python 2.6, not all args are strings...
     if len(errors) > 0: raise errors[-1].__class__(*errors[-1].args)
-    else:raise Exception, 'Unable to open %s' % f
+    else:raise Exception('Unable to open %s' % f)
     '''@todo: perhaps log the entire error stack if a file couldn't be opened?'''

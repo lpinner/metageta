@@ -165,7 +165,7 @@ if __name__ == '__main__':
     parser = optparse.OptionParser(description=description)
 
     opt=parser.add_option("-x", dest="xlsx", metavar="xlsx", help="Excel spreadsheet")
-    xlsxarg=getargs.FileArg(opt,filter=[('Excel Spreadsheet','*.xlsx')],icon=icons.xlsx_img)
+    xlsxarg=getargs.FileArg(opt,filter=[('Excel Spreadsheet','*.xlsx')],icon=icons.xls_img)
     xlsxarg.tooltip="Excel spreadsheet to read metadata from."
 
     opt=parser.add_option('-d', dest="dir", metavar="dir", help='Output directory')

@@ -95,7 +95,7 @@ def main(xlsx,xsl,dir,logger, mef=False,cat='',ops=''):
                 if val[0]=='DELETED' and val[1] == 1:deleted=True
                 elif val[0]=='filename':filename=val[1]
                 elif val[0]=='guid':guid=val[1]
-                elif val[0] in ['quicklook','thumbnail'] and val[1] != '':
+                elif val[0] in ['quicklook','thumbnail'] and val[1] not in [ '', None]:
                     overviews.append(os.path.join(qlkdir,val[1]))
                 elif val[0] == 'category' and val[1]:
                     tmpcat=val[1]
@@ -220,9 +220,7 @@ if __name__ == '__main__':
         while keepalive:
             args=getargs.GetArgs(xlsxarg,dirarg,xslarg,mefarg,catarg,opsarg,kaarg,title=APP,icon=ICON)
             if args:#GetArgs returns None if user cancels the GUI
-                if logger and logger.logging:
-                    logger.resetProgress()
-                else:
+                if not logger:
                     logger=getlogger(name=APP, debug=optvals.debug, icon=ICON)
                 keepalive=args.keepalive
                 forceexit=True

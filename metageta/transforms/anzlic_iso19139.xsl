@@ -47,7 +47,7 @@
                      xmlns:gmx="http://www.isotc211.org/2005/gmx" 
                      xmlns:gml="http://www.opengis.net/gml" 
                      xsi:schemaLocation="http://www.isotc211.org/2005/gmd http://www.isotc211.org/2005/gmd/gmd.xsd">
-      <xsl:if test="normalize-space(DELETED)">>
+      <xsl:if test="normalize-space(DELETED) = '1'">>
         <xsl:message terminate="yes">
           <xsl:value-of select="normalize-space(filename)"/> has been marked as deleted, XSLT processing will be terminated.
         </xsl:message>

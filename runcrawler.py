@@ -27,11 +27,11 @@ Contains code to show GUI to gather input arguments when none are provided
 To run, call the eponymous batch file/shell script which sets the required environment variables
 
 Usage::
-    runcrawler.bat/sh -d dir -x xls {-o} {--debug}
+    runcrawler.bat/sh -d dir -x xlsx {-o} {--debug}
 
 @newfield sysarg: Argument, Arguments
 @sysarg: C{-d [dir]}        : Directory to search for imagery
-@sysarg: C{-x [xls]}        : MS Excel spreadsheet to write metadata to
+@sysarg: C{-x [xlsx]}       : MS Excel 2007 spreadsheet to write metadata to
 @sysarg: C{-m, --mediaid}   : CD/DVD media ID, defaults to volume label.
 @sysarg: C{-u, --update}    : Update previous crawl results.
 @sysarg: C{-o, --overviews} : Generate overview (quicklook/thumbnail) images")
@@ -50,13 +50,13 @@ from metageta import crawler
 from metageta import overviews
 from metageta import progresslogger
 
-def main(dir, xls, logger, mediaid=None, update=False, getovs=False, recurse=False, archive=False):
+def main(dir, xlsx, logger, mediaid=None, update=False, getovs=False, recurse=False, archive=False):
     """ Run the Metadata Crawler
 
         @type  dir:    C{str}
         @param dir:    The directory to start the metadata crawl.
-        @type  xls:    C{str}
-        @param xls:    Excel spreadsheet to write metadata to
+        @type  xlsx:    C{str}
+        @param xlsx:    Excel spreadsheet to write metadata to
         @type  logger: C{progresslogger.ProgressLogger}
         @param logger: Use an already instantiated logger
         @type  mediaid:C{str}
@@ -70,7 +70,7 @@ def main(dir, xls, logger, mediaid=None, update=False, getovs=False, recurse=Fal
         @return:  C{progresslogger.ProgressLogger}
     """
 
-    shp=xls.replace('.xls','.shp')
+    shp=xlsx.replace('.xlsx','.shp')
 
     format_regex  = formats.format_regex
     format_fields = formats.fields
@@ -79,11 +79,11 @@ def main(dir, xls, logger, mediaid=None, update=False, getovs=False, recurse=Fal
 
     try:
         #raise Exception
-        ExcelWriter=utilities.ExcelWriter(xls,format_fields.keys(),update=update)
+        ExcelWriter=utilities.ExcelWriter(xlsx,format_fields.keys(),update=update)
 
         #Are we updating an existing crawl?
         records={}
-        if update and os.path.exists(xls):
+        if update and os.path.exists(xlsx):
 
             #Do we need to recreate the shapefile?
             if os.path.exists(shp):
@@ -94,7 +94,7 @@ def main(dir, xls, logger, mediaid=None, update=False, getovs=False, recurse=Fal
 
             #Build a dict of existing records
             row=-1
-            for row,rec in enumerate(utilities.ExcelReader(xls)):
+            for row,rec in enumerate(utilities.ExcelReader(xlsx)):
                 #Check if the dataset still exists, mark it DELETED if it doesn't
 
                 if os.path.exists(rec['filepath']) or rec['mediaid'] !='' or \
@@ -116,7 +116,6 @@ def main(dir, xls, logger, mediaid=None, update=False, getovs=False, recurse=Fal
     except Exception,err:
         logger.error('%s' % utilities.ExceptionInfo())
         logger.debug(utilities.ExceptionInfo(10))
-        time.sleep(0.5)# So the progresslogger picks up the error message before this python process exits.
         #sys.exit(1)
         return
 
@@ -132,15 +131,15 @@ def main(dir, xls, logger, mediaid=None, update=False, getovs=False, recurse=Fal
             fi=ds.fileinfo
             fi['filepath']=utilities.uncpath(fi['filepath'])
             fi['filelist']='|'.join(utilities.uncpath(ds.filelist))
-            #qlk=utilities.uncpath(os.path.join(os.path.dirname(xls),'%s.%s.qlk.jpg'%(fi['filename'],fi['guid'])))
-            #thm=utilities.uncpath(os.path.join(os.path.dirname(xls),'%s.%s.thm.jpg'%(fi['filename'],fi['guid'])))
-            qlk=os.path.join(os.path.dirname(xls),'%s.%s.qlk.jpg'%(fi['filename'],fi['guid']))
-            thm=os.path.join(os.path.dirname(xls),'%s.%s.thm.jpg'%(fi['filename'],fi['guid']))
+            #qlk=utilities.uncpath(os.path.join(os.path.dirname(xlsx),'%s.%s.qlk.jpg'%(fi['filename'],fi['guid'])))
+            #thm=utilities.uncpath(os.path.join(os.path.dirname(xlsx),'%s.%s.thm.jpg'%(fi['filename'],fi['guid'])))
+            qlk=os.path.join(os.path.dirname(xlsx),'%s.%s.qlk.jpg'%(fi['filename'],fi['guid']))
+            thm=os.path.join(os.path.dirname(xlsx),'%s.%s.thm.jpg'%(fi['filename'],fi['guid']))
 
             if update and ds.guid in records:
                 row,rec=records[ds.guid]
                 #Issue 35: if it's not modified, but we've asked for overview images and it doesn't already have them....
-                if ismodified(rec,fi,os.path.dirname(xls)) or (not rec['quicklook'] and getovs):
+                if ismodified(rec,fi,os.path.dirname(xlsx)) or (not rec['quicklook'] and getovs):
                     md=ds.metadata
                     geom=ds.extent
                     md.update(fi)
@@ -225,15 +224,15 @@ def main(dir, xls, logger, mediaid=None, update=False, getovs=False, recurse=Fal
     del ExcelWriter
     del ShapeWriter
 
-def ismodified(record,fileinfo,xlspath):
+def ismodified(record,fileinfo,xlsxpath):
     ''' Check if a record from a previous metadata crawl needs to be updated.
 
         @type  record:   C{dict}
         @param record:   The record from a previous crawl.
         @type  fileinfo: C{dict}
         @param fileinfo: The fileinfo from a dataset located in the current crawl
-        @type  xlspath: C{str}
-        @param xlspath:  The path to the XLS that holds the record from the previous crawl
+        @type  xlsxpath: C{str}
+        @param xlsxpath:  The path to the xlsx that holds the record from the previous crawl
         @return:  C{boolean}
     '''
     if record['datemodified']!=fileinfo['datemodified']:
@@ -242,7 +241,7 @@ def ismodified(record,fileinfo,xlspath):
         return True
     elif record['quicklook']:
         if os.path.basename(record['quicklook'])==record['quicklook']:
-            qlk=os.path.join(xlspath,record['quicklook'])
+            qlk=os.path.join(xlsxpath,record['quicklook'])
         else:qlk=record['quicklook']
         if not os.path.exists(qlk):
             return True
@@ -294,10 +293,10 @@ if __name__ == '__main__':
 
     #This is an extra check so existing spreadsheets don't get overwritten unless
     #the update arg is explicitly unchecked
-    def xlscallback(xlsarg,updatearg):
-        #xls=xlsarg.value.get()
-        xls=xlsarg.value
-        if utilities.exists(xls):
+    def xlsxcallback(xlsxarg,updatearg):
+        #xlsx=xlsxarg.value.get()
+        xlsx=xlsxarg.value
+        if utilities.exists(xlsx):
             updatearg.enabled=True
             #updatearg.value.set(True)
             updatearg.value=True
@@ -345,9 +344,9 @@ if __name__ == '__main__':
     medarg=getargs.StringArg(opt,enabled=False,required=False)
     medarg.tooltip='You can enter an ID for a CD/DVD, this defaults to the disc volume label.'
 
-    opt=parser.add_option("-x", dest="xls", metavar="xls",help="Output metadata spreadsheet")
-    xlsarg=getargs.FileArg(opt,filter=[('Excel Spreadsheet','*.xls')],icon=icons.xls_img,saveas=True)
-    xlsarg.tooltip='The Excel Spreadsheet to write the metadata to. A shapefile of extents, a logfile and overview images are also output to the same directory.'
+    opt=parser.add_option("-x", dest="xlsx", metavar="xlsx",help="Output metadata spreadsheet")
+    xlsxarg=getargs.FileArg(opt,filter=[('Excel 2007 Spreadsheet','*.xlsx')],icon=icons.xls_img,saveas=True)
+    xlsxarg.tooltip='The Excel Spreadsheet to write the metadata to. A shapefile of extents, a logfile and overview images are also output to the same directory.'
 
     opt=parser.add_option("-u", "--update", action="store_true", dest="update",default=False,
                       help="Update existing crawl results")
@@ -367,8 +366,8 @@ if __name__ == '__main__':
 
     #Add a callback to the directory arg, use the Command class so we can has arguments
     dirarg.callback=getargs.Command(mediacallback,dirarg,medarg)
-    #Add a callback to the xls arg, use the Command class so we can has arguments
-    xlsarg.callback=getargs.Command(xlscallback,xlsarg,updatearg)
+    #Add a callback to the xlsx arg, use the Command class so we can has arguments
+    xlsxarg.callback=getargs.Command(xlsxcallback,xlsxarg,updatearg)
 
     #Parse existing command line args
     optvals,argvals = parser.parse_args()
@@ -378,42 +377,42 @@ if __name__ == '__main__':
     logger=None
     forceexit=True
     #Do we need to pop up the GUI?
-    if not optvals.dir or not optvals.xls:
+    if not optvals.dir or not optvals.xlsx:
         #Add existing command line args values to opt default values so they show in the gui
         for opt in parser.option_list:
             opt.default=vars(optvals).get(opt.dest,None)
         keepalive=True
         hasrun=False
-        validate=getargs.Command(writablecallback,xlsarg)
-        if optvals.xls:
-            optvals.xls=utilities.checkExt(utilities.encode(optvals.xls), ['.xls'])
-            xlsarg.value=optvals.xls
-            xlsarg.callback()
+        validate=getargs.Command(writablecallback,xlsxarg)
+        if optvals.xlsx:
+            optvals.xlsx=utilities.checkExt(utilities.encode(optvals.xlsx), ['.xlsx'])
+            xlsxarg.value=optvals.xlsx
+            xlsxarg.callback()
         while keepalive:
             #Pop up the GUI
-            args=getargs.GetArgs(dirarg,medarg,xlsarg,updatearg,recursearg,archivearg,ovarg,kaarg,callback=validate,title=APP,icon=ICON)
+            args=getargs.GetArgs(dirarg,medarg,xlsxarg,updatearg,recursearg,archivearg,ovarg,kaarg,callback=validate,title=APP,icon=ICON)
             if args:#GetArgs returns None if user cancels the GUI/closes the dialog (or Tkinter can not be imported)
                 keepalive=args.keepalive
-                args.xls = utilities.checkExt(utilities.encode(args.xls), ['.xls'])
+                args.xlsx = utilities.checkExt(utilities.encode(args.xlsx), ['.xlsx'])
 
-                log=args.xls.replace('.xls','.log')
+                log=args.xlsx.replace('.xlsx','.log')
                 if logger and logger.logging:
                     logger.logfile=log
                 else:
                     logger=getlogger(log,name=APP,debug=optvals.debug)
                 keepalive=args.keepalive
                 forceexit=True
-                main(args.dir,args.xls,logger,args.med,args.update,args.ovs,args.recurse,args.archive)
+                main(args.dir,args.xlsx,logger,args.med,args.update,args.ovs,args.recurse,args.archive)
                 forceexit=False
                 hasrun=True
             else:
                 if not hasrun:parser.print_help()
                 keepalive=False
     else: #No need for the GUI
-        xls = utilities.checkExt(utilities.encode(optvals.xls), ['.xls'])
-        log=xls.replace('.xls','.log')
+        xlsx = utilities.checkExt(utilities.encode(optvals.xlsx), ['.xlsx'])
+        log=xlsx.replace('.xlsx','.log')
         logger=getlogger(log, name=APP, debug=optvals.debug)
-        main(optvals.dir,xls,logger,optvals.med,optvals.update,optvals.ovs,optvals.recurse,optvals.archive)
+        main(optvals.dir,xlsx,logger,optvals.med,optvals.update,optvals.ovs,optvals.recurse,optvals.archive)
 
     if logger:
         logger.shutdown()

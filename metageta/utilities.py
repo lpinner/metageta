@@ -26,12 +26,7 @@ Utility helper functions
 #========================================================================================================
 # Imports
 #========================================================================================================
-try:
-    import xlrd, xlwt
-except:
-    from xlutils import xlrd
-    from xlutils import xlwt
-from xlutils import copy as xlcp
+import openpyxl
 import sys, os.path, os, re, struct, glob, shutil,traceback,time,tempfile,copy
 import warnings
 import tarfile,zipfile
@@ -630,60 +625,53 @@ def FormatTraceback(trbk, maxTBlevel):
 class ExcelWriter:
     ''' A simple spreadsheet writer'''
 
-    def __init__(self,xls,fields=[],update=False, sort = True):
+    def __init__(self,xlsx,fields=[],update=False, sort = True):
         ''' A simple spreadsheet writer.
 
-            @type    xls: C{str}
-            @param   xls: Path to xls file
+            @type    xlsx: C{str}
+            @param   xlsx: Path to xlsx file
             @type    fields: C{list}
             @param   fields: List of column/field headers
         '''
 
         if sort:fields.sort()
-        self._file=xls
+        self._file=xlsx
         self._fields=fields
-        self._sheets=0 #sheet index
-        self._rows=0   #row index
+        self._sheets=[]
+        self._rows=1   #row index
         self._cols={}  #dict of col indices
 
+        self._heading = openpyxl.styles.Style(font=openpyxl.styles.Font(bold=True))
 
-        font = xlwt.Font()
-        font.bold = True
-        self._heading = xlwt.XFStyle()
-        self._heading.font = font
-
-        if update and os.path.exists(xls):
-            rb=xlrd.open_workbook(xls,encoding_override=encoding)
-            self._sheets=rb.nsheets
-            self._wb = xlcp.copy(rb)
+        if update and os.path.exists(xlsx):
+            self._wb=openpyxl.load_workbook(xlsx)
+            self._sheets=self._wb.worksheets
             self._wb.encoding=encoding #
-            #ws=rb.get_sheet(0) #xlrd bug? "AttributeError: 'Book' object has no attribute 'mem'"
-
-            #Ensure we can update cells
-            for i in range(0,self._sheets):
-                ws=self._wb.get_sheet(i)
-                if i==0:self._ws=ws
-                ws._cell_overwrite_ok = True
-            self._rows=len(ws.rows)-1
+            self._ws=self._sheets[0]
+            self._rows=self._ws.max_row-1
 
             #Check if all fields exist, add them if not
-            ws=rb.sheets()[0]
-            fields=map(encode, ws.row_values(0))
+            ws=self._sheets[0]
+            fields=[encode(c.value) for c in self._sheets[0].rows[0]]
             extrafields=[f for f in self._fields if f not in fields]
             col=len(fields)
-            for field in extrafields:
-                fields.append(field) #add field to end of existing field list
-                for i in range(self._sheets):
-                    self._wb.get_sheet(i).write(0,col,field)
-                col+=1
+            if extrafields:
+                for ws in self._sheets:
+                    #self._rows+=ws.max_row-1
+                    row=ws.rows[0]
+                    for i,field in enumerate(extrafields):
+                        row[col+i].value=field
+                fields+=extrafields
+                self._wb.save(self._file)
             self._fields=fields
-            self._wb.save(self._file)
 
-            del rb,ws
         else:
-            if os.path.exists(xls):os.remove(xls)
-            self._wb = xlwt.Workbook(encoding=encoding)
-            self.__addsheet__()
+            if os.path.exists(xlsx):os.remove(xlsx)
+            self._wb = openpyxl.Workbook(encoding=encoding)
+            self._sheets = self._wb.worksheets
+            self._ws = self._sheets[0]
+            self._rows = 0
+            self._addheader(self._ws)
             self._wb.save(self._file)
 
         #fs=set(self._fields) !!! set(list) reorders the list!!!
@@ -704,14 +692,33 @@ class ExcelWriter:
             pass
         return cols
 
-    def __addsheet__(self):
-        self._sheets+=1
-        self._ws = self._wb.add_sheet('Sheet %s'%self._sheets,cell_overwrite_ok=True)
-        #self._ws.keep_leading_zeros()
-
-        for i,field in enumerate(self._fields):
-            self._ws.write(0, i, field, self._heading) #[row,col] = 0 based row, col ref
+    def _addsheet(self):
+        self._ws = self._wb.create_sheet()
+        self._sheets=self._wb.worksheets
+        self._addheader(self._ws)
         self._rows = 0
+
+    def _addheader(self, ws):
+        for i,field in enumerate(self._fields):
+            ws.cell(row=1, column=i+1).value = field
+            ws.cell(row=1, column=i+1).style = self._heading
+
+    def _writevalue(self,row,col,value,ws=None):
+        ''' Write a value to a cell
+
+            @type    col: C{int}
+            @param   col: column index, 0 based
+            @type    row: C{int}
+            @param   row: row index, 0 based
+            @type    value: C{int/str}
+            @param   value: value to write
+        '''
+        if not ws:ws=self._ws
+        if isinstance(value,str):value=value.decode(encoding)
+        if isinstance(value,basestring) and  len(value) > 32767:
+            value=value[:32767]
+            warnings.warn('The "%s" field is longer than 32767 characters and has been truncated.'%self._fields[field])
+        ws.cell(row=row+1, column=col+1).value = value
 
     def WriteRecord(self,data):
         ''' Write a record
@@ -720,8 +727,8 @@ class ExcelWriter:
             @param   data: Dict containing column headers (dict.keys()) and values (dict.values())
         '''
         dirty=False
-        if self._rows > 65534:
-            self.__addsheet__()
+        if self._rows > 1048575:
+            self._addsheet()
 
         cols=copy.deepcopy(self._cols) #make a copy to alter
         if data!=dict(data):
@@ -731,22 +738,13 @@ class ExcelWriter:
                 if field in self._fields and value not in ['',None,False]:#0 is valid
                     try:col=cols[field].pop(0)
                     except:continue
-                    if isinstance(value,str):value=value.decode(encoding)
-                    if isinstance(value,basestring) and  len(value) > 32767:
-                        value=value[:32767]
-                        warnings.warn('The "%s" field is longer than 32767 characters and has been truncated.'%field)
-                    self._ws.write(self._rows+1, col, value)
+                    self._writevalue(self._rows+1, col,value)
                     dirty=True
 
         else:
             for field in data:
                 if field in self._fields and data[field] not in ['',None,False]:#0 is valid
-                    if isinstance(data[field],str):#Issue 24 - http://code.google.com/p/metageta/issues/detail?id=24
-                        data[field]=data[field].decode(encoding)
-                    if isinstance(data[field],basestring) and len(data[field]) > 32767:
-                        data[field]=data[field][:32767]
-                        warnings.warn('The "%s" field is longer than 32767 characters and has been truncated.'%field)
-                    self._ws.write(self._rows+1, self._cols[field][0], data[field]) #Issue 24 - http://code.google.com/p/metageta/issues/detail?id=24
+                    self._writevalue(self._rows+1, self._cols[field][0],data[field])
                     dirty=True
 
         if dirty:self._rows+=1
@@ -761,8 +759,8 @@ class ExcelWriter:
             @param   row:  Row number of existing record
         '''
         dirty=False
-        s=row/65535
-        r=row-s*65535
+        s=row/1048575
+        r=row-s*1048575
         ws=self._wb.get_sheet(s)
         cols=copy.deepcopy(self._cols) #make a copy to alter
         if data!=dict(data):
@@ -772,17 +770,13 @@ class ExcelWriter:
                 if field in self._fields and value not in ['',None,False]:#0 is valid
                     try:col=cols[field].pop(0)
                     except:continue
-                    val=values[i]
-                    if type(val) is str:val=val.decode(encoding)
-                    ws.write(r+1, col, val)
+                    self._writevalue(r+1, col,values[i], ws)
                     dirty=True
 
         else:
             for field in data:
                 if field in self._fields and data[field] not in ['',None,False]:#0 is valid
-                    if type(data[field]) is str:#Issue 24 - http://code.google.com/p/metageta/issues/detail?id=24
-                        data[field]=data[field].decode(encoding)
-                    ws.write(r+1, self._cols[field][0], data[field])
+                    self._writevalue(r+1, self._cols[field][0],data[field], ws)
                     dirty=True
         if dirty:self._wb.save(self._file)
 
@@ -796,32 +790,31 @@ class ExcelWriter:
 
 class ExcelReader:
     '''A simple spreadsheet reader'''
-    def __init__(self,xls,returntype=dict):
+    def __init__(self,xlsx,returntype=dict):
         ''' A simple spreadsheet reader.
 
-            @type    xls: C{str}
-            @param   xls: Path to xls file
+            @type    xlsx: C{str}
+            @param   xlsx: Path to xlsx file
             @type    returntype: C{type}
             @param   returntype: dict or list
         '''
-        self._wb=xlrd.open_workbook(xls,encoding_override=encoding)
+        self._wb=openpyxl.load_workbook(xlsx)
         self._returntype=returntype
-        self._sheets=self._wb.sheets()
+        self._sheets=self._wb.worksheets
         self.records=0-len(self._sheets)
-        self.headers=[encode(c.value) for c in self._sheets[0].row(0)]
+        self.headers=[encode(c.value) for c in self._sheets[0].rows[0]]
         for ws in self._sheets:
-            self.records+=ws.nrows
+            self.records+=ws.max_row
 
     def __getitem__(self, index):
-        i=index/65535
-        j=index-i*65535
+        i=index/1048575
+        j=index-i*1048575
         ws=self._sheets[i]
-        headers=[encode(c.value) for c in ws.row(0)]
-        cells=[encode(c.value) for c in ws.row(j+1)]
+        headers=[encode(c.value) for c in ws.rows[0]]
+        cells=[encode(c.value) for c in ws.rows[j+1]]
         if self._returntype is dict:
             return dict(zip(headers,cells))
         else:
             return zip(headers,cells)
 
 #}
-

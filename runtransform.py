@@ -29,10 +29,10 @@ Contains code to show GUI to gather input arguments when none are provided.
 To run, call the eponymous batch file which sets the required environment variables.
 
 Usage::
-    runtransform.bat -x xls -t xsl -d dir
+    runtransform.bat -x xlsx -t xsl -d dir
 
 @newfield sysarg: Argument, Arguments
-@sysarg: C{-x xls}: MS Excel spreadsheet to read from
+@sysarg: C{-x xlsx}: MS Excel 2007 spreadsheet to read from
 @sysarg: C{-t xsl}: XSL transform - may be one of the pre-defined XSL transforms or a path to a custom XSL file.
 @sysarg: C{-d dir}: Directory to write XML files to.
 
@@ -53,11 +53,11 @@ from metageta import utilities
 from metageta import transforms
 from metageta import progresslogger
 
-def main(xls,xsl,dir,logger, mef=False,cat='',ops=''):
+def main(xlsx,xsl,dir,logger, mef=False,cat='',ops=''):
     '''
     Run the Metadata Transform
-    @type  xls: C{str}
-    @param xls: Excel spreadsheet to read metadata from
+    @type  xlsx: C{str}
+    @param xlsx: Excel spreadsheet to read metadata from
     @type  xsl: C{str}
     @param xsl: XSL transform {*.xsl|%s}
     @type  dir: C{str}
@@ -76,14 +76,14 @@ def main(xls,xsl,dir,logger, mef=False,cat='',ops=''):
           - populate a dropdown list with transforms.categories
           - add a gui event that show/hides or enables/disables the categ list triggered by the mef opt
           - if <default> categ is selected, logic is:
-            * check xls for categ column
+            * check xlsx for categ column
             * if so use that,
             * if categ column is null for a row, of if no column at all then use default from config
 
     ''' % '|'.join(['"%s"'%s for s in transforms.transforms.keys()])
 
-    xlrdr=utilities.ExcelReader(xls, list)
-    qlkdir=os.path.dirname(xls)
+    xlrdr=utilities.ExcelReader(xlsx, list)
+    qlkdir=os.path.dirname(xlsx)
     logger.info('Transforming %s metadata records'%xlrdr.records)
     for rec in xlrdr:
         try:
@@ -164,9 +164,9 @@ if __name__ == '__main__':
 
     parser = optparse.OptionParser(description=description)
 
-    opt=parser.add_option("-x", dest="xls", metavar="xls", help="Excel spreadsheet")
-    xlsarg=getargs.FileArg(opt,filter=[('Excel Spreadsheet','*.xls')],icon=icons.xls_img)
-    xlsarg.tooltip="Excel spreadsheet to read metadata from."
+    opt=parser.add_option("-x", dest="xlsx", metavar="xlsx", help="Excel spreadsheet")
+    xlsxarg=getargs.FileArg(opt,filter=[('Excel Spreadsheet','*.xlsx')],icon=icons.xlsx_img)
+    xlsxarg.tooltip="Excel spreadsheet to read metadata from."
 
     opt=parser.add_option('-d', dest="dir", metavar="dir", help='Output directory')
     opt.icon=icons.dir_img
@@ -210,7 +210,7 @@ if __name__ == '__main__':
     logger=None
     forceexit=True
     #Do we need to pop up the GUI?
-    if not optvals.dir or not optvals.xls or not optvals.xsl:
+    if not optvals.dir or not optvals.xlsx or not optvals.xsl:
         #Add existing command line args values to opt default values so they show in the gui
         for opt in parser.option_list:
             opt.default=vars(optvals).get(opt.dest,None)
@@ -218,7 +218,7 @@ if __name__ == '__main__':
         keepalive=True
         hasrun=False
         while keepalive:
-            args=getargs.GetArgs(xlsarg,dirarg,xslarg,mefarg,catarg,opsarg,kaarg,title=APP,icon=ICON)
+            args=getargs.GetArgs(xlsxarg,dirarg,xslarg,mefarg,catarg,opsarg,kaarg,title=APP,icon=ICON)
             if args:#GetArgs returns None if user cancels the GUI
                 if logger and logger.logging:
                     logger.resetProgress()
@@ -226,7 +226,7 @@ if __name__ == '__main__':
                     logger=getlogger(name=APP, debug=optvals.debug, icon=ICON)
                 keepalive=args.keepalive
                 forceexit=True
-                main(args.xls,args.xsl,args.dir,logger,args.mef,args.cat,args.ops)
+                main(args.xlsx,args.xsl,args.dir,logger,args.mef,args.cat,args.ops)
                 forceexit=False
                 hasrun=True
             else:
@@ -234,7 +234,7 @@ if __name__ == '__main__':
                 keepalive=False
     else: #No need for the GUI
         logger=getlogger(name=APP, debug=optvals.debug, icon=ICON)
-        main(optvals.xls,optvals.xsl,optvals.dir,logger,optvals.mef,optvals.cat,optvals.ops)
+        main(optvals.xlsx,optvals.xsl,optvals.dir,logger,optvals.mef,optvals.cat,optvals.ops)
 
     if logger:
         logger.shutdown()

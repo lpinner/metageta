@@ -63,7 +63,7 @@
   the required environment variables</p>
   <p>Usage:</p>
 <pre class="literalblock">
-   runcrawler.bat/sh -d dir -x xls {-o} {--nogui} {--debug}
+   runcrawler.bat/sh -d dir -x xlsx {-o} {--debug}
 </pre>
 
 <hr />
@@ -73,7 +73,7 @@
         <code>-d [dir]</code>        : Directory to search for imagery
         </li>
         <li>
-        <code>-x [xls]</code>        : MS Excel spreadsheet to write 
+        <code>-x [xlsx]</code>       : MS Excel 2007 spreadsheet to write 
         metadata to
         </li>
         <li>
@@ -125,7 +125,7 @@
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="runcrawler-module.html#main" class="summary-sig-name">main</a>(<span class="summary-sig-arg">dir</span>,
-        <span class="summary-sig-arg">xls</span>,
+        <span class="summary-sig-arg">xlsx</span>,
         <span class="summary-sig-arg">logger</span>,
         <span class="summary-sig-arg">mediaid</span>=<span class="summary-sig-default">None</span>,
         <span class="summary-sig-arg">update</span>=<span class="summary-sig-default">False</span>,
@@ -150,7 +150,7 @@
         <tr>
           <td><span class="summary-sig"><a href="runcrawler-module.html#ismodified" class="summary-sig-name">ismodified</a>(<span class="summary-sig-arg">record</span>,
         <span class="summary-sig-arg">fileinfo</span>,
-        <span class="summary-sig-arg">xlspath</span>)</span><br />
+        <span class="summary-sig-arg">xlsxpath</span>)</span><br />
       Check if a record from a previous metadata crawl needs to be updated.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="runcrawler-pysrc.html#ismodified">source&nbsp;code</a></span>
@@ -168,7 +168,7 @@
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a name="exit"></a><span class="summary-sig-name">exit</span>()</span><br />
-      Force exit after closure of the ProgressBar GUI</td>
+      Force exit after closure</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="runcrawler-pysrc.html#exit">source&nbsp;code</a></span>
             
@@ -186,9 +186,7 @@
         <tr>
           <td><span class="summary-sig"><a name="getlogger"></a><span class="summary-sig-name">getlogger</span>(<span class="summary-sig-arg">logfile</span>,
         <span class="summary-sig-arg">name</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">nogui</span>=<span class="summary-sig-default">False</span>,
-        <span class="summary-sig-arg">debug</span>=<span class="summary-sig-default">False</span>,
-        <span class="summary-sig-arg">icon</span>=<span class="summary-sig-default">None</span>)</span></td>
+        <span class="summary-sig-arg">debug</span>=<span class="summary-sig-default">False</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="runcrawler-pysrc.html#getlogger">source&nbsp;code</a></span>
             
@@ -251,7 +249,7 @@
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">main</span>(<span class="sig-arg">dir</span>,
-        <span class="sig-arg">xls</span>,
+        <span class="sig-arg">xlsx</span>,
         <span class="sig-arg">logger</span>,
         <span class="sig-arg">mediaid</span>=<span class="sig-default">None</span>,
         <span class="sig-arg">update</span>=<span class="sig-default">False</span>,
@@ -269,7 +267,7 @@
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
         <li><strong class="pname"><code>dir</code></strong> (<code>str</code>) - The directory to start the metadata crawl.</li>
-        <li><strong class="pname"><code>xls</code></strong> (<code>str</code>) - Excel spreadsheet to write metadata to</li>
+        <li><strong class="pname"><code>xlsx</code></strong> (<code>str</code>) - Excel spreadsheet to write metadata to</li>
         <li><strong class="pname"><code>logger</code></strong> (<code>progresslogger.ProgressLogger</code>) - Use an already instantiated logger</li>
         <li><strong class="pname"><code>mediaid</code></strong> (<code>str</code>) - CD/DVD media ID</li>
         <li><strong class="pname"><code>getovs</code></strong> (<code>boolean</code>) - Generate overview (quicklook/thumbnail) images</li>
@@ -290,7 +288,7 @@
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">ismodified</span>(<span class="sig-arg">record</span>,
         <span class="sig-arg">fileinfo</span>,
-        <span class="sig-arg">xlspath</span>)</span>
+        <span class="sig-arg">xlsxpath</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="runcrawler-pysrc.html#ismodified">source&nbsp;code</a></span>&nbsp;
@@ -304,7 +302,8 @@
     <dd><ul class="nomargin-top">
         <li><strong class="pname"><code>record</code></strong> (<code>dict</code>) - The record from a previous crawl.</li>
         <li><strong class="pname"><code>fileinfo</code></strong> (<code>dict</code>) - The fileinfo from a dataset located in the current crawl</li>
-        <li><strong class="pname"><code>xlspath</code></strong> (<code>str</code>) - The path to the XLS that holds the record from the previous crawl</li>
+        <li><strong class="pname"><code>xlsxpath</code></strong> (<code>str</code>) - The path to the xlsx that holds the record from the previous 
+          crawl</li>
     </ul></dd>
     <dt>Returns:</dt>
         <dd><code>boolean</code></dd>

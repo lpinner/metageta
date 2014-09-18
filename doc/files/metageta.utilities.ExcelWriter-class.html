@@ -85,7 +85,7 @@
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="metageta.utilities.ExcelWriter-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">xls</span>,
+        <span class="summary-sig-arg">xlsx</span>,
         <span class="summary-sig-arg">fields</span>=<span class="summary-sig-default"><code class="variable-group">[</code><code class="variable-group">]</code></span>,
         <span class="summary-sig-arg">update</span>=<span class="summary-sig-default">False</span>,
         <span class="summary-sig-arg">sort</span>=<span class="summary-sig-default">True</span>)</span><br />
@@ -117,15 +117,53 @@
       
     </td>
   </tr>
-<tr>
+<tr class="private">
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="__addsheet__"></a><span class="summary-sig-name">__addsheet__</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td><span class="summary-sig"><a name="_addsheet"></a><span class="summary-sig-name">_addsheet</span>(<span class="summary-sig-arg">self</span>)</span></td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="metageta.utilities-pysrc.html#ExcelWriter.__addsheet__">source&nbsp;code</a></span>
+            <span class="codelink"><a href="metageta.utilities-pysrc.html#ExcelWriter._addsheet">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="_addheader"></a><span class="summary-sig-name">_addheader</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">ws</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="metageta.utilities-pysrc.html#ExcelWriter._addheader">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr class="private">
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="metageta.utilities.ExcelWriter-class.html#_writevalue" class="summary-sig-name" onclick="show_private();">_writevalue</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">row</span>,
+        <span class="summary-sig-arg">col</span>,
+        <span class="summary-sig-arg">value</span>,
+        <span class="summary-sig-arg">ws</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Write a value to a cell</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="metageta.utilities-pysrc.html#ExcelWriter._writevalue">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -213,7 +251,7 @@
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">xls</span>,
+        <span class="sig-arg">xlsx</span>,
         <span class="sig-arg">fields</span>=<span class="sig-default"><code class="variable-group">[</code><code class="variable-group">]</code></span>,
         <span class="sig-arg">update</span>=<span class="sig-default">False</span>,
         <span class="sig-arg">sort</span>=<span class="sig-default">True</span>)</span>
@@ -228,8 +266,37 @@
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>xls</code></strong> (<code>str</code>) - Path to xls file</li>
+        <li><strong class="pname"><code>xlsx</code></strong> (<code>str</code>) - Path to xlsx file</li>
         <li><strong class="pname"><code>fields</code></strong> (<code>list</code>) - List of column/field headers</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="_writevalue"></a>
+<div class="private">
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">_writevalue</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">row</span>,
+        <span class="sig-arg">col</span>,
+        <span class="sig-arg">value</span>,
+        <span class="sig-arg">ws</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="metageta.utilities-pysrc.html#ExcelWriter._writevalue">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Write a value to a cell</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>col</code></strong> (<code>int</code>) - column index, 0 based</li>
+        <li><strong class="pname"><code>row</code></strong> (<code>int</code>) - row index, 0 based</li>
+        <li><strong class="pname"><code>value</code></strong> (<code>int/str</code>) - value to write</li>
     </ul></dd>
   </dl>
 </td></tr></table>

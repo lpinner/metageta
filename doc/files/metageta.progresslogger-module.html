@@ -58,13 +58,13 @@
 </table>
 <!-- ==================== MODULE DESCRIPTION ==================== -->
 <h1 class="epydoc">Module progresslogger</h1><p class="nomargin-top"><span class="codelink"><a href="metageta.progresslogger-pysrc.html">source&nbsp;code</a></span></p>
-<p>Provide GUI &amp; file progress logging</p>
+<p>Provide file progress logging</p>
   <p>Example:</p>
 <pre class="py-doctest">
 <span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">import</span> progresslogger
 <span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">if</span> debug:level=progresslogger.DEBUG
 <span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">else</span>:level=progresslogger.INFO
-<span class="py-prompt">&gt;&gt;&gt; </span>pl = progresslogger.ProgressLogger(<span class="py-string">'Metadata Crawler'</span>,logfile=log, logToConsole=True, logToFile=True, logToGUI=True, level=level)
+<span class="py-prompt">&gt;&gt;&gt; </span>pl = progresslogger.ProgressLogger(<span class="py-string">'Metadata Crawler'</span>,logfile=log, logToConsole=True, logToFile=True, level=level)
 <span class="py-prompt">&gt;&gt;&gt; </span>try:
 <span class="py-prompt">&gt;&gt;&gt; </span>    do somthing
 <span class="py-prompt">&gt;&gt;&gt; </span>    pl.info(<span class="py-string">'That worked!'</span>)
@@ -94,87 +94,6 @@
     </td><td class="summary">
         <a href="metageta.progresslogger.ProgressLogger-class.html" class="summary-name">ProgressLogger</a><br />
       Provide logger interface
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a href="metageta.progresslogger.ProgressLoggerHandler-class.html" class="summary-name">ProgressLoggerHandler</a><br />
-      Provide a Progress Bar Logging handler
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a href="metageta.progresslogger.ProgressLoggerChecker-class.html" class="summary-name">ProgressLoggerChecker</a>
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a href="metageta.progresslogger.ProgressLoggerServer-class.html" class="summary-name">ProgressLoggerServer</a><br />
-      Provide a Progress Bar Logging Server
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a href="metageta.progresslogger.ProgressLoggerGUI-class.html" class="summary-name">ProgressLoggerGUI</a><br />
-      Provide a Progress Bar Logging GUI
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a href="metageta.progresslogger.ProgressBarView-class.html" class="summary-name">ProgressBarView</a><br />
-      A progress bar widget
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a href="metageta.progresslogger.PROCESSENTRY32-class.html" class="summary-name">PROCESSENTRY32</a>
-    </td>
-  </tr>
-</table>
-<!-- ==================== FUNCTIONS ==================== -->
-<a name="section-Functions"></a>
-<table class="summary" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr bgcolor="#70b0f0" class="table-header">
-  <td colspan="2" class="table-header">
-    <table border="0" cellpadding="0" cellspacing="0" width="100%">
-      <tr valign="top">
-        <td align="left"><span class="table-header">Functions</span></td>
-        <td align="right" valign="top"
-         ><span class="options">[<a href="#section-Functions"
-         class="privatelink" onclick="toggle_private();"
-         >hide private</a>]</span></td>
-      </tr>
-    </table>
-  </td>
-</tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="getppid"></a><span class="summary-sig-name">getppid</span>(<span class="summary-sig-arg">pid</span>=<span class="summary-sig-default">None</span>)</span><br />
-      the Windows version of os.getppid</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="metageta.progresslogger-pysrc.html#getppid">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
     </td>
   </tr>
 </table>

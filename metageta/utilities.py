@@ -660,7 +660,8 @@ class ExcelWriter:
                     #self._rows+=ws.max_row-1
                     row=ws.rows[0]
                     for i,field in enumerate(extrafields):
-                        row[col+i].value=field
+                        #row[col+i].value=field
+                        ws.cell(row=1, column=col+i+1).value = field
                 fields+=extrafields
                 self._wb.save(self._file)
             self._fields=fields
@@ -762,7 +763,8 @@ class ExcelWriter:
         dirty=False
         s=row/1048575
         r=row-s*1048575
-        ws=self._wb.get_sheet(s)
+        #ws=self._wb.get_sheet(s)
+        ws=self._wb.worksheets[s]
         cols=copy.deepcopy(self._cols) #make a copy to alter
         if data!=dict(data):
             fields,values = zip(*data)

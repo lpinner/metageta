@@ -90,16 +90,16 @@ def getoverview(ds,outfile,width,format,bands,stretch_type,*stretch_args):
     vrtgt=(gt[0],vrtpx,gt[2],gt[3],gt[4],vrtpy)
 
     vrtdrv=gdal.GetDriverByName('VRT')
-    tempvrts={} #dict with keys=file descriptor and values=[filename,GDALDataset]
+    #tempvrts={} #dict with keys=file descriptor and values=[filename,GDALDataset]
 
     #Below is a bit of a kludge to handle creating a VRT that is based on an in-memory vrt file
-    drv=ds.GetDriver().ShortName
-    desc=ds.GetDescription()
-    if drv == 'VRT':
-        if not desc or desc[0] == '<':# input path is an in-memory vrt file
-            vrtfd,vrtfn=tempfile.mkstemp('.vrt')
-            ds=vrtdrv.CreateCopy(vrtfn,ds)
-            tempvrts[vrtfd]=[vrtfn,ds]
+    #drv=ds.GetDriver().ShortName
+    #desc=ds.GetDescription()
+    #if drv == 'VRT':
+    #    if not desc or desc[0] == '<':# input path is an in-memory vrt file
+    #        vrtfd,vrtfn=tempfile.mkstemp('.vrt')
+    #        ds=vrtdrv.CreateCopy(vrtfn,ds)
+    #        tempvrts[vrtfd]=[vrtfn,ds]
 
     #if stretch_type != 'NONE':
     #    tmpxml=stretch('NONE',vrtcols,vrtrows,ds,bands)
@@ -107,8 +107,13 @@ def getoverview(ds,outfile,width,format,bands,stretch_type,*stretch_args):
     #    ds=vrtdrv.CreateCopy(vrtfn,geometry.OpenDataset(tmpxml))
     #    tempvrts[vrtfd]=[vrtfn,ds]
 
-    vrtxml=stretch(stretch_type,vrtcols,vrtrows,ds,bands,*stretch_args)
-    vrtds=geometry.OpenDataset(vrtxml)
+    #vrtxml=stretch(stretch_type,vrtcols,vrtrows,ds,bands,*stretch_args)
+    #vrtfn='/vsimem/%s.vrt'%tempfile._RandomNameSequence().next()
+    #geometry.write_vsimem(vrtfn,vrtxml)
+    vrtfn=stretch(stretch_type,vrtcols,vrtrows,ds,bands,*stretch_args)
+    gdal.UseExceptions()
+    vrtds=gdal.OpenShared(vrtfn, gdal.GA_ReadOnly) #geometry.OpenDataset(vrtfn)
+
     vrtds.SetGeoTransform(vrtgt)
     if outfile:
         cpds=ovdriver.CreateCopy(outfile, vrtds)
@@ -123,12 +128,15 @@ def getoverview(ds,outfile,width,format,bands,stretch_type,*stretch_args):
 
         if not cpds:raise geometry.GDALError, 'Unable to generate overview image.'
     else:
-        fd,fn=tempfile.mkstemp(suffix='.'+format.lower(), prefix='getoverviewtempimage')
+        #fd,fn=tempfile.mkstemp(suffix='.'+format.lower(), prefix='getoverviewtempimage')
+        fn='/vsimem/%s.%s'%(tempfile._RandomNameSequence().next(),format.lower())
         cpds=ovdriver.CreateCopy(fn, vrtds)
         if not cpds:raise geometry.GDALError, 'Unable to generate overview image.'
 
-        outfile=os.fdopen(fd).read()
-        os.unlink(fn)
+        #outfile=os.fdopen(fd).read()
+        #os.unlink(fn)
+        outfile=read_vsimem(fn)
+        gdal.Unlink(fn)
     for vrt in tempvrts:
         tempvrts[vrt][1]=None
         os.close(vrt)
@@ -233,33 +241,34 @@ def _stretch_PERCENT(vrtcols,vrtrows,ds,bands,low,high):
         try:dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = GetStatistics(rb,1,1)
         except:dfBandMin,dfBandMax,dfBandMean,dfBandStdDev = GetStatistics(rb,0,1)
         dfBandRange=dfBandMax-dfBandMin
-        if nbits == 8 or dfBandRange<=255:
+        if nbits == 8 or 2 < dfBandRange <= 255:
             nbins=int(math.ceil(dfBandRange))
             binsize=1
         else:
             nbins=256
-            binsize=int(math.ceil((dfBandRange)/nbins))
+            binsize=int(math.ceil(dfBandRange/nbins))
+            if binsize<=2:binsize=dfBandRange/nbins
 
         #hs=rb.GetHistogram(dfBandMin+abs(dfBandMin)*0.0001,dfBandMax-abs(dfBandMax)*0.0001, nbins,include_out_of_range=1,approx_ok=0)
         #hs=rb.GetHistogram(dfBandMin+abs(dfBandMin)*0.0001,dfBandMax-abs(dfBandMax)*0.0001, nbins,include_out_of_range=1,approx_ok=1)
         hs=rb.GetHistogram(dfBandMin+abs(dfBandMin)*0.0001,dfBandMax-abs(dfBandMax)*0.0001, nbins,include_out_of_range=0,approx_ok=1)
         #Check that outliers haven't really skewed the histogram
         #this is a kludge to workaround datasets with multiple nodata values
-##        for j in range(0,10):
-##            if len([v for v in hs if v > 0]) < nbins/4: #if only 25% of the bins have values...
-##                startbin=256
-##                lastbin=0
-##                for i,bin in enumerate(hs):
-##                    if bin > 0:
-##                        lastbin=i
-##                        if i<startbin:startbin=i
-##                dfBandMin=dfBandMin+startbin*binsize
-##                dfBandMax=dfBandMin+lastbin*binsize+binsize
-##                #hs=rb.GetHistogram(dfBandMin-abs(dfBandMin)*0.0001,dfBandMax+abs(dfBandMax)*0.0001,include_out_of_range=1,approx_ok=0)
-##                hs=rb.GetHistogram(dfBandMin-abs(dfBandMin)*0.0001,dfBandMax+abs(dfBandMax)*0.0001,include_out_of_range=1,approx_ok=1)
-##                if nbits == 8:binsize=1
-##                else:binsize=(dfBandRange)/nbins
-##            else:break
+        # for j in range(0,10):
+        #     if len([v for v in hs if v > 0]) < nbins/4: #if only 25% of the bins have values...
+        #        startbin=256
+        #        lastbin=0
+        #        for i,bin in enumerate(hs):
+        #            if bin > 0:
+        #                lastbin=i
+        #                if i<startbin:startbin=i
+        #        dfBandMin=dfBandMin+startbin*binsize
+        #        dfBandMax=dfBandMin+lastbin*binsize+binsize
+        #        #hs=rb.GetHistogram(dfBandMin-abs(dfBandMin)*0.0001,dfBandMax+abs(dfBandMax)*0.0001,include_out_of_range=1,approx_ok=0)
+        #        hs=rb.GetHistogram(dfBandMin-abs(dfBandMin)*0.0001,dfBandMax+abs(dfBandMax)*0.0001,include_out_of_range=1,approx_ok=1)
+        #        if nbits == 8:binsize=1
+        #        else:binsize=(dfBandRange)/nbins
+        #     else:break
         try:
             dfScaleSrcMin=max([dfScaleSrcMin, HistPercentileValue(hs, low, binsize,dfBandMin)])
             dfScaleSrcMax=min([dfScaleSrcMax, HistPercentileValue(hs, high, binsize,dfBandMin)])
@@ -789,3 +798,5 @@ def resize(infile,outfile,width):
     outfile =  getoverview(ds,outfile,width,None,bands,'NONE')
     del ds
     return outfile
+
+

@@ -85,11 +85,12 @@ class Dataset(__default__.Dataset):
 
         #Kludge... the drivers are designed to "open" strings, i.e. filenames and vrt xml
         #(maybe look at allowing GdalDataset objects in future) 
-        vrtds=geometry.CreateVRTCopy(vrtds) #This updates the Description property to include all the
-        vrtxml= vrtds.GetDescription()      #SRS/GCP/GT info we just added.
+        #vrtds=geometry.CreateVRTCopy(vrtds) #This updates the Description property to include all the
+        #vrtxml= vrtds.GetDescription()      #SRS/GCP/GT info we just added.
                                             #GetDescription() is the only way I know of to get at the
                                             #underlying XML string.
         
         #Autopopulate metadata
-        __default__.Dataset.__getmetadata__(self, vrtxml)
+        #__default__.Dataset.__getmetadata__(self, vrtxml)
+        __default__.Dataset.__getmetadata__(self)
         self.metadata['filetype'] = 'GTiff/GeoTIFF'

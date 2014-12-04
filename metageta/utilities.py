@@ -747,8 +747,9 @@ class ExcelWriter:
                     self._writevalue(self._rows+1, self._cols[field][0],data[field])
                     dirty=True
 
-        if dirty:self._rows+=1
-        self._wb.save(self._file)
+        if dirty:
+            self._rows+=1
+            self._wb.save(self._file)
 
     def UpdateRecord(self,data,row):
         ''' Update an existing record
@@ -778,6 +779,7 @@ class ExcelWriter:
                 if field in self._fields and data[field] not in ['',None,False]:#0 is valid
                     self._writevalue(r+1, self._cols[field][0],data[field], ws)
                     dirty=True
+
         if dirty:self._wb.save(self._file)
 
     def __del__(self):

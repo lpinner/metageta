@@ -95,76 +95,76 @@ def OpenDataset(filepath,mode=gdalconst.GA_ReadOnly):
     except:raise GDALError('Unable to open %s'%filepath)
     return gdalDataset
 
-def ParseGDALinfo(filepath):
-    ''' Very basic gdalinfo parser, does not include colo(u)r tables, raster attribute tables.
-
-        @type    filepath: C{str}
-        @param   filepath: path to dataset
-        @rtype:  C{(dict,list)}
-        @return: GDAL info,extent coordinates
-    '''
-
-    metadata={}
-    extent=[]
-
-    cmd='gdalinfo -noct '+filepath
-    exit_code,stdout,stderr=utilities.runcmd(cmd)
-    if exit_code != 0: raise Exception, stderr
-
-    decimal=r'([-+]?\d+\.?\d+e?[-+]?\d+?)'
-
-    rex=r'Size is (\d+),\s*(\d+)'
-    rex=re.compile(rex, re.I)
-    rex=rex.findall(stdout)
-    if rex:metadata['cols'],metadata['rows']=[int(r) for r in rex[0]]
-
-    rex=r'Coordinate System is:\s*(.*\])'
-    rex=re.compile(rex, re.I)
-    rex=rex.findall(' '.join([s.strip() for s in stdout.split('\n')]))
-    if rex:metadata['srs']=rex[0]
-
-
-    rex=r'Pixel Size\s*=\s*\(%s,%s\)' % (decimal,decimal)
-    rex=re.compile(rex, re.I)
-    rex=rex.findall(stdout)
-    if rex:metadata['cellx'],metadata['celly']=[float(r) for r in rex[0]]
-
-    rex=r'Upper Left\s*\(\s*%s\s*,\s*%s\)' % (decimal,decimal)
-    rex=re.compile(rex, re.I)
-    rex=rex.findall(stdout)
-    if rex:extent.append([float(r) for r in rex[0]])
-
-    rex=r'Upper Right\s*\(\s*%s\s*,\s*%s\)' % (decimal,decimal)
-    rex=re.compile(rex, re.I)
-    rex=rex.findall(stdout)
-    if rex:extent.append([float(r) for r in rex[0]])
-
-    rex=r'Lower Left\s*\(\s*%s\s*,\s*%s\)' % (decimal,decimal)
-    rex=re.compile(rex, re.I)
-    rex=rex.findall(stdout)
-    if rex:extent.append([float(r) for r in rex[0]])
-
-    rex=r'Lower Right\s*\(\s*%s\s*,\s*%s\)' % (decimal,decimal)
-    rex=re.compile(rex, re.I)
-    rex=rex.findall(stdout)
-    if rex:extent.append([float(r) for r in rex[0]])
-
-    rex=r'Band \d'
-    rex=re.compile(rex, re.I)
-    rex=rex.findall(stdout)
-    if rex:metadata['nbands']=len(rex)
-
-    rex=r'Type=(%s)' % '|'.join([gdal.GetDataTypeName(dt) for dt in range(0,gdal.GDT_TypeCount)])
-    rex=re.compile(rex, re.I)
-    rex=rex.findall(stdout)
-    if rex:metadata['datatype']=rex[0]
-
-    rex=r'NoData Value='+decimal
-    rex=re.compile(rex, re.I)
-    rex=rex.findall(stdout)
-    if rex:metadata['nodata']=rex[0]
-
-    return metadata,extent
+##def ParseGDALinfo(filepath):
+##    ''' Very basic gdalinfo parser, does not include colo(u)r tables, raster attribute tables.
+##
+##        @type    filepath: C{str}
+##        @param   filepath: path to dataset
+##        @rtype:  C{(dict,list)}
+##        @return: GDAL info,extent coordinates
+##    '''
+##
+##    metadata={}
+##    extent=[]
+##
+##    cmd='gdalinfo -noct '+filepath
+##    exit_code,stdout,stderr=utilities.runcmd(cmd)
+##    if exit_code != 0: raise Exception, stderr
+##
+##    decimal=r'([-+]?\d+\.?\d+e?[-+]?\d+?)'
+##
+##    rex=r'Size is (\d+),\s*(\d+)'
+##    rex=re.compile(rex, re.I)
+##    rex=rex.findall(stdout)
+##    if rex:metadata['cols'],metadata['rows']=[int(r) for r in rex[0]]
+##
+##    rex=r'Coordinate System is:\s*(.*\])'
+##    rex=re.compile(rex, re.I)
+##    rex=rex.findall(' '.join([s.strip() for s in stdout.split('\n')]))
+##    if rex:metadata['srs']=rex[0]
+##
+##
+##    rex=r'Pixel Size\s*=\s*\(%s,%s\)' % (decimal,decimal)
+##    rex=re.compile(rex, re.I)
+##    rex=rex.findall(stdout)
+##    if rex:metadata['cellx'],metadata['celly']=[float(r) for r in rex[0]]
+##
+##    rex=r'Upper Left\s*\(\s*%s\s*,\s*%s\)' % (decimal,decimal)
+##    rex=re.compile(rex, re.I)
+##    rex=rex.findall(stdout)
+##    if rex:extent.append([float(r) for r in rex[0]])
+##
+##    rex=r'Upper Right\s*\(\s*%s\s*,\s*%s\)' % (decimal,decimal)
+##    rex=re.compile(rex, re.I)
+##    rex=rex.findall(stdout)
+##    if rex:extent.append([float(r) for r in rex[0]])
+##
+##    rex=r'Lower Left\s*\(\s*%s\s*,\s*%s\)' % (decimal,decimal)
+##    rex=re.compile(rex, re.I)
+##    rex=rex.findall(stdout)
+##    if rex:extent.append([float(r) for r in rex[0]])
+##
+##    rex=r'Lower Right\s*\(\s*%s\s*,\s*%s\)' % (decimal,decimal)
+##    rex=re.compile(rex, re.I)
+##    rex=rex.findall(stdout)
+##    if rex:extent.append([float(r) for r in rex[0]])
+##
+##    rex=r'Band \d'
+##    rex=re.compile(rex, re.I)
+##    rex=rex.findall(stdout)
+##    if rex:metadata['nbands']=len(rex)
+##
+##    rex=r'Type=(%s)' % '|'.join([gdal.GetDataTypeName(dt) for dt in range(0,gdal.GDT_TypeCount)])
+##    rex=re.compile(rex, re.I)
+##    rex=rex.findall(stdout)
+##    if rex:metadata['datatype']=rex[0]
+##
+##    rex=r'NoData Value='+decimal
+##    rex=re.compile(rex, re.I)
+##    rex=rex.findall(stdout)
+##    if rex:metadata['nodata']=rex[0]
+##
+##    return metadata,extent
 
 #========================================================================================================
 #{Coordinate Utilities
@@ -526,6 +526,35 @@ def PixelToMap(px,py,gt):
     return mx,my
 
 #========================================================================================================
+#{VSIMEM utilities
+#========================================================================================================
+def read_vsimem(fn):
+    '''Read GDAL vsimem files
+
+        @type fn:  C{str}
+        @param fn: Filename
+        @return:   File contents
+    '''
+    vsifile = gdal.VSIFOpenL(fn,'r')
+    gdal.VSIFSeekL(vsifile, 0, 2)
+    vsileng = gdal.VSIFTellL(vsifile)
+    gdal.VSIFSeekL(vsifile, 0, 0)
+    return gdal.VSIFReadL(1, vsileng, vsifile)
+
+def write_vsimem(fn,data):
+    '''Write GDAL vsimem files
+
+        @type fn:  C{str}
+        @param fn: Filename
+        @param data: Data to write
+        @return:   0 on success or -1 on failure.
+    '''
+    vsifile = gdal.VSIFOpenL(fn,'w')
+    size = len(data)
+    gdal.VSIFWriteL(data, 1, size, vsifile)
+    return gdal.VSIFCloseL(vsifile)
+
+#========================================================================================================
 #{VRT Utilities
 #========================================================================================================
 def CreateVRTCopy(ds):
@@ -792,7 +821,6 @@ def CreateBIPRawRasterVRT(filename,nbands,cols,rows,datatype,nbits,nodata=None,h
         return CreateCustomVRT('\n'.join(vrt),cols,rows)
     except:
         return None
-    return '\n'.join(vrt)
 
 def CreateCustomVRT(vrtxml,vrtcols,vrtrows):
     try:
@@ -800,7 +828,10 @@ def CreateCustomVRT(vrtxml,vrtcols,vrtrows):
         vrt.append('<VRTDataset rasterXSize="%s" rasterYSize="%s">' % (vrtcols,vrtrows))
         vrt.append('%s' % vrtxml)
         vrt.append('</VRTDataset>')
-        return '\n'.join(vrt)
+        #return '\n'.join(vrt)
+        vrtfn='/vsimem/%s.vrt'%tempfile._RandomNameSequence().next()
+        write_vsimem(vrtfn,'\n'.join(vrt))
+        return vrtfn
     except:
         return None
 

@@ -59,6 +59,9 @@ class Dataset(__default__.Dataset):
         ncmd=nc.GetMetadata()
 
         sds=nc.GetSubDatasets()
+        gdal_version=''.join([c for c in gdal.__version__ if c in '1234567890.'])
+        gdal_version=[int(c) for c in gdal_version.split('.')]
+
         if sds: #Use the SubDataset with the most cols*rows
             xy=[]
             sdo=[]
@@ -70,14 +73,14 @@ class Dataset(__default__.Dataset):
             sd,sd_name,sd_desc=sdo[xy.index(max(xy))]
             try:__default__.Dataset.__getmetadata__(self, sd_name) #autopopulate basic metadata
             except NotImplementedError:
-                if map(int,geometry.gdal.__version__.split('.')) < [1,8,0]:
+                if gdal_version < [1,8,0]:
                     raise NotImplementedError('You are using GDAL %s, versions < 1.8 do not read georeferencing information for certain NetCDF files.'%geometry.gdal.__version__)
                 else:raise
             sdmd=sd.GetMetadata()
         else:
             try:__default__.Dataset.__getmetadata__(self, f) #autopopulate basic metadata
             except NotImplementedError:
-                if map(int,geometry.gdal.__version__.split('.')) < [1,8,0]:
+                if gdal_version < [1,8,0]:
                     raise NotImplementedError('You are using GDAL %s, versions < 1.8 do not read georeferencing information for certain NetCDF files.'%geometry.gdal.__version__)
                 else:raise
 

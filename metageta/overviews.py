@@ -137,11 +137,11 @@ def getoverview(ds,outfile,width,format,bands,stretch_type,*stretch_args):
         #os.unlink(fn)
         outfile=read_vsimem(fn)
         gdal.Unlink(fn)
-    for vrt in tempvrts:
-        tempvrts[vrt][1]=None
-        os.close(vrt)
-        del tempvrts[vrt][1]
-        os.unlink(tempvrts[vrt][0])
+    #for vrt in tempvrts:
+    #    tempvrts[vrt][1]=None
+    #    os.close(vrt)
+    #    del tempvrts[vrt][1]
+    #    os.unlink(tempvrts[vrt][0])
     return outfile
 #========================================================================================================
 #Stretch algorithms

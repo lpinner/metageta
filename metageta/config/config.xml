@@ -23,6 +23,7 @@
       <name>dummy</name>
       <organization>dummy</organization>
       <siteId>dummy</siteId>
+      <baseurl></baseurl>
     </site>
     <categories default="datasets">
       <category name="applications"/>

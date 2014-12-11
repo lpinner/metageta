@@ -57,6 +57,7 @@ def encode(string):
         @return:  Encoded string
     '''
     if type(string) is unicode:return string.encode(encoding)
+    elif string is None:return ''
     else:return string
 
 #========================================================================================================
@@ -815,7 +816,10 @@ class ExcelReader:
         j=index-i*1048575
         ws=self._sheets[i]
         headers=[encode(c.value) for c in ws.rows[0]]
-        cells=[encode(c.value) for c in ws.rows[j+1]]
+        #cells=[encode(c.value) for c in ws.rows[j+1]]
+        #little hack to work around some \r characters in cells
+        #TODO will require a better way if this happens for more characters...
+        cells=[str(encode(c.value)).replace('_x000D_','') for c in ws.rows[j+1]]
         if self._returntype is dict:
             return dict(zip(headers,cells))
         else:

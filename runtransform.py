@@ -85,14 +85,16 @@ def main(xlsx,xsl,dir,logger, mef=False,cat='',ops=''):
     xlrdr=utilities.ExcelReader(xlsx, list)
     qlkdir=os.path.dirname(xlsx)
     logger.info('Transforming %s metadata records'%xlrdr.records)
+    transform=transforms.Transform(xsl)
     for rec in xlrdr:
         try:
-            tmpcat=cat #dummy var as we may overwrite it
+            tmpcat=cat  # dummy var as we may overwrite it
             tmpops=ops
             overviews=[]
             deleted=False
-            for i,val in enumerate(rec): #We use a list instead of a dict as there can be multiple fields with the same header/name
-                if val[0]=='DELETED' and val[1] == 1:deleted=True
+            for i, val in enumerate(rec):    # We use a list instead of a dict as there can
+                                            # be multiple fields with the same header/name
+                if val[0]=='DELETED' and val[1] in [1,'1']:deleted=True
                 elif val[0]=='filename':filename=val[1]
                 elif val[0]=='guid':guid=val[1]
                 elif val[0] in ['quicklook','thumbnail'] and val[1] not in [ '', None]:
@@ -111,16 +113,19 @@ def main(xlsx,xsl,dir,logger, mef=False,cat='',ops=''):
                 if os.path.exists(meffile):os.rename(meffile,'%s.deleted'%meffile)
                 continue
             strxml=transforms.ListToXML(rec,'crawlresult')
-            result = transforms.Transform(strxml, xsl, xmlfile)
+            result = transform.transform(strxml, xmlfile)
             #if overviews:transforms.CreateMEF(dir,xmlfile,guid,overviews)
             #Create MEF even if there are no overviews
             if mef:transforms.CreateMEF(dir,xmlfile,guid,overviews,tmpcat,tmpops)
             logger.info('Transformed metadata for ' +filename)
         except Exception,err:
-            logger.error('%s\n%s' % (filename, utilities.ExceptionInfo()))
+            logger.error('%s %s' % (filename, utilities.ExceptionInfo()))
             logger.debug(utilities.ExceptionInfo(10))
             try:os.remove(xmlfile)
             except:pass
+            try:os.remove(meffile)
+            except:pass
+
 
 def exit():
     '''Force exit after closure of the ProgressBar GUI'''

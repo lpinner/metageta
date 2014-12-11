@@ -239,7 +239,31 @@ for _key in ['name','organization','siteId']:
 #++++++++++++++++++++++++
 #Public methods
 #++++++++++++++++++++++++
-def Transform(inxmlstring,transform,outxmlfile):
+# def Transform(inxmlstring,transform,outxmlfile):
+#     '''
+#     Transform a metadata record to XML using an XSL stylesheet
+#
+#     @param inxmlstring: metadata record in XML format.
+#     @param transform: may be one of the pre-defined XSL transforms or a path to a custom XSL file.
+#     @param outxmlfile: File to write transformed metadata to.
+#     '''
+#     if xslfiles.has_key(transform): #Is it a known XSL transform...?
+#         xslfile = _path.join(__path__[0],xslfiles[transform]).replace('\\','/')
+#     elif _path.exists(transform):    #Have we been passed an XSL file path...?
+#         xslfile=_path.abspath(transform).replace('\\','/') #Xslt.Transform doesn't like backslashes in absolute paths...
+#     else: raise ValueError, 'Can not transform using %s!' % transform
+#     xsl = _etree.parse(xslfile)
+#     xml = _etree.fromstring(inxmlstring)
+#     xslt = _etree.XSLT(xsl)
+#     try:
+#         result = xslt(xml)
+#     except:
+#         raise RuntimeError(xslt.error_log)
+#
+#     print xslt.error_log
+#     open(outxmlfile, 'w').write(str(result))
+
+class Transform(object):
     '''
     Transform a metadata record to XML using an XSL stylesheet
 
@@ -247,16 +271,31 @@ def Transform(inxmlstring,transform,outxmlfile):
     @param transform: may be one of the pre-defined XSL transforms or a path to a custom XSL file.
     @param outxmlfile: File to write transformed metadata to.
     '''
-    if xslfiles.has_key(transform): #Is it a known XSL transform...?
-        xslfile = _path.join(__path__[0],xslfiles[transform]).replace('\\','/')
-    elif _path.exists(transform):    #Have we been passed an XSL file path...?
-        xslfile=_path.abspath(transform).replace('\\','/') #Xslt.Transform doesn't like backslashes in absolute paths...
-    else: raise ValueError, 'Can not transform using %s!' % transform
-    xsl = _etree.parse(xslfile)
-    xml = _etree.fromstring(inxmlstring)
-    xslt = _etree.XSLT(xsl)
-    result = xslt(xml)
-    open(outxmlfile, 'w').write(str(result))
+    def __init__(self,transform):
+        '''
+        Transform a metadata record to XML using an XSL stylesheet
+
+        @param transform: may be one of the pre-defined XSL transforms or a path to a custom XSL file.
+        '''
+        if xslfiles.has_key(transform): #Is it a known XSL transform...?
+            xslfile = _path.join(__path__[0],xslfiles[transform]).replace('\\','/')
+        elif _path.exists(transform):    #Have we been passed an XSL file path...?
+            xslfile=_path.abspath(transform).replace('\\','/') #Xslt.Transform doesn't like backslashes in absolute paths...
+        else: raise ValueError, 'Can not transform using %s!' % transform
+        xsl = _etree.parse(xslfile)
+        self.xslt = _etree.XSLT(xsl)
+
+    def transform(self, inxmlstring, outxmlfile):
+        '''
+        Transform a metadata record to XML using an XSL stylesheet
+
+        @param inxmlstring: metadata record in XML format.
+        @param outxmlfile: File to write transformed metadata to.
+        '''
+        xml = _etree.fromstring(inxmlstring)
+        result = self.xslt(xml)
+        open(outxmlfile, 'w').write(str(result))
+        return self.xslt.error_log
 
 def ListToXML(lst,root,asstring=True):
     '''Transform a metadata record to a flat XML string'''

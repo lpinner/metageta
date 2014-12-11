@@ -32,6 +32,9 @@
   <xsl:variable name="hierarchyLevelName">
     <xsl:choose><xsl:when test="$hierarchyLevel='dataset'">Dataset</xsl:when><xsl:otherwise><xsl:value-of select="$hierarchyLevel"/></xsl:otherwise></xsl:choose>
   </xsl:variable>
+  <xsl:variable 
+            name="config"
+            select="document('../config/config.xml')/config"/>
     
   <xsl:template match="/crawlresult">
     <gmd:MD_Metadata xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
@@ -207,12 +210,12 @@
   </xsl:template><!--contact-->
   <xsl:template name="default_contact">
     <xsl:param name="contact">custodian</xsl:param> <!--default-->
-    <!--xsl:variable name="defaultcontact">
-        <xsl:copy-of select="exsl:node-set(document('../config/config.xml'))/config/defaultcontact"/>
-    </xsl:variable-->
+    <!--xsl:variable 
+      name="defaultcontact"
+      select="document('../config/config.xml')/config/defaultcontact"/-->
     <xsl:variable 
       name="defaultcontact"
-      select="document('../config/config.xml')/config/defaultcontact"/>
+      select="$config/defaultcontact"/>
         
     <gmd:CI_ResponsibleParty>
       <gmd:individualName gco:nilReason="withheld">
@@ -517,6 +520,18 @@
               </gmd:maintenanceAndUpdateFrequency>
             </gmd:MD_MaintenanceInformation>
           </gmd:resourceMaintenance>
+              
+          <xsl:variable name="baseurl">
+            <xsl:choose>
+              <xsl:when test="normalize-space($config/geonetwork/site/baseurl)">
+                <xsl:value-of select="concat($config/geonetwork/site/baseurl,'/srv/eng/resources.get?uuid=',guid,'&amp;access=public&amp;fname=')"/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:value-of select="''"/>
+              </xsl:otherwise>
+            </xsl:choose>
+          </xsl:variable>
+         
           <xsl:if test="normalize-space(quicklook)">
             <gmd:graphicOverview>
               <gmd:MD_BrowseGraphic>
@@ -524,13 +539,13 @@
                   <gco:CharacterString>
                     <xsl:choose>
                       <xsl:when test="contains(quicklook, '\')">
-                        <xsl:value-of select="str:split(quicklook,'\')[last()]"/>
+                        <xsl:value-of select="normalize-space(concat($baseurl,str:split(quicklook,'\')[last()]))"/>
                       </xsl:when>
-                      <xsl:when test="contains(quicklook, '/')">
-                        <xsl:value-of select="str:split(quicklook,'/')[last()]"/>
+                      <xsl:when test="contains(quicklook,'/')">
+                        <xsl:value-of select="normalize-space(concat($baseurl,str:split(quicklook,'/')[last()]))"/>
                       </xsl:when>
                       <xsl:otherwise>
-                        <xsl:value-of select="normalize-space(quicklook)"/>
+                        <xsl:value-of select="normalize-space(concat($baseurl,quicklook))"/>
                       </xsl:otherwise>
                     </xsl:choose>
                   </gco:CharacterString>

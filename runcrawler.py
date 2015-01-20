@@ -43,6 +43,7 @@ Usage::
 '''
 
 import sys, os, re,time,tempfile
+
 from metageta import formats
 from metageta import geometry
 from metageta import utilities
@@ -51,6 +52,7 @@ from metageta import overviews
 from metageta import progresslogger
 
 def main(dir, xlsx, logger, mediaid=None, update=False, getovs=False, recurse=False, archive=False):
+
     """ Run the Metadata Crawler
 
         @type  dir:    C{str}
@@ -77,75 +79,110 @@ def main(dir, xlsx, logger, mediaid=None, update=False, getovs=False, recurse=Fa
 
     logger.debug(' '.join(sys.argv))
 
-    try:
-        #raise Exception
-        ExcelWriter=utilities.ExcelWriter(xlsx,format_fields.keys(),update=update)
-
-        #Are we updating an existing crawl?
-        records={}
-        if update and os.path.exists(xlsx):
-
-            #Do we need to recreate the shapefile?
-            if os.path.exists(shp):
-                ShapeWriter=False
-            else:
-                logger.info('%s does not exist, it will be recreated...'%shp)
-                ShapeWriter=geometry.ShapeWriter(shp,format_fields,update=False)
-
-            #Build a dict of existing records
-            row=-1
-            for row,rec in enumerate(utilities.ExcelReader(xlsx)):
-                #Check if the dataset still exists, mark it DELETED if it doesn't
-
-                if os.path.exists(rec['filepath']) or rec['mediaid'] !='' or \
-                   (rec['filepath'][0:4]=='/vsi' and utilities.compressed_file_exists(rec['filepath'],False)):
-                    if ShapeWriter:
-                        ext=[rec['UL'].split(','),rec['UR'].split(','),rec['LR'].split(','),rec['LL'].split(',')]
-                        ShapeWriter.WriteRecord(ext,rec)
-                    #Kludge to ensure backwards compatibility with previously generated guids
-                    #records[rec['guid']]=rec
-                    records[utilities.uuid(rec['filepath'])]=(row,rec)
-                else:
-                    if rec.get('DELETED',0)!=1:
-                        rec['DELETED']=1
-                        ExcelWriter.UpdateRecord(rec,row)
-                        logger.info('Marked %s as deleted' % (rec['filepath']))
-            if row==-1:logger.info('Output spreadsheet is empty, no records to update')
-            del ShapeWriter
-        ShapeWriter=geometry.ShapeWriter(shp,format_fields,update=update)
-    except Exception,err:
-        logger.error('%s' % utilities.ExceptionInfo())
-        logger.debug(utilities.ExceptionInfo(10))
-        #sys.exit(1)
-        return
-
-    logger.info('Searching for files...')
-    now=time.time()
-    Crawler=crawler.Crawler(dir,recurse=recurse,archive=archive)
-    logger.info('Found %s files...'%Crawler.filecount)
-
-    #Loop thru dataset objects returned by Crawler
-    for ds in Crawler:
+    #raise Exception
+    #ExcelWriter=utilities.ExcelWriter(xlsx,format_fields.keys(),update=update)
+    with utilities.ExcelWriter(xlsx,format_fields.keys(),update=update) as ExcelWriter:
         try:
-            logger.debug('Attempting to open %s'%Crawler.file)
-            fi=ds.fileinfo
-            fi['filepath']=utilities.uncpath(fi['filepath'])
-            fi['filelist']='|'.join(utilities.uncpath(ds.filelist))
-            #qlk=utilities.uncpath(os.path.join(os.path.dirname(xlsx),'%s.%s.qlk.jpg'%(fi['filename'],fi['guid'])))
-            #thm=utilities.uncpath(os.path.join(os.path.dirname(xlsx),'%s.%s.thm.jpg'%(fi['filename'],fi['guid'])))
-            qlk=os.path.join(os.path.dirname(xlsx),'%s.%s.qlk.jpg'%(fi['filename'],fi['guid']))
-            thm=os.path.join(os.path.dirname(xlsx),'%s.%s.thm.jpg'%(fi['filename'],fi['guid']))
+            #Are we updating an existing crawl?
+            records={}
+            if update and os.path.exists(xlsx):
 
-            if update and ds.guid in records:
-                row,rec=records[ds.guid]
-                #Issue 35: if it's not modified, but we've asked for overview images and it doesn't already have them....
-                if ismodified(rec,fi,os.path.dirname(xlsx)) or (not rec['quicklook'] and getovs):
+                #Do we need to recreate the shapefile?
+                if os.path.exists(shp):
+                    ShapeWriter=False
+                else:
+                    logger.info('%s does not exist, it will be recreated...'%shp)
+                    ShapeWriter=geometry.ShapeWriter(shp,format_fields,update=False)
+
+                #Build a dict of existing records
+                row=-1
+                #with utilities.ExcelReader(xlsx) as ExcelReader: #Using a context manager ensures closure before writing
+                for row,rec in enumerate(utilities.ExcelReader(xlsx)):
+                    #Check if the dataset still exists, mark it DELETED if it doesn't
+                    if os.path.exists(rec['filepath']) or rec['mediaid'] !='' or \
+                       (rec['filepath'][0:4]=='/vsi' and utilities.compressed_file_exists(rec['filepath'],False)):
+                        if ShapeWriter:
+                            ext=[rec['UL'].split(','),rec['UR'].split(','),rec['LR'].split(','),rec['LL'].split(',')]
+                            ShapeWriter.WriteRecord(ext,rec)
+                        #Kludge to ensure backwards compatibility with previously generated guids
+                        #records[rec['guid']]=rec
+                        records[utilities.uuid(rec['filepath'])]=(row,rec)
+                    else:
+                        if rec.get('DELETED',0)not in [1,'1']:
+                            rec['DELETED']=1
+                            ExcelWriter.UpdateRecord(rec,row)
+                            logger.info('Marked %s as deleted' % (rec['filepath']))
+                if row==-1:logger.info('Output spreadsheet is empty, no records to update')
+                ExcelWriter.save()
+                del ShapeWriter
+            ShapeWriter=geometry.ShapeWriter(shp,format_fields,update=update)
+
+        except Exception,err:
+            logger.error('%s' % utilities.ExceptionInfo())
+            logger.debug(utilities.ExceptionInfo(10))
+            #sys.exit(1)
+            return
+
+        logger.info('Searching for files...')
+        now=time.time()
+        Crawler=crawler.Crawler(dir,recurse=recurse,archive=archive)
+        logger.info('Found %s files...'%Crawler.filecount)
+
+        #Loop thru dataset objects returned by Crawler
+        for ds in Crawler:
+            try:
+                logger.debug('Attempting to open %s'%Crawler.file)
+                fi=ds.fileinfo
+                fi['filepath']=utilities.uncpath(fi['filepath'])
+                fi['filelist']='|'.join(utilities.uncpath(ds.filelist))
+                #qlk=utilities.uncpath(os.path.join(os.path.dirname(xlsx),'%s.%s.qlk.jpg'%(fi['filename'],fi['guid'])))
+                #thm=utilities.uncpath(os.path.join(os.path.dirname(xlsx),'%s.%s.thm.jpg'%(fi['filename'],fi['guid'])))
+                qlk=os.path.join(os.path.dirname(xlsx),'%s.%s.qlk.jpg'%(fi['filename'],fi['guid']))
+                thm=os.path.join(os.path.dirname(xlsx),'%s.%s.thm.jpg'%(fi['filename'],fi['guid']))
+
+                if update and ds.guid in records:
+                    row,rec=records[ds.guid]
+                    #Issue 35: if it's not modified, but we've asked for overview images and it doesn't already have them....
+                    if ismodified(rec,fi,os.path.dirname(xlsx)) or (not rec['quicklook'] and getovs):
+                        md=ds.metadata
+                        geom=ds.extent
+                        md.update(fi)
+                        logger.info('Updated metadata for %s, %s files remaining' % (Crawler.file,len(Crawler.files)))
+                        try:
+                            if rec['quicklook'] and os.path.exists(rec['quicklook']):getovs=False #Don't update overview
+                            if getovs:
+                                qlk=ds.getoverview(qlk, width=800)
+                                #We don't need to regenerate it, just resize it
+                                #thm=ds.getoverview(thm, width=150)
+                                thm=overviews.resize(qlk,thm,width=150)
+                                md['quicklook']=os.path.basename(qlk)
+                                md['thumbnail']=os.path.basename(thm)
+                                #md['quicklook']=utilities.uncpath(qlk)
+                                #md['thumbnail']=utilities.uncpath(thm)
+                                logger.info('Updated overviews for %s' % Crawler.file)
+                        except Exception,err:
+                            logger.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
+                            logger.debug(utilities.ExceptionInfo(10))
+                        try:
+                            ExcelWriter.UpdateRecord(md,row)
+                        except Exception,err:
+                            logger.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
+                            logger.debug(utilities.ExceptionInfo(10))
+                        try:
+                            ShapeWriter.UpdateRecord(geom,md,'guid="%s"'%rec['guid'])
+                        except Exception,err:
+                            logger.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
+                            logger.debug(utilities.ExceptionInfo(10))
+                    else:
+                        logger.info('Metadata did not need updating for %s, %s files remaining' % (Crawler.file,len(Crawler.files)))
+                        continue
+                else:
                     md=ds.metadata
                     geom=ds.extent
                     md.update(fi)
-                    logger.info('Updated metadata for %s, %s files remaining' % (Crawler.file,len(Crawler.files)))
+                    if mediaid:md.update({'mediaid':mediaid})
+                    logger.info('Extracted metadata from %s, %s files remaining' % (Crawler.file,len(Crawler.files)))
                     try:
-                        if rec['quicklook'] and os.path.exists(rec['quicklook']):getovs=False #Don't update overview
                         if getovs:
                             qlk=ds.getoverview(qlk, width=800)
                             #We don't need to regenerate it, just resize it
@@ -155,74 +192,41 @@ def main(dir, xlsx, logger, mediaid=None, update=False, getovs=False, recurse=Fa
                             md['thumbnail']=os.path.basename(thm)
                             #md['quicklook']=utilities.uncpath(qlk)
                             #md['thumbnail']=utilities.uncpath(thm)
-                            logger.info('Updated overviews for %s' % Crawler.file)
-                    except Exception,err:
+                            logger.info('Generated overviews from %s' % Crawler.file)
+                    except Exception as err:
                         logger.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
                         logger.debug(utilities.ExceptionInfo(10))
                     try:
-                        ExcelWriter.UpdateRecord(md,row)
-                    except Exception,err:
+                        ExcelWriter.WriteRecord(md)
+                    except Exception as err:
                         logger.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
                         logger.debug(utilities.ExceptionInfo(10))
                     try:
-                        ShapeWriter.UpdateRecord(geom,md,'guid="%s"'%rec['guid'])
-                    except Exception,err:
+                        ShapeWriter.WriteRecord(geom,md)
+                    except Exception as err:
                         logger.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
                         logger.debug(utilities.ExceptionInfo(10))
-                else:
-                    logger.info('Metadata did not need updating for %s, %s files remaining' % (Crawler.file,len(Crawler.files)))
-                    continue
-            else:
-                md=ds.metadata
-                geom=ds.extent
-                md.update(fi)
-                if mediaid:md.update({'mediaid':mediaid})
-                logger.info('Extracted metadata from %s, %s files remaining' % (Crawler.file,len(Crawler.files)))
-                try:
-                    if getovs:
-                        qlk=ds.getoverview(qlk, width=800)
-                        #We don't need to regenerate it, just resize it
-                        #thm=ds.getoverview(thm, width=150)
-                        thm=overviews.resize(qlk,thm,width=150)
-                        md['quicklook']=os.path.basename(qlk)
-                        md['thumbnail']=os.path.basename(thm)
-                        #md['quicklook']=utilities.uncpath(qlk)
-                        #md['thumbnail']=utilities.uncpath(thm)
-                        logger.info('Generated overviews from %s' % Crawler.file)
-                except Exception as err:
-                    logger.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
-                    logger.debug(utilities.ExceptionInfo(10))
-                try:
-                    ExcelWriter.WriteRecord(md)
-                except Exception as err:
-                    logger.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
-                    logger.debug(utilities.ExceptionInfo(10))
-                try:
-                    ShapeWriter.WriteRecord(geom,md)
-                except Exception as err:
-                    logger.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
-                    logger.debug(utilities.ExceptionInfo(10))
 
-        except NotImplementedError as err:
-            logger.warn('%s: %s' % (Crawler.file, str(err)))
-            logger.debug(utilities.ExceptionInfo(10))
-        except Exception as err:
-            logger.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
-            logger.debug(utilities.ExceptionInfo(10))
-    then=time.time()
-    logger.debug(then-now)
-    #Check for files that couldn't be opened
-    for file,err,dbg in Crawler.errors:
-       logger.error('%s\n%s' % (file, err))
-       logger.debug(dbg)
+            except NotImplementedError as err:
+                logger.warn('%s: %s' % (Crawler.file, str(err)))
+                logger.debug(utilities.ExceptionInfo(10))
+            except Exception as err:
+                logger.error('%s\n%s' % (Crawler.file, utilities.ExceptionInfo()))
+                logger.debug(utilities.ExceptionInfo(10))
+        then=time.time()
+        logger.debug(then-now)
+        #Check for files that couldn't be opened
+        for file,err,dbg in Crawler.errors:
+           logger.error('%s\n%s' % (file, err))
+           logger.debug(dbg)
 
-    if Crawler.filecount == 0:
-        logger.info("No data found")
-    else:
-        logger.info("Metadata extraction complete!")
+        if Crawler.filecount == 0:
+            logger.info("No data found")
+        else:
+            logger.info("Metadata extraction complete!")
 
-    del ExcelWriter
-    del ShapeWriter
+        #del ExcelWriter
+        del ShapeWriter
 
 def ismodified(record,fileinfo,xlsxpath):
     ''' Check if a record from a previous metadata crawl needs to be updated.

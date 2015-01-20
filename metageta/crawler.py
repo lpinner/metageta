@@ -50,8 +50,7 @@ class Crawler:
         '''
 
         format_regex  = formats.format_regex
-        #dir=utilities.uncpath(utilities.realpath(utilities.normcase(utilities.encode(dir))))
-        dir=utilities.uncpath(utilities.realpath(utilities.encode(dir)))
+        dir=utilities.uncpath(utilities.realpath(utilities.normcase(utilities.encode(dir))))
         #Build a dict of matching files and regexes then sort according to the priority of the regex formats
         fileformats={}
         for f in utilities.rglob(dir,'|'.join(format_regex), True, re.IGNORECASE, recurse=recurse, archive=archive):
@@ -59,8 +58,7 @@ class Crawler:
             if f[-7:] in ('qlk.jpg','thm.jpg'):continue
             #Use utf-8 encoding to fix Issue 20
             if f[:4]=='/vsi':f=utilities.encode(f)
-            #else:f=utilities.realpath(utilities.normcase(utilities.encode(f)))
-            else:f=utilities.realpath(utilities.encode(f))
+            else:f=utilities.realpath(utilities.normcase(utilities.encode(f)))
             for r in format_regex: #This is so we always return _default_ format datasets last.
                 if re.search(r,os.path.basename(f),re.IGNORECASE):
                     if fileformats.has_key(r):fileformats[r].append(f)

@@ -74,14 +74,14 @@ def archivelist(f):
     if tarfile.is_tarfile(f):
         #return tarfile.open(f,'r').getnames() #includes subfolders
         lst=[ti.name for ti in tarfile.open(f,'r').getmembers() if ti.isfile()]
-        #return [os.sep.join(['/vsitar',normcase(f),l]) for l in lst]
-        return [os.sep.join(['/vsitar',f,l]) for l in lst]
+        return [os.sep.join(['/vsitar',normcase(f),l]) for l in lst]
+        #return [os.sep.join(['/vsitar',f,l]) for l in lst]
 
     elif zipfile.is_zipfile(f):
         #return zipfile.ZipFile(f,'r').namelist() #includes subfolders
         lst=[zi.filename for zi in zipfile.ZipFile(f,'r').infolist() if zi.file_size> 0]
-        #return [os.sep.join(['/vsizip',normcase(f),l]) for l in lst]
-        return [os.sep.join(['/vsizip',f,l]) for l in lst]
+        return [os.sep.join(['/vsizip',normcase(f),l]) for l in lst]
+        #return [os.sep.join(['/vsizip',f,l]) for l in lst]
     return lst
 
 def archivefileinfo(f,n):
@@ -349,8 +349,8 @@ def FileInfo(filepath):
             fileinfo['guid']=uuid(filepath)
             filepath=archive
         else:
-            #filepath=normcase(realpath(filepath))
-            filepath=realpath(filepath)
+            filepath=normcase(realpath(filepath))
+            #filepath=realpath(filepath)
             filestat = os.stat(filepath)
 
             fileinfo['filename']=os.path.basename(filepath)
@@ -380,8 +380,8 @@ def uuid(filepath):
         @rtype:  C{str}
         @return: uuid
     '''
-    #filepath=normcase(uncpath(realpath(filepath)))
-    filepath=uncpath(realpath(filepath))
+    filepath=normcase(uncpath(realpath(filepath)))
+    #filepath=uncpath(realpath(filepath))
     return str(_uuid.uuid3(_uuid.NAMESPACE_DNS,filepath))
 
 def uncpath(filepath):
@@ -398,13 +398,11 @@ def uncpath(filepath):
         if hasattr(filepath,'__iter__'): #Is iterable
             uncpath=[]
             for path in filepath:
-                #try:    uncpath.append(normcase(win32wnet.WNetGetUniversalName(path)))
-                #except: uncpath.append(normcase(path)) #Local path
-                try:    uncpath.append(win32wnet.WNetGetUniversalName(path))
-                except: uncpath.append(path) #Local path
+                try:    uncpath.append(normcase(win32wnet.WNetGetUniversalName(path)))
+                except: uncpath.append(normcase(path)) #Local path
+                #try:    uncpath.append(win32wnet.WNetGetUniversalName(path))
+                #except: uncpath.append(path) #Local path
         else:
-            #try:    uncpath=win32wnet.WNetGetUniversalName(filepath)
-            #except: uncpath=filepath #Local path
             try:    uncpath=win32wnet.WNetGetUniversalName(filepath)
             except: uncpath=filepath #Local path
     else:uncpath=filepath
@@ -546,8 +544,8 @@ class rglob:
                 self.index = self.index + 1
             except IndexError:
                 # pop next directory from stack
-                #self.directory = normcase(self.stack.pop())
-                self.directory = self.stack.pop()
+                self.directory = normcase(self.stack.pop())
+                #self.directory = self.stack.pop()
                 try:
                     self.files = os.listdir(self.directory)
                     self.index = 0
@@ -637,6 +635,7 @@ class ExcelWriter:
 
         if sort:fields.sort()
         self._file=xlsx
+        self._tempfile=""
         self._fields=fields
         self._sheets=[]
         self._rows=1   #row index
@@ -645,7 +644,9 @@ class ExcelWriter:
         self._heading = openpyxl.styles.Style(font=openpyxl.styles.Font(bold=True))
 
         if update and os.path.exists(xlsx):
-            self._wb=openpyxl.load_workbook(xlsx)
+            self._tempfile=os.path.join(tempfile.mkdtemp(),os.path.basename(xlsx))
+            shutil.copy(xlsx, self._tempfile)
+            self._wb=openpyxl.load_workbook(self._tempfile)
             self._sheets=self._wb.worksheets
             self._wb.encoding=encoding #
             self._ws=self._sheets[0]
@@ -664,7 +665,7 @@ class ExcelWriter:
                         #row[col+i].value=field
                         ws.cell(row=1, column=col+i+1).value = field
                 fields+=extrafields
-                self._wb.save(self._file)
+                #self._wb.save(self._file)
             self._fields=fields
 
         else:
@@ -751,7 +752,7 @@ class ExcelWriter:
 
         if dirty:
             self._rows+=1
-            self._wb.save(self._file)
+            #self._wb.save(self._file)
 
     def UpdateRecord(self,data,row):
         ''' Update an existing record
@@ -783,14 +784,28 @@ class ExcelWriter:
                     self._writevalue(r+1, self._cols[field][0],data[field], ws)
                     dirty=True
 
-        if dirty:self._wb.save(self._file)
-
-    def __del__(self):
-        try:
+        #if dirty:self._wb.save(self._file)
+    def save(self):
+        if os.path.exists(self._tempfile):
+            self._wb.save(self._tempfile)
+        else:
             self._wb.save(self._file)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_traceback):
+        #try:
+        if exc_type is None: #Don't save if we've crashed.
+            self.save()
             del self._ws
             del self._wb
-        except:pass
+            if os.path.exists(self._tempfile):
+                print self._tempfile
+                shutil.copy(self._tempfile, self._file)
+                os.unlink(self._tempfile)
+                os.rmdir(os.path.dirname(self._tempfile))
+        #except:pass
 
 
 class ExcelReader:
@@ -803,26 +818,43 @@ class ExcelReader:
             @type    returntype: C{type}
             @param   returntype: dict or list
         '''
-        self._wb=openpyxl.load_workbook(xlsx)
+        self._wb=openpyxl.load_workbook(xlsx, use_iterators = True)
         self._returntype=returntype
         self._sheets=self._wb.worksheets
+        self._headers=[]
+        self._rows=[]
         self.records=0-len(self._sheets)
-        self.headers=[encode(c.value) for c in self._sheets[0].rows[0]]
         for ws in self._sheets:
             self.records+=ws.max_row
+            rows=ws.iter_rows()
+            row=rows.next()
+            headers=[encode(c.value) for c in row]
+            self._rows.append(rows)
+            self._headers.append(headers)
 
     def __getitem__(self, index):
         i=index/1048575
         j=index-i*1048575
         ws=self._sheets[i]
-        headers=[encode(c.value) for c in ws.rows[0]]
-        #cells=[encode(c.value) for c in ws.rows[j+1]]
-        #little hack to work around some \r characters in cells
-        #TODO will require a better way if this happens for more characters...
-        cells=[str(encode(c.value)).replace('_x000D_','') for c in ws.rows[j+1]]
+        headers=self._headers[i]
+        rows=self._rows[i]
+        row=rows.next()
+        ### Little kludge for port to openpyxl
+        cells=[str(encode(c.value)).replace('_x000D_','') for c in row]
+        #cells=[str(encode(c.value)) for c in row]
+        ###
         if self._returntype is dict:
             return dict(zip(headers,cells))
         else:
             return zip(headers,cells)
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self):
+        del self._headers
+        del self._rows
+        del self._sheets
+        del self._wb
 
 #}

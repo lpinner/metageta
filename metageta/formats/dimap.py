@@ -31,7 +31,7 @@ B{Format specification}:
 #format_regex=[r'metadata\.dim$'] #DIMAP
 #format_regex=[r'\.dim$'] #DIMAP any *.dim
 format_regex=[r'(?<!vol_list)\.dim$',       #DIMAP - any *.dim (excluding vol_list.dim)
-              r'dim_phr.*\.xml']          #Pleiades image metadata not yet implemented, see
+              r'dim_phr.*\.xml$']          #Pleiades image metadata not yet implemented, see
                                           #http://trac.osgeo.org/gdal/ticket/5018 and
                                           #http://trac.osgeo.org/gdal/ticket/4826
 
@@ -61,7 +61,10 @@ gdal.AllRegister()
 class Dataset(__default__.Dataset):
     '''Subclass of __default__.Dataset class so we get a load of metadata populated automatically'''
     def __init__(self,f):
-        if f[:4]=='/vsi':raise NotImplementedError
+        if f[:4]=='/vsi':
+            import warnings
+            warnings.warn('DIMAP files in zip/tar archives are not supported')
+            raise NotImplementedError
         '''Open the dataset'''
         if not f:f=self.fileinfo['filepath']
         self.filelist=[r for r in glob.glob('%s/*'%os.path.dirname(f))]
@@ -76,6 +79,8 @@ class Dataset(__default__.Dataset):
 
         self.dimap_version=map(int, self._dom.xpath('string(//*/METADATA_FORMAT/@version)').split('.'))
         if self.dimap_version[0]>2:
+            import warnings
+            warnings.warn('DIMAP V%s is not supported'%self.dimap_version[0])
             raise NotImplementedError
 
     def __getmetadata__(self,f=None):
@@ -148,61 +153,74 @@ class Dataset(__default__.Dataset):
         self.metadata['lineage']='\n'.join(lineage)
 
     def v2(self,f=None):
+        if not f:f=self.fileinfo['filepath']
         dom = self._dom
         self.metadata['sceneid'] = dom.xpath('string(/Dimap_Document/Dataset_Identification/DATASET_NAME)')
-        ncols=dom.xpath('number(//*/NCOLS)')
-        nrows=dom.xpath('number(//*/NROWS)')
-        nbands=dom.xpath('number(//*/NBANDS)')
-        nbits=dom.xpath('number(//*/NBITS)')
-        if nbits==16:datatype='UInt16'
-        else:datatype='Byte'
-        if nbands==1:
-            bands=[1]
-        else:
-            bands=[int(b[1:]) for b in [dom.xpath('string(//*/RED_CHANNEL)'),
-                                    dom.xpath('string(//*/GREEN_CHANNEL)'),
-                                    dom.xpath('string(//*/BLUE_CHANNEL)')]]
-        self.metadata['bands']=','.join(map(str,bands))
+        try:
+            self._gdaldataset=geometry.OpenDataset(f)
+            __default__.Dataset.__getmetadata__(self) #autopopulate basic metadata
+        except:
+            ncols=dom.xpath('number(//*/NCOLS)')
+            nrows=dom.xpath('number(//*/NROWS)')
+            nbands=dom.xpath('number(//*/NBANDS)')
+            nbits=dom.xpath('number(//*/NBITS)')
+            if nbits==16:datatype='UInt16'
+            else:datatype='Byte'
+            if nbands==1:
+                bands=[1]
+            else:
+                bands=[int(b[1:]) for b in [dom.xpath('string(//*/RED_CHANNEL)'),
+                                        dom.xpath('string(//*/GREEN_CHANNEL)'),
+                                        dom.xpath('string(//*/BLUE_CHANNEL)')]]
+            self.metadata['bands']=','.join(map(str,bands))
 
-        if dom.xpath('string(//*/DATA_FILE_TILES)')=='true':
-            import math
-            ntiles=dom.xpath('number(//*/NTILES)')
-            ntiles_x=dom.xpath('number(//*/NTILES_COUNT/@ntiles_x)')
-            ntiles_y=dom.xpath('number(//*/NTILES_COUNT/@ntiles_y)')
-            tile_cols=math.ceil(ncols/ntiles_x)
-            last_tile_cols=tile_cols-(ntiles_x*tile_cols-ncols)
-            tile_rows=math.ceil(ncols/ntiles_x)
-            last_tile_rows=tile_rows-(ntiles_y*tile_row-nrows)
-            srcrects,dstrects=[],[]
-            files=[]
-            for df in dom.xpath('//*/Data_File'):
-                col=df.xpath('number(@tile_C)')
-                row=df.xpath('number(@tile_R)')
-                datafile=os.path.join(os.path.dirname(f),df.xpath('string(DATA_FILE_PATH/@href)'))
-                exists,datafile=utilities.exists(datafile,True) #Work around reading images with lowercase filenames when the DATA_FILE_PATH is uppercase
-                                                                # - eg samba filesystems which get converted to lowercase
+            if dom.xpath('string(//*/DATA_FILE_TILES)')=='true':
+                import math
+                ntiles=dom.xpath('number(//*/NTILES)')
+                if dom.xpath('boolean(//*/NTILES_COUNT/@ntiles_x)'):
+                    ntiles_x=dom.xpath('number(//*/NTILES_COUNT/@ntiles_x)')
+                    ntiles_y=dom.xpath('number(//*/NTILES_COUNT/@ntiles_y)')
+                elif dom.xpath('boolean(//*/NTILES_COUNT/@ntiles_C)'):
+                    ntiles_x=dom.xpath('number(//*/NTILES_COUNT/@ntiles_C)')
+                    ntiles_y=dom.xpath('number(//*/NTILES_COUNT/@ntiles_R)')
 
-                srcrect=[0,0,tile_cols,tile_rows]
-                dstrect=[(ntiles_x-1)*tile_cols,(ntiles_y-1)*tile_rows,tile_cols,tile_rows]
-                if col==ntiles_x:#last col
-                    srcrect[2]=last_tile_cols
-                    dstrect[2]=last_tile_cols
-                if row==ntiles_y:#last row
-                    srcrect[3]=last_tile_rows
-                    dstrect[3]=last_tile_rows
+                tile_cols=math.ceil(ncols/ntiles_x)
+                last_tile_cols=tile_cols-(ntiles_x*tile_cols-ncols)
+                tile_rows=math.ceil(nrows/ntiles_y)
+                last_tile_rows=tile_rows-(ntiles_y*tile_rows-nrows)
+                srcrects,dstrects=[],[]
+                files=[]
+                for df in dom.xpath('//*/Data_File'):
+                    col=df.xpath('number(@tile_C)')
+                    row=df.xpath('number(@tile_R)')
+                    datafile=os.path.join(os.path.dirname(f),df.xpath('string(DATA_FILE_PATH/@href)'))
+                    exists,datafile=utilities.exists(datafile,True) #Work around reading images with lowercase filenames when the DATA_FILE_PATH is uppercase
+                                                                    # - eg samba filesystems which get converted to lowercase
+                    if (row,col)==(1,1):r1c1=datafile
+                    srcrect=[0,0,tile_cols,tile_rows]
+                    dstrect=[(ntiles_x-1)*tile_cols,(ntiles_y-1)*tile_rows,tile_cols,tile_rows]
+                    if col==ntiles_x:#last col
+                        srcrect[2]=last_tile_cols
+                        dstrect[2]=last_tile_cols
+                    if row==ntiles_y:#last row
+                        srcrect[3]=last_tile_rows
+                        dstrect[3]=last_tile_rows
 
-                files.append(datafile)
-                srcrects.append(srcrect)
-                dstrects.append(dstrect)
+                    files.append(datafile)
+                    srcrects.append(srcrect)
+                    dstrects.append(dstrect)
 
-            self._gdaldataset=geometry.OpenDataset(geometry.CreateMosaicedVRT(files,bands,srcrects,dstrects,ncols,nrows,datatype))
+                self._gdaldataset=geometry.OpenDataset(geometry.CreateMosaicedVRT(files,bands,srcrects,dstrects,ncols,nrows,datatype))
+                ds=geometry.OpenDataset(r1c1)
+                self._gdaldataset.SetGeoTransform(ds.GetGeoTransform())
+                self._gdaldataset.SetProjection(ds.GetProjection())
 
-        else:
-            datafile=os.path.join(os.path.dirname(f),dom.xpath('string(//*/DATA_FILE_PATH/@href)'))
-            exists,datafile=utilities.exists(datafile,True)
-            self._gdaldataset=geometry.OpenDataset(datafile)
+            else:
+                datafile=os.path.join(os.path.dirname(f),dom.xpath('string(//*/DATA_FILE_PATH/@href)'))
+                exists,datafile=utilities.exists(datafile,True)
+                self._gdaldataset=geometry.OpenDataset(datafile)
 
-        __default__.Dataset.__getmetadata__(self)
+            __default__.Dataset.__getmetadata__(self)
 
         dates={}
         for src in dom.xpath('//Source_Identification'):

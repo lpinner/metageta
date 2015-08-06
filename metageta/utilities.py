@@ -636,10 +636,11 @@ class ExcelWriter:
         if sort:fields.sort()
         self._file=xlsx
         self._tempfile=""
-        self._fields=fields
         self._sheets=[]
         self._rows=1   #row index
         self._cols={}  #dict of col indices
+        if isinstance(fields[0], (list,tuple)):fields=fields[0]
+        self._fields=fields
 
         self._heading = openpyxl.styles.Style(font=openpyxl.styles.Font(bold=True))
 
@@ -720,7 +721,7 @@ class ExcelWriter:
         if isinstance(value,str):value=value.decode(encoding)
         if isinstance(value,basestring) and  len(value) > 32767:
             value=value[:32767]
-            warnings.warn('The "%s" field is longer than 32767 characters and has been truncated.'%self._fields[field])
+            warnings.warn('The "%s" field is longer than 32767 characters and has been truncated.'%self._fields[col])
         ws.cell(row=row+1, column=col+1).value = value
 
     def WriteRecord(self,data):
@@ -831,6 +832,7 @@ class ExcelReader:
             headers=[encode(c.value) for c in row]
             self._rows.append(rows)
             self._headers.append(headers)
+        self.headers=self._headers[0]
 
     def __getitem__(self, index):
         i=index/1048575

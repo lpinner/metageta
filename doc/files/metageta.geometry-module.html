@@ -143,24 +143,6 @@
       
     </td>
   </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type"><code>(dict,list)</code></span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="metageta.geometry-module.html#ParseGDALinfo" class="summary-sig-name">ParseGDALinfo</a>(<span class="summary-sig-arg">filepath</span>)</span><br />
-      Very basic gdalinfo parser, does not include colo(u)r tables, raster 
-      attribute tables.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="metageta.geometry-pysrc.html#ParseGDALinfo">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
 <tr bgcolor="#e8f0f8" >
   <th colspan="2" class="group-header"
     >&nbsp;&nbsp;&nbsp;&nbsp;Coordinate Utilities</th></tr>
@@ -383,6 +365,44 @@
       Convert pixel to map coordinates</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="metageta.geometry-pysrc.html#PixelToMap">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr bgcolor="#e8f0f8" >
+  <th colspan="2" class="group-header"
+    >&nbsp;&nbsp;&nbsp;&nbsp;VSIMEM utilities</th></tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="metageta.geometry-module.html#read_vsimem" class="summary-sig-name">read_vsimem</a>(<span class="summary-sig-arg">fn</span>)</span><br />
+      Read GDAL vsimem files</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="metageta.geometry-pysrc.html#read_vsimem">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="metageta.geometry-module.html#write_vsimem" class="summary-sig-name">write_vsimem</a>(<span class="summary-sig-arg">fn</span>,
+        <span class="summary-sig-arg">data</span>)</span><br />
+      Write GDAL vsimem files</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="metageta.geometry-pysrc.html#write_vsimem">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -649,32 +669,6 @@
     </ul></dd>
     <dt>Returns: <code>osgeo.gdal.Dataset</code></dt>
         <dd>GDAL Dataset</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="ParseGDALinfo"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">ParseGDALinfo</span>(<span class="sig-arg">filepath</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="metageta.geometry-pysrc.html#ParseGDALinfo">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Very basic gdalinfo parser, does not include colo(u)r tables, raster 
-  attribute tables.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>filepath</code></strong> (<code>str</code>) - path to dataset</li>
-    </ul></dd>
-    <dt>Returns: <code>(dict,list)</code></dt>
-        <dd>GDAL info,extent coordinates</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1067,6 +1061,58 @@
         0,0 is UL corner of UL pixel, 0.5,0.5 is centre of UL pixel
       </p>
 </div></td></tr></table>
+</div>
+<a name="read_vsimem"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">read_vsimem</span>(<span class="sig-arg">fn</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="metageta.geometry-pysrc.html#read_vsimem">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Read GDAL vsimem files</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>fn</code></strong> (<code>str</code>) - Filename</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>File contents</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="write_vsimem"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">write_vsimem</span>(<span class="sig-arg">fn</span>,
+        <span class="sig-arg">data</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="metageta.geometry-pysrc.html#write_vsimem">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Write GDAL vsimem files</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>fn</code></strong> (<code>str</code>) - Filename</li>
+        <li><strong class="pname"><code>data</code></strong> - Data to write</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>0 on success or -1 on failure.</dd>
+  </dl>
+</td></tr></table>
 </div>
 <a name="CreateVRTCopy"></a>
 <div>

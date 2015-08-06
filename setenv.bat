@@ -15,6 +15,8 @@ SET GEOTIFF_CSV=%GDAL_DATA%
 SET PROJ_LIB=%GDAL_ROOT%\share\proj
 SET GDAL_DRIVER_PATH=%GDAL_ROOT%\bin\plugins
 
+set PYTHONNOUSERSITE=1
+
 SET PYTHONHOME=%TOPDIR%\bin\Python27
 SET PYTHONPATH=%PYTHONHOME%\Lib\lib-tk
 SET PYTHONPATH=%PYTHONHOME%\Lib\site-packages\pywin32_system32;%PYTHONHOME%\Lib\site-packages\win32;%PYTHONHOME%\Lib\site-packages\win32\lib;%PYTHONHOME%\Lib\site-packages\pythonwin;%PYTHONPATH%

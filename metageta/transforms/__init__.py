@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2013 Australian Government, Department of the Environment
+# Copyright (c) 2015 Australian Government, Department of the Environment
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -266,10 +266,6 @@ for _key in ['name','organization','siteId']:
 class Transform(object):
     '''
     Transform a metadata record to XML using an XSL stylesheet
-
-    @param inxmlstring: metadata record in XML format.
-    @param transform: may be one of the pre-defined XSL transforms or a path to a custom XSL file.
-    @param outxmlfile: File to write transformed metadata to.
     '''
     def __init__(self,transform):
         '''

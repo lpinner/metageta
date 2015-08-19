@@ -23,17 +23,15 @@ Download [http://code.google.com/p/metageta/downloads/list] the source package o
 
 You will need the following libraries:
 
-  * Python 2.5 or 2.6 and the following non-standard Python libraries: (if you wish to use Python 3.0+, you will need to port the application)
-    * epydoc [http://epydoc.sourceforge.net]
-    * 4Suite XML [http://4suite.org]
-    * xlutils 1.41+ [http://pypi.python.org/pypi/xlutils ]
-    * xlrd 0.71+ [http://pypi.python.org/pypi/xlrd]
-    * xlwt 0.72+ [http://pypi.python.org/pypi/xlwt]
-    * pywin32 [http://pywin32.sourceforge.net] (obviously only on Windows)
+  * Python 2.7 and the following non-standard Python libraries: (if you wish to use Python 3+, you will need to port the application)
+    * epydoc
+    * lxml
+    * openpyxl
+    * pywin32 (obviously only on Windows)
     * GDAL python bindings (see below)
 
   * GDAL 1.6+ http://www.gdal.org
-    * On Windows, use OSGeo4W [http://trac.osgeo.org/osgeo4w] or the prebuilt binaries at http://vbkto.dyndns.org/sdk to get GDAL 1.6+ and the appropriate python bindings (Don't use FWTools, it only supports python 2.3.)
+    * On Windows, use Christoph Gohlke's wheels [http://www.lfd.uci.edu/~gohlke/pythonlibs], OSGeo4W [http://trac.osgeo.org/osgeo4w] or the prebuilt binaries at http://vbkto.dyndns.org/sdk to get GDAL 1.6+ and the appropriate python bindings (Don't use FWTools, it only supports python 2.3.)
     * On Ubuntu, try the UbuntuGIS [https://wiki.ubuntu.com/UbuntuGIS] packages (or build from source if you prefer)
     * If you want to read ECW/JPEG2000/MrSID files, you'll need to install and link to the appropriate SDK (if building from source) or the OSGeo4W plugins gdal-mrsid [http://trac.osgeo.org/osgeo4w/wiki/pkg-gdal-mrsid] & gdal-ecw [http://trac.osgeo.org/osgeo4w/wiki/pkg-gdal-ecw]) or the see the UbuntuGIS scripts - gdal-mrsid-build gdal-ecw-build (located in /usr/bin by default if installed from the repos) and see - http://lists.osgeo.org/pipermail/ubuntu/2009-June/000054.html and http://trac.osgeo.org/ubuntugis/wiki/TutorialMrSid
     * You will also have to download and build appropriate libraries for other non-standard GDAL formats. 

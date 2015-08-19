@@ -122,7 +122,8 @@ class Dataset(object):
 
         #Check for pre-defined stretch
         if self._stretch:
-            stretch_type,rgb_bands,stretch_args=self._stretch
+            try:stretch_type,rgb_bands,stretch_args=self._stretch
+            except ValueError:stretch_type,rgb_bands=self._stretch
         else:
             #Check for pre-defined rgb bands, if 8 bit - assume they don't need stretching
             for i in range(1,nbands+1):

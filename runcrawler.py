@@ -419,5 +419,6 @@ if __name__ == '__main__':
         main(optvals.dir,xlsx,logger,optvals.med,optvals.update,optvals.ovs,optvals.recurse,optvals.archive)
 
     if logger:
+        logger.debug('Shutting down')
         logger.shutdown()
         del logger

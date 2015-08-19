@@ -89,30 +89,9 @@ def getoverview(ds,outfile,width,format,bands,stretch_type,*stretch_args):
     vrtpy=rows/float(vrtrows)*gt[5]
     vrtgt=(gt[0],vrtpx,gt[2],gt[3],gt[4],vrtpy)
 
-    vrtdrv=gdal.GetDriverByName('VRT')
-    #tempvrts={} #dict with keys=file descriptor and values=[filename,GDALDataset]
-
-    #Below is a bit of a kludge to handle creating a VRT that is based on an in-memory vrt file
-    #drv=ds.GetDriver().ShortName
-    #desc=ds.GetDescription()
-    #if drv == 'VRT':
-    #    if not desc or desc[0] == '<':# input path is an in-memory vrt file
-    #        vrtfd,vrtfn=tempfile.mkstemp('.vrt')
-    #        ds=vrtdrv.CreateCopy(vrtfn,ds)
-    #        tempvrts[vrtfd]=[vrtfn,ds]
-
-    #if stretch_type != 'NONE':
-    #    tmpxml=stretch('NONE',vrtcols,vrtrows,ds,bands)
-    #    vrtfd,vrtfn=tempfile.mkstemp('.vrt')
-    #    ds=vrtdrv.CreateCopy(vrtfn,geometry.OpenDataset(tmpxml))
-    #    tempvrts[vrtfd]=[vrtfn,ds]
-
-    #vrtxml=stretch(stretch_type,vrtcols,vrtrows,ds,bands,*stretch_args)
-    #vrtfn='/vsimem/%s.vrt'%tempfile._RandomNameSequence().next()
-    #geometry.write_vsimem(vrtfn,vrtxml)
     vrtfn=stretch(stretch_type,vrtcols,vrtrows,ds,bands,*stretch_args)
     gdal.UseExceptions()
-    vrtds=gdal.OpenShared(vrtfn, gdal.GA_ReadOnly) #geometry.OpenDataset(vrtfn)
+    vrtds=gdal.Open(vrtfn, gdal.GA_ReadOnly)
 
     vrtds.SetGeoTransform(vrtgt)
     if outfile:
@@ -128,20 +107,13 @@ def getoverview(ds,outfile,width,format,bands,stretch_type,*stretch_args):
 
         if not cpds:raise geometry.GDALError, 'Unable to generate overview image.'
     else:
-        #fd,fn=tempfile.mkstemp(suffix='.'+format.lower(), prefix='getoverviewtempimage')
         fn='/vsimem/%s.%s'%(tempfile._RandomNameSequence().next(),format.lower())
         cpds=ovdriver.CreateCopy(fn, vrtds)
         if not cpds:raise geometry.GDALError, 'Unable to generate overview image.'
 
-        #outfile=os.fdopen(fd).read()
-        #os.unlink(fn)
         outfile=read_vsimem(fn)
         gdal.Unlink(fn)
-    #for vrt in tempvrts:
-    #    tempvrts[vrt][1]=None
-    #    os.close(vrt)
-    #    del tempvrts[vrt][1]
-    #    os.unlink(tempvrts[vrt][0])
+
     return outfile
 #========================================================================================================
 #Stretch algorithms

@@ -104,7 +104,6 @@ class ProgressLogger(logging.Logger):
 
         Should be called at application exit.
         '''
-        self.debug('Shutting down')
         self.logging=False
         for h in self.handlers:
             try:

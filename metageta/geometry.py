@@ -549,6 +549,7 @@ def write_vsimem(fn,data):
         @param data: Data to write
         @return:   0 on success or -1 on failure.
     '''
+    #gdal.FileFromMemBuffer(vrtfn,'\n'.join(vrt))
     vsifile = gdal.VSIFOpenL(fn,'w')
     size = len(data)
     gdal.VSIFWriteL(data, 1, size, vsifile)
@@ -828,7 +829,6 @@ def CreateCustomVRT(vrtxml,vrtcols,vrtrows):
         vrt.append('<VRTDataset rasterXSize="%s" rasterYSize="%s">' % (vrtcols,vrtrows))
         vrt.append('%s' % vrtxml)
         vrt.append('</VRTDataset>')
-        #return '\n'.join(vrt)
         vrtfn='/vsimem/%s.vrt'%tempfile._RandomNameSequence().next()
         write_vsimem(vrtfn,'\n'.join(vrt))
         return vrtfn

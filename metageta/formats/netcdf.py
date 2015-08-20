@@ -59,7 +59,7 @@ class Dataset(__default__.Dataset):
         ncmd=nc.GetMetadata()
 
         sds=nc.GetSubDatasets()
-        gdal_version=''.join([c for c in gdal.__version__ if c in '1234567890.'])
+        #gdal_version=''.join([c for c in gdal.__version__ if c in '1234567890.'])
         gdal_version=[int(c) for c in gdal_version.split('.')]
 
         if sds: #Use the SubDataset with the most cols*rows

@@ -33,27 +33,46 @@ import __default__
 # import other modules
 import sys, os,glob
 from metageta.overviews import GetDataTypeRange
+from metageta.geometry import read_vsimem
 from osgeo import gdal
 
 class Dataset(__default__.Dataset): 
     '''Subclass of __default__.Dataset class so we get a load of metadata populated automatically'''
     def __init__(self,f=None):
         if not f:f=self.fileinfo['filepath']
-        if f[:4]=='/vsi':raise NotImplementedError
-        
-        lin=open(f).readline().strip() #read first line, is it an ENVI format hdr...?
+
+        #read first line, is it an ENVI format hdr...?
+        if f[:4]=='/vsi':
+            if [int(v) for v in gdal.__version__.split('.')] < [1,7,0]:raise NotImplementedError
+            lin = read_vsimem(f).splitlines()[0]
+        else:
+            lin=open(f).readline().strip()
         if lin != 'ENVI':raise NotImplementedError
         
         dat=os.path.splitext(f)[0]
         self._datafile=''
-        if os.path.exists(dat):self._datafile=dat
+        dirname=os.path.dirname(dat)
+        files = gdal.ReadDir(dirname)
+        if os.path.basename(dat) in files:self._datafile=dat
         else:  #Handle ENVI files with _any_ extension
-            for f in glob.glob(dat+'.*'):
-                ds=gdal.Open(f)
-                if ds and ds.GetDriver().ShortName:
-                    self._datafile=f
-                    break
-                del ds
+            for f in files:
+                f = os.path.join(dirname,f)
+                try:
+                    ds=gdal.Open(f)
+                    if ds.GetDriver().ShortName.upper() == 'ENVI':
+                        self._datafile=f
+                        break
+                    del ds
+                except:
+                    continue
+        # if os.path.exists(dat):self._datafile=dat
+        # else:  #Handle ENVI files with _any_ extension
+        #     for f in glob.glob(dat+'.*'):
+        #         ds=gdal.Open(f)
+        #         if ds and ds.GetDriver().ShortName:
+        #             self._datafile=f
+        #             break
+        #         del ds
 
         if not self._datafile: 
             raise NotImplementedError #This error gets ignored in __init__.Open()

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2015 Australian Government, Department of the Environment
+# Copyright (c) 2013 Australian Government, Department of the Environment
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -557,7 +557,10 @@ class rglob:
                         except:pass
             else:
                 # got a filename
-                fullname = os.path.join(self.directory, file)
+                if file[:4]=='/vsi':
+                    fullname = file
+                else:
+                    fullname = os.path.join(self.directory, file)
                 try:islink=os.path.islink(fullname)
                 except:islink=False
                 try:isdir=os.path.isdir(fullname) and not islink

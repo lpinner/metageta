@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2015 Australian Government, Department of the Environment
+# Copyright (c) 2013 Australian Government, Department of the Environment
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -749,7 +749,8 @@ def ExpandedColourLUT(lut,rb):
     return tbl
 ExpandedColorLUT=ExpandedColourLUT #Synonym for the norteamericanos
 #Workaround for missing values http://trac.osgeo.org/gdal/ticket/3253
-if int(gdal.VersionInfo()[0:2]) < 17: #Missing values fixed in 1.7+
+#if int(gdal.VersionInfo()[0:2]) < 17: #Missing values fixed in 1.7+
+if [int(v) for v in gdal.__version__.split('.')] < [1,7,0]: #Missing values fixed in 1.7+
     ColourLUT = ExpandedColourLUT
     ColorLUT  = ExpandedColorLUT
 

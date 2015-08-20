@@ -1,0 +1,40 @@
+#----------------------------------------------------
+# Files/dirs to exclude
+# Only the * wildcard seems to be supported by NSIS,
+# regex and *nix shell-style wildcards are not.
+# e.g *.py[co] will not work.
+#
+# NOTE! Variables are limited to 1024 characters.
+# and all excluded files are considered a single variable
+# 1024 char limit also includes the "/x " that we prepend to each file
+# Workaround:See http://nsis.sourceforge.net/Docs/Chapter4.html#4.2
+# or look into getting NSIS to read directly from this file...
+#
+#----------------------------------------------------
+.svn
+*.chm
+*.pyc
+*.pyo
+*.sh
+*.zip
+docgen.*
+epydoc
+pythonwin
+pyscripter*
+gdallocationinfo.exe
+gdalsrsinfo.exe
+gdal_translate.exe
+setup.py
+tag_new_release.bat
+
+#ECW/JP2/MrSID distributed separately
+gdal_ECW_JP2ECW.dll*
+NCSEcw.dll
+*-eula.txt
+ECW5License.rtf
+ecw*.py
+jp2.py
+lti_*.dll
+tbb.dll
+gdal_MrSID.dll
+MRSIDLicense.rtf

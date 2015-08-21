@@ -39,7 +39,7 @@ args.append('--name=MetaGETA (Metadata Gathering, Extraction and Transformation)
 #args.append('--css=black')     # White on black, with blue highlights.
 #args.append('--css=grayscale') # Grayscale black on white.
 #args.append('--css=none') # No stylesheet
-args.append('--css=%s'%os.path.join(curdir,'epydoc.css')) # ?.
+args.append('--css=%s'%os.path.join(curdir,'docgen.css')) # ?.
 args.append('--output=%s'%os.path.join(curdir,'doc','files'))
 args.append('--html')
 args.append('--show-private')

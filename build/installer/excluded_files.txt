@@ -12,13 +12,15 @@
 #
 #----------------------------------------------------
 .svn
+.idea
+build
 *.chm
 *.pyc
 *.pyo
 *.sh
 *.zip
 docgen.*
-epydoc
+docgen.css
 pythonwin
 pyscripter*
 gdallocationinfo.exe

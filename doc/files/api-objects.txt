@@ -48,6 +48,7 @@ metageta.formats.ecwp.format_regex	metageta.formats.ecwp-module.html#format_rege
 metageta.formats.envi	metageta.formats.envi-module.html
 metageta.formats.envi.GetDataTypeRange	metageta.overviews-module.html#GetDataTypeRange
 metageta.formats.envi.__package__	metageta.formats.envi-module.html#__package__
+metageta.formats.envi.read_vsimem	metageta.geometry-module.html#read_vsimem
 metageta.formats.envi.format_regex	metageta.formats.envi-module.html#format_regex
 metageta.formats.esribil	metageta.formats.esribil-module.html
 metageta.formats.esribil.__package__	metageta.formats.esribil-module.html#__package__
@@ -129,6 +130,7 @@ metageta.overviews.stretch	metageta.overviews-module.html#stretch
 metageta.overviews.GetDataTypeRange	metageta.overviews-module.html#GetDataTypeRange
 metageta.overviews.__package__	metageta.overviews-module.html#__package__
 metageta.overviews.resize	metageta.overviews-module.html#resize
+metageta.overviews.v	metageta.overviews-module.html#v
 metageta.overviews._stretch_COLOURTABLELUT	metageta.overviews-module.html#_stretch_COLOURTABLELUT
 metageta.overviews._stretch_NONE	metageta.overviews-module.html#_stretch_NONE
 metageta.overviews._stretch_PERCENT	metageta.overviews-module.html#_stretch_PERCENT

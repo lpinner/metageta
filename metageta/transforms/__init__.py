@@ -187,14 +187,12 @@ Additional metadata elements
        could be documented there instead of above here...
 '''
 from glob import glob as _glob
-from os import path as _path, environ as _env
-import StringIO as _strio
+from os import path as _path
 import time as _time,os as _os,zipfile as _zip,shutil as _sh,sys as _sys,tempfile as _tmp
 if __name__ == '__main__':_sys.exit(0)
 
 from lxml import etree as _etree
-from metageta import utilities  as _utilities, __path__ as _mpath
-#from metageta import
+from metageta import utilities  as _utilities, config as _config
 
 #++++++++++++++++++++++++
 #Public vars
@@ -219,7 +217,7 @@ for _f in _glob(_path.join(__path__[0],'*.xml')):
     transforms[_name]=_desc
 
 #Load config
-config=_etree.parse('%s/config/config.xml'%_mpath[0])
+config=_etree.parse(_config.get_config_file())
 categories={'default':config.xpath('string(/config/geonetwork/categories/@default)'),
              'categories':config.xpath('/config/geonetwork/categories/category/@name')
              }
@@ -355,7 +353,6 @@ def CreateMEF(outdir,xmlfile,uid,overviews=[],cat=categories['default'],ops=oper
 
     xmldir=_path.dirname(xmlfile)
     curdir=_path.abspath(_os.curdir)
-    #mefdir=_path.join(_os.environ['TEMP'],_path.basename(_path.splitext(xmlfile)[0]))
     mefdir=mefdir=_tmp.mkdtemp()
     mefpath='%s.mef'%(_path.join(outdir,_path.basename(_path.splitext(xmlfile)[0])))
     try: #

@@ -24,10 +24,9 @@
 Script to run the MetaGeta Metadata Crawler
 
 Contains code to show GUI to gather input arguments when none are provided
-To run, call the eponymous batch file/shell script which sets the required environment variables
 
 Usage::
-    runcrawler.bat/sh -d dir -x xlsx {-o} {--debug}
+    runcrawler -d dir -x xlsx {-o} {--debug}
 
 @newfield sysarg: Argument, Arguments
 @sysarg: C{-d [dir]}        : Directory to search for imagery
@@ -39,23 +38,21 @@ Usage::
 @sysarg: C{-a, --archive}   : Search compressed archives?
 @sysarg: C{--debug}         : Turn debug output on
 
-@note: See U{Issue 22<http://code.google.com/p/metageta/issues/detail?id=22>}
+@note: See U{Issue 22<https://github.com/lpinner/metageta/issues/22>}
 '''
 
 import sys, os
-import re
 import time
-import tempfile
 import optparse
 
-from . import formats
-from . import geometry
-from . import utilities
-from . import crawler
-from . import overviews
-from . import progresslogger
-from . import icons
-from . import getargs
+from metageta import formats
+from metageta import geometry
+from metageta import utilities
+from metageta import crawler
+from metageta import overviews
+from metageta import progresslogger
+from metageta import icons
+from metageta import getargs
 
 def execute(dir, xlsx, logger, mediaid=None, update=False, getovs=False, recurse=False, archive=False):
 
@@ -328,8 +325,6 @@ def writablecallback(arg):
         return False
 
 def main():
-
-    import optparse
 
     APP='MetaGETA Crawler'
     ICON=icons.app_img

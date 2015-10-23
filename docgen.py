@@ -42,14 +42,12 @@ args.append('--name=MetaGETA (Metadata Gathering, Extraction and Transformation)
 args.append('--css=%s'%os.path.join(curdir,'docgen.css')) # ?.
 args.append('--output=%s'%os.path.join(curdir,'doc','files'))
 args.append('--html')
-args.append('--show-private')
+#args.append('--show-private')
 args.append('--inheritance=grouped')
 args.append('--exclude=.*builtin.*')
 args.append('--exclude=.*Tkinter.*')
+args.append('--exclude=.*appdirs.*')
 #args.append('--no-imports')
-
-args.append('%s'%os.path.join(curdir,'runcrawler.py'))
-args.append('%s'%os.path.join(curdir,'runtransform.py'))
 
 for f in glob.glob('%s'%os.path.join(curdir,'doc','files','*.*')):
     os.unlink(f)

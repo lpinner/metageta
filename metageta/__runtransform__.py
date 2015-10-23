@@ -26,7 +26,6 @@ Metadata Transforms
 Script to run the Metadata Transforms.
 
 Contains code to show GUI to gather input arguments when none are provided.
-To run, call the eponymous batch file which sets the required environment variables.
 
 Usage::
     runtransform.bat -x xlsx -t xsl -d dir
@@ -48,13 +47,14 @@ Usage::
 #Imports
 import os,sys
 import optparse
-from . import utilities
-from . import transforms
-from . import progresslogger
-from . import icons
-from . import getargs
+from metageta import utilities
+from metageta import transforms
+from metageta import progresslogger
+from metageta import icons
+from metageta import getargs
 
-def execute(xlsx,xsl,dir,logger, mef=False,cat='',ops=''):
+
+def execute(xlsx, xsl, dir, logger, mef=False, cat='', ops=''):
     '''
     Run the Metadata Transform
     @type  xlsx: C{str}

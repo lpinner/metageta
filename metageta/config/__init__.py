@@ -39,12 +39,24 @@ def _mkdirs(path):
 
 
 def get_config_dir():
+    """
+        Get the user application config directory, creating it if required.
+
+        @rtype:   C{str}
+        @return:  directory path
+    """
     user_conf_dir = user_config_dir('MetaGETA')
     _mkdirs(user_conf_dir)
     return user_conf_dir
 
 
 def get_config_file():
+    """
+        Get the user application config file, creating it if required.
+
+        @rtype:   C{str}
+        @return:  file path
+    """
     conf_file = 'config.xml'
     default_conf_file = os.path.join(os.path.dirname(__file__), conf_file)
     user_conf_dir = get_config_dir()

@@ -6,7 +6,7 @@ Search for, extract and transform metadata from spatial imagery data.
 MetaGETA is a python application for discovering and extracting metadata from spatial raster datasets (metadata crawler) and transforming it into xml (metadata transformation). A number of generic and specialised imagery formats are supported. The format support has a plugin architecture and more formats can easily be added.
 
 ## News
-06 August 2013 - MetaGETA 1.3.9 has been released! See the Changelog for details.
+**Coming soon**
 
 ## Features
  - Search for supported data formats on your local or network file system;
@@ -20,14 +20,19 @@ MetaGETA is a python application for discovering and extracting metadata from sp
  - Enables flagging of records in MS Excel that should not be included in the transformed xml i.e. maintains a record of but does not create xml metadata for redundant or irrelevant datasets.
 
 ## Installation
+**Coming soon**
+<!--
 User installation:
- ```pip install --user metageta``` 
- ```pip install --user <path_to_downloaded_metageta>.whl```
+
+    pip install --user metageta
+    pip install --user <path_to_downloaded_metageta>.whl
 
 
 System wide installation (requires root/admin/elevated privileges):
  ```pip install metageta``` 
  ```pip install <path_to_downloaded_metageta>.whl```
+
+-->
 
 ### Requirements
 Python 2.7 and the following 3rd party Python libraries: 

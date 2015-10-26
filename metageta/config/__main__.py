@@ -20,7 +20,7 @@
 # THE SOFTWARE.
 
 from metageta.config import get_config_file
-import subprocess, sys
+import os, subprocess, sys
 
 def main():
 

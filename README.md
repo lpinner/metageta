@@ -7,6 +7,10 @@ MetaGETA is a python application for discovering and extracting metadata from sp
 
 ## News
 **Coming soon**
+<!--
+
+-->
+
 
 ## Features
  - Search for supported data formats on your local or network file system;
@@ -14,14 +18,18 @@ MetaGETA is a python application for discovering and extracting metadata from sp
  - Automatically populate an MS Excel (.xlsx) file with the metadata;
  - Automatically generate quicklooks and thumbnails for each metadata record;
  - Manually supplement metadata records with additional metadata fields;
- - Transform the MS Excel file to ANZLIC profile ISO19115/19139 xml as a bundled (includes quicklooks and thumbnails) MEF suitable for upload to Geonetwork;
+ - Transform the MS Excel file to ANZLIC profile ISO19115/19139 xml as a bundled (includes quicklooks and thumbnails)
+   MEF suitable for upload to Geonetwork;
    - Note: You can write your own translation stylesheet to meet the requirements of your target profile.
  - Subsequent metadata crawls may be used to update records when data is added to or removed from the file system;
- - Enables flagging of records in MS Excel that should not be included in the transformed xml i.e. maintains a record of but does not create xml metadata for redundant or irrelevant datasets.
+ - Enables flagging of records in MS Excel that should not be included in the transformed xml i.e. maintains a record
+   of but does not create xml metadata for redundant or irrelevant datasets.
 
 ## Installation
 **Coming soon**
 <!--
+MetaGETA is available on pypi, or from the GitHub [release page](https://github.com/lpinner/metageta/releases).
+
 User installation:
 
     pip install --user metageta
@@ -29,13 +37,18 @@ User installation:
 
 
 System wide installation (requires root/admin/elevated privileges):
- ```pip install metageta``` 
- ```pip install <path_to_downloaded_metageta>.whl```
+
+    pip install metageta
+    pip install <path_to_downloaded_metageta>.whl
+
+Windows users may optionally use the executable installers which also add Start Menu shortcuts for the runcrawler and
+runtransform scripts and a Windows Explorer folder/directory context menu to allow you to right click a folder and run
+the runcrawler script on that folder.
 
 -->
 
 ### Requirements
-Python 2.7 and the following 3rd party Python libraries: 
+[Python 2.7](https://www.python.org/downloads/release) and the following 3rd party Python libraries:
 
  - lxml
  - openpyxl

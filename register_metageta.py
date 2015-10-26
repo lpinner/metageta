@@ -4,8 +4,10 @@ import _winreg as winreg
 
 crawl_script = 'runcrawler.exe'
 trans_script = 'runtransform.exe'
+config_script = 'metagetaconfig.exe'
 crawl_lnk = 'MetaGETA Crawler.lnk'
 trans_lnk = 'MetaGETA Transform.lnk'
+config_lnk = 'MetaGETA Config.lnk'
 
 
 def add_to_start_menu(start_menu, script_dir):
@@ -33,6 +35,13 @@ def add_to_start_menu(start_menu, script_dir):
     tmplnk = os.path.join(tmpdir, trans_lnk)
     startlnk = os.path.join(start_menu, trans_lnk)
     create_shortcut(script, 'MetaGETA Transform', tmplnk, '', '', icon)
+    shutil.move(tmplnk, startlnk)
+    file_created(startlnk)
+
+    script = os.path.join(script_dir, config_script)
+    tmplnk = os.path.join(tmpdir, config_lnk)
+    startlnk = os.path.join(start_menu, config_lnk)
+    create_shortcut(script, 'MetaGETA Config', tmplnk, '', '', icon)
     shutil.move(tmplnk, startlnk)
     file_created(startlnk)
 

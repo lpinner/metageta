@@ -2,6 +2,7 @@
 from setuptools import setup, find_packages
 from codecs import open
 from os import path
+import sys
 
 here = path.abspath(path.dirname(__file__))
 
@@ -46,6 +47,47 @@ setupargs = {
         ],
     }
 }
+
+if 'bdist_wininst' in sys.argv:
+    directory = path.join(path.dirname(__file__), 'build')
+    if path.exists(path.join(directory, 'wininst-9.0.exe')):
+
+        from distutils.command.bdist_wininst import bdist_wininst as _bdist_wininst
+        from sysconfig import get_python_version
+
+        class bdist_wininst(_bdist_wininst):
+            """
+                Patched wininst to allow building from patched wininst-9.0*.exe
+                that can run an uninstall script
+            """
+            def get_exe_bytes (self):
+                cur_version = get_python_version()
+                bv=9.0
+                directory = path.join(path.dirname(__file__), 'build')
+                if self.plat_name != 'win32' and self.plat_name[:3] == 'win':
+                    sfix = self.plat_name[3:]
+                else:
+                    sfix = ''
+
+                filename = path.join(directory, "wininst-%.1f%s.exe" % (bv, sfix))
+                f = open(filename, "rb")
+                try:
+                    return f.read()
+                finally:
+                    f.close()
+        setupargs['cmdclass']={'bdist_wininst':bdist_wininst}
+
+    setupargs['options']={"bdist_wininst":
+                               {"install_script": "register_metageta.py",
+                                "title": "%s %s" % ('MetaGETA', version),
+                                "bitmap": 'metageta.ico',
+                                "user_access_control": "force"}
+                          }
+    setupargs['data_files'] = [('Scripts', ('metageta.ico',),)]
+    setupargs['scripts'] = ['register_metageta.py']
+
+    setup(**setupargs)
+    sys.argv += ['--plat-name', 'win-amd64']
 
 setup(**setupargs)
 

@@ -1,0 +1,2 @@
+Patched wininst*.exes from the [spyderlib project](https://code.google.com/p/spyderlib/wiki/PatchingDistutils).
+Based on patch suggested in python distutils [issue 13276](https://bugs.python.org/issue13276).

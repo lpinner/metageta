@@ -57,8 +57,10 @@ if 'bdist_wininst' in sys.argv:
 
         class bdist_wininst(_bdist_wininst):
             """
-                Patched wininst to allow building from patched wininst-9.0*.exe
-                that can run an uninstall script
+                Monkey-patch bdist_wininst to allow building from non-standard wininst-9.0*.exes.
+
+                Patched wininst*.exes from the spyderlib project that can run an uninstall script.
+                Based on patch suggested in python distutils issue 13276.
             """
             def get_exe_bytes (self):
                 cur_version = get_python_version()

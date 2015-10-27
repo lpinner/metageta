@@ -82,11 +82,11 @@ if 'bdist_wininst' in sys.argv:
     setupargs['options']={"bdist_wininst":
                                {"install_script": "register_metageta.py",
                                 "title": "%s %s" % ('MetaGETA', version),
-                                "bitmap": 'metageta.ico',
+                                "bitmap": 'build/metageta.ico',
                                 "user_access_control": "force"}
                           }
-    setupargs['data_files'] = [('Scripts', ('metageta.ico',),)]
-    setupargs['scripts'] = ['register_metageta.py']
+    setupargs['data_files'] = [('Scripts', ('build/metageta.ico',),)]
+    setupargs['scripts'] = ['build/register_metageta.py']
 
     setup(**setupargs)
     sys.argv += ['--plat-name', 'win-amd64']

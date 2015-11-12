@@ -508,81 +508,52 @@ def writable(filepath):
     except:
         return False
 
-class rglob:
-    '''A recursive/regex enhanced glob
-       adapted from os-path-walk-example-3.py - http://effbot.org/librarybook/os-path.htm
+def rglob(directory, pattern="*", regex=False, regex_flags=0, recurse=True, archive=False):
+    ''' @type    directory: C{str}
+        @param   directory: Path to xls file
+        @type    pattern: C{type}
+        @param   pattern: Regular expression/wildcard pattern to match files against
+        @type    regex: C{boolean}
+        @param   regex: Use regular expression matching (if False, use fnmatch)
+                        See U{http://docs.python.org/library/re.html}
+        @type    regex_flags: C{int}
+        @param   regex_flags: Flags to pass to the regular expression compiler.
+                              See U{http://docs.python.org/library/re.html}
+        @type    recurse: C{boolean}
+        @param   recurse: Recurse into the directory?
+        @type    archive: C{boolean}
+        @param   archive: List files in compressed archives? Archive be supported by the zipfile and tarfile modules. Note: this slows things down considerably....
     '''
-    def __init__(self, directory, pattern="*", regex=False, regex_flags=0, recurse=True, archive=False):
-        ''' @type    directory: C{str}
-            @param   directory: Path to xls file
-            @type    pattern: C{type}
-            @param   pattern: Regular expression/wildcard pattern to match files against
-            @type    regex: C{boolean}
-            @param   regex: Use regular expression matching (if False, use fnmatch)
-                            See U{http://docs.python.org/library/re.html}
-            @type    regex_flags: C{int}
-            @param   regex_flags: Flags to pass to the regular expression compiler.
-                                  See U{http://docs.python.org/library/re.html}
-            @type    recurse: C{boolean}
-            @param   recurse: Recurse into the directory?
-            @type    archive: C{boolean}
-            @param   archive: List files in compressed archives? Archive be supported by the zipfile and tarfile modules. Note: this slows things down considerably....
-        '''
-        self.stack = [directory]
-        self.pattern = pattern
-        self.regex = regex
-        self.recurse = recurse
-        self.archive = archive
-        self.regex_flags = regex_flags
-        self.files = []
-        self.index = 0
+    for root, dirs, files in os.walk(directory):
 
-    def __getitem__(self, index):
-        while 1:
-            try:
-                file = self.files[self.index]
-                self.index = self.index + 1
-            except IndexError:
-                # pop next directory from stack
-                self.directory = normcase(self.stack.pop())
-                #self.directory = self.stack.pop()
-                try:
-                    self.files = os.listdir(self.directory)
-                    self.index = 0
-                except:
-                    if self.archive:
-                        try:
-                            self.files = archivelist(self.directory)
-                            self.index = 0
-                        except:pass
-            else:
-                # got a filename
-                if file[:4]=='/vsi':
-                    fullname = file
-                else:
-                    fullname = os.path.join(self.directory, file)
-                try:islink=os.path.islink(fullname)
-                except:islink=False
-                try:isdir=os.path.isdir(fullname) and not islink
-                except:isdir=False
-                try:isarchive=(not islink and not isdir) and (tarfile.is_tarfile(fullname) or zipfile.is_zipfile(fullname))
+        for f in files:
+            fullname = os.path.join(root, f)
+
+            if archive:
+                try:isarchive=tarfile.is_tarfile(fullname) or zipfile.is_zipfile(fullname)
                 except:isarchive=False
-                try:isfile=((not isdir and not isarchive and not islink) and os.path.isfile(fullname)) or (tarfile.is_tarfile(self.directory) or zipfile.is_zipfile(self.directory))
-                except:isfile=False
 
-                if isdir and self.recurse:
-                    self.stack.append(fullname)
-                elif isarchive and self.archive and os.path.exists(fullname):
-                    self.stack.append(fullname)
-                elif isfile:
-                    if self.regex:
-                        import re
-                        if re.search(self.pattern,file,self.regex_flags):
-                            return fullname
-                    else:
-                        import fnmatch
-                        if fnmatch.fnmatch(file, self.pattern):
-                            return fullname
+                if isarchive:
+                    paths = archivelist(fullname)
+                    for p in paths:
+                        if match(p, pattern, regex, regex_flags):
+                            yield p
+                    continue
+
+            if match(f, pattern, regex, regex_flags):
+                yield fullname
+
+        if not recurse:
+            dirs = []
+            break
+
+def match(f, pattern="*", regex=False, regex_flags=0):
+    if regex:
+        import re
+        return re.search(pattern,f,regex_flags) is not None
+    else:
+        import fnmatch
+        return fnmatch.fnmatch(f, pattern)
 
 
 #========================================================================================================

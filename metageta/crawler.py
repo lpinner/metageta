@@ -47,6 +47,12 @@ class Crawler:
 
             @type  dir: C{str}
             @param dir: The directory to start the metadata crawl.
+            @type    recurse: C{bool}
+            @param   recurse: Recurse into subdirectories?
+            @type    archive: C{bool}
+            @param   archive: Look in zip/gzip archives
+            @type    excludes: C{list}
+            @param   excludes: List of glob style file/directory exclusion pattern/s
         '''
 
         format_regex  = formats.format_regex

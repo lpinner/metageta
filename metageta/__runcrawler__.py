@@ -34,6 +34,7 @@ Usage::
 @sysarg: C{-m, --mediaid}   : CD/DVD media ID, defaults to volume label.
 @sysarg: C{-u, --update}    : Update previous crawl results.
 @sysarg: C{-o, --overviews} : Generate overview (quicklook/thumbnail) images")
+@sysarg: C{-e, --exclude}   : Glob style file/directory exclusion pattern/s
 @sysarg: C{-r, --recurse}   : Search directory recursively?
 @sysarg: C{-a, --archive}   : Search compressed archives?
 @sysarg: C{--debug}         : Turn debug output on

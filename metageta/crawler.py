@@ -42,7 +42,7 @@ import re,os
 
 class Crawler:
     ''' Iterator for metadata crawling'''
-    def __init__(self,dir, recurse=True, archive=False):
+    def __init__(self,dir, recurse=True, archive=False, excludes=[]):
         ''' Iterator for metadata crawling
 
             @type  dir: C{str}
@@ -53,7 +53,8 @@ class Crawler:
         dir=utilities.uncpath(utilities.realpath(utilities.normcase(utilities.encode(dir))))
         #Build a dict of matching files and regexes then sort according to the priority of the regex formats
         fileformats={}
-        for f in utilities.rglob(dir,'|'.join(format_regex), True, re.IGNORECASE, recurse=recurse, archive=archive):
+        for f in utilities.rglob(dir,'|'.join(format_regex), True, re.IGNORECASE,
+                                 recurse=recurse, archive=archive, excludes=excludes):
             #Don't return existing overviews
             if f[-7:] in ('qlk.jpg','thm.jpg'):continue
             #Use utf-8 encoding to fix Issue 20

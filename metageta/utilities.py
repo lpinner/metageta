@@ -26,11 +26,20 @@ Utility helper functions
 #========================================================================================================
 # Imports
 #========================================================================================================
-import openpyxl
-import sys, os.path, os, re, struct, glob, shutil,traceback,time,tempfile,copy
-import warnings
+import os, sys
+import copy
+import fnmatch
+import re
+import shutil
+import struct
 import tarfile,zipfile
+import tempfile
+import time
+import traceback
 import uuid as _uuid
+import warnings
+
+import openpyxl
 
 #========================================================================================================
 # Globals
@@ -508,7 +517,7 @@ def writable(filepath):
     except:
         return False
 
-def rglob(directory, pattern="*", regex=False, regex_flags=0, recurse=True, archive=False):
+def rglob(directory, pattern="*", regex=False, regex_flags=0, recurse=True, archive=False, excludes=[]):
     ''' @type    directory: C{str}
         @param   directory: Path to xls file
         @type    pattern: C{type}
@@ -523,8 +532,14 @@ def rglob(directory, pattern="*", regex=False, regex_flags=0, recurse=True, arch
         @param   recurse: Recurse into the directory?
         @type    archive: C{boolean}
         @param   archive: List files in compressed archives? Archive be supported by the zipfile and tarfile modules. Note: this slows things down considerably....
+        @type    excludes: C{list}
+        @param   excludes: List of glob style file/directory exclusion pattern/s
     '''
     for root, dirs, files in os.walk(directory):
+
+        for exc in excludes:
+            dirs[:] = [d for d in dirs if not fnmatch.fnmatch(d,exc)]
+            files[:] = [f for f in files if not fnmatch.fnmatch(f,exc)]
 
         for f in files:
             fullname = os.path.join(root, f)
@@ -549,10 +564,8 @@ def rglob(directory, pattern="*", regex=False, regex_flags=0, recurse=True, arch
 
 def match(f, pattern="*", regex=False, regex_flags=0):
     if regex:
-        import re
         return re.search(pattern,f,regex_flags) is not None
     else:
-        import fnmatch
         return fnmatch.fnmatch(f, pattern)
 
 

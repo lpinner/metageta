@@ -93,12 +93,18 @@ executables (on Windows, you may need to add your install path to your PATH envi
     usage: runcrawler [arguments]
     Run the metadata crawler. If no arguments are passed, a dialog box pops up.
     Options: 
-	    -h, --help show this help message and exit 
-	    -m media CD/DVD ID 
-	    -x xlsx Output metadata spreadsheet 
-            -o, --overviews Generate overview images 
-            --debug Turn debug output on
-            --keep-alive Reopen the dialog box after the crawl
+        -h, --help            show this help message and exit
+        -d dir                The directory to crawl
+        -r, --recurse         Search directory recursively
+        -a, --archive         Search compressed archives (tar/zip)?
+        -m media              CD/DVD ID
+        -x xlsx               Output metadata spreadsheet
+        -u, --update          Update existing crawl results
+        -o, --overviews       Generate overview images
+        -e excludes, --exclude=excludes
+                              File/directory exclusion pattern (Glob style matching of path/directory basenames)
+        --keep-alive Reopen the dialog box after the crawl
+        --debug               Turn debug output on
 
 The information extracted can then be transformed into XML. Currently only the ANZLIC Profile (ISO 19139)
 metadata schema is implemented for XML transformation, however more stylesheets can be added (PR welcome).

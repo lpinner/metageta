@@ -368,7 +368,7 @@ def main():
     opt=parser.add_option('-e', "--exclude", dest="excludes", metavar="excludes",
                           help='File/directory exclusion',default='')
     excarg=getargs.StringArg(opt,enabled=True)
-    excarg.tooltip='Glob style file/directory exclusion pattern/s i.e *.png somedir? img_[0-9][0-9].tif'
+    excarg.tooltip='Glob style file/directory basename exclusion pattern/s i.e *.png somedir? img_[0-9][0-9].tif'
 
     opt=parser.add_option("--debug", action="store_true", dest="debug",default=False,
                       help="Turn debug output on")

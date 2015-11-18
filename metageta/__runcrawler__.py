@@ -366,8 +366,8 @@ def main():
     ovarg.tooltip='Do you want to generate overview (quicklook and thumbnail) images?'
 
     opt=parser.add_option('-e', "--exclude", dest="excludes", metavar="excludes",
-                          help='File/directory exclusion',default='')
-    excarg=getargs.StringArg(opt,enabled=True)
+                          help='File/directory exclusion pattern',default='')
+    excarg=getargs.StringArg(opt, enabled=True,required=False)
     excarg.tooltip='Glob style file/directory basename exclusion pattern/s i.e *.png somedir? img_[0-9][0-9].tif'
 
     opt=parser.add_option("--debug", action="store_true", dest="debug",default=False,

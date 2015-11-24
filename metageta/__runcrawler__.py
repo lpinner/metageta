@@ -34,6 +34,7 @@ Usage::
 @sysarg: C{-m, --mediaid}   : CD/DVD media ID, defaults to volume label.
 @sysarg: C{-u, --update}    : Update previous crawl results.
 @sysarg: C{-o, --overviews} : Generate overview (quicklook/thumbnail) images")
+@sysarg: C{-e, --exclude}   : Glob style file/directory exclusion pattern/s
 @sysarg: C{-r, --recurse}   : Search directory recursively?
 @sysarg: C{-a, --archive}   : Search compressed archives?
 @sysarg: C{--debug}         : Turn debug output on
@@ -54,7 +55,7 @@ from metageta import progresslogger
 from metageta import icons
 from metageta import getargs
 
-def execute(dir, xlsx, logger, mediaid=None, update=False, getovs=False, recurse=False, archive=False):
+def execute(dir, xlsx, logger, mediaid=None, update=False, getovs=False, recurse=False, archive=False, excludes=''):
 
     """ Run the Metadata Crawler
 
@@ -72,10 +73,13 @@ def execute(dir, xlsx, logger, mediaid=None, update=False, getovs=False, recurse
         @param recurse: Search directory recursively?
         @type  archive: C{boolean}
         @param archive: Search compressed archives (tar/zip)?
+        @type  exclude: C{list}
+        @param archive: Glob style file/directory exclusion pattern/s
         @return:  C{progresslogger.ProgressLogger}
     """
 
     shp=xlsx.replace('.xlsx','.shp')
+    excludes = excludes.split()
 
     format_regex  = formats.format_regex
     format_fields = formats.fields
@@ -128,7 +132,7 @@ def execute(dir, xlsx, logger, mediaid=None, update=False, getovs=False, recurse
 
         logger.info('Searching for files...')
         now=time.time()
-        Crawler=crawler.Crawler(dir,recurse=recurse,archive=archive)
+        Crawler=crawler.Crawler(dir,recurse=recurse,archive=archive,excludes=excludes)
         logger.info('Found %s files...'%Crawler.filecount)
 
         #Loop thru dataset objects returned by Crawler
@@ -361,6 +365,11 @@ def main():
     ovarg=getargs.BoolArg(opt)
     ovarg.tooltip='Do you want to generate overview (quicklook and thumbnail) images?'
 
+    opt=parser.add_option('-e', "--exclude", dest="excludes", metavar="excludes",
+                          help='File/directory exclusion pattern',default='')
+    excarg=getargs.StringArg(opt, enabled=True,required=False)
+    excarg.tooltip='Glob style file/directory basename exclusion pattern/s i.e *.png somedir? img_[0-9][0-9].tif'
+
     opt=parser.add_option("--debug", action="store_true", dest="debug",default=False,
                       help="Turn debug output on")
 
@@ -394,7 +403,8 @@ def main():
             xlsxarg.callback()
         while keepalive:
             #Pop up the GUI
-            args=getargs.GetArgs(dirarg,medarg,xlsxarg,updatearg,recursearg,archivearg,ovarg,kaarg,callback=validate,title=APP,icon=ICON)
+            args=getargs.GetArgs(dirarg,medarg,xlsxarg,updatearg,recursearg,archivearg,ovarg,excarg,kaarg,
+                                 callback=validate,title=APP,icon=ICON)
             if args:#GetArgs returns None if user cancels the GUI/closes the dialog (or Tkinter can not be imported)
                 keepalive=args.keepalive
                 args.xlsx = utilities.checkExt(utilities.encode(args.xlsx), ['.xlsx'])
@@ -406,7 +416,7 @@ def main():
                     logger=getlogger(log,name=APP,debug=optvals.debug)
                 keepalive=args.keepalive
                 forceexit=True
-                execute(args.dir,args.xlsx,logger,args.med,args.update,args.ovs,args.recurse,args.archive)
+                execute(args.dir,args.xlsx,logger,args.med,args.update,args.ovs,args.recurse,args.archive, args.excludes)
                 forceexit=False
                 hasrun=True
             else:
@@ -416,7 +426,8 @@ def main():
         xlsx = utilities.checkExt(utilities.encode(optvals.xlsx), ['.xlsx'])
         log=xlsx.replace('.xlsx','.log')
         logger=getlogger(log, name=APP, debug=optvals.debug)
-        execute(optvals.dir,xlsx,logger,optvals.med,optvals.update,optvals.ovs,optvals.recurse,optvals.archive)
+        execute(optvals.dir,xlsx,logger,optvals.med,optvals.update,optvals.ovs,
+                optvals.recurse,optvals.archive,optvals.excludes)
 
     if logger:
         logger.debug('Shutting down')

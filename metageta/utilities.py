@@ -81,13 +81,11 @@ def archivelist(f):
     '''
     lst=[]
     if tarfile.is_tarfile(f):
-        #return tarfile.open(f,'r').getnames() #includes subfolders
         lst=[ti.name for ti in tarfile.open(f,'r').getmembers() if ti.isfile()]
         return [os.sep.join(['/vsitar',normcase(f),l]) for l in lst]
         #return [os.sep.join(['/vsitar',f,l]) for l in lst]
 
     elif zipfile.is_zipfile(f):
-        #return zipfile.ZipFile(f,'r').namelist() #includes subfolders
         lst=[zi.filename for zi in zipfile.ZipFile(f,'r').infolist() if zi.file_size> 0]
         return [os.sep.join(['/vsizip',normcase(f),l]) for l in lst]
         #return [os.sep.join(['/vsizip',f,l]) for l in lst]
@@ -517,7 +515,8 @@ def writable(filepath):
     except:
         return False
 
-def rglob(directory, pattern="*", regex=False, regex_flags=0, recurse=True, archive=False, excludes=[]):
+def rglob(directory, pattern="*", regex=False, regex_flags=0, recurse=True, archive=False, excludes=[],
+          onerror=None, followlinks=False):
     ''' @type    directory: C{str}
         @param   directory: Path to xls file
         @type    pattern: C{type}
@@ -535,7 +534,7 @@ def rglob(directory, pattern="*", regex=False, regex_flags=0, recurse=True, arch
         @type    excludes: C{list}
         @param   excludes: List of glob style file/directory exclusion pattern/s
     '''
-    for root, dirs, files in os.walk(directory):
+    for root, dirs, files in os.walk(directory, onerror=onerror, followlinks=followlinks):
 
         for exc in excludes:
             dirs[:] = [d for d in dirs if not fnmatch.fnmatch(d,exc)]
@@ -549,10 +548,17 @@ def rglob(directory, pattern="*", regex=False, regex_flags=0, recurse=True, arch
                 except:isarchive=False
 
                 if isarchive:
-                    paths = archivelist(fullname)
-                    for p in paths:
-                        if match(p, pattern, regex, regex_flags):
-                            yield p
+                    try:
+                        paths = archivelist(fullname)
+                        for exc in excludes:
+                            paths[:] = [p for p in paths if not fnmatch.fnmatch(p,exc)]
+                        for p in paths:
+                            if match(p, pattern, regex, regex_flags):
+                                yield p
+                    except Exception as e:
+                        if onerror is not None:
+                            e.filename = fullname
+                            onerror(e)
                     continue
 
             if match(f, pattern, regex, regex_flags):
@@ -591,14 +597,11 @@ def isrunning(pid):
 #========================================================================================================
 def ExceptionInfo(maxTBlevel=0):
     '''Get info about the last exception'''
-    cla, exc, trbk = sys.exc_info()
-    excName = cla.__name__
-    if maxTBlevel > 0:
-        excArgs=[]
-        excTb = FormatTraceback(trbk, maxTBlevel)
-        #return '%s: %s\nTraceback: %s' % (excName, str(exc), excTb)
-        return '%s: %s\n%s' % (excName, str(exc), excTb)
+    if maxTBlevel:
+        return traceback.format_exc(maxTBlevel)
     else:
+        cla, exc, trbk = sys.exc_info()
+        excName = cla.__name__
         return '%s: %s' % (excName, str(exc))
 
 def FormatTraceback(trbk, maxTBlevel):

@@ -46,7 +46,7 @@ debug=False
 gdal.UseExceptions()
 class GDALError(Exception):
     ''' For raising GDAL related errors '''
-    def __init__(self,msg=None):
+    def __init__(self,msg=None, *args, **kwargs):
         ''' For raising GDAL related errors
 
             @type msg: C{str}

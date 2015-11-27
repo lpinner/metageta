@@ -219,7 +219,6 @@ def Open(f):
         errors.append(err)
 
     #Couldn't open file, raise the last error in the stack
-    #if len(errors) > 0: raise errors[-1].__class__,'\n'.join(errors[-1].args) #Updated for Python 2.6, not all args are strings...
-    if len(errors) > 0: raise errors[-1].__class__(*errors[-1].args)
+    if len(errors) > 0: raise errors[-1]
     else:raise Exception('Unable to open %s' % f)
     '''@todo: perhaps log the entire error stack if a file couldn't be opened?'''

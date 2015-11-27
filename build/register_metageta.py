@@ -2,8 +2,8 @@ import os, shutil, site, sys, tempfile
 import _winreg as winreg
 
 
-crawl_script = 'runcrawler.exe'
-trans_script = 'runtransform.exe'
+crawl_script = 'metagetacrawler.exe'
+trans_script = 'metagetatransform.exe'
 config_script = 'metagetaconfig.exe'
 crawl_lnk = 'MetaGETA Crawler.lnk'
 trans_lnk = 'MetaGETA Transform.lnk'

@@ -52,9 +52,6 @@ encoding='utf-8'
 
 iswin=os.name=='nt'#sys.platform[0:3].lower()=='win'#Are we on Windows
 
-compressedfiles=('.zip','.tar.gz','.tgz','.tbz', '.tbz2','.tb2','.tar.bz2','.tar','kmz')
-
-
 #========================================================================================================
 #{String Utilities
 #========================================================================================================
@@ -340,12 +337,14 @@ def FileInfo(filepath):
         if filepath[:4].lower() == '/vsi':
             f=filepath.replace('/vsitar/','').replace('/vsitar\\','')
             f=f.replace('/vsizip/','').replace('/vsizip\\','')
-            for ext in compressedfiles:
-                if ext in f.lower():
-                    f=f.split(ext)
-                    archive=f[0]+ext
-                    filename=ext.join(f[1:]).strip('\\/')
-                    fileinfo.update(archivefileinfo(archive,filename))
+            d=f
+
+            while not os.path.isdir(d):
+                d=os.path.dirname(d)
+                if zipfile.is_zipfile(d) or tarfile.is_tarfile(d):
+                    f=f.split(d)[1].strip('\\/')
+                    fileinfo.update(archivefileinfo(d,f))
+                    archive, filename = d,f
                     break
 
             filestat = os.stat(archive)

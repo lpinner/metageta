@@ -111,7 +111,7 @@ def getoverview(ds,outfile,width,format,bands,stretch_type,*stretch_args):
         cpds=ovdriver.CreateCopy(fn, vrtds)
         if not cpds:raise geometry.GDALError, 'Unable to generate overview image.'
 
-        outfile=read_vsimem(fn)
+        outfile=read_vsi(fn)
         gdal.Unlink(fn)
 
     return outfile

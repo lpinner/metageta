@@ -33,7 +33,7 @@ import __default__
 # import other modules
 import sys, os,glob
 from metageta.overviews import GetDataTypeRange
-from metageta.geometry import read_vsimem
+from metageta.geometry import read_vsi
 from osgeo import gdal
 
 class Dataset(__default__.Dataset): 
@@ -44,7 +44,7 @@ class Dataset(__default__.Dataset):
         #read first line, is it an ENVI format hdr...?
         if f[:4]=='/vsi':
             if [int(v) for v in gdal.__version__.split('.')] < [1,7,0]:raise NotImplementedError
-            lin = read_vsimem(f).splitlines()[0]
+            lin = read_vsi(f).splitlines()[0]
         else:
             lin=open(f).readline().strip()
         if lin != 'ENVI':raise NotImplementedError

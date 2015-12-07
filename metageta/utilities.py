@@ -113,6 +113,22 @@ def archivefileinfo(f,n):
 
     return archiveinfo
 
+def archivefilename(filepath):
+    ''' Determine archive file name from a path to a file inside the archive
+        @type     f:  C{str}
+        @param    f:  archived file filepath
+        @rtype:   C{tuple}
+        @return:  (archive path, filepath within archive)
+    '''
+    archive=filepath[:]
+    while not os.path.isdir(archive):
+        if archive==os.path.dirname(archive):
+            raise RuntimeError('Unable to determine archive file from %s'%filepath)
+        archive=os.path.dirname(archive)
+        if zipfile.is_zipfile(archive) or tarfile.is_tarfile(archive):
+            filename=filepath.split(archive)[1].strip('\\/')
+            return (archive, filename)
+
 def compressed_file_exists(path,testfile=True):
     ''' Check check whether /vsi...\path_to_archive\folder\file exists.
         Alternatively, only check if the archive exists on the file system.
@@ -337,15 +353,10 @@ def FileInfo(filepath):
         if filepath[:4].lower() == '/vsi':
             f=filepath.replace('/vsitar/','').replace('/vsitar\\','')
             f=f.replace('/vsizip/','').replace('/vsizip\\','')
-            d=f
 
-            while not os.path.isdir(d):
-                d=os.path.dirname(d)
-                if zipfile.is_zipfile(d) or tarfile.is_tarfile(d):
-                    f=f.split(d)[1].strip('\\/')
-                    fileinfo.update(archivefileinfo(d,f))
-                    archive, filename = d,f
-                    break
+            archive, filename = archivefilename(f)
+            fileinfo.update(archivefileinfo(archive, filename))
+
 
             filestat = os.stat(archive)
             fileinfo['filename']=os.path.basename(filename)

@@ -61,10 +61,9 @@ gdal.AllRegister()
 class Dataset(__dataset__.Dataset):
     '''Subclass of base Dataset class'''
     def __init__(self,f):
-        if f[:4]=='/vsi':raise NotImplementedError
+        if f[:4]=='/vsi':raise NotImplementedError #GDAL (as at 1.11.3) doesn't support VSI access to ALI rasters
         self.filelist=glob.glob(os.path.dirname(f)+'/*') #Assume raw data - all files in current dir belong to this dataset.
-        #filelist=glob.glob(os.path.splitext(f)[0]+'.*')
-        #filelist.extend(glob.glob('%s\\%s_%s_*.hdf' % (os.path.dirname(f),os.path.basename(f)[10:14],os.path.basename(f)[14:17])))
+
     def __getmetadata__(self):
         '''Read Metadata for recognised EO1 ALI (L1G & L1R) & Hyperion (L1R) images as GDAL doesn't'''
 
@@ -133,9 +132,6 @@ class Dataset(__dataset__.Dataset):
             self.metadata['sensor']='ALI'
 
             gdalDataset = geometry.OpenDataset(f)
-            #if not gdalDataset: #Error now raised in geometry.OpenDataset
-            #    errmsg=gdal.GetLastErrorMsg()
-            #    raise IOError, 'Unable to open %s\n%s' % (f,errmsg.strip())
 
             self.metadata['filetype'] = '%s/%s (%s %s)' % (gdalDataset.GetDriver().ShortName,
                                                            gdalDataset.GetDriver().LongName,

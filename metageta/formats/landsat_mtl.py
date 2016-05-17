@@ -147,7 +147,11 @@ def parseheader(f):
               files. Need to fix duplication - digitalglobe driver will need tweaking
               as it's version of the parser extracts band information.
     '''
-    lines=iter(open(f).readlines())
+
+    if f[:4]=='/vsi':
+        lines=iter(geometry.read_vsi(f).splitlines())
+    else:
+        lines=iter(open(f).readlines())
 
     hdrdata=OrderedDict({})
     line=lines.next()

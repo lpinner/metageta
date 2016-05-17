@@ -79,6 +79,7 @@ class Dataset(__default__.Dataset):
         
         self.fileinfo['filepath']=self._led #change filename to leader file
         self.fileinfo['filename']=os.path.basename(self._led)
+
     def __getmetadata__(self,f=None):
         '''Read Metadata for an ACRES ALOS AVNIR-2/PRISM/PALSAR format image as GDAL doesn't'''
 

@@ -55,12 +55,16 @@ class Crawler:
             @param   excludes: List of glob style file/directory exclusion pattern/s
         '''
 
+        #Class vars
+        self.errors=[] #A list of files that couldn't be opened. Contains a tuple with file name, error info, debug info
+
         format_regex  = formats.format_regex
         dir=utilities.uncpath(utilities.realpath(utilities.normcase(utilities.encode(dir))))
         #Build a dict of matching files and regexes then sort according to the priority of the regex formats
         fileformats={}
         for f in utilities.rglob(dir,'|'.join(format_regex), True, re.IGNORECASE,
-                                 recurse=recurse, archive=archive, excludes=excludes):
+                                 recurse=recurse, archive=archive, excludes=excludes,
+                                 onerror=self.onerror, followlinks=False):
             #Don't return existing overviews
             if f[-7:] in ('qlk.jpg','thm.jpg'):continue
             #Use utf-8 encoding to fix Issue 20
@@ -76,7 +80,6 @@ class Crawler:
             if fileformats.has_key(r):files.extend(fileformats[r])
 
         #Class vars
-        self.errors=[] #A list of files that couldn't be opened. Contains a tuple with file name, error info, debug info
         self.files=files
         self.file=''
         self.filecount=len(self.files)
@@ -105,19 +108,20 @@ class Crawler:
                     self.filecount-=1
             #Fin!
             return ds
-        except:
+        except Exception as e:
             #decrement the filecount and append to the errors list
             self.filecount-=1
-            self.errors.append((self.file,
-                                utilities.ExceptionInfo(),
-                                utilities.ExceptionInfo(10)
-                        ))
-
+            e.filename = self.file
+            self.onerror(e)
             #Skip to the next file so we don't stop the iteration
             #Exceptions here will keep recursing until we find a
             #file we can open or run out of files.
             return self.next()
 
 
-
+    def onerror(self, e):
+        self.errors.append((e.filename,
+                           utilities.ExceptionInfo(),
+                           utilities.ExceptionInfo(10))
+                          )
 

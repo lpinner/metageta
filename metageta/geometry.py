@@ -46,7 +46,7 @@ debug=False
 gdal.UseExceptions()
 class GDALError(Exception):
     ''' For raising GDAL related errors '''
-    def __init__(self,msg=None):
+    def __init__(self,msg=None, *args, **kwargs):
         ''' For raising GDAL related errors
 
             @type msg: C{str}
@@ -528,7 +528,7 @@ def PixelToMap(px,py,gt):
 #========================================================================================================
 #{VSIMEM utilities
 #========================================================================================================
-def read_vsimem(fn):
+def read_vsi(fn):
     '''Read GDAL vsimem files
 
         @type fn:  C{str}
@@ -541,7 +541,7 @@ def read_vsimem(fn):
     gdal.VSIFSeekL(vsifile, 0, 0)
     return gdal.VSIFReadL(1, vsileng, vsifile)
 
-def write_vsimem(fn,data):
+def write_vsi(fn,data):
     '''Write GDAL vsimem files
 
         @type fn:  C{str}
@@ -830,7 +830,7 @@ def CreateCustomVRT(vrtxml,vrtcols,vrtrows):
         vrt.append('%s' % vrtxml)
         vrt.append('</VRTDataset>')
         vrtfn='/vsimem/%s.vrt'%tempfile._RandomNameSequence().next()
-        write_vsimem(vrtfn,'\n'.join(vrt))
+        write_vsi(vrtfn,'\n'.join(vrt))
         return vrtfn
     except:
         return None

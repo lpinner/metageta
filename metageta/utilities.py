@@ -52,9 +52,6 @@ encoding='utf-8'
 
 iswin=os.name=='nt'#sys.platform[0:3].lower()=='win'#Are we on Windows
 
-compressedfiles=('.zip','.tar.gz','.tgz','.tbz', '.tbz2','.tb2','.tar.bz2','.tar','kmz')
-
-
 #========================================================================================================
 #{String Utilities
 #========================================================================================================
@@ -81,13 +78,11 @@ def archivelist(f):
     '''
     lst=[]
     if tarfile.is_tarfile(f):
-        #return tarfile.open(f,'r').getnames() #includes subfolders
         lst=[ti.name for ti in tarfile.open(f,'r').getmembers() if ti.isfile()]
         return [os.sep.join(['/vsitar',normcase(f),l]) for l in lst]
         #return [os.sep.join(['/vsitar',f,l]) for l in lst]
 
     elif zipfile.is_zipfile(f):
-        #return zipfile.ZipFile(f,'r').namelist() #includes subfolders
         lst=[zi.filename for zi in zipfile.ZipFile(f,'r').infolist() if zi.file_size> 0]
         return [os.sep.join(['/vsizip',normcase(f),l]) for l in lst]
         #return [os.sep.join(['/vsizip',f,l]) for l in lst]
@@ -117,6 +112,22 @@ def archivefileinfo(f,n):
         archiveinfo['datemodified']=time.strftime(datetimeformat, list(afi.date_time)+[0,0,0])
 
     return archiveinfo
+
+def archivefilename(filepath):
+    ''' Determine archive file name from a path to a file inside the archive
+        @type     f:  C{str}
+        @param    f:  archived file filepath
+        @rtype:   C{tuple}
+        @return:  (archive path, filepath within archive)
+    '''
+    archive=filepath[:]
+    while not os.path.isdir(archive):
+        if archive==os.path.dirname(archive):
+            raise RuntimeError('Unable to determine archive file from %s'%filepath)
+        archive=os.path.dirname(archive)
+        if zipfile.is_zipfile(archive) or tarfile.is_tarfile(archive):
+            filename=filepath.split(archive)[1].strip('\\/')
+            return (archive, filename)
 
 def compressed_file_exists(path,testfile=True):
     ''' Check check whether /vsi...\path_to_archive\folder\file exists.
@@ -342,13 +353,10 @@ def FileInfo(filepath):
         if filepath[:4].lower() == '/vsi':
             f=filepath.replace('/vsitar/','').replace('/vsitar\\','')
             f=f.replace('/vsizip/','').replace('/vsizip\\','')
-            for ext in compressedfiles:
-                if ext in f.lower():
-                    f=f.split(ext)
-                    archive=f[0]+ext
-                    filename=ext.join(f[1:]).strip('\\/')
-                    fileinfo.update(archivefileinfo(archive,filename))
-                    break
+
+            archive, filename = archivefilename(f)
+            fileinfo.update(archivefileinfo(archive, filename))
+
 
             filestat = os.stat(archive)
             fileinfo['filename']=os.path.basename(filename)
@@ -517,7 +525,8 @@ def writable(filepath):
     except:
         return False
 
-def rglob(directory, pattern="*", regex=False, regex_flags=0, recurse=True, archive=False, excludes=[]):
+def rglob(directory, pattern="*", regex=False, regex_flags=0, recurse=True, archive=False, excludes=[],
+          onerror=None, followlinks=False):
     ''' @type    directory: C{str}
         @param   directory: Path to xls file
         @type    pattern: C{type}
@@ -535,7 +544,7 @@ def rglob(directory, pattern="*", regex=False, regex_flags=0, recurse=True, arch
         @type    excludes: C{list}
         @param   excludes: List of glob style file/directory exclusion pattern/s
     '''
-    for root, dirs, files in os.walk(directory):
+    for root, dirs, files in os.walk(directory, onerror=onerror, followlinks=followlinks):
 
         for exc in excludes:
             dirs[:] = [d for d in dirs if not fnmatch.fnmatch(d,exc)]
@@ -549,10 +558,17 @@ def rglob(directory, pattern="*", regex=False, regex_flags=0, recurse=True, arch
                 except:isarchive=False
 
                 if isarchive:
-                    paths = archivelist(fullname)
-                    for p in paths:
-                        if match(p, pattern, regex, regex_flags):
-                            yield p
+                    try:
+                        paths = archivelist(fullname)
+                        for exc in excludes:
+                            paths[:] = [p for p in paths if not fnmatch.fnmatch(p,exc)]
+                        for p in paths:
+                            if match(p, pattern, regex, regex_flags):
+                                yield p
+                    except Exception as e:
+                        if onerror is not None:
+                            e.filename = fullname
+                            onerror(e)
                     continue
 
             if match(f, pattern, regex, regex_flags):
@@ -591,14 +607,11 @@ def isrunning(pid):
 #========================================================================================================
 def ExceptionInfo(maxTBlevel=0):
     '''Get info about the last exception'''
-    cla, exc, trbk = sys.exc_info()
-    excName = cla.__name__
-    if maxTBlevel > 0:
-        excArgs=[]
-        excTb = FormatTraceback(trbk, maxTBlevel)
-        #return '%s: %s\nTraceback: %s' % (excName, str(exc), excTb)
-        return '%s: %s\n%s' % (excName, str(exc), excTb)
+    if maxTBlevel:
+        return traceback.format_exc(maxTBlevel)
     else:
+        cla, exc, trbk = sys.exc_info()
+        excName = cla.__name__
         return '%s: %s' % (excName, str(exc))
 
 def FormatTraceback(trbk, maxTBlevel):

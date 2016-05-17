@@ -32,8 +32,8 @@ setupargs = {
                    'Topic :: Scientific/Engineering :: GIS'],
     'packages':find_packages(),
     'install_requires':['GDAL >= 1.7, < 2.0',
-                        'lxml >= 3.3.1',
-                        'openpyxl >= 2.0.5'],
+                        'lxml >= 3.3',
+                        'openpyxl >= 2.0'],
     'extras_require':{':sys_platform == "win32"': ['pypiwin32']},
     'package_data':{'metageta': ['config/config.xml'],
                    'metageta.transforms': ['*.xml','*.xsl'],
@@ -41,14 +41,19 @@ setupargs = {
                     },
     'entry_points':{
         'console_scripts': [
-            'runcrawler=metageta.__runcrawler__:main',
-            'runtransform=metageta.__runtransform__:main',
+            'metagetacrawler=metageta.__runcrawler__:main',
+            'metagetatransform=metageta.__runtransform__:main',
             'metagetaconfig=metageta.config.__main__:main',
         ],
     }
 }
 
 if 'bdist_wininst' in sys.argv:
+
+    args = [a for a in sys.argv[1:] if not a=='bdist_wininst']
+    del sys.argv[1:]
+    sys.argv.append('bdist_wininst')
+
     directory = path.join(path.dirname(__file__), 'build')
     if path.exists(path.join(directory, 'wininst-9.0.exe')):
 
@@ -88,8 +93,16 @@ if 'bdist_wininst' in sys.argv:
     setupargs['data_files'] = [('Scripts', ('build/metageta.ico',),)]
     setupargs['scripts'] = ['build/register_metageta.py']
 
+    sys.argv += ['--plat-name', 'win32']
     setup(**setupargs)
     sys.argv += ['--plat-name', 'win-amd64']
+    setup(**setupargs)
+
+    if args:
+        del sys.argv[1:]
+        sys.argv+=args
+    else:
+        sys.exit(0)
 
 setup(**setupargs)
 

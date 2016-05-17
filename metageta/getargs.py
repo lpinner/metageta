@@ -163,7 +163,7 @@ class Arg(object):
         @type    required:  C{boolean}
         @keyword required:  The Arg is required to have a value .
     '''
-    def __init__(self,opt,enabled=True,callback=None,icon=None,tooltip=None,required=True):
+    def __init__(self,opt,enabled=True,callback=None,icon=None,tooltip=None,required=True, label=None):
         self.opt=opt
         self._enabled=True #default
         self._callback=lambda *a,**kw:'break' #default
@@ -172,6 +172,7 @@ class Arg(object):
         self.required=required
         self.icon=icon
         self.tooltip=tooltip
+        self.label=opt.help if label is None else label
 
         #On update callback
         if callback and callable(callback):
@@ -249,7 +250,7 @@ class DirArg(Arg):
         if not self.lastdir:self.lastdir=Tix.StringVar(root,self.initialdir)
 
         if self.opt.default is not None:self._value.set(self.opt.default)
-        self.TkLabel=Tix.Label(root, text=self.opt.help+':')
+        self.TkLabel=Tix.Label(root, text=self.label+':')
         self.TkEntry=Tix.Entry(root, textvariable=self._value)
 
         self.TkButton = Tix.Button(root,image=self.TkPhotoImage, command=Command(self.cmd,root,self.opt.help,self.lastdir,self._value))
@@ -293,7 +294,7 @@ class FileArg(Arg):
 
         if not self.lastdir:self.lastdir=Tix.StringVar(root,self.initialdir)
         if self.opt.default is not None:self._value.set(self.opt.default)
-        self.TkLabel=Tix.Label(root, text=self.opt.help+':')
+        self.TkLabel=Tix.Label(root, text=self.label+':')
         self.TkEntry=Tix.Entry(root, textvariable=self._value)
         self.TkButton = Tix.Button(root,image=self.TkPhotoImage,command=Command(self.cmd,root,self.opt.help,self.filter,self.lastdir,self._value))
         self.TkLabel.grid(row=row, column=0,sticky=Tix.W, padx=2)
@@ -366,7 +367,7 @@ class ComboBoxArg(Arg):
             self._value = Tix.StringVar(root)
             self.TkComboBox=Tix.ComboBox(root, command=self.callback, dropdown=1, editable=1,variable=self._value,options='listbox.height 6 listbox.background white')
 
-        self.TkLabel=Tix.Label(root, text=self.opt.help+':')
+        self.TkLabel=Tix.Label(root, text=self.label+':')
         for o in self.options:self.TkComboBox.insert(Tix.END, o)
         if self.opt.default is not None:
             selected=self.opt.default
@@ -401,7 +402,7 @@ class StringArg(Arg):
         self._value = Tix.StringVar(root)
         if self.opt.default is not None:self._value.set(self.opt.default)
 
-        self.TkLabel=Tix.Label(root, text=self.opt.help+':')
+        self.TkLabel=Tix.Label(root, text=self.label+':')
         self.TkEntry=Tix.Entry(root, textvariable=self._value)
         #self.TkEntry.bind('<Key>', self.keypress)
         self.TkLabel.grid(row=row, column=0,sticky=Tix.W)
@@ -419,7 +420,7 @@ class BoolArg(Arg):
     def __build__(self,root,row):
         self._value = Tix.BooleanVar(root)
         self._value.set(self.opt.default)
-        self.TkLabel=Tix.Label(root, text=self.opt.help+':')
+        self.TkLabel=Tix.Label(root, text=self.label+':')
         self.TkCheckbutton=Tix.Checkbutton(root, variable=self._value)
         self.TkLabel.grid(row=row, column=0,sticky=Tix.W)
         self.TkCheckbutton.grid(row=row, column=1,sticky=Tix.W)

@@ -1,5 +1,7 @@
 # MetaGETA
 
+Note: this project is no longer maintained.
+
 Search for, extract and transform metadata from spatial imagery data.
 
 ## Introduction
